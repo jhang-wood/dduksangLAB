@@ -1,0 +1,30 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: '떡상연구소 - AI 기반 교육 플랫폼',
+  description: 'AI/노코드 교육 콘텐츠 제공, 수강생 간 커뮤니티 활성화, 개인/팀 SaaS 홍보 플랫폼',
+  keywords: 'AI 교육, 노코드, 커뮤니티, SaaS, 온라인 강의',
+  authors: [{ name: '떡상연구소' }],
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#000000',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="ko" className="dark">
+      <body className={`${inter.className} bg-black text-white antialiased`}>
+        <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+          {children}
+        </div>
+      </body>
+    </html>
+  )
+}
