@@ -1,0 +1,43 @@
+.env
+*.log
+__pycache__/
+venv/
+node_modules/
+.DS_Store
+*.pyc
+*.pid
+.vscode/
+automation_*.log
+telegram_*.log
+claude_*.log
+*.secret
+credentials/
+.ssh/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+/venv/
+.venv/
+
+# IDE & Editor specific
+.vscode/
+.idea/
+.cursor-server/
+.claude/
+
+# Cache & Dependencies
+.cache/
+.npm/
+
+# Log files
+*.log
+*.lock
+*.pid
+*.jsonl
+
+# OS specific
+.DS_Store
+Thumbs.db
