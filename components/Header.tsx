@@ -20,10 +20,10 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const { user, userProfile, signOut, isAdmin } = useAuth()
 
   const navItems = [
-    { id: 'home', label: '홈', href: '/' },
-    { id: 'lectures', label: '강의', href: '/lectures' },
+    { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
+    { id: 'saas', label: 'SaaS 쇼케이스', href: '/saas' },
     { id: 'community', label: '커뮤니티', href: '/community' },
-    { id: 'saas', label: 'SaaS', href: '/saas' },
+    { id: 'lectures', label: '강의', href: '/lectures' },
     ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
   ]
 
