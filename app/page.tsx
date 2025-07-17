@@ -188,6 +188,300 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-yellow-900/10">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              떡상연구소의 <span className="text-yellow-400">놀라운 성과</span>
+            </h3>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              실제 수강생들이 만들어낸 놀라운 변화의 숫자들
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">2,847+</div>
+              <div className="text-xl text-gray-300">수강생</div>
+              <div className="text-sm text-gray-500 mt-2">전국에서 함께하는</div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-center"
+            >
+              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">92%</div>
+              <div className="text-xl text-gray-300">만족도</div>
+              <div className="text-sm text-gray-500 mt-2">수강생 평균 만족도</div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">₩15M</div>
+              <div className="text-xl text-gray-300">평균 수익</div>
+              <div className="text-sm text-gray-500 mt-2">6개월 내 달성</div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center"
+            >
+              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">24/7</div>
+              <div className="text-xl text-gray-300">서포트</div>
+              <div className="text-sm text-gray-500 mt-2">언제나 함께하는</div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              <span className="text-yellow-400">수강생들의</span> 생생한 후기
+            </h3>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              떡상연구소와 함께 성공한 사람들의 이야기
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
+                  김
+                </div>
+                <div className="ml-4">
+                  <h4 className="text-white font-semibold">김OO</h4>
+                  <p className="text-gray-400 text-sm">전업 트레이더</p>
+                </div>
+              </div>
+              <div className="mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-300">
+                "AI 활용법을 배운 후 수익률이 3배나 증가했습니다. 
+                체계적인 커리큘럼과 실무 중심 교육이 정말 도움이 되었어요."
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
+                  이
+                </div>
+                <div className="ml-4">
+                  <h4 className="text-white font-semibold">이OO</h4>
+                  <p className="text-gray-400 text-sm">스타트업 대표</p>
+                </div>
+              </div>
+              <div className="mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-300">
+                "노코드로 MVP를 1주일 만에 만들었습니다. 
+                투자 유치까지 성공했어요. 떡상연구소 최고!"
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
+            >
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
+                  박
+                </div>
+                <div className="ml-4">
+                  <h4 className="text-white font-semibold">박OO</h4>
+                  <p className="text-gray-400 text-sm">프리랜서 개발자</p>
+                </div>
+              </div>
+              <div className="mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-300">
+                "AI 자동화로 업무 시간이 70% 단축되었습니다. 
+                덕분에 더 많은 프로젝트를 진행할 수 있게 되었어요."
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-gray-900/50">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              떡상연구소의 <span className="text-yellow-400">학습 프로세스</span>
+            </h3>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              체계적인 4단계 프로세스로 누구나 AI 전문가가 됩니다
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
+                1
+              </div>
+              <h4 className="text-xl font-semibold text-white text-center mb-2">기초 학습</h4>
+              <p className="text-gray-400 text-center">
+                AI/노코드 기본 개념과 핵심 원리를 쉽게 이해
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative"
+            >
+              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
+                2
+              </div>
+              <h4 className="text-xl font-semibold text-white text-center mb-2">실습 프로젝트</h4>
+              <p className="text-gray-400 text-center">
+                실제 프로젝트를 통한 hands-on 경험 축적
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
+                3
+              </div>
+              <h4 className="text-xl font-semibold text-white text-center mb-2">멘토링</h4>
+              <p className="text-gray-400 text-center">
+                전문가의 1:1 맞춤형 피드백과 코칭
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative"
+            >
+              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
+                4
+              </div>
+              <h4 className="text-xl font-semibold text-white text-center mb-2">수익화</h4>
+              <p className="text-gray-400 text-center">
+                실제 수익 창출까지 완벽 지원
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              자주 묻는 <span className="text-yellow-400">질문</span>
+            </h3>
+            <p className="text-gray-300 text-lg">
+              떡상연구소에 대해 궁금한 점을 해결해드립니다
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
+            >
+              <h4 className="text-xl font-semibold text-white mb-2">
+                Q. 프로그래밍 경험이 없어도 수강할 수 있나요?
+              </h4>
+              <p className="text-gray-300">
+                A. 네, 전혀 문제없습니다! 떡상연구소는 비전공자도 쉽게 따라올 수 있도록 
+                기초부터 차근차근 알려드립니다. 노코드 툴을 활용하기 때문에 
+                프로그래밍 지식이 없어도 충분히 수강 가능합니다.
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
+            >
+              <h4 className="text-xl font-semibold text-white mb-2">
+                Q. 수강 기간은 얼마나 되나요?
+              </h4>
+              <p className="text-gray-300">
+                A. 기본 과정은 12주이며, 평생 수강이 가능합니다. 
+                본인의 페이스에 맞춰 학습할 수 있고, 
+                업데이트되는 콘텐츠도 계속 무료로 제공됩니다.
+              </p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
+            >
+              <h4 className="text-xl font-semibold text-white mb-2">
+                Q. 실제로 수익을 낼 수 있나요?
+              </h4>
+              <p className="text-gray-300">
+                A. 90% 이상의 수강생이 2개월 내 첫 수익을 달성했습니다. 
+                체계적인 커리큘럼과 실무 프로젝트, 그리고 멘토링을 통해 
+                실제 수익화까지 완벽하게 지원합니다.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-red-900/20 to-red-600/20">
         <div className="container mx-auto">
