@@ -4,36 +4,37 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Menu, X, User, LogOut } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
+import AuthModal from './AuthModal'
 
 interface HeaderProps {
   currentPage?: string
-  isAuthenticated?: boolean
-  userType?: 'visitor' | 'student' | 'admin'
-  userName?: string
 }
 
-export default function Header({ 
-  currentPage = 'home', 
-  isAuthenticated = false, 
-  userType = 'visitor',
-  userName = ''
-}: HeaderProps) {
+export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin')
   const router = useRouter()
+  const { user, userProfile, signOut, isAdmin } = useAuth()
 
   const navItems = [
     { id: 'home', label: '홈', href: '/' },
     { id: 'lectures', label: '강의', href: '/lectures' },
     { id: 'community', label: '커뮤니티', href: '/community' },
     { id: 'saas', label: 'SaaS', href: '/saas' },
-    ...(userType === 'admin' ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
+    ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
   ]
 
-  const handleSignOut = () => {
-    // 실제 로그아웃 로직 구현
-    console.log('Sign out')
+  const handleSignOut = async () => {
+    await signOut()
     setIsUserMenuOpen(false)
+  }
+
+  const handleAuthClick = (mode: 'signin' | 'signup') => {
+    setAuthModalMode(mode)
+    setShowAuthModal(true)
   }
 
   return (
@@ -72,28 +73,27 @@ export default function Header({
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-3">
-            {isAuthenticated ? (
+            {user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 transition-colors"
                 >
                   <User size={20} />
-                  <span>{userName || '사용자'}</span>
+                  <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
                 </button>
                 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-yellow-500/20 rounded-lg shadow-xl">
                     <div className="py-2">
                       <div className="px-4 py-2 text-sm text-gray-400 border-b border-gray-800">
-                        {userType === 'admin' ? '관리자' : 
-                         userType === 'student' ? '수강생' : '방문자'}
+                        {userProfile?.role === 'admin' ? '관리자' : '일반회원'}
                       </div>
                       <button
-                        onClick={() => router.push('/profile')}
+                        onClick={() => router.push('/mypage')}
                         className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800 hover:text-yellow-400 transition-colors"
                       >
-                        프로필
+                        마이페이지
                       </button>
                       <button
                         onClick={() => router.push('/settings')}
@@ -115,13 +115,13 @@ export default function Header({
             ) : (
               <>
                 <button
-                  onClick={() => router.push('/login')}
+                  onClick={() => handleAuthClick('signin')}
                   className="px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors"
                 >
                   로그인
                 </button>
                 <button
-                  onClick={() => router.push('/signup')}
+                  onClick={() => handleAuthClick('signup')}
                   className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors"
                 >
                   회원가입
@@ -160,19 +160,19 @@ export default function Header({
               
               {/* Mobile Auth Section */}
               <div className="px-4 pt-4 space-y-2">
-                {isAuthenticated ? (
+                {user ? (
                   <>
                     <div className="text-sm text-gray-400 mb-2">
-                      {userName || '사용자'} ({userType === 'admin' ? '관리자' : userType === 'student' ? '수강생' : '방문자'})
+                      {userProfile?.name || user.email?.split('@')[0] || '사용자'} ({userProfile?.role === 'admin' ? '관리자' : '일반회원'})
                     </div>
                     <button
                       onClick={() => {
-                        router.push('/profile')
+                        router.push('/mypage')
                         setIsMenuOpen(false)
                       }}
                       className="block w-full px-4 py-2 text-left text-gray-300 hover:text-yellow-400 transition-colors"
                     >
-                      프로필
+                      마이페이지
                     </button>
                     <button
                       onClick={() => {
@@ -188,7 +188,7 @@ export default function Header({
                   <div className="space-y-2">
                     <button
                       onClick={() => {
-                        router.push('/login')
+                        handleAuthClick('signin')
                         setIsMenuOpen(false)
                       }}
                       className="block w-full px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors text-center"
@@ -197,7 +197,7 @@ export default function Header({
                     </button>
                     <button
                       onClick={() => {
-                        router.push('/signup')
+                        handleAuthClick('signup')
                         setIsMenuOpen(false)
                       }}
                       className="block w-full px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors text-center"
@@ -211,6 +211,13 @@ export default function Header({
           </div>
         )}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+      />
     </header>
   )
 }

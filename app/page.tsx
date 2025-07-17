@@ -13,6 +13,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function HomePage() {
   return (
@@ -21,8 +22,8 @@ export default function HomePage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-yellow-500/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative w-12 h-12">
+            <div className="flex items-center">
+              <div className="relative w-16 h-16">
                 <Image
                   src="/images/떡상연구소_로고-removebg-preview.png"
                   alt="떡상연구소 로고"
@@ -30,7 +31,6 @@ export default function HomePage() {
                   className="object-contain"
                 />
               </div>
-              <h1 className="text-2xl font-bold text-yellow-400">떡상연구소</h1>
             </div>
             <nav className="hidden md:flex space-x-6">
               <a href="#lectures" className="text-gray-300 hover:text-yellow-400 transition-colors">강의</a>
@@ -39,12 +39,12 @@ export default function HomePage() {
               <a href="#admin" className="text-gray-300 hover:text-yellow-400 transition-colors">관리</a>
             </nav>
             <div className="flex space-x-3">
-              <button className="px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors">
+              <Link href="/auth/login" className="px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors">
                 로그인
-              </button>
-              <button className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors">
+              </Link>
+              <Link href="/auth/signup" className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors">
                 회원가입
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -58,16 +58,22 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
+            <div className="mb-8">
+              <span className="inline-block px-4 py-2 bg-yellow-400/10 text-yellow-400 rounded-full text-sm font-semibold">
+                ⚡ 이 페이지도 1시간만에 만들어졌습니다
+              </span>
+            </div>
             <h2 className="text-5xl md:text-7xl font-bold mb-6">
               <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
-                AI 시대
+                완벽한 AI 시대가
               </span>
               <br />
-              <span className="text-white">완전정복</span>
+              <span className="text-white">열렸습니다</span>
             </h2>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              프로페셔널한 AI 교육과 활발한 커뮤니티, 
-              그리고 당신의 SaaS를 세상에 알려보세요
+              더 이상 늦지마세요. AI와 함께하는 미래,
+              <br />
+              지금 시작하지 않으면 영원히 뒤처집니다
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 bg-yellow-400 text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors flex items-center justify-center">
@@ -99,60 +105,84 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
             >
-              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                <BookOpen className="text-black" size={24} />
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
+                <div className="text-center">
+                  <div className="text-yellow-400 text-3xl font-bold mb-2">2025년 8월</div>
+                  <div className="text-white text-lg">오픈 예정</div>
+                </div>
               </div>
-              <h4 className="text-xl font-semibold mb-4 text-white">전문 강의</h4>
-              <p className="text-gray-300 mb-4">
-                체계적인 AI/노코드 교육 프로그램으로 전문성을 키우세요
-              </p>
-              <ul className="text-sm text-gray-400 space-y-2">
-                <li>• 단계별 커리큘럼</li>
-                <li>• 실무 중심 교육</li>
-                <li>• 개인 맞춤 학습</li>
-              </ul>
+              <div className="opacity-30">
+                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                  <BookOpen className="text-black" size={24} />
+                </div>
+                <h4 className="text-xl font-semibold mb-4 text-white">전문 강의</h4>
+                <p className="text-gray-300 mb-4">
+                  체계적인 AI/노코드 교육 프로그램으로 전문성을 키우세요
+                </p>
+                <ul className="text-sm text-gray-400 space-y-2">
+                  <li>• 단계별 커리큘럼</li>
+                  <li>• 실무 중심 교육</li>
+                  <li>• 개인 맞춤 학습</li>
+                </ul>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
             >
-              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                <MessageSquare className="text-black" size={24} />
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
+                <div className="text-center">
+                  <div className="text-yellow-400 text-3xl font-bold mb-2">2025년 8월</div>
+                  <div className="text-white text-lg">오픈 예정</div>
+                </div>
               </div>
-              <h4 className="text-xl font-semibold mb-4 text-white">활발한 커뮤니티</h4>
-              <p className="text-gray-300 mb-4">
-                전국의 수강생들과 지식을 공유하고 네트워킹하세요
-              </p>
-              <ul className="text-sm text-gray-400 space-y-2">
-                <li>• 실시간 질문답변</li>
-                <li>• 프로젝트 공유</li>
-                <li>• 멘토링 시스템</li>
-              </ul>
+              <div className="opacity-30">
+                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                  <MessageSquare className="text-black" size={24} />
+                </div>
+                <h4 className="text-xl font-semibold mb-4 text-white">활발한 커뮤니티</h4>
+                <p className="text-gray-300 mb-4">
+                  전국의 수강생들과 지식을 공유하고 네트워킹하세요
+                </p>
+                <ul className="text-sm text-gray-400 space-y-2">
+                  <li>• 실시간 질문답변</li>
+                  <li>• 프로젝트 공유</li>
+                  <li>• 멘토링 시스템</li>
+                </ul>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
             >
-              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                <TrendingUp className="text-black" size={24} />
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
+                <div className="text-center">
+                  <div className="text-yellow-400 text-3xl font-bold mb-2">2025년 8월</div>
+                  <div className="text-white text-lg">오픈 예정</div>
+                </div>
               </div>
-              <h4 className="text-xl font-semibold mb-4 text-white">SaaS 홍보</h4>
-              <p className="text-gray-300 mb-4">
-                개발한 SaaS를 효과적으로 홍보하고 사용자를 모으세요
-              </p>
-              <ul className="text-sm text-gray-400 space-y-2">
-                <li>• 카드형 홍보</li>
-                <li>• 트렌드 분석</li>
-                <li>• 마케팅 지원</li>
-              </ul>
+              <div className="opacity-30">
+                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                  <TrendingUp className="text-black" size={24} />
+                </div>
+                <h4 className="text-xl font-semibold mb-4 text-white">SaaS 홍보</h4>
+                <p className="text-gray-300 mb-4">
+                  개발한 SaaS를 효과적으로 홍보하고 사용자를 모으세요
+                </p>
+                <ul className="text-sm text-gray-400 space-y-2">
+                  <li>• 카드형 홍보</li>
+                  <li>• 트렌드 분석</li>
+                  <li>• 마케팅 지원</li>
+                </ul>
+              </div>
             </motion.div>
           </div>
         </div>
