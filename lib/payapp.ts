@@ -92,7 +92,10 @@ export function generatePayAppUrl(orderData: {
 
   const signature = generatePayAppSignature(params)
   const queryString = new URLSearchParams({
-    ...params,
+    ...Object.entries(params).reduce((acc, [key, value]) => ({
+      ...acc,
+      [key]: String(value)
+    }), {}),
     signature
   }).toString()
 
