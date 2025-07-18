@@ -1,0 +1,14 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/admin/page": "app/admin/page.js",
+  "/api/payment/webhook/route": "app/api/payment/webhook/route.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/auth/signup/page": "app/auth/signup/page.js",
+  "/community/page": "app/community/page.js",
+  "/lectures/page": "app/lectures/page.js",
+  "/mypage/page": "app/mypage/page.js",
+  "/page": "app/page.js",
+  "/payment/cancel/page": "app/payment/cancel/page.js",
+  "/payment/success/page": "app/payment/success/page.js",
+  "/saas/page": "app/saas/page.js"
+}

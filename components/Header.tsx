@@ -42,16 +42,18 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="relative w-10 h-10">
-              <Image
-                src="/images/떡상연구소_로고-removebg-preview.png"
-                alt="떡상연구소 로고"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <h1 className="text-xl font-bold text-yellow-400">떡상연구소</h1>
+          <div className="flex items-center">
+            <a href="/" className="block">
+              <div className="relative w-12 h-12">
+                <Image
+                  src="/images/떡상연구소_로고-removebg-preview.png"
+                  alt="떡상연구소 로고"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </a>
           </div>
 
           {/* Desktop Navigation */}
