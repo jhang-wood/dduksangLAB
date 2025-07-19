@@ -50,7 +50,7 @@ export default function StarField() {
         }
       }
 
-      draw(ctx: CanvasRenderingContext2D) {
+      draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         const x = this.x / this.z
         const y = this.y / this.z
         const px = this.prevX
@@ -81,7 +81,7 @@ export default function StarField() {
 
       stars.forEach(star => {
         star.update(3)
-        star.draw(ctx)
+        star.draw(ctx, canvas)
       })
 
       animationId = requestAnimationFrame(animate)

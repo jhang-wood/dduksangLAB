@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { Fragment } from 'react'
 import { motion } from 'framer-motion'
 import { 
   PlayCircle, 
@@ -118,6 +118,7 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
+      </div>
 
       {/* Tech Stack Section - 2줄 무한 슬라이드 */}
       <section className="py-20 px-4 relative">
@@ -150,7 +151,7 @@ export default function HomePage() {
                 className="flex gap-4 flex-shrink-0"
               >
                 {[...Array(2)].map((_, setIndex) => (
-                  <React.Fragment key={setIndex}>
+                  <Fragment key={setIndex}>
                     {/* AI Tools Card */}
                     <div className="w-80 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm p-6 rounded-2xl border border-yellow-500/30 hover:border-yellow-500/50 transition-all flex-shrink-0">
                       <div className="flex items-center gap-4 mb-4">
@@ -210,7 +211,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </motion.div>
             </div>
@@ -223,7 +224,7 @@ export default function HomePage() {
                 className="flex gap-4 flex-shrink-0"
               >
                 {[...Array(2)].map((_, setIndex) => (
-                  <React.Fragment key={setIndex}>
+                  <Fragment key={setIndex}>
                     {/* Database Card */}
                     <div className="w-80 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm p-6 rounded-2xl border border-yellow-500/30 hover:border-yellow-500/50 transition-all flex-shrink-0">
                       <div className="flex items-center gap-4 mb-4">
@@ -283,7 +284,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </motion.div>
             </div>
