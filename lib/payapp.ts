@@ -2,11 +2,11 @@ import * as crypto from 'crypto'
 
 // PayApp 설정
 const PAYAPP_CONFIG = {
-  secretKey: process.env.PAYAPP_SECRET_KEY || '2m/tdA5GmmwTLP/KWo9V7e1DPJnCCRVaOgT+oqg6zaM=',
-  value: process.env.PAYAPP_VALUE || '2m/tdA5GmmwTLP/KWo9V7c0BU4QO/tDrbfcHeaukANY=',
-  userCode: 'BA0209', // 예시 상점 코드
-  storeId: 'dduksanglab', // 예시 상점 ID
-  testMode: true, // 테스트 모드
+  secretKey: process.env.PAYAPP_SECRET_KEY || '',
+  value: process.env.PAYAPP_VALUE || '',
+  userCode: process.env.PAYAPP_USER_CODE || 'BA0209',
+  storeId: process.env.PAYAPP_STORE_ID || 'dduksanglab',
+  testMode: process.env.NODE_ENV !== 'production',
 }
 
 // 가격 플랜 정의

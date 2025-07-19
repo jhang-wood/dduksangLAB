@@ -15,25 +15,25 @@ Name: NEXT_PUBLIC_SUPABASE_URL
 Value: https://wpzvocfgfwvsxmpckdnu.supabase.co
 
 Name: NEXT_PUBLIC_SUPABASE_ANON_KEY
-Value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2Njc4NTIsImV4cCI6MjA2ODI0Mzg1Mn0.LlO3iM55sbzXexcCExkDsSH448J2Z-NJUT1aZQCdck8
+Value: [YOUR_SUPABASE_ANON_KEY]
 
 Name: SUPABASE_SERVICE_ROLE_KEY
-Value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjY2Nzg1MiwiZXhwIjoyMDY4MjQzODUyfQ.c7vRQStMHbBZRjkDDM_iXdLWq4t0HWBvDNbkC7P6Z6c
+Value: [YOUR_SUPABASE_SERVICE_ROLE_KEY]
 ```
 
 #### PayApp (필수)
 ```
 Name: PAYAPP_SECRET_KEY
-Value: 2m/tdA5GmmwTLP/KWo9V7e1DPJnCCRVaOgT+oqg6zaM=
+Value: [YOUR_PAYAPP_SECRET_KEY]
 
 Name: PAYAPP_VALUE
-Value: 2m/tdA5GmmwTLP/KWo9V7c0BU4QO/tDrbfcHeaukANY=
+Value: [YOUR_PAYAPP_VALUE]
 ```
 
 #### NextAuth (필수)
 ```
 Name: NEXTAUTH_SECRET
-Value: EkprhjFI9i16QoEIN3Y2itAxSfPLSlIvcvlMETfvr1o=
+Value: [GENERATE_A_SECURE_RANDOM_STRING]
 
 Name: NEXTAUTH_URL
 Value: https://dduksang.com
@@ -48,13 +48,13 @@ Value: https://dduksang.com
 #### Cloudflare (선택사항 - 필요시)
 ```
 Name: CLOUDFLARE_API_TOKEN
-Value: 1mT4GjLX68DOkfd8MQfuts9R3QTE2jGAiwUpII2T
+Value: [YOUR_CLOUDFLARE_API_TOKEN]
 
 Name: CLOUDFLARE_ACCOUNT_ID
-Value: bc8ec24cef9d77d4fa1a545dffbccd38
+Value: [YOUR_CLOUDFLARE_ACCOUNT_ID]
 
 Name: CLOUDFLARE_ZONE_ID
-Value: 53c8596574446b6b61ad6c1211da8e1c
+Value: [YOUR_CLOUDFLARE_ZONE_ID]
 ```
 
 ### 3. 환경 변수 적용
