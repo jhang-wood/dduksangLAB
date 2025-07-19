@@ -19,7 +19,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
   const navItems = [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
-    { id: 'saas', label: 'SaaS 쇼케이스', href: '/saas' },
+    { id: 'sites', label: '사이트홍보관', href: '/sites' },
     { id: 'community', label: '커뮤니티', href: '/community' },
     { id: 'lectures', label: '강의', href: '/lectures' },
     ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])

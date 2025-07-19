@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
   PlayCircle, 
@@ -8,314 +10,343 @@ import {
   Star, 
   Users, 
   BookOpen, 
-  Filter,
-  Search,
-  Grid,
-  List
+  ShoppingCart,
+  Check,
+  Sparkles,
+  Code2,
+  MessageSquare,
+  Zap,
+  Brain,
+  Rocket,
+  Trophy,
+  Crown,
+  ArrowRight,
+  Gift,
+  CheckCircle2
 } from 'lucide-react'
-import Image from 'next/image'
+import Header from '@/components/Header'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/lib/auth-context'
+import { PaymentButton } from '@/hooks/usePayment'
 
-const lectures = [
-  {
-    id: 1,
-    title: "AI 기초부터 실전까지",
-    instructor: "김AI박사",
-    duration: "2시간 30분",
-    students: 1250,
-    rating: 4.8,
-    price: "59,000원",
-    tags: ["AI", "기초", "실전"],
-    level: "초급",
-    thumbnail: "/images/lecture1.jpg",
-    description: "AI의 기본 개념부터 실제 프로젝트까지 완벽하게 마스터하세요."
-  },
-  {
-    id: 2,
-    title: "노코드로 만드는 SaaS",
-    instructor: "박노코드",
-    duration: "3시간 15분",
-    students: 890,
-    rating: 4.9,
-    price: "79,000원",
-    tags: ["노코드", "SaaS", "창업"],
-    level: "중급",
-    thumbnail: "/images/lecture2.jpg",
-    description: "코딩 없이도 전문적인 SaaS 서비스를 만들 수 있습니다."
-  },
-  {
-    id: 3,
-    title: "ChatGPT 활용 마케팅",
-    instructor: "이마케팅",
-    duration: "1시간 45분",
-    students: 2100,
-    rating: 4.7,
-    price: "49,000원",
-    tags: ["ChatGPT", "마케팅", "실무"],
-    level: "초급",
-    thumbnail: "/images/lecture3.jpg",
-    description: "ChatGPT를 활용한 혁신적인 마케팅 전략을 배워보세요."
-  },
-  {
-    id: 4,
-    title: "데이터 분석 with AI",
-    instructor: "최데이터",
-    duration: "4시간 10분",
-    students: 720,
-    rating: 4.6,
-    price: "99,000원",
-    tags: ["데이터", "분석", "AI"],
-    level: "고급",
-    thumbnail: "/images/lecture4.jpg",
-    description: "AI를 활용한 데이터 분석 기법을 실전에서 활용해보세요."
-  }
-]
-
-const categories = ["전체", "AI", "노코드", "마케팅", "데이터"]
-const levels = ["전체", "초급", "중급", "고급"]
+// AI Agent 마스터과정 데이터
+const masterCourse = {
+  id: 'ai-agent-master',
+  title: 'AI Agent 마스터과정',
+  subtitle: 'AI 300만원짜리 강의, 더 이상 돈 주고 듣지 마세요',
+  description: 'AI로 비싼 강의의 핵심만 추출하고, 실행 가능한 자동화 프로그램으로 만드는 압도적인 방법을 알려드립니다.',
+  instructor_name: '떡상연구소 대표',
+  duration: 480, // 8시간
+  price: 990000,
+  originalPrice: 1800000,
+  discount: 45,
+  category: 'AI',
+  level: 'all',
+  preview_url: '',
+  thumbnail_url: '',
+  studentCount: 1247,
+  rating: 4.9,
+  features: [
+    '최정상 1%의 AI Toolset',
+    '시공간 제약 없는 텔레그램 코딩',
+    '자동화를 자동화하는 메타 자동화',
+    '비개발자를 위한 최소 지식 원칙'
+  ],
+  benefits: [
+    'Claude Code + Super Claude 세팅',
+    '텔레그램 바이블 코딩 시스템',
+    '메타 자동화 프로그램 생성',
+    'EXE 파일 자동 생성 시스템',
+    '1:1 맞춤형 멘토링',
+    '평생 업데이트 제공'
+  ],
+  modules: [
+    { title: 'AI 시대의 게임체인저가 되는 법', duration: '60분' },
+    { title: 'Claude Code + Super Claude 완벽 세팅', duration: '90분' },
+    { title: '텔레그램 바이블 코딩 마스터', duration: '120분' },
+    { title: '메타 자동화 시스템 구축', duration: '90분' },
+    { title: '실전 프로젝트: 나만의 AI 비즈니스', duration: '120분' }
+  ]
+}
 
 export default function LecturesPage() {
-  const [selectedCategory, setSelectedCategory] = useState("전체")
-  const [selectedLevel, setSelectedLevel] = useState("전체")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [viewMode, setViewMode] = useState("grid")
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const { user } = useAuth()
 
-  const filteredLectures = lectures.filter(lecture => {
-    const matchesCategory = selectedCategory === "전체" || lecture.tags.includes(selectedCategory)
-    const matchesLevel = selectedLevel === "전체" || lecture.level === selectedLevel
-    const matchesSearch = searchTerm === "" || 
-      lecture.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lecture.instructor.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    checkEnrollment()
+  }, [user])
+
+  const checkEnrollment = async () => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
     
-    return matchesCategory && matchesLevel && matchesSearch
-  })
+    try {
+      // Check if user is enrolled in AI Agent Master course
+      const { data } = await supabase
+        .from('lecture_enrollments')
+        .select('lecture_id')
+        .eq('user_id', user.id)
+        .eq('lecture_id', masterCourse.id)
+        .single()
+      
+      if (data) {
+        setIsEnrolled(true)
+      }
+    } catch (error) {
+      // User not enrolled
+      setIsEnrolled(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEnrollClick = () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+    // Navigate to course preview/purchase page
+    router.push(`/lectures/${masterCourse.id}/preview`)
+  }
+
+  const handleContinueLearning = () => {
+    router.push(`/lectures/${masterCourse.id}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
-      {/* Header */}
-      <header className="bg-black/80 backdrop-blur-md border-b border-yellow-500/20 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative w-10 h-10">
-                <Image
-                  src="/images/떡상연구소_로고-removebg-preview.png"
-                  alt="떡상연구소 로고"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <h1 className="text-xl font-bold text-yellow-400">떡상연구소</h1>
-            </div>
-            <nav className="hidden md:flex space-x-6">
-              <a href="/" className="text-gray-300 hover:text-yellow-400 transition-colors">홈</a>
-              <a href="/lectures" className="text-yellow-400">강의</a>
-              <a href="/community" className="text-gray-300 hover:text-yellow-400 transition-colors">커뮤니티</a>
-              <a href="/saas" className="text-gray-300 hover:text-yellow-400 transition-colors">SaaS</a>
-            </nav>
-            <div className="flex space-x-3">
-              <button className="px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors">
-                로그인
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-deepBlack-900">
+      <Header currentPage="lectures" />
 
-      {/* Page Header */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto">
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-4">
+        <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-yellow-400">전문 강의</span>
-              <span className="text-white"> 컬렉션</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              AI 시대를 앞서가는 전문 교육 프로그램
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full border border-metallicGold-500/30 mb-8">
+              <Sparkles className="w-5 h-5 text-metallicGold-500" />
+              <span className="text-metallicGold-500 font-semibold">GRAND OPEN SPECIAL</span>
+              <Sparkles className="w-5 h-5 text-metallicGold-500" />
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-montserrat font-bold mb-6">
+              <span className="block text-offWhite-200 mb-4">{masterCourse.title}</span>
+              <span className="block text-3xl md:text-4xl bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 bg-clip-text text-transparent">
+                {masterCourse.subtitle}
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-offWhite-500 max-w-4xl mx-auto leading-relaxed">
+              {masterCourse.description}
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="px-4 mb-8">
-        <div className="container mx-auto">
-          <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/20">
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
-                    placeholder="강의명, 강사명으로 검색..."
-                    className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Category Filter */}
-              <div className="flex gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-yellow-400 text-black'
-                        : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-
-              {/* Level Filter */}
-              <div className="flex gap-2">
-                {levels.map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setSelectedLevel(level)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      selectedLevel === level
-                        ? 'bg-yellow-400 text-black'
-                        : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                    }`}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-
-              {/* View Mode */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid"
-                      ? 'bg-yellow-400 text-black'
-                      : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                  }`}
-                >
-                  <Grid size={20} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "list"
-                      ? 'bg-yellow-400 text-black'
-                      : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
-                  }`}
-                >
-                  <List size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Lectures Grid */}
+      {/* Main Course Display */}
       <section className="px-4 pb-20">
-        <div className="container mx-auto">
-          <div className={`grid gap-6 ${
-            viewMode === "grid" ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
-          }`}>
-            {filteredLectures.map((lecture, index) => (
-              <motion.div
-                key={lecture.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-all duration-300 overflow-hidden group"
-              >
-                <div className="relative aspect-video bg-gray-800">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                  <div className="absolute top-4 right-4 z-20">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      lecture.level === "초급" ? "bg-green-500 text-white" :
-                      lecture.level === "중급" ? "bg-yellow-500 text-black" :
-                      "bg-red-500 text-white"
-                    }`}>
-                      {lecture.level}
-                    </span>
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Left Column - Course Details */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Price Card */}
+              <div className="bg-deepBlack-300 rounded-3xl p-8 border border-metallicGold-900/30 mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-offWhite-600 line-through text-lg">₩{masterCourse.originalPrice.toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-metallicGold-500">₩{masterCourse.price.toLocaleString()}</p>
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <button className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <PlayCircle className="text-black" size={24} />
-                    </button>
+                  <div className="text-right">
+                    <div className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm font-semibold inline-block">
+                      {masterCourse.discount}% 할인
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    {lecture.tags.map((tag, i) => (
-                      <span key={i} className="px-2 py-1 bg-yellow-400/20 text-yellow-400 rounded text-xs">
-                        {tag}
-                      </span>
-                    ))}
+                {isEnrolled ? (
+                  <button
+                    onClick={handleContinueLearning}
+                    className="w-full px-8 py-4 bg-green-500/20 text-green-400 rounded-xl font-bold text-lg border border-green-500/30 hover:bg-green-500/30 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Check size={20} />
+                    학습 계속하기
+                  </button>
+                ) : user ? (
+                  <PaymentButton
+                    lectureId={masterCourse.id}
+                    price={masterCourse.price}
+                    className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+                  >
+                    <ShoppingCart size={20} className="inline mr-2" />
+                    지금 수강 신청하기
+                  </PaymentButton>
+                ) : (
+                  <button
+                    onClick={handleEnrollClick}
+                    className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+                  >
+                    로그인하고 수강 신청하기
+                  </button>
+                )}
+
+                <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-metallicGold-900/20">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 text-metallicGold-500 mb-1">
+                      <Star className="fill-current" size={16} />
+                      <span className="font-bold">{masterCourse.rating}</span>
+                    </div>
+                    <p className="text-sm text-offWhite-600">평점</p>
                   </div>
-
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
-                    {lecture.title}
-                  </h3>
-                  
-                  <p className="text-gray-300 text-sm mb-4">
-                    {lecture.description}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
-                    <div className="flex items-center gap-1">
-                      <BookOpen size={16} />
-                      <span>{lecture.instructor}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock size={16} />
-                      <span>{lecture.duration}</span>
-                    </div>
+                  <div className="text-center">
+                    <p className="text-metallicGold-500 font-bold mb-1">{masterCourse.studentCount.toLocaleString()}+</p>
+                    <p className="text-sm text-offWhite-600">수강생</p>
                   </div>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-400 mb-6">
-                    <div className="flex items-center gap-1">
-                      <Star className="text-yellow-400" size={16} />
-                      <span>{lecture.rating}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users size={16} />
-                      <span>{lecture.students.toLocaleString()}명</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-yellow-400">
-                      {lecture.price}
-                    </span>
-                    <button className="px-6 py-2 bg-yellow-400 text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors">
-                      수강하기
-                    </button>
+                  <div className="text-center">
+                    <p className="text-metallicGold-500 font-bold mb-1">{masterCourse.duration / 60}시간</p>
+                    <p className="text-sm text-offWhite-600">총 강의</p>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+
+              {/* Course Features */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-offWhite-200 mb-6">이런 분들께 추천합니다</h3>
+                <div className="space-y-4">
+                  {[
+                    "비싼 강의료에 지친 직장인",
+                    "AI로 자동화 비즈니스를 시작하고 싶은 사업가",
+                    "코딩 없이 프로그램을 만들고 싶은 비개발자",
+                    "시간과 장소에 구애받지 않고 일하고 싶은 프리랜서"
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-start gap-3"
+                    >
+                      <CheckCircle2 className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                      <span className="text-offWhite-300 text-lg">{item}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right Column - Course Curriculum */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h3 className="text-2xl font-bold text-offWhite-200 mb-6">무엇을 배우나요?</h3>
+              
+              {/* Key Features */}
+              <div className="grid gap-6 mb-10">
+                {masterCourse.features.map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.15 }}
+                    className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl p-6 hover:border-metallicGold-500/40 transition-all"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-deepBlack-900 font-bold">{index + 1}</span>
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-metallicGold-500 mb-2">{feature}</h4>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Course Modules */}
+              <h3 className="text-2xl font-bold text-offWhite-200 mb-6">커리큘럼</h3>
+              <div className="space-y-4">
+                {masterCourse.modules.map((module, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    className="bg-deepBlack-600/50 rounded-xl p-5 border border-metallicGold-900/20 hover:border-metallicGold-500/30 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <PlayCircle className="text-metallicGold-500" size={20} />
+                        <h4 className="font-medium text-offWhite-200">{module.title}</h4>
+                      </div>
+                      <span className="text-sm text-offWhite-600">{module.duration}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Benefits */}
+              <div className="mt-10 bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 rounded-2xl p-8 border border-metallicGold-500/30">
+                <h3 className="text-xl font-bold text-metallicGold-500 mb-4 flex items-center gap-2">
+                  <Gift size={24} />
+                  수강생 전용 혜택
+                </h3>
+                <ul className="space-y-3">
+                  {masterCourse.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-2 text-offWhite-300">
+                      <span className="text-metallicGold-500 mt-1">•</span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
           </div>
 
-          {filteredLectures.length === 0 && (
-            <div className="text-center py-20">
-              <h3 className="text-2xl font-bold text-gray-400 mb-4">
-                검색 결과가 없습니다
-              </h3>
-              <p className="text-gray-500">
-                다른 검색어나 필터를 사용해보세요
-              </p>
-            </div>
-          )}
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="mt-20 text-center bg-deepBlack-300/30 backdrop-blur-sm rounded-3xl p-12 border border-metallicGold-900/30"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-6">
+              지금이 가장 저렴한 가격입니다
+            </h2>
+            <p className="text-xl text-offWhite-500 mb-8">
+              그랜드 오픈 기념 <span className="text-metallicGold-500 font-bold">45% 할인</span>은 선착순 100명 한정입니다
+            </p>
+            {!isEnrolled && (
+              <button
+                onClick={handleEnrollClick}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+              >
+                <Rocket size={24} />
+                지금 바로 시작하기
+                <ArrowRight size={20} />
+              </button>
+            )}
+          </motion.div>
         </div>
       </section>
     </div>

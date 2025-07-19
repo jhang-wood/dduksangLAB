@@ -1,36 +1,33 @@
 'use client'
 
-import React, { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
 import { motion } from 'framer-motion'
-import { Mail, Lock, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const { signIn } = useAuth()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
+      const { error } = await signIn(email, password)
       if (error) {
-        setError(error.message)
+        setError(error.message || '로그인에 실패했습니다.')
       } else {
         router.push('/')
-        router.refresh()
       }
     } catch (err) {
       setError('로그인 중 오류가 발생했습니다.')
@@ -40,79 +37,133 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <motion.div
+    <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="max-w-md w-full space-y-8"
       >
-        <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-yellow-500/20">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            <span className="text-yellow-400">떡상연구소</span>
-            <span className="text-white"> 로그인</span>
+        <div>
+          <Link href="/" className="flex justify-center mb-8">
+            <Image
+              src="/images/떡상연구소_로고-removebg-preview.png"
+              alt="떡상연구소"
+              width={60}
+              height={60}
+              className="object-contain"
+            />
+          </Link>
+          <h2 className="text-center text-3xl font-extrabold text-metallicGold-500">
+            로그인
           </h2>
+          <p className="mt-2 text-center text-sm text-offWhite-600">
+            떡상연구소에 오신 것을 환영합니다
+          </p>
+        </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center gap-3"
+            >
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+              <p className="text-sm text-red-400">{error}</p>
+            </motion.div>
+          )}
+
+          <div className="space-y-4">
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-offWhite-500 mb-2">
                 이메일
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <input
+                  id="email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition-colors"
+                  className="appearance-none block w-full px-4 py-3 pl-12 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent transition-all"
                   placeholder="example@email.com"
                 />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-offWhite-600" />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-offWhite-500 mb-2">
                 비밀번호
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <input
-                  type="password"
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition-colors"
-                  placeholder="••••••••"
+                  className="appearance-none block w-full px-4 py-3 pl-12 pr-12 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent transition-all"
+                  placeholder="비밀번호를 입력하세요"
                 />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-offWhite-600" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-offWhite-600 hover:text-metallicGold-500 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
+          </div>
 
-            {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <AlertCircle className="text-red-500" size={18} />
-                <p className="text-red-500 text-sm">{error}</p>
-              </div>
-            )}
+          <div className="flex items-center justify-between">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-metallicGold-500 hover:text-metallicGold-400 transition-colors"
+            >
+              비밀번호를 잊으셨나요?
+            </Link>
+          </div>
 
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-yellow-400 text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-deepBlack-900 font-medium bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 hover:from-metallicGold-400 hover:to-metallicGold-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-metallicGold-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? '로그인 중...' : '로그인'}
+              {loading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  로그인 중...
+                </span>
+              ) : (
+                '로그인'
+              )}
             </button>
-          </form>
+          </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400">
+          <div className="text-center">
+            <span className="text-sm text-offWhite-600">
               아직 계정이 없으신가요?{' '}
-              <Link href="/auth/signup" className="text-yellow-400 hover:text-yellow-500 transition-colors">
+              <Link
+                href="/auth/signup"
+                className="font-medium text-metallicGold-500 hover:text-metallicGold-400 transition-colors"
+              >
                 회원가입
               </Link>
-            </p>
+            </span>
           </div>
-        </div>
+        </form>
       </motion.div>
     </div>
   )

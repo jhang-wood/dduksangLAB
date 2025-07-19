@@ -289,6 +289,67 @@ export const getSaaSProducts = async (filters?: {
   return { data, error }
 }
 
+// Lecture Progress helpers
+export const updateLectureProgress = async (
+  userId: string,
+  lectureId: string,
+  chapterId: string,
+  watchTime: number,
+  completed: boolean
+) => {
+  const { data, error } = await supabase
+    .from('lecture_progress')
+    .upsert({
+      user_id: userId,
+      lecture_id: lectureId,
+      chapter_id: chapterId,
+      watch_time: watchTime,
+      completed,
+      last_watched_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id,lecture_id,chapter_id'
+    })
+  return { data, error }
+}
+
+export const getLectureProgress = async (userId: string, lectureId: string) => {
+  const { data, error } = await supabase
+    .from('lecture_progress')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('lecture_id', lectureId)
+  return { data, error }
+}
+
+export const getLectureWithChapters = async (lectureId: string) => {
+  const { data, error } = await supabase
+    .from('lectures')
+    .select(`
+      *,
+      chapters:lecture_chapters(*)
+    `)
+    .eq('id', lectureId)
+    .single()
+  
+  if (data) {
+    data.chapters = data.chapters?.sort((a: any, b: any) => a.order_index - b.order_index) || []
+  }
+  
+  return { data, error }
+}
+
+export const checkEnrollment = async (userId: string, lectureId: string) => {
+  const { data, error } = await supabase
+    .from('lecture_enrollments')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('lecture_id', lectureId)
+    .eq('status', 'active')
+    .single()
+  
+  return { data, error }
+}
+
 // Helper function to create like increment function in database
 export const createLikeFunctions = `
 -- 게시글 좋아요 증가 함수

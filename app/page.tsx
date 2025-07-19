@@ -58,16 +58,16 @@ export default function HomePage() {
                 />
               </motion.div>
 
-              {/* Main Headline */}
+              {/* Main Headline - product_page_copy.md 기반 */}
               <motion.h1
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-montserrat font-bold mb-8 leading-tight tracking-wider"
               >
-                <span className="block text-offWhite-200 mb-4">코딩도, 노코드 툴도 없는</span>
+                <span className="block text-offWhite-200 mb-4">AI 300만원짜리 강의,</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900">
-                  새로운 시대가 시작됩니다
+                  더 이상 돈 주고 듣지 마세요
                 </span>
               </motion.h1>
 
@@ -78,9 +78,10 @@ export default function HomePage() {
                 transition={{ delay: 0.6 }}
                 className="text-xl md:text-2xl text-offWhite-500 max-w-4xl mx-auto mb-16 leading-relaxed font-light"
               >
-                AI와의 <span className="text-metallicGold-500 font-semibold">'대화'</span>만으로 자동화 프로그램을 만드는,
-                <br />
-                떡상연구소의 첫 번째 공식 클래스에 당신을 초대합니다.
+                AI로 비싼 강의의 핵심만 <span className="text-metallicGold-500 font-semibold">'추출'</span>하고, 
+                <span className="text-metallicGold-500 font-semibold">'실행 가능한 자동화 프로그램'</span>으로 만드는 압도적인 방법을 알려드립니다.
+                <br className="hidden md:block" />
+                <span className="text-offWhite-400">비개발자인 제가 해냈으니, 당신은 더 빨리 할 수 있습니다.</span>
               </motion.p>
 
               {/* Countdown Section */}
@@ -124,6 +125,129 @@ export default function HomePage() {
                 </Link>
               </motion.div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Pain Points Section - 문제 제기 */}
+        <section className="py-32 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold text-offWhite-200 mb-6">
+                혹시, 아직도 이렇게 시간 낭비하고 계신가요?
+              </h2>
+              <div className="w-32 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
+            </motion.div>
+
+            <div className="space-y-8">
+              {[
+                {
+                  title: '"열심히 하는데 왜 결과가 안나오지?"',
+                  content: '수많은 사람들이 아직도 Cursor, Replit 같은 차로 비유하면, 당신이 경차로 낁낁댁 때, 누군가는 F1 머신으로 질주하고 있습니다. 애초에 도구가 다릅니다.',
+                  icon: Code2
+                },
+                {
+                  title: '"자동화 하려다 노가다만 늘어난다?"',
+                  content: 'Make, n8n 화면에서 마우스로 점 찍고 선 잇는 작업, 그것도 결국 수작업입니다. 자동화를 만들기 위해 또 다른 노가다를 하는 셈이죠. 그 과정 자체를 자동화할 생각은 왜 못했을까요?',
+                  icon: Zap
+                },
+                {
+                  title: '"코딩, 배워도 배워도 끝이 없다?"',
+                  content: '비개발자에게 C언어, Java는 독입니다. 우리는 개발자가 될 게 아닙니다. 98%의 불필요한 지식 때문에 정작 돈 버는 2%의 핵심을 놓치고 있습니다.',
+                  icon: Brain
+                }
+              ].map((pain, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ x: index % 2 === 0 ? -30 : 30, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="bg-deepBlack-300/50 backdrop-blur-sm border border-red-900/20 rounded-2xl p-8 md:p-12 hover:border-red-500/30 transition-all duration-300"
+                >
+                  <div className="flex items-start gap-6">
+                    <div className="w-14 h-14 bg-gradient-to-br from-red-500/20 to-red-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <pain.icon className="w-7 h-7 text-red-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-red-400 mb-4">{pain.title}</h3>
+                      <p className="text-lg text-offWhite-400 leading-relaxed">{pain.content}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Solution Section - 해결책 제시 */}
+        <section className="py-32 px-4 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-deepBlack-800/50 to-transparent" />
+          
+          <div className="container mx-auto max-w-7xl relative">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-20"
+            >
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold mb-6">
+                <span className="text-offWhite-200">떡상연구소는</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                  '게임의 룰'을 바꿉니다
+                </span>
+              </h2>
+              <div className="w-32 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-20">
+              {[
+                {
+                  number: "1",
+                  title: "최정상 1%의 AI Toolset",
+                  description: "우리는 현존 최강의 성능을 내는 'Claude Code'에 'Super Claude'를 탑재한 우리만의 강화된 AI를 사용합니다. 대부분의 사람들이 세팅조차 못하는 이 압도적인 도구를, 당신은 강의 시작 10분 만에 손에 넣게 됩니다."
+                },
+                {
+                  number: "2",
+                  title: "시공간 제약 없는 '텔레그램 코딩'",
+                  description: '"지금 아이디어가 떠올랐는데!" 컴퓨터 앞에 앉을 필요 없습니다. 언제 어디서든 텔레그램 채팅 하나로 아이디어를 즉시 \'바이블 코딩\'하여 프로그램으로 만듭니다. 생각과 현실화 사이의 딜레이가 0이 됩니다.'
+                },
+                {
+                  number: "3",
+                  title: "자동화를 자동화하는 '메타 자동화'",
+                  description: "Make, n8n의 수작업은 이제 그만. 우리는 코드로 자동화 설계도 자체를 생성합니다. 마우스 클릭이 아닌, 명령어 한 줄로 복잡한 자동화 시스템을 1분 만에 구축하는 '메타 자동화' 기술입니다."
+                },
+                {
+                  number: "4",
+                  title: "비개발자를 위한 '최소 지식 원칙'",
+                  description: "저는 천재 개발자가 아닙니다. 오히려 코딩을 못했기 때문에, 누구보다 효율적인 길을 찾아야만 했습니다. 이 강의는 개발 지식의 98%를 버리고, 오직 '결과물'을 만드는 데 필요한 2%의 핵심만 다룹니다."
+                }
+              ].map((principle, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 30, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.15 }}
+                  viewport={{ once: true }}
+                  className="group"
+                >
+                  <div className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 md:p-10 hover:border-metallicGold-500/40 transition-all duration-300">
+                    <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-deepBlack-900 font-bold text-xl">{principle.number}</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-4 mt-4">{principle.title}</h3>
+                    <p className="text-lg text-offWhite-400 leading-relaxed">{principle.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -185,6 +309,72 @@ export default function HomePage() {
                     {/* Text content */}
                     <h3 className="text-2xl font-bold text-offWhite-200 mb-4">{item.title}</h3>
                     <p className="text-offWhite-500 whitespace-pre-line leading-relaxed text-lg">{item.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Free Class Details Section - 무료 강의 상세 소개 */}
+        <section className="py-32 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-20"
+            >
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold text-offWhite-200 mb-8">
+                이번 무료 강의에서 당신이 <span className="text-metallicGold-500">'훔쳐 갈'</span> 3가지 비법
+              </h2>
+              <div className="w-32 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
+            </motion.div>
+
+            <div className="space-y-12">
+              {[
+                {
+                  emoji: "🎯",
+                  number: "1️⃣",
+                  title: "고가 강의 '자동 분석 시스템' 구축법",
+                  content: "300만원짜리 강의 결제 대신, AI에게 강의 내용을 분석시켜 핵심 커리큘럼과 노하우만 추출하는 시스템을 직접 만듭니다. 더 이상 정보의 소비자가 아닌, 정보의 '지배자'가 되십시오.",
+                  gradient: "from-purple-500 to-pink-500"
+                },
+                {
+                  emoji: "🚀",
+                  number: "2️⃣",
+                  title: "텔레그램으로 '언제 어디서나 코딩' 실전법",
+                  content: "휴대폰 하나로 필요한 자동화를 만들어내는 비법을 공개합니다. 카페에서, 지하철에서, 침대에서... 언제 어디서나 아이디어를 현실로 만드는 힘, 그것이 진정한 자유입니다.",
+                  gradient: "from-blue-500 to-cyan-500"
+                },
+                {
+                  emoji: "✨",
+                  number: "3️⃣",
+                  title: "밥 먹듯이 EXE 뽑아내는 '메타 자동화' 설계도",
+                  content: "아이디어만 있으면 클릭 몇 번에 자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다. 이는 당신이 평생 써먹을 '디지털 건물'을 짓는 능력입니다.",
+                  gradient: "from-yellow-500 to-orange-500"
+                }
+              ].map((secret, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 30, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="relative"
+                >
+                  <div className="absolute -left-16 top-0 text-6xl opacity-10">{secret.emoji}</div>
+                  <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 md:p-12 hover:border-metallicGold-500/40 transition-all duration-300">
+                    <div className="flex items-start gap-6">
+                      <div className={`w-14 h-14 bg-gradient-to-br ${secret.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                        <span className="text-2xl">{secret.number}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-metallicGold-500 mb-6">{secret.title}</h3>
+                        <p className="text-lg md:text-xl text-offWhite-300 leading-relaxed">{secret.content}</p>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}

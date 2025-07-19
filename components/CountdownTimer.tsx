@@ -56,15 +56,21 @@ export default function CountdownTimer() {
         
         {/* Main container */}
         <div className="relative bg-deepBlack-300 border border-metallicGold-900/30 rounded-xl p-6 group-hover:border-metallicGold-500/50 transition-all">
-          {/* Number */}
-          <motion.div
-            key={value}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-5xl md:text-6xl font-montserrat font-bold text-transparent bg-clip-text bg-gradient-to-br from-metallicGold-500 to-metallicGold-900"
-          >
-            {value.toString().padStart(2, '0')}
-          </motion.div>
+          {/* Number - Only animate seconds */}
+          {label === "초" ? (
+            <motion.div
+              key={value}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-5xl md:text-6xl font-montserrat font-bold text-transparent bg-clip-text bg-gradient-to-br from-metallicGold-500 to-metallicGold-900"
+            >
+              {value.toString().padStart(2, '0')}
+            </motion.div>
+          ) : (
+            <div className="text-5xl md:text-6xl font-montserrat font-bold text-transparent bg-clip-text bg-gradient-to-br from-metallicGold-500 to-metallicGold-900">
+              {value.toString().padStart(2, '0')}
+            </div>
+          )}
           
           {/* Label */}
           <div className="text-offWhite-500 text-sm mt-2 uppercase tracking-wider">
