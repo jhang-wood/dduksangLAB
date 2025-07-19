@@ -9,52 +9,56 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // 2025 Modern Color System
-        // Pure monochrome base
+        // Deep Black System - 깊이감 있는 다크 모드
+        deepBlack: {
+          50: '#2A2A2A',   // Border Black
+          100: '#232323',
+          200: '#1F1F1F',
+          300: '#1A1A1A',  // Card Background
+          400: '#171717',
+          500: '#141414',
+          600: '#121212',  // Main Background
+          700: '#0F0F0F',
+          800: '#0C0C0C',
+          900: '#0A0A0A',  // Primary Black (Deepest)
+          950: '#050505',
+        },
+        // Metallic Gold System - 광택과 음영이 느껴지는 금색
+        metallicGold: {
+          50: '#FFF9E6',   // Lightest tint
+          100: '#FFF5CC',  // Highlight Gold
+          200: '#FFEB99',
+          300: '#FFE066',
+          400: '#FFD633',
+          500: '#FFD700',  // Base Gold (Pure Gold)
+          600: '#E6C300',
+          700: '#CCAC00',
+          800: '#B39600',
+          900: '#B8860B',  // Shadow Gold (Dark Goldenrod)
+          gradient: 'linear-gradient(45deg, #FFD700 0%, #B8860B 100%)',
+        },
+        // Off White System - 가독성을 위한 밝은 색상
+        offWhite: {
+          50: '#FFFFFF',
+          100: '#F5F5F5',
+          200: '#EAEAEA',  // Primary Text
+          300: '#DEDEDE',
+          400: '#C9C9C9',
+          500: '#B0B0B0',  // Secondary Text
+          600: '#969696',
+          700: '#7D7D7D',
+          800: '#666666',  // Disabled Text
+          900: '#4F4F4F',
+        },
+        // Keep existing for compatibility
         neutral: {
-          50: '#fafafa',
-          100: '#f5f5f5',
-          200: '#e5e5e5',
-          300: '#d4d4d4',
-          400: '#a3a3a3',
-          500: '#737373',
-          600: '#525252',
-          700: '#404040',
-          800: '#262626',
-          900: '#171717',
           950: '#0a0a0a',
         },
-        // Modern accent - Electric Blue/Purple gradient
-        accent: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          electric: '#6366f1', // Electric indigo
-          neon: '#a855f7', // Neon purple
-        },
-        // Modern green for success states
-        success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-        },
-        // Keep compatibility
         charcoal: {
           950: '#0a0a0a',
         },
         premiumGold: {
-          500: '#D4AF37',
+          500: '#FFD700',
         },
       },
       backgroundImage: {
@@ -65,9 +69,10 @@ module.exports = {
         'dark-gradient': 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
       },
       fontFamily: {
-        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        'display': ['Geist', 'Inter', 'system-ui', 'sans-serif'],
-        'mono': ['Geist Mono', 'Menlo', 'Monaco', 'monospace'],
+        'sans': ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+        'montserrat': ['var(--font-montserrat)', 'sans-serif'],
+        'display': ['var(--font-montserrat)', 'Pretendard', 'sans-serif'],
+        'mono': ['Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       letterSpacing: {
         'tightest': '-.075em',

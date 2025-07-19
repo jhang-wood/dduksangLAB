@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth-context'
 
-const inter = Inter({ 
+const montserrat = Montserrat({ 
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-montserrat',
   display: 'swap',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
 })
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${inter.variable} font-sans bg-neutral-950 text-white antialiased`}>
+      <body className={`${montserrat.variable} font-sans bg-deepBlack-900 text-offWhite-200 antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

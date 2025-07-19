@@ -31,7 +31,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-deepBlack-900/80 backdrop-blur-xl border-b border-metallicGold-900/20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -46,7 +46,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   priority
                 />
               </div>
-              <span className="hidden md:block text-lg font-semibold">떡상연구소</span>
+              <span className="hidden md:block text-lg font-semibold text-metallicGold-500">떡상연구소</span>
             </Link>
           </div>
 
@@ -58,8 +58,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                 href={item.href}
                 className={`text-sm font-medium transition-all ${
                   currentPage === item.id
-                    ? 'text-white'
-                    : 'text-neutral-400 hover:text-white'
+                    ? 'text-metallicGold-500'
+                    : 'text-offWhite-500 hover:text-metallicGold-500'
                 }`}
               >
                 {item.label}
@@ -73,16 +73,16 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-300 hover:text-white transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-offWhite-500 hover:text-metallicGold-500 transition-colors"
                 >
                   <User size={18} />
                   <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
                 </button>
                 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-lg shadow-xl">
+                  <div className="absolute right-0 mt-2 w-48 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg shadow-xl">
                     <div className="py-1">
-                      <div className="px-4 py-2 text-xs text-neutral-500 border-b border-neutral-800">
+                      <div className="px-4 py-2 text-xs text-offWhite-600 border-b border-metallicGold-900/20">
                         {userProfile?.role === 'admin' ? '관리자' : '일반회원'}
                       </div>
                       <button
@@ -90,13 +90,13 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                           router.push('/mypage')
                           setIsUserMenuOpen(false)
                         }}
-                        className="w-full px-4 py-2 text-sm text-left text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
+                        className="w-full px-4 py-2 text-sm text-left text-offWhite-500 hover:bg-deepBlack-600/50 hover:text-metallicGold-500 transition-colors"
                       >
                         마이페이지
                       </button>
                       <button
                         onClick={handleSignOut}
-                        className="w-full px-4 py-2 text-sm text-left text-neutral-300 hover:bg-neutral-800 hover:text-red-400 transition-colors flex items-center gap-2"
+                        className="w-full px-4 py-2 text-sm text-left text-offWhite-500 hover:bg-deepBlack-600/50 hover:text-red-400 transition-colors flex items-center gap-2"
                       >
                         <LogOut size={16} />
                         <span>로그아웃</span>
@@ -108,7 +108,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
             ) : (
               <Link
                 href="/auth/login"
-                className="px-6 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-100 transition-all"
+                className="px-6 py-2 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 text-sm font-semibold rounded-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
               >
                 로그인
               </Link>
@@ -118,7 +118,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-neutral-400 hover:text-white transition-colors"
+            className="md:hidden text-offWhite-500 hover:text-metallicGold-500 transition-colors"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -126,7 +126,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-neutral-800 py-4">
+          <div className="md:hidden border-t border-metallicGold-900/20 py-4">
             <nav className="space-y-1">
               {navItems.map((item) => (
                 <Link
@@ -134,8 +134,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   href={item.href}
                   className={`block px-4 py-3 text-sm font-medium transition-colors ${
                     currentPage === item.id
-                      ? 'text-white bg-neutral-900'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-900/50'
+                      ? 'text-metallicGold-500 bg-deepBlack-600/50'
+                      : 'text-offWhite-500 hover:text-metallicGold-500 hover:bg-deepBlack-600/30'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -144,10 +144,10 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
               ))}
               
               {/* Mobile Auth Section */}
-              <div className="pt-4 px-4 border-t border-neutral-800">
+              <div className="pt-4 px-4 border-t border-metallicGold-900/20">
                 {user ? (
                   <div className="space-y-2">
-                    <div className="text-sm text-neutral-500 mb-2">
+                    <div className="text-sm text-offWhite-600 mb-2">
                       {userProfile?.name || user.email?.split('@')[0] || '사용자'}
                     </div>
                     <button
@@ -155,7 +155,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                         router.push('/mypage')
                         setIsMenuOpen(false)
                       }}
-                      className="block w-full py-2 text-sm text-left text-neutral-300 hover:text-white"
+                      className="block w-full py-2 text-sm text-left text-offWhite-500 hover:text-metallicGold-500"
                     >
                       마이페이지
                     </button>
@@ -173,7 +173,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   <Link
                     href="/auth/login"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full py-3 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-100 transition-all text-center"
+                    className="block w-full py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 text-sm font-semibold rounded-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all text-center"
                   >
                     로그인
                   </Link>
