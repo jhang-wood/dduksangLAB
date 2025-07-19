@@ -12,7 +12,6 @@
   },
   "functions": {
     "app/api/payment/webhook/route.ts": {
-      "runtime": "nodejs18.x",
       "maxDuration": 60
     }
   }
