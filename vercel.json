@@ -1,15 +1,4 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "outputDirectory": ".next",
-  "public": true,
-  "github": {
-    "enabled": true
-  },
   "functions": {
     "app/api/payment/webhook/route.ts": {
       "maxDuration": 60
