@@ -9,44 +9,58 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // 먹색 그라데이션 팔레트
-        ink: {
-          50: '#f7f7f8',
-          100: '#e8e8ea',
-          200: '#c7c7cc',
+        // Premium Color System
+        charcoal: {
+          50: '#f6f6f7',
+          100: '#e1e1e3',
+          200: '#c3c3c7',
           300: '#9d9da5',
-          400: '#6b6b75',
-          500: '#4a4a55',
-          600: '#363640',
-          700: '#282832',
-          800: '#1a1a24',
-          900: '#0f0f18',
-          950: '#030307',
+          400: '#797982',
+          500: '#5e5e67',
+          600: '#4a4a52',
+          700: '#3d3d44',
+          800: '#34343a',
+          900: '#2d2d33',
+          950: '#0A0A0B',
         },
-        // 파스텔 오로라 팔레트
-        aurora: {
-          green: {
-            light: '#34d399',
-            DEFAULT: '#10b981',
-            dark: '#059669',
-          },
-          blue: {
-            light: '#93c5fd',
-            DEFAULT: '#60a5fa',
-            dark: '#3b82f6',
-          },
-          purple: {
-            light: '#d8b4fe',
-            DEFAULT: '#c084fc',
-            dark: '#a855f7',
-          },
-          amber: {
-            light: '#fde047',
-            DEFAULT: '#fbbf24',
-            dark: '#f59e0b',
-          },
+        // Premium Gold Palette
+        premiumGold: {
+          50: '#fffdf5',
+          100: '#fffae6',
+          200: '#fff4c2',
+          300: '#ffeb94',
+          400: '#ffdd5c',
+          500: '#D4AF37', // Main premium gold
+          600: '#c09b23',
+          700: '#a07d1a',
+          800: '#84641a',
+          900: '#70531a',
+          foil: '#FFD700',
         },
-        // 금박 포인트 색상
+        // Soft Cream
+        cream: {
+          50: '#FFFFFE',
+          100: '#FEFDFB',
+          200: '#FBF7F4',
+          300: '#F7F0EA',
+          400: '#F2E8DF',
+          500: '#EADED2',
+        },
+        // Deep Purple Gradient
+        deepPurple: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+          950: '#1e0e3e',
+        },
+        // Keep existing colors for compatibility
         gold: {
           50: '#fffdf7',
           100: '#fef9e7',
@@ -58,22 +72,11 @@ module.exports = {
           700: '#d97706',
           800: '#b45309',
           900: '#92400e',
-          foil: '#FFD700', // 금박 효과용
+          foil: '#FFD700',
         },
-        // 기존 dark 색상 유지
-        dark: {
-          50: '#f9fafb',
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
-          950: '#0a0a0a',
-        }
+        ink: {
+          950: '#030307',
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -85,6 +88,8 @@ module.exports = {
       fontFamily: {
         'pretendard': ['Pretendard Variable', 'system-ui', 'sans-serif'],
         'noto-serif': ['Noto Serif KR', 'serif'],
+        'playfair': ['Playfair Display', 'serif'],
+        'gmarket': ['GmarketSans', 'sans-serif'],
       },
       letterSpacing: {
         'tightest': '-.075em',
@@ -95,6 +100,23 @@ module.exports = {
         'wider': '.05em',
         'widest': '.1em',
         'ultra': '.2em',
+        'mega': '.3em',
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1.2' }],
+        '6xl': ['3.75rem', { lineHeight: '1.1' }],
+        '7xl': ['4.5rem', { lineHeight: '1.1' }],
+        '8xl': ['6rem', { lineHeight: '1' }],
+        '9xl': ['8rem', { lineHeight: '1' }],
+        'display': ['10rem', { lineHeight: '0.9' }],
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s ease-out',
@@ -104,6 +126,9 @@ module.exports = {
         'float': 'float 6s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
         'aurora': 'aurora 15s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite',
+        'reveal': 'reveal 1s ease-out',
+        'gradient': 'gradient 15s ease infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -160,6 +185,34 @@ module.exports = {
           '50%': {
             opacity: '0.6',
             transform: 'translateY(-10px) scale(1.05)',
+          },
+        },
+        glow: {
+          '0%, 100%': {
+            opacity: '0.5',
+            filter: 'blur(15px)',
+          },
+          '50%': {
+            opacity: '0.8',
+            filter: 'blur(20px)',
+          },
+        },
+        reveal: {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(30px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        gradient: {
+          '0%, 100%': {
+            'background-position': '0% 50%',
+          },
+          '50%': {
+            'background-position': '100% 50%',
           },
         },
       },

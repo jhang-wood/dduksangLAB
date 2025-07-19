@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Noto_Serif_KR } from 'next/font/google'
+import { Inter, Noto_Serif_KR, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth-context'
 
@@ -8,6 +8,11 @@ const notoSerifKR = Noto_Serif_KR({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-noto-serif'
+})
+const playfair = Playfair_Display({ 
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  variable: '--font-playfair'
 })
 
 export const metadata: Metadata = {
@@ -30,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${inter.className} ${notoSerifKR.variable} bg-ink-950 text-white antialiased`}>
+      <body className={`${inter.className} ${notoSerifKR.variable} ${playfair.variable} bg-charcoal-950 text-white antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
