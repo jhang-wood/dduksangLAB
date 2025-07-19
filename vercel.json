@@ -3,6 +3,8 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "outputDirectory": ".next",
   "public": true,
   "github": {
@@ -10,6 +12,7 @@
   },
   "functions": {
     "app/api/payment/webhook/route.ts": {
+      "runtime": "nodejs18.x",
       "maxDuration": 60
     }
   },
