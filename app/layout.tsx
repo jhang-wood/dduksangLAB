@@ -1,9 +1,14 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Noto_Serif_KR } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth-context'
 
 const inter = Inter({ subsets: ['latin'] })
+const notoSerifKR = Noto_Serif_KR({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-noto-serif'
+})
 
 export const metadata: Metadata = {
   title: '떡상연구소 - AI 기반 교육 플랫폼',
@@ -25,11 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${inter.className} ${notoSerifKR.variable} bg-ink-950 text-white antialiased`}
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
-            {children}
-          </div>
+          {children}
         </AuthProvider>
       </body>
     </html>
