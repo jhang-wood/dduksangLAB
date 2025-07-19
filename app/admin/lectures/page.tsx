@@ -37,6 +37,7 @@ interface Lecture {
   thumbnail_url?: string
   objectives?: string[]
   requirements?: string[]
+  target_audience?: string[]
   rating?: number
 }
 
