@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${inter.className} ${notoSerifKR.variable} bg-ink-950 text-white antialiased`}
+      <body className={`${inter.className} ${notoSerifKR.variable} bg-ink-950 text-white antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
