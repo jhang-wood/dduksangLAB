@@ -9,73 +9,52 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Premium Color System
+        // 2025 Modern Color System
+        // Pure monochrome base
+        neutral: {
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+          950: '#0a0a0a',
+        },
+        // Modern accent - Electric Blue/Purple gradient
+        accent: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          electric: '#6366f1', // Electric indigo
+          neon: '#a855f7', // Neon purple
+        },
+        // Modern green for success states
+        success: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#16a34a',
+        },
+        // Keep compatibility
         charcoal: {
-          50: '#f6f6f7',
-          100: '#e1e1e3',
-          200: '#c3c3c7',
-          300: '#9d9da5',
-          400: '#797982',
-          500: '#5e5e67',
-          600: '#4a4a52',
-          700: '#3d3d44',
-          800: '#34343a',
-          900: '#2d2d33',
-          950: '#0A0A0B',
+          950: '#0a0a0a',
         },
-        // Premium Gold Palette
         premiumGold: {
-          50: '#fffdf5',
-          100: '#fffae6',
-          200: '#fff4c2',
-          300: '#ffeb94',
-          400: '#ffdd5c',
-          500: '#D4AF37', // Main premium gold
-          600: '#c09b23',
-          700: '#a07d1a',
-          800: '#84641a',
-          900: '#70531a',
-          foil: '#FFD700',
-        },
-        // Soft Cream
-        cream: {
-          50: '#FFFFFE',
-          100: '#FEFDFB',
-          200: '#FBF7F4',
-          300: '#F7F0EA',
-          400: '#F2E8DF',
-          500: '#EADED2',
-        },
-        // Deep Purple Gradient
-        deepPurple: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
-          950: '#1e0e3e',
-        },
-        // Keep existing colors for compatibility
-        gold: {
-          50: '#fffdf7',
-          100: '#fef9e7',
-          200: '#fef3c7',
-          300: '#fde68a',
-          400: '#fcd34d',
-          500: '#fbbf24',
-          600: '#f59e0b',
-          700: '#d97706',
-          800: '#b45309',
-          900: '#92400e',
-          foil: '#FFD700',
-        },
-        ink: {
-          950: '#030307',
+          500: '#D4AF37',
         },
       },
       backgroundImage: {
@@ -86,10 +65,9 @@ module.exports = {
         'dark-gradient': 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
       },
       fontFamily: {
-        'pretendard': ['Pretendard Variable', 'system-ui', 'sans-serif'],
-        'noto-serif': ['Noto Serif KR', 'serif'],
-        'playfair': ['Playfair Display', 'serif'],
-        'gmarket': ['GmarketSans', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        'display': ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+        'mono': ['Geist Mono', 'Menlo', 'Monaco', 'monospace'],
       },
       letterSpacing: {
         'tightest': '-.075em',
@@ -118,17 +96,21 @@ module.exports = {
         '9xl': ['8rem', { lineHeight: '1' }],
         'display': ['10rem', { lineHeight: '0.9' }],
       },
+      extend: {
+        backgroundImage: {
+          'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+          'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+          'mesh-gradient': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+        },
+      },
       animation: {
-        'fade-in-up': 'fadeInUp 0.6s ease-out',
-        'fade-in-down': 'fadeInDown 0.6s ease-out',
-        'slide-in-right': 'slideInRight 0.6s ease-out',
-        'bounce-slow': 'bounce 2s infinite',
-        'float': 'float 6s ease-in-out infinite',
+        'fade-in': 'fadeIn 0.5s ease-out',
+        'fade-in-up': 'fadeInUp 0.5s ease-out',
+        'slide-in': 'slideIn 0.3s ease-out',
         'shimmer': 'shimmer 2s linear infinite',
-        'aurora': 'aurora 15s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite',
-        'reveal': 'reveal 1s ease-out',
-        'gradient': 'gradient 15s ease infinite',
+        'gradient-shift': 'gradientShift 8s ease infinite',
+        'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -207,12 +189,38 @@ module.exports = {
             transform: 'translateY(0)',
           },
         },
-        gradient: {
+        gradientShift: {
           '0%, 100%': {
             'background-position': '0% 50%',
           },
           '50%': {
             'background-position': '100% 50%',
+          },
+        },
+        fadeIn: {
+          '0%': {
+            opacity: '0',
+          },
+          '100%': {
+            opacity: '1',
+          },
+        },
+        slideIn: {
+          '0%': {
+            transform: 'translateX(-10px)',
+            opacity: '0',
+          },
+          '100%': {
+            transform: 'translateX(0)',
+            opacity: '1',
+          },
+        },
+        pulseSoft: {
+          '0%, 100%': {
+            opacity: '1',
+          },
+          '50%': {
+            opacity: '0.8',
           },
         },
       },

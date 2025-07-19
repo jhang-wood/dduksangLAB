@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
-import AuthModal from './AuthModal'
 
 interface HeaderProps {
   currentPage?: string
@@ -14,8 +14,6 @@ interface HeaderProps {
 export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin')
   const router = useRouter()
   const { user, userProfile, signOut, isAdmin } = useAuth()
 
@@ -32,80 +30,73 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     setIsUserMenuOpen(false)
   }
 
-  const handleAuthClick = (mode: 'signin' | 'signup') => {
-    setAuthModalMode(mode)
-    setShowAuthModal(true)
-  }
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-yellow-500/20">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="/" className="block">
-              <div className="relative w-12 h-12">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="relative w-8 h-8">
                 <Image
                   src="/images/떡상연구소_로고-removebg-preview.png"
-                  alt="떡상연구소 로고"
+                  alt="떡상연구소"
                   fill
                   className="object-contain"
                   priority
                 />
               </div>
-            </a>
+              <span className="hidden md:block text-lg font-semibold">떡상연구소</span>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.id}
                 href={item.href}
-                className={`font-medium transition-colors ${
+                className={`text-sm font-medium transition-all ${
                   currentPage === item.id
-                    ? 'text-yellow-400'
-                    : 'text-gray-300 hover:text-yellow-400'
+                    ? 'text-white'
+                    : 'text-neutral-400 hover:text-white'
                 }`}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
           {/* Desktop Auth Section */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center">
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-300 hover:text-white transition-colors"
                 >
-                  <User size={20} />
+                  <User size={18} />
                   <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
                 </button>
                 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-yellow-500/20 rounded-lg shadow-xl">
-                    <div className="py-2">
-                      <div className="px-4 py-2 text-sm text-gray-400 border-b border-gray-800">
+                  <div className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-lg shadow-xl">
+                    <div className="py-1">
+                      <div className="px-4 py-2 text-xs text-neutral-500 border-b border-neutral-800">
                         {userProfile?.role === 'admin' ? '관리자' : '일반회원'}
                       </div>
                       <button
-                        onClick={() => router.push('/mypage')}
-                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800 hover:text-yellow-400 transition-colors"
+                        onClick={() => {
+                          router.push('/mypage')
+                          setIsUserMenuOpen(false)
+                        }}
+                        className="w-full px-4 py-2 text-sm text-left text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
                       >
                         마이페이지
                       </button>
                       <button
-                        onClick={() => router.push('/settings')}
-                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800 hover:text-yellow-400 transition-colors"
-                      >
-                        설정
-                      </button>
-                      <button
                         onClick={handleSignOut}
-                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800 hover:text-red-400 transition-colors flex items-center space-x-2"
+                        className="w-full px-4 py-2 text-sm text-left text-neutral-300 hover:bg-neutral-800 hover:text-red-400 transition-colors flex items-center gap-2"
                       >
                         <LogOut size={16} />
                         <span>로그아웃</span>
@@ -115,27 +106,19 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                 )}
               </div>
             ) : (
-              <>
-                <button
-                  onClick={() => handleAuthClick('signin')}
-                  className="px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors"
-                >
-                  로그인
-                </button>
-                <button
-                  onClick={() => handleAuthClick('signup')}
-                  className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors"
-                >
-                  회원가입
-                </button>
-              </>
+              <Link
+                href="/auth/login"
+                className="px-6 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-100 transition-all"
+              >
+                로그인
+              </Link>
             )}
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-300 hover:text-yellow-400 transition-colors"
+            className="md:hidden text-neutral-400 hover:text-white transition-colors"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -143,36 +126,36 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-yellow-500/20">
-            <nav className="py-4 space-y-2">
+          <div className="md:hidden border-t border-neutral-800 py-4">
+            <nav className="space-y-1">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.id}
                   href={item.href}
-                  className={`block px-4 py-2 font-medium transition-colors ${
+                  className={`block px-4 py-3 text-sm font-medium transition-colors ${
                     currentPage === item.id
-                      ? 'text-yellow-400'
-                      : 'text-gray-300 hover:text-yellow-400'
+                      ? 'text-white bg-neutral-900'
+                      : 'text-neutral-400 hover:text-white hover:bg-neutral-900/50'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
               
               {/* Mobile Auth Section */}
-              <div className="px-4 pt-4 space-y-2">
+              <div className="pt-4 px-4 border-t border-neutral-800">
                 {user ? (
-                  <>
-                    <div className="text-sm text-gray-400 mb-2">
-                      {userProfile?.name || user.email?.split('@')[0] || '사용자'} ({userProfile?.role === 'admin' ? '관리자' : '일반회원'})
+                  <div className="space-y-2">
+                    <div className="text-sm text-neutral-500 mb-2">
+                      {userProfile?.name || user.email?.split('@')[0] || '사용자'}
                     </div>
                     <button
                       onClick={() => {
                         router.push('/mypage')
                         setIsMenuOpen(false)
                       }}
-                      className="block w-full px-4 py-2 text-left text-gray-300 hover:text-yellow-400 transition-colors"
+                      className="block w-full py-2 text-sm text-left text-neutral-300 hover:text-white"
                     >
                       마이페이지
                     </button>
@@ -181,45 +164,25 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                         handleSignOut()
                         setIsMenuOpen(false)
                       }}
-                      className="block w-full px-4 py-2 text-left text-gray-300 hover:text-red-400 transition-colors"
+                      className="block w-full py-2 text-sm text-left text-red-400 hover:text-red-300"
                     >
                       로그아웃
                     </button>
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        handleAuthClick('signin')
-                        setIsMenuOpen(false)
-                      }}
-                      className="block w-full px-4 py-2 text-yellow-400 border border-yellow-400 rounded hover:bg-yellow-400 hover:text-black transition-colors text-center"
-                    >
-                      로그인
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleAuthClick('signup')
-                        setIsMenuOpen(false)
-                      }}
-                      className="block w-full px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors text-center"
-                    >
-                      회원가입
-                    </button>
                   </div>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block w-full py-3 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-100 transition-all text-center"
+                  >
+                    로그인
+                  </Link>
                 )}
               </div>
             </nav>
           </div>
         )}
       </div>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authModalMode}
-      />
     </header>
   )
 }
