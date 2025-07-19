@@ -33,6 +33,11 @@ interface Lecture {
   created_at: string
   student_count?: number
   chapters?: any[]
+  preview_url?: string
+  thumbnail_url?: string
+  objectives?: string[]
+  requirements?: string[]
+  rating?: number
 }
 
 interface Chapter {
