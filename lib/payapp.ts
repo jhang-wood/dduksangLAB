@@ -1,4 +1,4 @@
-import crypto from 'crypto'
+import * as crypto from 'crypto'
 
 // PayApp 설정
 const PAYAPP_CONFIG = {

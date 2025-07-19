@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { verifyPayAppWebhook } from '@/lib/payapp'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()

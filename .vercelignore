@@ -1,0 +1,46 @@
+# Git
+.git/
+.gitignore
+
+# Development files
+*.log
+*.md
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Documentation
+docs/
+README.md
+readme.md
+prd.md
+worklog.md
+디자인지침서.md
+
+# Test files
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+__tests__/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python files (if any)
+*.py
+__pycache__/
+
+# Other unnecessary files
+master
+deployment-timestamp.js
+deployment.log
+deploy-trigger.txt
+떡상연구소.html
