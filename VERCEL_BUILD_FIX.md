@@ -1,9 +1,72 @@
-# Vercel 빌드 오류 해결 가이드
+# Vercel 프로젝트 설정 가이드
 
-## 문제 상황
-- Vercel이 이전 커밋(e1f6944)을 계속 빌드하고 있음
-- 최신 커밋(87d2a17)이 반영되지 않음
-- `@supabase/auth-helpers-nextjs` 패키지 찾지 못함 오류
+## Vercel 프로젝트 새로 만들기 (프로젝트 삭제한 경우)
+
+### 1. Vercel에서 새 프로젝트 생성
+1. https://vercel.com 로그인
+2. "Add New..." → "Project" 클릭
+3. "Import Git Repository" 선택
+4. GitHub 계정 연결 (이미 연결되어 있다면 스킵)
+5. "jhang-wood/dduksangLAB" 저장소 선택
+6. "Import" 클릭
+
+### 2. 프로젝트 설정
+프로젝트 설정 화면에서:
+- **Project Name**: dduksangLAB (또는 원하는 이름)
+- **Framework Preset**: Next.js (자동 감지됨)
+- **Root Directory**: ./ (기본값 유지)
+- **Build and Output Settings**: 기본값 유지
+- **Environment Variables**: 아래 섹션 참조
+
+### 3. 환경 변수 설정 (중요!)
+"Environment Variables" 섹션에서 다음 변수들을 추가:
+
+#### Supabase 환경 변수
+```
+NEXT_PUBLIC_SUPABASE_URL=https://wpzvocfgfwvsxmpckdnu.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2Njc4NTIsImV4cCI6MjA2ODI0Mzg1Mn0.LlO3iM55sbzXexcCExkDsSH448J2Z-NJUT1aZQCdck8
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjY2Nzg1MiwiZXhwIjoyMDY4MjQzODUyfQ.c7vRQStMHbBZRjkDDM_iXdLWq4t0HWBvDNbkC7P6Z6c
+```
+
+#### PayApp 환경 변수
+```
+PAYAPP_SECRET_KEY=2m/tdA5GmmwTLP/KWo9V7e1DPJnCCRVaOgT+oqg6zaM=
+NEXT_PUBLIC_PAYAPP_API_KEY=페이앱에서 발급받은 API 키
+```
+
+#### 사이트 URL
+```
+NEXT_PUBLIC_SITE_URL=https://dduksang.com
+```
+
+### 4. 배포
+모든 환경 변수를 추가한 후 "Deploy" 버튼 클릭
+
+## Supabase 환경 변수 찾는 방법
+
+### 1. Supabase 대시보드에서 찾기
+1. https://supabase.com/dashboard 로그인
+2. 프로젝트 선택 (wpzvocfgfwvsxmpckdnu)
+3. 왼쪽 메뉴에서 "Settings" (설정) 클릭
+4. "API" 섹션 클릭
+
+### 2. 필요한 값들
+- **Project URL** (NEXT_PUBLIC_SUPABASE_URL):
+  - API Settings 페이지 상단의 "URL" 섹션
+  - 형식: `https://[프로젝트ID].supabase.co`
+  - 예: `https://wpzvocfgfwvsxmpckdnu.supabase.co`
+
+- **Anon/Public Key** (NEXT_PUBLIC_SUPABASE_ANON_KEY):
+  - "Project API keys" 섹션의 "anon public" 키
+  - 긴 JWT 토큰 형식
+  - 공개되어도 안전한 키
+
+- **Service Role Key** (SUPABASE_SERVICE_ROLE_KEY):
+  - "Project API keys" 섹션의 "service_role secret" 키
+  - ⚠️ 비밀 키이므로 절대 공개하면 안됨
+  - 서버 사이드에서만 사용
+
+## 기존 문제 상황 (참고)
 
 ## 즉시 해결 방법
 
