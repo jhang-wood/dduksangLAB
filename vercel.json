@@ -8,7 +8,7 @@
   "outputDirectory": ".next",
   "public": true,
   "github": {
-    "enabled": false
+    "enabled": true
   },
   "functions": {
     "app/api/payment/webhook/route.ts": {
