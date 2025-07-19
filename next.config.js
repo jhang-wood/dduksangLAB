@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // experimental.appDir 제거 - Next.js 14에서는 불필요
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co'],
     unoptimized: true,
   },
   eslint: {
