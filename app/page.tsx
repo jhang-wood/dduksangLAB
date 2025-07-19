@@ -6,7 +6,7 @@ import {
   ArrowRight,
   Sparkles,
   Code2,
-  MessageSquareCode,
+  MessageSquare,
   Globe,
   Zap,
   Gift,
@@ -128,7 +128,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  icon: MessageSquareCode,
+                  icon: MessageSquare,
                   title: "대화만으로 완성",
                   description: "AI와의 자연스러운 대화로\n복잡한 자동화 프로그램을 구현"
                 },
