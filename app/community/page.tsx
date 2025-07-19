@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   MessageSquare, 
@@ -14,106 +14,153 @@ import {
   TrendingUp,
   MessageCircle,
   Star,
-  Flag
+  Flag,
+  Loader2
 } from 'lucide-react'
 import Image from 'next/image'
-
-const posts = [
-  {
-    id: 1,
-    title: "AI 개발자로 전환하는 방법",
-    author: "김개발자",
-    avatar: "/images/avatar1.jpg",
-    content: "최근 AI 분야로 커리어 전환을 고민하고 있습니다. 어떤 순서로 공부해야 할까요?",
-    category: "질문",
-    tags: ["AI", "개발", "커리어"],
-    likes: 24,
-    comments: 12,
-    views: 456,
-    createdAt: "2시간 전",
-    isPopular: true
-  },
-  {
-    id: 2,
-    title: "노코드 툴 추천 부탁드립니다",
-    author: "박노코드",
-    avatar: "/images/avatar2.jpg",
-    content: "초보자도 쉽게 사용할 수 있는 노코드 툴을 찾고 있습니다. 추천해주세요!",
-    category: "추천",
-    tags: ["노코드", "툴", "추천"],
-    likes: 18,
-    comments: 8,
-    views: 234,
-    createdAt: "4시간 전",
-    isPopular: false
-  },
-  {
-    id: 3,
-    title: "ChatGPT API 활용 프로젝트 후기",
-    author: "이프로젝트",
-    avatar: "/images/avatar3.jpg",
-    content: "ChatGPT API를 활용해서 고객 서비스 챗봇을 만들어봤습니다. 경험을 공유합니다.",
-    category: "경험공유",
-    tags: ["ChatGPT", "API", "프로젝트"],
-    likes: 42,
-    comments: 15,
-    views: 789,
-    createdAt: "6시간 전",
-    isPopular: true
-  },
-  {
-    id: 4,
-    title: "데이터 분석 스터디 모집",
-    author: "최데이터",
-    avatar: "/images/avatar4.jpg",
-    content: "데이터 분석 스터디를 함께 할 분들을 찾습니다. 매주 토요일 오후 2시 예정입니다.",
-    category: "스터디",
-    tags: ["데이터", "분석", "스터디"],
-    likes: 15,
-    comments: 23,
-    views: 123,
-    createdAt: "8시간 전",
-    isPopular: false
-  },
-  {
-    id: 5,
-    title: "AI 시대 마케팅 전략",
-    author: "정마케팅",
-    avatar: "/images/avatar5.jpg",
-    content: "AI 도구들을 활용한 마케팅 전략에 대해 이야기해보고 싶습니다.",
-    category: "토론",
-    tags: ["AI", "마케팅", "전략"],
-    likes: 31,
-    comments: 19,
-    views: 567,
-    createdAt: "12시간 전",
-    isPopular: true
-  }
-]
+import { supabase, CommunityPost, getCommunityPosts } from '@/lib/supabase'
+import { format, formatDistanceToNow } from 'date-fns'
+import { ko } from 'date-fns/locale'
 
 const categories = ["전체", "질문", "추천", "경험공유", "스터디", "토론"]
+
+// 커뮤니티 게시글 타입 확장 (작성자 정보 포함)
+interface PostWithAuthor extends CommunityPost {
+  profiles: {
+    name: string
+    avatar_url: string | null
+  }
+  comment_count?: number
+}
 
 export default function CommunityPage() {
   const [selectedCategory, setSelectedCategory] = useState("전체")
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("latest")
+  const [posts, setPosts] = useState<PostWithAuthor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({
+    totalPosts: 0,
+    totalComments: 0,
+    activeUsers: 0,
+    todayPosts: 0
+  })
+
+  // 게시글 불러오기
+  useEffect(() => {
+    loadPosts()
+    loadStats()
+  }, [])
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true)
+      
+      // 게시글 불러오기 (작성자 정보 포함)
+      const { data: posts, error } = await supabase
+        .from('community_posts')
+        .select(`
+          *,
+          profiles (
+            name,
+            avatar_url
+          )
+        `)
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error loading posts:', error)
+        return
+      }
+
+      // 각 게시글의 댓글 수 계산
+      const postsWithCommentCount = await Promise.all(
+        (posts || []).map(async (post) => {
+          const { count } = await supabase
+            .from('community_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id)
+            .eq('is_published', true)
+
+          return {
+            ...post,
+            comment_count: count || 0
+          }
+        })
+      )
+
+      setPosts(postsWithCommentCount)
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadStats = async () => {
+    try {
+      // 전체 게시글 수
+      const { count: postsCount } = await supabase
+        .from('community_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_published', true)
+
+      // 활성 사용자 수 (최근 30일 내 게시글 작성)
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      
+      const { data: activeAuthors } = await supabase
+        .from('community_posts')
+        .select('author_id')
+        .eq('is_published', true)
+        .gte('created_at', thirtyDaysAgo.toISOString())
+      
+      const uniqueAuthors = new Set(activeAuthors?.map(post => post.author_id) || [])
+
+      // 오늘 게시글 수
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      const { count: todayCount } = await supabase
+        .from('community_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_published', true)
+        .gte('created_at', today.toISOString())
+
+      setStats({
+        totalPosts: postsCount || 0,
+        totalComments: 0, // 댓글 기능 구현 시 업데이트
+        activeUsers: uniqueAuthors.size,
+        todayPosts: todayCount || 0
+      })
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    }
+  }
 
   const filteredPosts = posts.filter(post => {
     const matchesCategory = selectedCategory === "전체" || post.category === selectedCategory
     const matchesSearch = searchTerm === "" || 
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.author.toLowerCase().includes(searchTerm.toLowerCase())
+      post.content.toLowerCase().includes(searchTerm.toLowerCase())
     
     return matchesCategory && matchesSearch
   }).sort((a, b) => {
     if (sortBy === "popular") {
       return b.likes - a.likes
-    } else if (sortBy === "comments") {
-      return b.comments - a.comments
+    } else if (sortBy === "views") {
+      return b.views - a.views
     } else {
-      return 0 // latest - 실제로는 createdAt으로 정렬
+      // latest - 최신순
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     }
   })
+
+  // 시간 포맷팅 함수
+  const formatTimeAgo = (date: string) => {
+    return formatDistanceToNow(new Date(date), { addSuffix: true, locale: ko })
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
@@ -173,19 +220,19 @@ export default function CommunityPage() {
         <div className="container mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/20 text-center">
-              <div className="text-2xl font-bold text-yellow-400 mb-2">1,234</div>
+              <div className="text-2xl font-bold text-yellow-400 mb-2">{stats.totalPosts.toLocaleString()}</div>
               <div className="text-gray-400 text-sm">총 게시글</div>
             </div>
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/20 text-center">
-              <div className="text-2xl font-bold text-yellow-400 mb-2">5,678</div>
+              <div className="text-2xl font-bold text-yellow-400 mb-2">{stats.totalComments.toLocaleString()}</div>
               <div className="text-gray-400 text-sm">총 댓글</div>
             </div>
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/20 text-center">
-              <div className="text-2xl font-bold text-yellow-400 mb-2">890</div>
+              <div className="text-2xl font-bold text-yellow-400 mb-2">{stats.activeUsers.toLocaleString()}</div>
               <div className="text-gray-400 text-sm">활성 회원</div>
             </div>
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/20 text-center">
-              <div className="text-2xl font-bold text-yellow-400 mb-2">123</div>
+              <div className="text-2xl font-bold text-yellow-400 mb-2">{stats.todayPosts.toLocaleString()}</div>
               <div className="text-gray-400 text-sm">오늘 게시글</div>
             </div>
           </div>
@@ -250,6 +297,16 @@ export default function CommunityPage() {
                 >
                   인기순
                 </button>
+                <button
+                  onClick={() => setSortBy("views")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    sortBy === "views"
+                      ? 'bg-yellow-400 text-black'
+                      : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'
+                  }`}
+                >
+                  조회순
+                </button>
               </div>
             </div>
           </div>
@@ -259,6 +316,11 @@ export default function CommunityPage() {
       {/* Posts */}
       <section className="px-4 pb-20">
         <div className="container mx-auto">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="animate-spin text-yellow-400" size={48} />
+            </div>
+          ) : (
           <div className="space-y-4">
             {filteredPosts.map((post, index) => (
               <motion.div
@@ -266,20 +328,30 @@ export default function CommunityPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border transition-all duration-300 hover:border-yellow-500/40 ${
-                  post.isPopular ? 'border-yellow-500/30' : 'border-yellow-500/20'
+                className={`bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border transition-all duration-300 hover:border-yellow-500/40 cursor-pointer ${
+                  post.likes > 20 ? 'border-yellow-500/30' : 'border-yellow-500/20'
                 }`}
               >
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
-                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
-                    <User className="text-gray-400" size={20} />
+                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                    {post.profiles?.avatar_url ? (
+                      <Image
+                        src={post.profiles.avatar_url}
+                        alt={post.profiles.name}
+                        width={48}
+                        height={48}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <User className="text-gray-400" size={20} />
+                    )}
                   </div>
 
                   {/* Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-medium text-white">{post.author}</span>
+                      <span className="font-medium text-white">{post.profiles?.name || '익명'}</span>
                       <span className={`px-2 py-1 rounded text-xs ${
                         post.category === "질문" ? "bg-blue-500/20 text-blue-400" :
                         post.category === "추천" ? "bg-green-500/20 text-green-400" :
@@ -289,13 +361,13 @@ export default function CommunityPage() {
                       }`}>
                         {post.category}
                       </span>
-                      {post.isPopular && (
+                      {post.likes > 20 && (
                         <span className="flex items-center gap-1 text-yellow-400 text-xs">
                           <TrendingUp size={12} />
                           인기
                         </span>
                       )}
-                      <span className="text-gray-500 text-sm">{post.createdAt}</span>
+                      <span className="text-gray-500 text-sm">{formatTimeAgo(post.created_at)}</span>
                     </div>
 
                     <h3 className="text-lg font-semibold text-white mb-2 hover:text-yellow-400 transition-colors cursor-pointer">
@@ -307,13 +379,15 @@ export default function CommunityPage() {
                     </p>
 
                     {/* Tags */}
-                    <div className="flex items-center gap-2 mb-4">
-                      {post.tags.map((tag, i) => (
-                        <span key={i} className="px-2 py-1 bg-yellow-400/20 text-yellow-400 rounded text-xs">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="flex items-center gap-2 mb-4">
+                        {post.tags.map((tag, i) => (
+                          <span key={i} className="px-2 py-1 bg-yellow-400/20 text-yellow-400 rounded text-xs">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex items-center gap-6 text-gray-400 text-sm">
@@ -323,7 +397,7 @@ export default function CommunityPage() {
                       </button>
                       <button className="flex items-center gap-1 hover:text-yellow-400 transition-colors">
                         <MessageCircle size={16} />
-                        <span>{post.comments}</span>
+                        <span>{post.comment_count || 0}</span>
                       </button>
                       <span className="flex items-center gap-1">
                         <Eye size={16} />
@@ -339,6 +413,7 @@ export default function CommunityPage() {
               </motion.div>
             ))}
           </div>
+          )}
 
           {filteredPosts.length === 0 && (
             <div className="text-center py-20">

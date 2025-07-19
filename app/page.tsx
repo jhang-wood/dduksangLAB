@@ -22,7 +22,9 @@ import {
   Cloud,
   Terminal,
   Layers,
-  Workflow
+  Workflow,
+  AlertTriangle,
+  CheckCircle
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -33,7 +35,7 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header currentPage="home" />
 
-      {/* Hero Section */}
+      {/* Hero Section - 반응형 개선 */}
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto text-center">
           <motion.div
@@ -41,17 +43,20 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                 이 사이트도
               </span>
-              <br />
+              <br className="hidden md:block" />
+              <span className="md:hidden"> </span>
               <span className="text-white">1시간만에 만들어졌습니다</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              AI와 노코드 도구를 활용하면 누구나 빠르게 웹서비스를 만들 수 있습니다.
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              AI와 노코드 도구를 활용하면 <br className="md:hidden" />
+              누구나 빠르게 웹서비스를 만들 수 있습니다.
               <br />
-              함께 성장하는 개발자 커뮤니티에서 당신의 아이디어를 현실로 만드세요.
+              함께 성장하는 개발자 커뮤니티에서 <br className="md:hidden" />
+              당신의 아이디어를 현실로 만드세요.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/community" className="px-8 py-4 bg-yellow-400 text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors flex items-center justify-center">
@@ -67,7 +72,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Tech Stack Section */}
+      {/* Tech Stack Section - 3열 카드 레이아웃 */}
       <section className="py-20 px-4 bg-gradient-to-b from-transparent to-gray-900/30">
         <div className="container mx-auto">
           <div className="text-center mb-16">
@@ -79,105 +84,84 @@ export default function HomePage() {
             </p>
           </div>
           
-          <div className="relative overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Row 1 */}
             <motion.div
-              animate={{
-                x: ["-100%", "0%"],
-              }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 20,
-                  ease: "linear",
-                },
-              }}
-              className="flex gap-8 py-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
             >
-              {/* Tech logos */}
-              <div className="flex items-center gap-8 whitespace-nowrap">
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Cpu className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Python</span>
+              <div className="flex items-center gap-4 mb-4">
+                <Brain className="text-yellow-400" size={32} />
+                <h3 className="text-xl font-bold text-white">AI 도구</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Terminal className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Claude, ChatGPT</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Brain className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Google AI</span>
+                <div className="flex items-center gap-2">
+                  <Bot className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Cursor AI, Replit AI</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Workflow className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">LangChain</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Zap className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">n8n</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Settings className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Make</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Bot className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Cursor AI</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Code2 className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Replit AI</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Terminal className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Claude</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Layers className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Next.js</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Database className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Ruby on Rails</span>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Google AI, Gemini</span>
                 </div>
               </div>
-              {/* Duplicate for seamless loop */}
-              <div className="flex items-center gap-8 whitespace-nowrap">
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Cpu className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Python</span>
+            </motion.div>
+
+            {/* Row 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <Workflow className="text-yellow-400" size={32} />
+                <h3 className="text-xl font-bold text-white">자동화 도구</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">n8n, Make (Integromat)</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Brain className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Google AI</span>
+                <div className="flex items-center gap-2">
+                  <Settings className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Zapier, Workato</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Workflow className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">LangChain</span>
+                <div className="flex items-center gap-2">
+                  <Code2 className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">LangChain, AutoGPT</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Zap className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">n8n</span>
+              </div>
+            </motion.div>
+
+            {/* Row 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <Layers className="text-yellow-400" size={32} />
+                <h3 className="text-xl font-bold text-white">개발 프레임워크</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Globe className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Next.js, React</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Settings className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Make</span>
+                <div className="flex items-center gap-2">
+                  <Cpu className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Python, JavaScript</span>
                 </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Bot className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Cursor AI</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Code2 className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Replit AI</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Terminal className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Claude</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Layers className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Next.js</span>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-900/50 rounded-lg border border-yellow-500/20">
-                  <Database className="text-yellow-400" size={24} />
-                  <span className="text-white font-semibold">Ruby on Rails</span>
+                <div className="flex items-center gap-2">
+                  <Database className="text-yellow-400/60" size={20} />
+                  <span className="text-gray-300">Supabase, PostgreSQL</span>
                 </div>
               </div>
             </motion.div>
@@ -185,7 +169,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section - 8월 오픈 예정 제거 */}
       <section id="features" className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16">
@@ -202,26 +186,22 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
             >
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
-                <div className="text-center">
-                  <div className="text-yellow-400 text-3xl font-bold mb-2">8월 오픈 예정</div>
-                </div>
+              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                <Globe className="text-black" size={24} />
               </div>
-              <div className="opacity-30">
-                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                  <Globe className="text-black" size={24} />
-                </div>
-                <h4 className="text-xl font-semibold mb-4 text-white">AI 자동화 뉴스</h4>
-                <p className="text-gray-300 mb-4">
-                  매일 업데이트되는 AI 트렌드와 자동화 기술 소식
-                </p>
-                <ul className="text-sm text-gray-400 space-y-2">
-                  <li>• 실시간 AI 뉴스 큐레이션</li>
-                  <li>• 자동화 도구 리뷰</li>
-                  <li>• 업계 동향 분석</li>
-                </ul>
+              <h4 className="text-xl font-semibold mb-4 text-white">AI 자동화 뉴스</h4>
+              <p className="text-gray-300 mb-4">
+                매일 업데이트되는 AI 트렌드와 자동화 기술 소식
+              </p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• 실시간 AI 뉴스 큐레이션</li>
+                <li>• 자동화 도구 리뷰</li>
+                <li>• 업계 동향 분석</li>
+              </ul>
+              <div className="mt-4 text-yellow-400 text-sm font-medium">
+                곧 공개 예정
               </div>
             </motion.div>
 
@@ -229,26 +209,22 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
             >
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
-                <div className="text-center">
-                  <div className="text-yellow-400 text-3xl font-bold mb-2">8월 오픈 예정</div>
-                </div>
+              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                <Sparkles className="text-black" size={24} />
               </div>
-              <div className="opacity-30">
-                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                  <Sparkles className="text-black" size={24} />
-                </div>
-                <h4 className="text-xl font-semibold mb-4 text-white">SaaS 프로젝트 쇼케이스</h4>
-                <p className="text-gray-300 mb-4">
-                  창업자들의 SaaS 프로젝트를 소개하고 홍보하는 공간
-                </p>
-                <ul className="text-sm text-gray-400 space-y-2">
-                  <li>• 프로젝트 갤러리</li>
-                  <li>• 사용자 리뷰 시스템</li>
-                  <li>• 투자자 매칭</li>
-                </ul>
+              <h4 className="text-xl font-semibold mb-4 text-white">SaaS 프로젝트 쇼케이스</h4>
+              <p className="text-gray-300 mb-4">
+                창업자들의 SaaS 프로젝트를 소개하고 홍보하는 공간
+              </p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• 프로젝트 갤러리</li>
+                <li>• 사용자 리뷰 시스템</li>
+                <li>• 투자자 매칭</li>
+              </ul>
+              <div className="mt-4 text-yellow-400 text-sm font-medium">
+                서비스 준비 중
               </div>
             </motion.div>
 
@@ -256,365 +232,108 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors relative overflow-hidden"
+              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
             >
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
-                <div className="text-center">
-                  <div className="text-yellow-400 text-3xl font-bold mb-2">8월 오픈 예정</div>
-                </div>
+              <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
+                <Users className="text-black" size={24} />
               </div>
-              <div className="opacity-30">
-                <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mb-6">
-                  <Users className="text-black" size={24} />
-                </div>
-                <h4 className="text-xl font-semibold mb-4 text-white">전문가 Q&A 커뮤니티</h4>
-                <p className="text-gray-300 mb-4">
-                  AI 전문가들과 실시간으로 소통하는 지식 공유 공간
-                </p>
-                <ul className="text-sm text-gray-400 space-y-2">
-                  <li>• 실시간 질문답변</li>
-                  <li>• 전문가 멘토링</li>
-                  <li>• 지식 아카이브</li>
-                </ul>
+              <h4 className="text-xl font-semibold mb-4 text-white">전문가 Q&A 커뮤니티</h4>
+              <p className="text-gray-300 mb-4">
+                AI 전문가들과 실시간으로 소통하는 지식 공유 공간
+              </p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• 실시간 질문답변</li>
+                <li>• 전문가 멘토링</li>
+                <li>• 지식 아카이브</li>
+              </ul>
+              <div className="mt-4 text-green-400 text-sm font-medium">
+                ✅ 현재 운영 중
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Live Feed Section */}
+      {/* 무료 강의 CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-transparent to-gray-900/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              실시간 커뮤니티 피드
-            </h3>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              지금 이 순간에도 활발히 소통하고 있는 커뮤니티
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Recent Posts */}
-            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6">
-              <h4 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <MessageSquare className="mr-2 text-yellow-400" size={20} />
-                최신 게시글
-              </h4>
-              <div className="space-y-4">
-                <div className="border-b border-gray-800 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold">
-                      김
-                    </div>
-                    <div className="flex-1">
-                      <h5 className="text-white font-medium">AI로 월 1000만원 버는 방법 공유</h5>
-                      <p className="text-gray-400 text-sm mt-1">김OO • 방금 전</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="border-b border-gray-800 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold">
-                      이
-                    </div>
-                    <div className="flex-1">
-                      <h5 className="text-white font-medium">n8n 자동화 수익화 후기</h5>
-                      <p className="text-gray-400 text-sm mt-1">이OO • 5분 전</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="border-b border-gray-800 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold">
-                      박
-                    </div>
-                    <div className="flex-1">
-                      <h5 className="text-white font-medium">Cursor AI로 SaaS 만들기 성공</h5>
-                      <p className="text-gray-400 text-sm mt-1">박OO • 15분 전</p>
-                    </div>
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-yellow-500/30 overflow-hidden"
+          >
+            <div className="p-8 md:p-12 text-center">
+              <div className="flex justify-center mb-6">
+                <AlertTriangle className="text-yellow-400" size={60} />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">
+                ⚠️ 마지막 경고
+              </h2>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white mb-6">
+                "AI 시대는 이미 시작되었습니다"
+              </h3>
+              
+              <div className="space-y-4 mb-8 text-lg text-gray-300">
+                <p>지금 시작하지 않으면 격차는 더욱 벌어집니다.</p>
+                <p className="text-yellow-400 font-semibold">
+                  선점자가 모든 것을 가져가는 시대,
+                </p>
+                <p className="text-red-400 font-semibold">
+                  지금이 마지막 기회입니다.
+                </p>
+              </div>
+
+              <div className="bg-gray-900/50 rounded-xl p-6 mb-8">
+                <h4 className="text-xl font-bold text-yellow-400 mb-4 flex items-center justify-center gap-2">
+                  <Zap size={24} />
+                  AI 무료강의로 배우는 것들
+                </h4>
+                <div className="space-y-3 text-left max-w-2xl mx-auto">
+                  <p className="text-gray-300">
+                    이 강의만으로도 <span className="text-yellow-400 font-semibold">웹사이트부터 자동화 EXE파일까지</span> 전부 생성 가능합니다.
+                  </p>
+                  <p className="text-gray-300">
+                    그것도 <span className="text-yellow-400 font-semibold">아주 쉽고 빠르게</span> 전부 다 알려드릴게요.
+                  </p>
+                  
+                  <div className="mt-4 space-y-2">
+                    <p className="text-gray-400">
+                      그리고 무료강의 후에 유료강의 홍보하겠지 생각하실텐데
+                    </p>
+                    <p className="text-gray-400">
+                      아시는 분들은 아시다시피 <span className="text-yellow-400">이번이 마지막입니다.</span>
+                    </p>
+                    <p className="text-gray-400">
+                      유료 오픈하겠지만 빠른 시일내에 저를 믿고 기다려주신 분들을 위해서
+                    </p>
+                    <p className="text-yellow-400 font-semibold">
+                      초특가 할인은 바로 마감 후 시킬 예정입니다.
+                    </p>
+                    <p className="text-red-400 font-semibold">
+                      다시는 기회 없습니다. 아실 분들은 아십니다.
+                    </p>
                   </div>
                 </div>
               </div>
+
+              <Link 
+                href="/lectures" 
+                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg font-bold text-lg hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-lg"
+              >
+                <PlayCircle className="mr-2" size={24} />
+                긴급 탑승하기
+              </Link>
+
+              <p className="mt-6 text-red-400 font-semibold">
+                🔥 마감까지 1월 7시간 11분 21초
+              </p>
             </div>
-            
-            {/* Live Activities */}
-            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6">
-              <h4 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <TrendingUp className="mr-2 text-yellow-400" size={20} />
-                실시간 활동
-              </h4>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-gray-300 text-sm">
-                    <span className="text-white font-medium">최OO</span>님이 <span className="text-yellow-400">"AI 뉴스"</span> 게시판에 새 글을 작성했습니다
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-gray-300 text-sm">
-                    <span className="text-white font-medium">정OO</span>님이 <span className="text-yellow-400">"SaaS 프로젝트"</span>를 등록했습니다
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-gray-300 text-sm">
-                    <span className="text-white font-medium">한OO</span>님이 댓글을 남겼습니다
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-gray-300 text-sm">
-                    <span className="text-white font-medium">강OO</span>님이 좋아요를 눌렀습니다
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-gray-300 text-sm">
-                    <span className="text-white font-medium">손OO</span>님이 <span className="text-yellow-400">"Q&A"</span>에 질문을 등록했습니다
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 text-center">
-                <p className="text-yellow-400 text-sm font-medium">현재 접속자 2,847명</p>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-yellow-900/10">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              떡상연구소의 <span className="text-yellow-400">놀라운 성과</span>
-            </h3>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              실제 수강생들이 만들어낸 놀라운 변화의 숫자들
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center"
-            >
-              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">2,847+</div>
-              <div className="text-xl text-gray-300">수강생</div>
-              <div className="text-sm text-gray-500 mt-2">전국에서 함께하는</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">92%</div>
-              <div className="text-xl text-gray-300">만족도</div>
-              <div className="text-sm text-gray-500 mt-2">수강생 평균 만족도</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">₩15M</div>
-              <div className="text-xl text-gray-300">평균 수익</div>
-              <div className="text-sm text-gray-500 mt-2">6개월 내 달성</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-center"
-            >
-              <div className="text-5xl md:text-6xl font-bold text-yellow-400 mb-2">24/7</div>
-              <div className="text-xl text-gray-300">서포트</div>
-              <div className="text-sm text-gray-500 mt-2">언제나 함께하는</div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              <span className="text-yellow-400">수강생들의</span> 생생한 후기
-            </h3>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              떡상연구소와 함께 성공한 사람들의 이야기
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
-                  김
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-white font-semibold">김OO</h4>
-                  <p className="text-gray-400 text-sm">전업 트레이더</p>
-                </div>
-              </div>
-              <div className="mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-300">
-                "AI 활용법을 배운 후 수익률이 3배나 증가했습니다. 
-                체계적인 커리큘럼과 실무 중심 교육이 정말 도움이 되었어요."
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
-                  이
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-white font-semibold">이OO</h4>
-                  <p className="text-gray-400 text-sm">스타트업 대표</p>
-                </div>
-              </div>
-              <div className="mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-300">
-                "노코드로 MVP를 1주일 만에 만들었습니다. 
-                투자 유치까지 성공했어요. 떡상연구소 최고!"
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-yellow-500/20"
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl">
-                  박
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-white font-semibold">박OO</h4>
-                  <p className="text-gray-400 text-sm">프리랜서 개발자</p>
-                </div>
-              </div>
-              <div className="mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="inline-block w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-300">
-                "AI 자동화로 업무 시간이 70% 단축되었습니다. 
-                덕분에 더 많은 프로젝트를 진행할 수 있게 되었어요."
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-gray-900/50">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              떡상연구소의 <span className="text-yellow-400">학습 프로세스</span>
-            </h3>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              체계적인 4단계 프로세스로 누구나 AI 전문가가 됩니다
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
-              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
-                1
-              </div>
-              <h4 className="text-xl font-semibold text-white text-center mb-2">기초 학습</h4>
-              <p className="text-gray-400 text-center">
-                AI/노코드 기본 개념과 핵심 원리를 쉽게 이해
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative"
-            >
-              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
-                2
-              </div>
-              <h4 className="text-xl font-semibold text-white text-center mb-2">실습 프로젝트</h4>
-              <p className="text-gray-400 text-center">
-                실제 프로젝트를 통한 hands-on 경험 축적
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
-                3
-              </div>
-              <h4 className="text-xl font-semibold text-white text-center mb-2">멘토링</h4>
-              <p className="text-gray-400 text-center">
-                전문가의 1:1 맞춤형 피드백과 코칭
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="relative"
-            >
-              <div className="bg-yellow-400 text-black rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-4 mx-auto">
-                4
-              </div>
-              <h4 className="text-xl font-semibold text-white text-center mb-2">수익화</h4>
-              <p className="text-gray-400 text-center">
-                실제 수익 창출까지 완벽 지원
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
+      {/* FAQ Section - 내용 수정 */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-16">
@@ -634,12 +353,12 @@ export default function HomePage() {
               className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
             >
               <h4 className="text-xl font-semibold text-white mb-2">
-                Q. 프로그래밍 경험이 없어도 수강할 수 있나요?
+                Q. 바이브 코딩이 뭔가요?
               </h4>
               <p className="text-gray-300">
-                A. 네, 전혀 문제없습니다! 떡상연구소는 비전공자도 쉽게 따라올 수 있도록 
-                기초부터 차근차근 알려드립니다. 노코드 툴을 활용하기 때문에 
-                프로그래밍 지식이 없어도 충분히 수강 가능합니다.
+                A. 바이브 코딩은 AI 도구들을 활용해 기존 개발 방식보다 10배 빠르게 
+                웹서비스를 만드는 새로운 개발 방법론입니다. 코딩 경험이 없어도 
+                AI와 노코드 도구를 조합해 원하는 서비스를 만들 수 있습니다.
               </p>
             </motion.div>
             
@@ -650,12 +369,12 @@ export default function HomePage() {
               className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
             >
               <h4 className="text-xl font-semibold text-white mb-2">
-                Q. 수강 기간은 얼마나 되나요?
+                Q. 이 사이트를 정말 하루만에 만들었나요?
               </h4>
               <p className="text-gray-300">
-                A. 기본 과정은 12주이며, 평생 수강이 가능합니다. 
-                본인의 페이스에 맞춰 학습할 수 있고, 
-                업데이트되는 콘텐츠도 계속 무료로 제공됩니다.
+                A. 네, 실제로 1시간 만에 기본 구조를 완성했고, 하루 만에 배포까지 
+                완료했습니다. Claude AI, Cursor, Next.js를 활용했고, 
+                Supabase로 데이터베이스를 구축했습니다. 이 모든 과정을 강의에서 공개합니다.
               </p>
             </motion.div>
             
@@ -666,12 +385,12 @@ export default function HomePage() {
               className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-yellow-500/20 p-6"
             >
               <h4 className="text-xl font-semibold text-white mb-2">
-                Q. 실제로 수익을 낼 수 있나요?
+                Q. 프로그래밍 경험이 없어도 가능한가요?
               </h4>
               <p className="text-gray-300">
-                A. 90% 이상의 수강생이 2개월 내 첫 수익을 달성했습니다. 
-                체계적인 커리큘럼과 실무 프로젝트, 그리고 멘토링을 통해 
-                실제 수익화까지 완벽하게 지원합니다.
+                A. 물론입니다! 오히려 기존 개발 방식에 익숙하지 않은 분들이 
+                더 빠르게 적응하는 경우가 많습니다. AI가 코드를 대신 작성해주기 때문에 
+                아이디어와 열정만 있다면 누구나 시작할 수 있습니다.
               </p>
             </motion.div>
           </div>
