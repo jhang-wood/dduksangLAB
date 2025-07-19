@@ -9,6 +9,10 @@ const PAYAPP_CONFIG = {
   testMode: process.env.NODE_ENV !== 'production',
 }
 
+if (!PAYAPP_CONFIG.secretKey || !PAYAPP_CONFIG.value) {
+  console.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.')
+}
+
 // 가격 플랜 정의
 export const PRICING_PLANS = {
   basic: {
