@@ -41,36 +41,53 @@ export default function HomePage() {
               transition={{ duration: 1 }}
               className="text-center"
             >
-              {/* Logo */}
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="w-20 h-20 mx-auto mb-16"
-              >
-                <Image
-                  src="/images/떡상연구소_로고-removebg-preview.png"
-                  alt="떡상연구소"
-                  width={80}
-                  height={80}
-                  className="object-contain filter drop-shadow-[0_0_30px_rgba(255,215,0,0.3)]"
-                  priority
-                />
-              </motion.div>
-
-              {/* Main Headline - 도발적이고 강력한 메시지 */}
+              {/* Main Headline with Logo - 도발적이고 강력한 메시지 */}
               <motion.h1
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
-                className="font-montserrat font-bold mb-8"
+                className="font-montserrat font-bold mb-8 relative"
               >
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight mb-4">
+                {/* Background Logo Watermark */}
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 0.05 }}
+                  transition={{ delay: 0.2, duration: 1.2 }}
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
+                  <Image
+                    src="/images/떡상연구소_로고-removebg-preview.png"
+                    alt=""
+                    width={400}
+                    height={400}
+                    className="object-contain"
+                  />
+                </motion.div>
+                
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight mb-4 relative">
                   AI 300만원짜리 강의,
                 </span>
-                <span className="block text-offWhite-200 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
+                <span className="block text-offWhite-200 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight relative">
                   더 이상 돈 주고 듣지 마세요.
                 </span>
+                
+                {/* Signature Logo */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="absolute -bottom-8 right-0 md:right-10 flex items-center gap-2"
+                >
+                  <div className="relative w-12 h-12 md:w-16 md:h-16">
+                    <Image
+                      src="/images/떡상연구소_로고-removebg-preview.png"
+                      alt="떡상연구소"
+                      fill
+                      className="object-contain filter drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                    />
+                  </div>
+                  <span className="text-sm md:text-base text-metallicGold-500 font-bold">떡상연구소</span>
+                </motion.div>
               </motion.h1>
 
               {/* Subtitle - 압도적인 차별점 제시 */}
@@ -78,7 +95,7 @@ export default function HomePage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="text-base sm:text-lg md:text-xl text-offWhite-400 max-w-3xl mx-auto mb-16 leading-relaxed px-4 sm:px-0"
+                className="text-base sm:text-lg md:text-xl text-offWhite-400 max-w-3xl mx-auto mb-16 mt-12 leading-relaxed px-4 sm:px-0"
               >
                 AI로 비싼 강의의 핵심만 <span className="text-metallicGold-500 font-bold">'추출'</span>하고,<br className="hidden sm:inline" />
                 <span className="text-metallicGold-500 font-bold">'실행 가능한 자동화 프로그램'</span>으로 만드는<br />

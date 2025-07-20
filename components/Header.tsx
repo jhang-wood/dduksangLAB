@@ -17,6 +17,13 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const router = useRouter()
   const { user, userProfile, signOut, isAdmin } = useAuth()
 
+  console.log('[Header] Auth state:', {
+    user: user?.email,
+    userProfile: userProfile,
+    role: userProfile?.role,
+    isAdmin: isAdmin
+  })
+
   const navItems = [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
     { id: 'sites', label: '사이트홍보관', href: '/sites' },
@@ -24,6 +31,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     { id: 'lectures', label: '강의', href: '/lectures' },
     ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
   ]
+
+  console.log('[Header] Nav items:', navItems)
 
   const handleSignOut = async () => {
     await signOut()
@@ -37,16 +46,16 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3">
-              <div className="relative w-8 h-8">
+              <div className="relative w-10 h-10 md:w-12 md:h-12">
                 <Image
                   src="/images/떡상연구소_로고-removebg-preview.png"
                   alt="떡상연구소"
                   fill
-                  className="object-contain"
+                  className="object-contain filter drop-shadow-[0_0_8px_rgba(255,215,0,0.3)]"
                   priority
                 />
               </div>
-              <span className="hidden md:block text-lg font-semibold text-metallicGold-500">떡상연구소</span>
+              <span className="hidden md:block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">떡상연구소</span>
             </Link>
           </div>
 
