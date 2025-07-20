@@ -22,9 +22,16 @@ import {
   Crown,
   ArrowRight,
   Gift,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle,
+  Timer,
+  Target,
+  Shield,
+  TrendingUp,
+  Flame
 } from 'lucide-react'
 import Header from '@/components/Header'
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth-context'
 import { PaymentButton } from '@/hooks/usePayment'
@@ -44,8 +51,8 @@ const masterCourse = {
   level: 'all',
   preview_url: '',
   thumbnail_url: '',
-  studentCount: 1247,
-  rating: 4.9,
+  studentCount: 0,
+  rating: 0,
   features: [
     '최정상 1%의 AI Toolset',
     '시공간 제약 없는 텔레그램 코딩',
@@ -127,48 +134,260 @@ export default function LecturesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deepBlack-900">
-      <Header currentPage="lectures" />
+    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+      <NeuralNetworkBackground />
+      <div className="relative z-10">
+        <Header currentPage="lectures" />
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full border border-metallicGold-500/30 mb-8">
-              <Sparkles className="w-5 h-5 text-metallicGold-500" />
-              <span className="text-metallicGold-500 font-semibold">GRAND OPEN SPECIAL</span>
-              <Sparkles className="w-5 h-5 text-metallicGold-500" />
-            </div>
-            
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-montserrat font-bold mb-6">
-              <span className="block text-offWhite-200 mb-4">{masterCourse.title}</span>
-              <span className="block text-3xl md:text-4xl bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 bg-clip-text text-transparent">
-                {masterCourse.subtitle}
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-offWhite-500 max-w-4xl mx-auto leading-relaxed">
-              {masterCourse.description}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Main Course Display */}
-      <section className="px-4 pb-20">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Left Column - Course Details */}
+        {/* Hero Section with Shocking Proposition */}
+        <section className="pt-32 pb-20 px-4">
+          <div className="container mx-auto max-w-7xl">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
             >
+              {/* Urgent Badge */}
+              <motion.div 
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500/20 to-red-900/20 rounded-full border border-red-500/50 mb-8"
+              >
+                <Flame className="w-5 h-5 text-red-500" />
+                <span className="text-red-400 font-bold">⚠️ 경고: 이 가격은 다시 돌아오지 않습니다</span>
+                <Flame className="w-5 h-5 text-red-500" />
+              </motion.div>
+              
+              <h1 className="font-montserrat font-bold mb-8">
+                <span className="block text-red-400 mb-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
+                  AI 300만원짜리 강의,
+                </span>
+                <span className="block bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-none">
+                  더 이상 돈 주고<br className="sm:hidden" />
+                  듣지 마세요
+                </span>
+              </h1>
+              
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-offWhite-400 max-w-4xl mx-auto leading-relaxed mb-8 px-4 sm:px-0">
+                AI로 비싼 강의의 핵심만<br className="sm:hidden" />
+                <span className="text-metallicGold-500 font-bold">'추출'</span>하고,<br />
+                <span className="text-metallicGold-500 font-bold">'실행 가능한 자동화 프로그램'</span>으로<br className="sm:hidden" />
+                만드는 압도적인 방법을 알려드립니다.
+              </p>
+              
+              <p className="text-lg sm:text-xl md:text-2xl text-offWhite-200 font-bold px-4 sm:px-0">
+                비개발자인 제가 해냈으니,<br className="sm:hidden" />
+                <span className="text-metallicGold-500">당신은 더 빨리 할 수 있습니다.</span>
+              </p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Pain Points Section */}
+        <section className="py-20 px-4 bg-deepBlack-300/30">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-12 px-4">
+                <span className="text-red-400 leading-tight">혹시, 아직도 이렇게<br className="sm:hidden" /> 시간 낭비하고 계신가요?</span>
+              </h2>
+              
+              <div className="grid md:grid-cols-3 gap-8">
+                {[
+                  {
+                    icon: AlertTriangle,
+                    title: "열심히 하는데 왜 결과가 안나오지?",
+                    description: "수많은 사람들이 아직도 Cursor, Replit 같은 '보급형' AI를 쓰고 있습니다. 자동차로 비유하면, 당신이 경차로 낑낑댈 때, 누군가는 F1 머신으로 질주하고 있습니다.",
+                    highlight: "애초에 도구가 다릅니다."
+                  },
+                  {
+                    icon: Timer,
+                    title: "자동화 하려다 노가다만 늘어난다?",
+                    description: "Make, n8n 화면에서 마우스로 점 찍고 선 잇는 작업, 그것도 결국 수작업입니다. 자동화를 만들기 위해 또 다른 노가다를 하는 셈이죠.",
+                    highlight: "그 과정 자체를 자동화할 생각은 왜 못했을까요?"
+                  },
+                  {
+                    icon: Brain,
+                    title: "코딩, 배워도 배워도 끝이 없다?",
+                    description: "비개발자에게 C언어, Java는 독입니다. 우리는 개발자가 될 게 아닙니다. 98%의 불필요한 지식 때문에 정작 돈 버는 2%의 핵심을 놓치고 있습니다.",
+                    highlight: "정작 돈 버는 2%의 핵심을 놓치고 있습니다."
+                  }
+                ].map((pain, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ y: 30, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    className="bg-deepBlack-600/50 rounded-2xl p-6 md:p-8 border border-red-500/20 hover:border-red-500/40 transition-all"
+                  >
+                    <pain.icon className="w-10 h-10 md:w-12 md:h-12 text-red-500 mb-4" />
+                    <h3 className="text-lg md:text-xl font-bold text-offWhite-200 mb-4 leading-tight">{pain.title}</h3>
+                    <p className="text-sm md:text-base text-offWhite-500 mb-4 leading-relaxed">{pain.description}</p>
+                    <p className="text-sm md:text-base text-metallicGold-500 font-bold">{pain.highlight}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Game Changer Solution Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                  떡상연구소는 '게임의 룰'을 바꿉니다
+                </span>
+              </h2>
+              <p className="text-xl text-center text-offWhite-500 mb-16">
+                우리의 4가지 원칙으로 당신의 AI 활용 수준을 완전히 다른 차원으로 끌어올립니다
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  {
+                    icon: Rocket,
+                    number: "1",
+                    title: "최정상 1%의 AI Toolset",
+                    description: "우리는 현존 최강의 성능을 내는 'Claude Code'에 'Super Claude'를 탑재한 우리만의 강화된 AI를 사용합니다.",
+                    highlight: "대부분의 사람들이 세팅조차 못하는 이 압도적인 도구를, 당신은 강의 시작 10분 만에 손에 넣게 됩니다."
+                  },
+                  {
+                    icon: MessageSquare,
+                    number: "2",
+                    title: "시공간 제약 없는 '텔레그램 코딩'",
+                    description: "\"지금 아이디어가 떠올랐는데!\" 컴퓨터 앞에 앉을 필요 없습니다. 언제 어디서든 텔레그램 채팅 하나로 아이디어를 즉시 '바이블 코딩'하여 프로그램으로 만듭니다.",
+                    highlight: "생각과 현실화 사이의 딜레이가 0이 됩니다."
+                  },
+                  {
+                    icon: Zap,
+                    number: "3",
+                    title: "자동화를 자동화하는 '메타 자동화'",
+                    description: "Make, n8n의 수작업은 이제 그만. 우리는 코드로 자동화 설계도 자체를 생성합니다.",
+                    highlight: "마우스 클릭이 아닌, 명령어 한 줄로 복잡한 자동화 시스템을 1분 만에 구축하는 '메타 자동화' 기술입니다."
+                  },
+                  {
+                    icon: Target,
+                    number: "4",
+                    title: "비개발자를 위한 '최소 지식 원칙'",
+                    description: "저는 천재 개발자가 아닙니다. 오히려 코딩을 못했기 때문에, 누구보다 효율적인 길을 찾아야만 했습니다.",
+                    highlight: "이 강의는 개발 지식의 98%를 버리고, 오직 '결과물'을 만드는 데 필요한 2%의 핵심만 다룹니다."
+                  }
+                ].map((solution, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ y: 30, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.15 }}
+                    viewport={{ once: true }}
+                    className="bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 rounded-2xl p-8 border border-metallicGold-500/30 hover:border-metallicGold-500/50 transition-all"
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-3xl font-bold text-deepBlack-900">{solution.number}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-metallicGold-500 mb-2">{solution.title}</h3>
+                      </div>
+                    </div>
+                    <p className="text-offWhite-400 mb-4">{solution.description}</p>
+                    <p className="text-offWhite-200 font-bold">{solution.highlight}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* What You'll Steal Section */}
+        <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/30">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
+                <span className="text-offWhite-200">이번 무료 강의에서 당신이</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                  '훔쳐 갈' 3가지 비법
+                </span>
+              </h2>
+              <p className="text-xl text-center text-offWhite-500 mb-16">
+                이것만 알아도 당신은 더 이상 '정보의 소비자'가 아닌 '정보의 지배자'가 됩니다
+              </p>
+              
+              <div className="space-y-8">
+                {[
+                  {
+                    icon: Brain,
+                    number: "1️⃣",
+                    title: "고가 강의 '자동 분석 시스템' 구축법",
+                    description: "300만원짜리 강의 결제 대신, AI에게 강의 내용을 분석시켜 핵심 커리큘럼과 노하우만 추출하는 시스템을 직접 만듭니다.",
+                    highlight: "더 이상 정보의 소비자가 아닌, 정보의 '지배자'가 되십시오."
+                  },
+                  {
+                    icon: MessageSquare,
+                    number: "2️⃣",
+                    title: "생각만 하면 프로그램이 나오는 '텔레그램 바이블 코딩'",
+                    description: "복잡한 개발 환경 없이, 스마트폰 텔레그램으로 명령만 내리면 AI가 즉시 실행 가능한 프로그램을 만들어냅니다.",
+                    highlight: "출퇴근 지하철에서도 월 천만원 짜리 자동화 프로그램을 뚝딱 만들어낼 수 있습니다."
+                  },
+                  {
+                    icon: Zap,
+                    number: "3️⃣",
+                    title: "밥 먹듯이 EXE 뽑아내는 '메타 자동화' 설계도",
+                    description: "아이디어만 있으면 클릭 몇 번에 자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다.",
+                    highlight: "이는 당신이 평생 써먹을 '디지털 건물'을 짓는 능력입니다."
+                  }
+                ].map((secret, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ x: -30, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    className="bg-deepBlack-600/50 rounded-2xl p-8 border border-metallicGold-500/20 hover:border-metallicGold-500/40 transition-all"
+                  >
+                    <div className="flex items-start gap-6">
+                      <div className="text-4xl">{secret.number}</div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-metallicGold-500 mb-4">{secret.title}</h3>
+                        <p className="text-lg text-offWhite-400 mb-4">{secret.description}</p>
+                        <p className="text-lg text-offWhite-200 font-bold">{secret.highlight}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Main Course Display */}
+        <section className="px-4 pb-20">
+          <div className="container mx-auto max-w-7xl">
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Left Column - Course Details */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+              >
               {/* Price Card */}
               <div className="bg-deepBlack-300 rounded-3xl p-8 border border-metallicGold-900/30 mb-8">
                 <div className="flex items-center justify-between mb-6">
@@ -211,15 +430,15 @@ export default function LecturesPage() {
 
                 <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-metallicGold-900/20">
                   <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 text-metallicGold-500 mb-1">
-                      <Star className="fill-current" size={16} />
-                      <span className="font-bold">{masterCourse.rating}</span>
+                    <div className="flex items-center justify-center gap-1 text-red-500 mb-1">
+                      <Flame className="fill-current" size={16} />
+                      <span className="font-bold">한정</span>
                     </div>
-                    <p className="text-sm text-offWhite-600">평점</p>
+                    <p className="text-sm text-offWhite-600">선착순</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-metallicGold-500 font-bold mb-1">{masterCourse.studentCount.toLocaleString()}+</p>
-                    <p className="text-sm text-offWhite-600">수강생</p>
+                    <p className="text-metallicGold-500 font-bold mb-1">첫 기수</p>
+                    <p className="text-sm text-offWhite-600">모집중</p>
                   </div>
                   <div className="text-center">
                     <p className="text-metallicGold-500 font-bold mb-1">{masterCourse.duration / 60}시간</p>
@@ -323,32 +542,93 @@ export default function LecturesPage() {
             </motion.div>
           </div>
 
+          {/* Why You Must Act Now Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-16 mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-offWhite-200 mb-12">
+              지금 신청하지 않으면 <span className="text-red-400">후회하는 이유</span>
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  icon: Timer,
+                  title: "가격이 다시 올라갑니다",
+                  description: "첫 기수 한정 45% 할인. 다음 기수부터는 정가 180만원",
+                  warning: "지금 아니면 99만원 더 내야 합니다"
+                },
+                {
+                  icon: Shield,
+                  title: "경쟁자들이 먼저 배웁니다",
+                  description: "이미 많은 분들이 신청 중. 당신만 뒤처질 수 있습니다",
+                  warning: "1년 후에도 같은 자리에 있고 싶으신가요?"
+                },
+                {
+                  icon: TrendingUp,
+                  title: "AI 격차는 더 벌어집니다",
+                  description: "AI를 제대로 쓰는 1%와 못 쓰는 99%의 격차는 매일 커집니다",
+                  warning: "지금이 마지막 따라잡을 기회입니다"
+                }
+              ].map((reason, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-deepBlack-600/50 rounded-2xl p-6 border border-red-500/20"
+                >
+                  <reason.icon className="w-12 h-12 text-red-500 mb-4" />
+                  <h3 className="text-xl font-bold text-offWhite-200 mb-3">{reason.title}</h3>
+                  <p className="text-offWhite-500 mb-3">{reason.description}</p>
+                  <p className="text-red-400 font-bold text-sm">{reason.warning}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
           {/* Bottom CTA */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="mt-20 text-center bg-deepBlack-300/30 backdrop-blur-sm rounded-3xl p-12 border border-metallicGold-900/30"
+            className="mt-20 text-center bg-gradient-to-br from-red-500/10 to-red-900/10 rounded-3xl p-12 border border-red-500/30"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-6">
-              지금이 가장 저렴한 가격입니다
-            </h2>
-            <p className="text-xl text-offWhite-500 mb-8">
-              그랜드 오픈 기념 <span className="text-metallicGold-500 font-bold">45% 할인</span>은 선착순 100명 한정입니다
-            </p>
+            <motion.div
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-6">
+                지금이 아니면, <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">영원히 못합니다</span>
+              </h2>
+              <p className="text-xl text-offWhite-400 mb-4">
+                대부분의 사람들은 이 페이지를 그냥 지나칩니다.<br />
+                그리고 1년 후에도 여전히 같은 자리에 있을 겁니다.
+              </p>
+              <p className="text-lg text-metallicGold-500 font-bold mb-8">
+                당신은 다르길 바랍니다.
+              </p>
+            </motion.div>
             {!isEnrolled && (
-              <button
+              <motion.button
                 onClick={handleEnrollClick}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-xl hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-2xl"
               >
-                <Rocket size={24} />
+                <Rocket size={28} />
                 지금 바로 시작하기
-                <ArrowRight size={20} />
-              </button>
+                <ArrowRight size={24} />
+              </motion.button>
             )}
           </motion.div>
         </div>
       </section>
+      </div>
     </div>
   )
 }
