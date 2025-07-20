@@ -194,4 +194,5 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
       </div>
     </header>
   )
-}// Force cache invalidation: 1752976128
+}
+// Force cache invalidation: 1752976128
