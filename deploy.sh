@@ -5,7 +5,7 @@
 echo "🚀 dduksangLAB Vercel 배포 시작..."
 
 # 디렉토리 이동
-cd /home/qwg18/dduksangLAB || exit 1
+cd /home/qwg18/projects/dduksangLAB || exit 1
 
 # 환경 변수 확인
 if [ ! -f .env.local ]; then
