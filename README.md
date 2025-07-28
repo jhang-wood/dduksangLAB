@@ -82,4 +82,4 @@ npm run build
 
 ---
 
-© 2024 떡상연구소. All rights reserved.
+© 2024 떡상연구소. All rights reserved.# Mon Jul 28 16:26:57 KST 2025
