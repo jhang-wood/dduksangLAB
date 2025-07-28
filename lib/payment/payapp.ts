@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 import { supabase } from '../supabase'
+import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
 interface PayAppConfig {
   secretKey: string
@@ -114,7 +116,7 @@ class PayAppService {
         throw new Error(result.errorMessage || '결제 요청 실패')
       }
     } catch (error) {
-      console.error('PayApp payment creation error:', error)
+      logger.error('PayApp payment creation error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : '결제 요청 중 오류가 발생했습니다'
@@ -195,7 +197,7 @@ class PayAppService {
         }
       }
     } catch (error) {
-      console.error('PayApp payment verification error:', error)
+      logger.error('PayApp payment verification error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : '결제 확인 중 오류가 발생했습니다'
@@ -264,7 +266,7 @@ class PayAppService {
         throw new Error(result.errorMessage || '결제 취소 실패')
       }
     } catch (error) {
-      console.error('PayApp payment cancellation error:', error)
+      logger.error('PayApp payment cancellation error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : '결제 취소 중 오류가 발생했습니다'

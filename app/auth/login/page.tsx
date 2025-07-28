@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { motion } from 'framer-motion'
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -37,13 +38,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-8"
-      >
+    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+      <NeuralNetworkBackground />
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-md w-full space-y-8"
+        >
         <div>
           <Link href="/" className="flex justify-center mb-8">
             <Image
@@ -165,6 +168,7 @@ export default function LoginPage() {
           </div>
         </form>
       </motion.div>
+      </div>
     </div>
   )
 }

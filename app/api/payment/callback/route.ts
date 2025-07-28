@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { payapp, completeLectureEnrollment } from '@/lib/payment/payapp'
 import { supabase } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       .eq('id', orderid)
 
     if (updateError) {
-      console.error('Payment update error:', updateError)
+      logger.error('Payment update error:', updateError)
       return NextResponse.json(
         { error: '결제 정보 업데이트 실패' },
         { status: 500 }
@@ -50,13 +51,13 @@ export async function POST(request: NextRequest) {
       try {
         await completeLectureEnrollment(orderid)
       } catch (error) {
-        console.error('Enrollment error:', error)
+        logger.error('Enrollment error:', error)
       }
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Payment callback error:', error)
+    logger.error('Payment callback error:', error)
     return NextResponse.json(
       { error: '콜백 처리 중 오류가 발생했습니다' },
       { status: 500 }

@@ -1,10 +1,20 @@
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+// Initialize Supabase client with validated environment variables
+let supabaseUrl: string
+let supabaseAnonKey: string
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('⚠️ Supabase 환경 변수가 설정되지 않았습니다. Vercel 대시보드에서 환경 변수를 설정해주세요.')
+try {
+  supabaseUrl = env.supabaseUrl
+  supabaseAnonKey = env.supabaseAnonKey
+} catch (error) {
+  logger.error('⚠️ Supabase 환경 변수가 설정되지 않았습니다. Vercel 대시보드에서 환경 변수를 설정해주세요.')
+  logger.error(error)
+  // Use dummy values for development
+  supabaseUrl = 'http://localhost'
+  supabaseAnonKey = 'dummy-key'
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)

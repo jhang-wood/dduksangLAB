@@ -1,3 +1,4 @@
+import { userNotification } from '@/lib/logger'
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -13,7 +14,6 @@ import {
   Maximize,
   Clock,
   CheckCircle,
-  Lock,
   BookOpen,
   MessageSquare,
   ChevronLeft,
@@ -21,7 +21,6 @@ import {
 } from 'lucide-react'
 import Header from '@/components/Header'
 import { 
-  supabase, 
   getLectureWithChapters, 
   checkEnrollment, 
   getLectureProgress,
@@ -62,10 +61,10 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   const [lecture, setLecture] = useState<Lecture | null>(null)
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null)
   const [progress, setProgress] = useState<Progress[]>([])
-  const [enrollment, setEnrollment] = useState<any>(null)
+  const [_enrollment, setEnrollment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState(1)
+  const [_volume, _setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -113,7 +112,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
         setProgress(progressData)
       }
     } catch (error) {
-      console.error('Error fetching lecture:', error)
+      logger.error('Error fetching lecture:', error)
     } finally {
       setLoading(false)
     }
@@ -133,7 +132,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
         completed
       )
     } catch (error) {
-      console.error('Error updating progress:', error)
+      logger.error('Error updating progress:', error)
     }
   }
 

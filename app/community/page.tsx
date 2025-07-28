@@ -8,6 +8,7 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
 import { useAuth } from '@/lib/auth-context'
+import { logger, userNotification } from '@/lib/logger'
 import { supabase } from '@/lib/supabase'
 
 interface Post {
@@ -65,7 +66,7 @@ export default function CommunityPage() {
       if (error) throw error
       setPosts(data || [])
     } catch (error) {
-      console.error('Error fetching posts:', error)
+      logger.error('Error fetching posts:', error)
     } finally {
       setLoading(false)
     }
@@ -73,7 +74,7 @@ export default function CommunityPage() {
 
   const handleWriteClick = () => {
     if (!user) {
-      alert('로그인이 필요한 서비스입니다.')
+      userNotification.alert('로그인이 필요한 서비스입니다.')
       router.push('/auth/login')
       return
     }

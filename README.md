@@ -63,9 +63,11 @@ npm run build
 
 ## 📚 문서
 
+- [개발 워크플로우](docs/project/DEVELOPMENT_WORKFLOW.md) ⭐ **필수 읽기**
 - [Vercel 배포 가이드](docs/vercel/VERCEL_BUILD_FIX.md)
 - [환경 변수 설정](docs/guides/SUPABASE_ENV_GUIDE.md)
 - [보안 가이드](docs/guides/SECURITY_CLEANUP.md)
+- [작업 로그](docs/project/worklog.md)
 
 ## 🔒 보안
 

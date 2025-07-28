@@ -1,9 +1,19 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { logger } from '@/lib/logger'
+import { validateRequiredEnvVars } from '@/lib/env'
+
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import { User } from '@supabase/supabase-js'
-import { supabase, getUserProfile } from './supabase'
+import { supabase} from './supabase'
 import { useRouter } from 'next/navigation'
+
+// Validate environment variables at module load
+try {
+  validateRequiredEnvVars()
+} catch (error) {
+  logger.error('Environment validation failed:', error)
+}
 
 interface AuthContextType {
   user: User | null
@@ -24,13 +34,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   const fetchUserProfile = async (userId: string) => {
+    logger.log('[Auth] Fetching profile for user:', userId)
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single()
     
-    if (data) {
+    if (error) {
+      logger.error('[Auth] Error fetching profile:', error)
+      
+      // 프로필이 없는 경우 생성
+      if (error.code === 'PGRST116') {
+        logger.log('[Auth] Profile not found, creating new profile...')
+        const { data: userData } = await supabase.auth.getUser()
+        
+        if (userData?.user) {
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: userId,
+              email: userData.user.email,
+              name: userData.user.email?.split('@')[0] || 'User',
+              role: 'user',
+              created_at: new Date().toISOString()
+            })
+            .select()
+            .single()
+            
+          if (createError) {
+            logger.error('[Auth] Error creating profile:', createError)
+            setUserProfile(null)
+          } else {
+            logger.log('[Auth] Profile created:', newProfile)
+            setUserProfile(newProfile)
+          }
+        }
+      } else {
+        setUserProfile(null)
+      }
+    } else if (data) {
+      logger.log('[Auth] Profile fetched:', data)
+      logger.log('[Auth] User role:', data.role)
       setUserProfile(data)
     }
   }
@@ -94,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
 
       if (profileError) {
-        console.error('프로필 생성 오류:', profileError)
+        logger.error('프로필 생성 오류:', profileError)
       }
     }
 
@@ -107,7 +152,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/')
   }
 
-  const isAdmin = userProfile?.role === 'admin'
+  const isAdmin = useMemo(() => {
+    const adminStatus = userProfile?.role === 'admin'
+    logger.log('[Auth] isAdmin calculation:', {
+      userProfile: userProfile,
+      role: userProfile?.role,
+      isAdmin: adminStatus
+    })
+    return adminStatus
+  }, [userProfile])
 
   const value = {
     user,

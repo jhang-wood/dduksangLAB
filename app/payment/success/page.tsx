@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth-context'
+import { logger } from '@/lib/logger'
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams()
@@ -51,7 +52,7 @@ export default function PaymentSuccessPage() {
         })
 
       if (paymentError) {
-        console.error('결제 기록 저장 실패:', paymentError)
+        logger.error('결제 기록 저장 실패:', paymentError)
       }
 
       setTimeout(() => {

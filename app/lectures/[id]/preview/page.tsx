@@ -22,6 +22,7 @@ import Header from '@/components/Header'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth-context'
 import { PaymentButton } from '@/hooks/usePayment'
+import { logger } from '@/lib/logger'
 
 interface Chapter {
   id: string
@@ -60,7 +61,7 @@ const levelLabels = {
 export default function LecturePreviewPage({ params }: { params: { id: string } }) {
   const [lecture, setLecture] = useState<Lecture | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isEnrolled, setIsEnrolled] = useState(false)
+  const [_isEnrolled, _setIsEnrolled] = useState(false)
   const [showAllChapters, setShowAllChapters] = useState(false)
   const router = useRouter()
   const { user } = useAuth()
@@ -111,7 +112,7 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
         })
       }
     } catch (error) {
-      console.error('Error fetching lecture:', error)
+      logger.error('Error fetching lecture:', error)
     } finally {
       setLoading(false)
     }

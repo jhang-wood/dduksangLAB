@@ -1,3 +1,4 @@
+import { logger, userNotification } from '@/lib/logger'
 'use client'
 
 import { useState } from 'react'
@@ -17,7 +18,7 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
 
   const handlePayment = async () => {
     if (!user) {
-      alert('로그인이 필요합니다.')
+      userNotification.alert('로그인이 필요합니다.')
       return
     }
 
@@ -36,8 +37,8 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
       // 새 창에서 결제 페이지 열기
       window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
     } catch (error) {
-      console.error('결제 URL 생성 실패:', error)
-      alert('결제 처리 중 오류가 발생했습니다.')
+      logger.error('결제 URL 생성 실패:', error)
+      userNotification.alert('결제 처리 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }

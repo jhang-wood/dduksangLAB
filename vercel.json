@@ -2,8 +2,17 @@
   "functions": {
     "app/api/payment/webhook/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/ai-trends/collect/route.ts": {
+      "maxDuration": 60
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/collect-ai-trends",
+      "schedule": "0 9 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

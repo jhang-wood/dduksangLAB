@@ -5,15 +5,8 @@ import { motion } from 'framer-motion'
 import { 
   ArrowRight,
   Sparkles,
-  Code2,
   MessageSquare,
-  Globe,
-  Zap,
   Gift,
-  CheckCircle2,
-  Star,
-  Users,
-  Timer,
   Trophy,
   Crown,
   Brain,
@@ -502,7 +495,6 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
-
 
         {/* Footer */}
         <footer className="py-16 px-4 border-t border-metallicGold-900/20 bg-deepBlack-900">

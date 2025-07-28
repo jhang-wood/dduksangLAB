@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { initiateLecturePayment } from '@/lib/payment/payapp'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error('Payment initiation error:', error)
+    logger.error('Payment initiation error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : '결제 요청 중 오류가 발생했습니다' },
       { status: 500 }

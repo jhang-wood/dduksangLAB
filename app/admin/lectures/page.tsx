@@ -1,5 +1,7 @@
 'use client'
 
+import { userNotification, logger } from '@/lib/logger'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -9,10 +11,8 @@ import {
   Trash2, 
   Eye, 
   EyeOff,
-  Upload,
   Save,
   X,
-  Video,
   ChevronDown,
   ChevronUp
 } from 'lucide-react'
@@ -122,7 +122,7 @@ export default function AdminLecturesPage() {
       if (error) throw error
       setLectures(data || [])
     } catch (error) {
-      console.error('Error fetching lectures:', error)
+      logger.error('Error fetching lectures:', error)
     } finally {
       setLoading(false)
     }
@@ -173,8 +173,8 @@ export default function AdminLecturesPage() {
       resetForm()
       fetchLectures()
     } catch (error) {
-      console.error('Error creating lecture:', error)
-      alert('강의 생성 중 오류가 발생했습니다.')
+      logger.error('Error creating lecture:', error)
+      userNotification.alert('강의 생성 중 오류가 발생했습니다.')
     }
   }
 
@@ -225,13 +225,13 @@ export default function AdminLecturesPage() {
       resetForm()
       fetchLectures()
     } catch (error) {
-      console.error('Error updating lecture:', error)
-      alert('강의 수정 중 오류가 발생했습니다.')
+      logger.error('Error updating lecture:', error)
+      userNotification.alert('강의 수정 중 오류가 발생했습니다.')
     }
   }
 
   const handleDeleteLecture = async (lectureId: string) => {
-    if (!confirm('정말 이 강의를 삭제하시겠습니까? 모든 챕터와 수강 기록이 삭제됩니다.')) {
+    if (!userNotification.confirm('정말 이 강의를 삭제하시겠습니까? 모든 챕터와 수강 기록이 삭제됩니다.')) {
       return
     }
 
@@ -244,8 +244,8 @@ export default function AdminLecturesPage() {
       if (error) throw error
       fetchLectures()
     } catch (error) {
-      console.error('Error deleting lecture:', error)
-      alert('강의 삭제 중 오류가 발생했습니다.')
+      logger.error('Error deleting lecture:', error)
+      userNotification.alert('강의 삭제 중 오류가 발생했습니다.')
     }
   }
 
@@ -259,7 +259,7 @@ export default function AdminLecturesPage() {
       if (error) throw error
       fetchLectures()
     } catch (error) {
-      console.error('Error toggling publish status:', error)
+      logger.error('Error toggling publish status:', error)
     }
   }
 
@@ -325,6 +325,261 @@ export default function AdminLecturesPage() {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
+      </div>
+    )
+  }
+
+  // Chapter Management Component
+  const ChapterManagement = ({ lectureId, onChaptersUpdated }: { lectureId: string, onChaptersUpdated: () => void }) => {
+    const [lectureChapters, setLectureChapters] = useState<any[]>([])
+    const [loadingChapters, setLoadingChapters] = useState(true)
+    const [editingChapter, setEditingChapter] = useState<any>(null)
+    const [newChapter, setNewChapter] = useState({
+      title: '',
+      description: '',
+      video_url: '',
+      duration: 0,
+      is_preview: false
+    })
+
+    useEffect(() => {
+      fetchChapters()
+    }, [lectureId])
+
+    const fetchChapters = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('lecture_chapters')
+          .select('*')
+          .eq('lecture_id', lectureId)
+          .order('order_index', { ascending: true })
+
+        if (error) throw error
+        setLectureChapters(data || [])
+      } catch (error) {
+        logger.error('Error fetching chapters:', error)
+      } finally {
+        setLoadingChapters(false)
+      }
+    }
+
+    const addNewChapter = async () => {
+      if (!newChapter.title || !newChapter.video_url) {
+        userNotification.alert('제목과 비디오 URL은 필수입니다.')
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('lecture_chapters')
+          .insert({
+            lecture_id: lectureId,
+            title: newChapter.title,
+            description: newChapter.description,
+            video_url: newChapter.video_url,
+            duration: newChapter.duration,
+            order_index: lectureChapters.length + 1,
+            is_preview: newChapter.is_preview
+          })
+
+        if (error) throw error
+
+        setNewChapter({
+          title: '',
+          description: '',
+          video_url: '',
+          duration: 0,
+          is_preview: false
+        })
+        
+        fetchChapters()
+        onChaptersUpdated()
+        userNotification.alert('챕터가 추가되었습니다.')
+      } catch (error) {
+        logger.error('Error adding chapter:', error)
+        userNotification.alert('챕터 추가 중 오류가 발생했습니다.')
+      }
+    }
+
+    const updateChapter = async (chapterId: string, updates: any) => {
+      try {
+        const { error } = await supabase
+          .from('lecture_chapters')
+          .update(updates)
+          .eq('id', chapterId)
+
+        if (error) throw error
+
+        fetchChapters()
+        onChaptersUpdated()
+        userNotification.alert('챕터가 수정되었습니다.')
+      } catch (error) {
+        logger.error('Error updating chapter:', error)
+        userNotification.alert('챕터 수정 중 오류가 발생했습니다.')
+      }
+    }
+
+    const deleteChapter = async (chapterId: string) => {
+      if (!userNotification.confirm('정말 이 챕터를 삭제하시겠습니까?')) {
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('lecture_chapters')
+          .delete()
+          .eq('id', chapterId)
+
+        if (error) throw error
+
+        fetchChapters()
+        onChaptersUpdated()
+        userNotification.alert('챕터가 삭제되었습니다.')
+      } catch (error) {
+        logger.error('Error deleting chapter:', error)
+        userNotification.alert('챕터 삭제 중 오류가 발생했습니다.')
+      }
+    }
+
+    if (loadingChapters) {
+      return (
+        <div className="border-t border-metallicGold-900/30 p-6 bg-deepBlack-600/50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-metallicGold-500 mx-auto mb-2"></div>
+            <p className="text-offWhite-600">챕터를 불러오는 중...</p>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="border-t border-metallicGold-900/30 p-6 bg-deepBlack-600/50">
+        <h4 className="text-lg font-bold text-offWhite-200 mb-4">챕터 관리</h4>
+        
+        {/* Add New Chapter */}
+        <div className="mb-6 p-4 bg-deepBlack-900 rounded-lg">
+          <h5 className="font-medium text-offWhite-200 mb-3">새 챕터 추가</h5>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <input
+              type="text"
+              placeholder="챕터 제목"
+              value={newChapter.title}
+              onChange={(e) => setNewChapter({ ...newChapter, title: e.target.value })}
+              className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+            />
+            <input
+              type="number"
+              placeholder="재생시간 (초)"
+              value={newChapter.duration}
+              onChange={(e) => setNewChapter({ ...newChapter, duration: parseInt(e.target.value) || 0 })}
+              className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+            />
+          </div>
+          <input
+            type="text"
+            placeholder="비디오 URL"
+            value={newChapter.video_url}
+            onChange={(e) => setNewChapter({ ...newChapter, video_url: e.target.value })}
+            className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3"
+          />
+          <textarea
+            placeholder="챕터 설명 (선택사항)"
+            value={newChapter.description}
+            onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value })}
+            className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3 h-20"
+          />
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-offWhite-500">
+              <input
+                type="checkbox"
+                checked={newChapter.is_preview}
+                onChange={(e) => setNewChapter({ ...newChapter, is_preview: e.target.checked })}
+                className="rounded text-metallicGold-500"
+              />
+              미리보기 가능
+            </label>
+            <button
+              onClick={addNewChapter}
+              className="px-4 py-2 bg-metallicGold-500 text-deepBlack-900 rounded font-medium hover:bg-metallicGold-400 transition-colors"
+            >
+              챕터 추가
+            </button>
+          </div>
+        </div>
+
+        {/* Existing Chapters */}
+        <div className="space-y-3">
+          {lectureChapters.length === 0 ? (
+            <p className="text-offWhite-600 text-center py-4">등록된 챕터가 없습니다.</p>
+          ) : (
+            lectureChapters.map((chapter, index) => (
+              <div key={chapter.id} className="p-4 bg-deepBlack-900 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <h6 className="font-medium text-offWhite-200">
+                    챕터 {chapter.order_index}: {chapter.title}
+                  </h6>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setEditingChapter(editingChapter === chapter.id ? null : chapter.id)}
+                      className="p-1 text-metallicGold-500 hover:text-metallicGold-400"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => deleteChapter(chapter.id)}
+                      className="p-1 text-red-500 hover:text-red-400"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="text-sm text-offWhite-600 mb-2">
+                  <span className="mr-4">재생시간: {Math.floor(chapter.duration / 60)}분 {chapter.duration % 60}초</span>
+                  {chapter.is_preview && <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs">미리보기</span>}
+                </div>
+
+                {chapter.description && (
+                  <p className="text-sm text-offWhite-600 mb-2">{chapter.description}</p>
+                )}
+
+                <div className="text-xs text-offWhite-700">
+                  비디오: {chapter.video_url}
+                </div>
+
+                {editingChapter === chapter.id && (
+                  <div className="mt-3 pt-3 border-t border-metallicGold-900/30">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <input
+                        type="text"
+                        defaultValue={chapter.title}
+                        onBlur={(e) => updateChapter(chapter.id, { title: e.target.value })}
+                        className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                      />
+                      <input
+                        type="number"
+                        defaultValue={chapter.duration}
+                        onBlur={(e) => updateChapter(chapter.id, { duration: parseInt(e.target.value) || 0 })}
+                        className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      defaultValue={chapter.video_url}
+                      onBlur={(e) => updateChapter(chapter.id, { video_url: e.target.value })}
+                      className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3"
+                    />
+                    <textarea
+                      defaultValue={chapter.description || ''}
+                      onBlur={(e) => updateChapter(chapter.id, { description: e.target.value })}
+                      className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 h-20"
+                    />
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     )
   }
@@ -430,10 +685,10 @@ export default function AdminLecturesPage() {
 
               {/* Expanded Chapter Management */}
               {expandedLecture === lecture.id && (
-                <div className="border-t border-metallicGold-900/30 p-6 bg-deepBlack-600/50">
-                  {/* Chapter management UI would go here */}
-                  <p className="text-offWhite-600">챕터 관리 기능은 준비 중입니다.</p>
-                </div>
+                <ChapterManagement 
+                  lectureId={lecture.id}
+                  onChaptersUpdated={fetchLectures}
+                />
               )}
             </motion.div>
           ))}

@@ -8,9 +8,7 @@ import {
   MapPin, 
   Instagram, 
   Youtube, 
-  Github,
-  ExternalLink 
-} from 'lucide-react'
+  Github} from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()

@@ -1,16 +1,18 @@
 import * as crypto from 'crypto'
+import { logger } from '@/lib/logger'
+import { env, getOptionalEnvVar } from '@/lib/env'
 
 // PayApp 설정
 const PAYAPP_CONFIG = {
-  secretKey: process.env.PAYAPP_SECRET_KEY || '',
-  value: process.env.PAYAPP_VALUE || '',
-  userCode: process.env.PAYAPP_USER_CODE || 'BA0209',
-  storeId: process.env.PAYAPP_STORE_ID || 'dduksanglab',
-  testMode: process.env.NODE_ENV !== 'production',
+  secretKey: getOptionalEnvVar('PAYAPP_SECRET_KEY'),
+  value: getOptionalEnvVar('PAYAPP_VALUE'),
+  userCode: getOptionalEnvVar('PAYAPP_USER_CODE', 'BA0209'),
+  storeId: getOptionalEnvVar('PAYAPP_STORE_ID', 'dduksanglab'),
+  testMode: !env.isProduction,
 }
 
 if (!PAYAPP_CONFIG.secretKey || !PAYAPP_CONFIG.value) {
-  console.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.')
+  logger.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.')
 }
 
 // 가격 플랜 정의

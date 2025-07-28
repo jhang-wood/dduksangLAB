@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { verifyPayAppWebhook } from '@/lib/payapp'
+import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
         .eq('email', data.user_email)
 
       if (userError) {
-        console.error('사용자 업데이트 실패:', userError)
+        logger.error('사용자 업데이트 실패:', userError)
         return NextResponse.json({ error: 'User update failed' }, { status: 500 })
       }
 
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Webhook 처리 오류:', error)
+    logger.error('Webhook 처리 오류:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

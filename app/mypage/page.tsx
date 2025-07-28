@@ -1,13 +1,14 @@
 'use client'
 
+import { logger } from '@/lib/logger'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { 
-  User, Mail, Phone, LogOut, CreditCard, BookOpen, 
-  Shield, Bell, Settings, Camera, Check, X
-} from 'lucide-react'
+  User, LogOut, CreditCard, BookOpen, 
+  Shield, Bell, Camera } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import Header from '@/components/Header'
 import { supabase } from '@/lib/supabase'
@@ -101,7 +102,7 @@ export default function MyPage() {
         if (data) setPayments(data)
       }
     } catch (error) {
-      console.error('Failed to fetch user data:', error)
+      logger.error('Failed to fetch user data:', error)
     }
   }
 
@@ -124,9 +125,46 @@ export default function MyPage() {
         setEditMode(false)
       }
     } catch (error) {
-      console.error('Failed to update profile:', error)
+      logger.error('Failed to update profile:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const makeAdmin = async () => {
+    if (!user) return
+    
+    logger.log('[MyPage] Making user admin:', user.id)
+    
+    try {
+      // 프로필 업데이트
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', user.id)
+        .select()
+        .single()
+        
+      if (error) {
+        logger.error('[MyPage] Error updating role:', error)
+        userNotification.alert('오류가 발생했습니다: ' + error.message)
+        return
+      }
+      
+      logger.log('[MyPage] Profile updated:', data)
+      
+      // 프로필 다시 가져오기
+      await fetchUserData()
+      
+      userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
+      
+      // 약간의 지연 후 새로고침
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+    } catch (err) {
+      logger.error('[MyPage] Unexpected error:', err)
+      userNotification.alert('예상치 못한 오류가 발생했습니다.')
     }
   }
 
@@ -268,6 +306,24 @@ export default function MyPage() {
                       <div>
                         <label className="text-sm text-offWhite-600">이메일</label>
                         <p className="text-offWhite-200 font-medium">{profileData.email}</p>
+                      </div>
+                      
+                      {/* 임시 관리자 권한 버튼 */}
+                      <div className="pt-4 border-t border-metallicGold-900/30">
+                        <p className="text-sm text-offWhite-600 mb-2">현재 역할: {userProfile?.role || 'user'}</p>
+                        {userProfile?.role !== 'admin' ? (
+                          <>
+                            <button
+                              onClick={makeAdmin}
+                              className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg font-semibold hover:from-red-400 hover:to-red-600 transition-all shadow-lg"
+                            >
+                              🔧 관리자 권한 부여 (임시)
+                            </button>
+                            <p className="text-xs text-offWhite-600 mt-2">개발용 임시 버튼입니다.</p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-green-500">✅ 관리자 권한이 활성화되었습니다.</p>
+                        )}
                       </div>
                       
                       <div>

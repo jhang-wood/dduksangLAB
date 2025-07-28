@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
+import { logger } from '@/lib/logger'
 
 interface HeaderProps {
   currentPage?: string
@@ -17,7 +18,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const router = useRouter()
   const { user, userProfile, signOut, isAdmin } = useAuth()
 
-  console.log('[Header] Auth state:', {
+  logger.debug('[Header] Auth state:', {
     user: user?.email,
     userProfile: userProfile,
     role: userProfile?.role,
@@ -32,7 +33,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
   ]
 
-  console.log('[Header] Nav items:', navItems)
+  logger.debug('[Header] Nav items:', navItems)
 
   const handleSignOut = async () => {
     await signOut()

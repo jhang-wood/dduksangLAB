@@ -2,24 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+
 import { motion } from 'framer-motion'
 import { 
-  PlayCircle, 
-  Clock, 
-  Star, 
-  Users, 
-  BookOpen, 
+  PlayCircle,
   ShoppingCart,
   Check,
-  Sparkles,
-  Code2,
   MessageSquare,
   Zap,
   Brain,
   Rocket,
-  Trophy,
-  Crown,
   ArrowRight,
   Gift,
   CheckCircle2,
