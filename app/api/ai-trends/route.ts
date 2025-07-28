@@ -3,12 +3,11 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
 
-const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseServiceKey
-)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // GET: Fetch AI trends with pagination and filtering
 export async function GET(request: NextRequest) {
