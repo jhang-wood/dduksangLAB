@@ -278,10 +278,11 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
                     </video>
                   ) : lecture.thumbnail_url ? (
                     <>
-                      <img
-                        src={lecture.thumbnail_url}
-                        alt={lecture.title}
-                        className="w-full h-full object-cover"
+                      <div
+                        className="w-full h-full object-cover bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${lecture.thumbnail_url})`
+                        }}
                       />
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                         <div className="w-20 h-20 bg-metallicGold-500 rounded-full flex items-center justify-center">

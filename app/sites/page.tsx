@@ -408,10 +408,11 @@ export default function SitesPage() {
                     {/* Thumbnail */}
                     <div className="relative aspect-video bg-deepBlack-600 overflow-hidden">
                       {site.thumbnail_url ? (
-                        <img 
-                          src={site.thumbnail_url} 
-                          alt={site.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        <div
+                          className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300" 
+                          style={{
+                            backgroundImage: `url(${site.thumbnail_url})`
+                          }}
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -592,10 +593,11 @@ export default function SitesPage() {
                   {(thumbnailPreview || formData.thumbnail_url) && (
                     <div className="relative">
                       <div className="relative aspect-video bg-deepBlack-600 rounded-lg overflow-hidden border border-metallicGold-900/30">
-                        <img 
-                          src={thumbnailPreview || formData.thumbnail_url} 
-                          alt="썸네일 미리보기"
-                          className="w-full h-full object-cover"
+                        <div
+                          className="w-full h-full bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url(${thumbnailPreview || formData.thumbnail_url})`
+                          }}
                         />
                         <button
                           type="button"
