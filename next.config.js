@@ -11,4 +11,20 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/auth/login',
+        permanent: true,
+      },
+      {
+        source: '/register',
+        destination: '/auth/signup',
+        permanent: false,
+      },
+    ]
+  },
 }
+
+module.exports = nextConfig

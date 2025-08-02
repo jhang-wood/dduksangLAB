@@ -107,7 +107,7 @@ export default function HomePage() {
               >
                 <p className="text-lg text-offWhite-500 mb-8 tracking-[0.3em] uppercase">Grand Open D-Day</p>
                 <CountdownTimer />
-                <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">2025년 7월 21일 (월) 오후 7시</p>
+                <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">2025년 8월 5일 (화) 오후 7시</p>
               </motion.div>
 
               {/* CTA Button */}
