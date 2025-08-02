@@ -68,3 +68,4 @@ dist/
 *.pem
 *.key
 credentials/.vercel
+.env.local
