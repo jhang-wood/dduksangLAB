@@ -1,8 +1,8 @@
 'use client'
 
-import { userNotification } from '@/lib/logger'
+import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, MessageSquare, Users, HelpCircle, Briefcase } from 'lucide-react'
@@ -29,9 +29,14 @@ export default function CommunityWritePage() {
   const { user } = useAuth()
   const router = useRouter()
 
-  // 로그인 체크
+  // 로그인 체크를 useEffect로 이동
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/login')
+    }
+  }, [user, router])
+
   if (!user) {
-    router.push('/auth/login')
     return null
   }
 
