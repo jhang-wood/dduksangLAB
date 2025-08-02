@@ -1,7 +1,6 @@
 import crypto from 'crypto'
 import { supabase } from '../supabase'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
 
 interface PayAppConfig {
   secretKey: string

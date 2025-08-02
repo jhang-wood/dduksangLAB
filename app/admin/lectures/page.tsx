@@ -512,7 +512,7 @@ export default function AdminLecturesPage() {
           {lectureChapters.length === 0 ? (
             <p className="text-offWhite-600 text-center py-4">등록된 챕터가 없습니다.</p>
           ) : (
-            lectureChapters.map((chapter, index) => (
+            lectureChapters.map((chapter, _index) => (
               <div key={chapter.id} className="p-4 bg-deepBlack-900 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h6 className="font-medium text-offWhite-200">

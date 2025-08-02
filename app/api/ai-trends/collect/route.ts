@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
               source_name: trendData.source_name || 'AI 트렌드 연구소',
               seo_title: trendData.title.substring(0, 70),
               seo_description: trendData.summary.substring(0, 160),
-              seo_keywords: trendData.seo_keywords || trendData.tags || [],
+              seo_keywords: trendData.tags || [],
               is_published: true,
               thumbnail_url: `/images/ai-trends/default-${category.toLowerCase().replace(/\s+/g, '-')}.jpg`
             })

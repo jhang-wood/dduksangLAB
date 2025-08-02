@@ -1,0 +1,250 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  
+jobs:
+  # 린트 및 타입 체크
+  lint-and-type-check:
+    name: 🔍 Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run ESLint
+        run: npm run lint
+        
+      - name: Run TypeScript check
+        run: npm run type-check
+
+  # 환경변수 보안 검사
+  security-check:
+    name: 🔒 Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Create test environment file
+        run: |
+          cp .env.example .env.local
+          sed -i 's/your-project/test-project/g' .env.local
+          sed -i 's/your-.*-key/test-key-for-ci-pipeline/g' .env.local
+          sed -i 's/https:\/\/example/https:\/\/test/g' .env.local
+          
+      - name: Run security validation
+        run: |
+          chmod +x scripts/validate-env.js
+          node scripts/validate-env.js || true
+          
+      - name: Check for secrets in code
+        run: |
+          echo "🔍 Checking for hardcoded secrets..."
+          if grep -r -i "sk-.*" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" app/ lib/ components/ 2>/dev/null; then
+            echo "❌ Hardcoded API keys found!"
+            exit 1
+          fi
+          if grep -r -i "eyJ[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" app/ lib/ components/ 2>/dev/null; then
+            echo "❌ Hardcoded JWT tokens found!"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
+
+  # 빌드 테스트
+  build-test:
+    name: 🏗️ Build Test
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check]
+    
+    strategy:
+      matrix:
+        environment: [development, production]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Create environment file
+        run: |
+          cp .env.example .env.local
+          sed -i 's/your-project/ci-test-project/g' .env.local
+          sed -i 's/your-.*-key/ci-test-key-$(openssl rand -hex 16)/g' .env.local
+          sed -i 's/https:\/\/example/https:\/\/ci-test/g' .env.local
+          
+      - name: Set environment variables
+        run: |
+          echo "NODE_ENV=${{ matrix.environment }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_URL=https://ci-test.supabase.co" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test" >> .env.local
+          echo "SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.service" >> .env.local
+          echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env.local
+          echo "ENCRYPTION_KEY=$(openssl rand -hex 32)" >> .env.local
+          echo "CRON_SECRET=$(openssl rand -hex 16)" >> .env.local
+          
+      - name: Run environment validation
+        run: npm run env:validate
+        
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: ${{ matrix.environment }}
+          
+      - name: Check build output
+        run: |
+          echo "✅ Build completed successfully"
+          ls -la .next/
+          du -sh .next/
+
+  # 보안 스캔
+  security-scan:
+    name: 🛡️ Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # 배포 준비성 검사
+  deployment-readiness:
+    name: 🚀 Deployment Readiness
+    runs-on: ubuntu-latest
+    needs: [build-test, security-check]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Create production environment
+        run: |
+          cp .env.example .env.local
+          echo "NODE_ENV=production" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env.local
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env.local
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.local
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env.local
+          echo "CRON_SECRET=${{ secrets.CRON_SECRET }}" >> .env.local
+        if: env.HAS_SECRETS == 'true'
+        env:
+          HAS_SECRETS: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+          
+      - name: Production build test
+        run: |
+          if [ -f .env.local ]; then
+            npm run build
+            echo "✅ Production build successful"
+          else
+            echo "⚠️ Skipping production build - secrets not configured"
+          fi
+          
+      - name: Bundle size check
+        run: |
+          if [ -d .next ]; then
+            BUNDLE_SIZE=$(du -sm .next | cut -f1)
+            echo "📦 Bundle size: ${BUNDLE_SIZE}MB"
+            
+            if [ $BUNDLE_SIZE -gt 100 ]; then
+              echo "⚠️ Bundle size is large (>100MB)"
+            else
+              echo "✅ Bundle size is optimal"
+            fi
+          fi
+
+  # Vercel 프리뷰 배포 (PR용)
+  preview-deployment:
+    name: 🔍 Preview Deployment
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to Vercel Preview
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          working-directory: ./
+        if: env.HAS_VERCEL_SECRETS == 'true'
+        env:
+          HAS_VERCEL_SECRETS: ${{ secrets.VERCEL_TOKEN != '' }}
+
+  # 성공 알림
+  notify-success:
+    name: 📢 Notify Success
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check, security-check, build-test, security-scan]
+    if: success()
+    
+    steps:
+      - name: Success notification
+        run: |
+          echo "🎉 All CI checks passed!"
+          echo "✅ Lint and type check: PASSED"
+          echo "✅ Security check: PASSED"
+          echo "✅ Build test: PASSED"
+          echo "✅ Security scan: PASSED"

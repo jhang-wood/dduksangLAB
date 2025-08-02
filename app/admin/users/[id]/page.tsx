@@ -4,7 +4,6 @@ import { userNotification, logger } from '@/lib/logger'
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { 
   ArrowLeft,
   User, 

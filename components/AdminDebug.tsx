@@ -1,5 +1,6 @@
-import { logger } from '@/lib/logger'
 'use client'
+
+import { logger, userNotification } from '@/lib/logger'
 
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'

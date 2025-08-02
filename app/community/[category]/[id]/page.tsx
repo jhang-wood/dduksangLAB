@@ -1,6 +1,6 @@
 'use client'
 
-import { userNotification } from '@/lib/logger'
+import { userNotification, logger } from '@/lib/logger'
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'

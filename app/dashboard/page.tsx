@@ -12,9 +12,6 @@ import {
   Trophy,
   Clock,
   Target,
-  TrendingUp,
-  Award,
-  Calendar,
   ChevronRight
 } from 'lucide-react'
 
