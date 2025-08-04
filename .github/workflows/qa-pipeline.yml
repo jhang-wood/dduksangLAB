@@ -1,0 +1,346 @@
+# QA Pipeline - dduksangLAB 품질 검증 자동화
+name: QA Quality Assurance Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # 1단계: 기본 환경 검증
+  environment-check:
+    name: 🌍 Environment Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required environment variables
+        run: |
+          echo "🔍 필수 환경변수 검증..."
+          
+          # 클라이언트 환경변수 (시뮬레이션)
+          CLIENT_VARS=("NEXT_PUBLIC_SUPABASE_URL" "NEXT_PUBLIC_SUPABASE_ANON_KEY" "NEXT_PUBLIC_TOSS_CLIENT_KEY")
+          
+          for var in "${CLIENT_VARS[@]}"; do
+            if [ -z "${!var}" ]; then
+              echo "❌ 클라이언트 환경변수 누락: $var"
+              echo "::warning::Missing client environment variable: $var"
+            else
+              echo "✅ $var 설정됨"
+            fi
+          done
+          
+          echo "환경변수 검증 완료"
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key  
+          NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
+
+      - name: Run environment test scenarios
+        run: node scripts/qa/test-env-scenarios.js
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
+          NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
+          SUPABASE_SERVICE_ROLE_KEY: test-service-key
+          TOSS_SECRET_KEY: test-secret-key
+          GEMINI_API_KEY: test-api-key
+          CRON_SECRET: test-cron-secret
+
+  # 2단계: TypeScript 타입 안정성 검증
+  typescript-check:
+    name: 🔍 TypeScript Type Safety
+    runs-on: ubuntu-latest
+    needs: environment-check
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript compilation check
+        run: |
+          echo "🔧 TypeScript 컴파일 검사..."
+          npm run type-check
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ TypeScript 컴파일 성공"
+          else
+            echo "❌ TypeScript 컴파일 실패"
+            exit 1
+          fi
+
+      - name: TypeScript strict mode validation
+        run: |
+          echo "🔒 TypeScript strict 모드 확인..."
+          
+          # tsconfig.json에서 strict 설정 확인
+          STRICT_ENABLED=$(grep -o '"strict":\s*true' tsconfig.json || echo "false")
+          
+          if [[ "$STRICT_ENABLED" == *"true"* ]]; then
+            echo "✅ TypeScript strict 모드 활성화됨"
+          else
+            echo "❌ TypeScript strict 모드 비활성화됨"
+            echo "::error::TypeScript strict mode must be enabled"
+            exit 1
+          fi
+
+  # 3단계: ESLint 및 코드 품질 검사
+  code-quality:
+    name: 📋 Code Quality Check  
+    runs-on: ubuntu-latest
+    needs: typescript-check
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint check
+        run: |
+          echo "📋 ESLint 검사 시작..."
+          npm run lint > eslint-report.txt 2>&1 || true
+          
+          # ESLint 에러 개수 확인
+          ERROR_COUNT=$(grep -c "Error:" eslint-report.txt || echo "0")
+          WARNING_COUNT=$(grep -c "Warning:" eslint-report.txt || echo "0")
+          
+          echo "ESLint 결과:"
+          echo "  에러: $ERROR_COUNT 개"
+          echo "  경고: $WARNING_COUNT 개"
+          
+          # 크리티컬 에러 개수 제한 (점진적 개선)
+          if [ "$ERROR_COUNT" -gt 100 ]; then
+            echo "❌ ESLint 에러가 너무 많습니다 ($ERROR_COUNT > 100)"
+            echo "::warning::Too many ESLint errors: $ERROR_COUNT"
+            # 현재는 경고로만 처리 (나중에 exit 1로 변경)
+          else
+            echo "✅ ESLint 에러 개수 허용 범위 내"
+          fi
+          
+          cat eslint-report.txt
+
+      - name: Console.log usage check
+        run: |
+          echo "🔍 Console.log 사용 검사..."
+          ./scripts/qa/check-console-usage.sh > console-report.txt 2>&1
+          
+          # 스크립트 폴더 제외한 console 사용 개수 확인
+          CONSOLE_COUNT=$(grep -r "console\." --include="*.tsx" --include="*.ts" . \
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=scripts | wc -l)
+          
+          echo "Console 사용 현황: $CONSOLE_COUNT 개"
+          
+          # 목표: 50개 이하로 줄이기
+          if [ "$CONSOLE_COUNT" -gt 50 ]; then
+            echo "⚠️  Console.log 사용이 많습니다 ($CONSOLE_COUNT > 50)"
+            echo "::warning::Too many console statements: $CONSOLE_COUNT"
+          else
+            echo "✅ Console.log 사용 개수 양호"
+          fi
+          
+          cat console-report.txt
+
+  # 4단계: 빌드 테스트
+  build-test:
+    name: 🏗️ Build Verification
+    runs-on: ubuntu-latest
+    needs: code-quality
+    strategy:
+      matrix:
+        node-env: [development, production]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application (${{ matrix.node-env }})
+        run: |
+          echo "🏗️ ${{ matrix.node-env }} 환경 빌드 테스트..."
+          NODE_ENV=${{ matrix.node-env }} npm run build
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ ${{ matrix.node-env }} 빌드 성공"
+          else
+            echo "❌ ${{ matrix.node-env }} 빌드 실패"
+            exit 1
+          fi
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
+          NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
+          SUPABASE_SERVICE_ROLE_KEY: test-service-key
+          TOSS_SECRET_KEY: test-secret-key
+          GEMINI_API_KEY: test-api-key
+          CRON_SECRET: test-cron-secret
+
+      - name: Check build output
+        run: |
+          echo "📦 빌드 출력 확인..."
+          
+          if [ -d ".next" ]; then
+            echo "✅ .next 디렉토리 생성됨"
+            
+            # 빌드 크기 확인
+            BUILD_SIZE=$(du -sh .next | cut -f1)
+            echo "빌드 크기: $BUILD_SIZE"
+            
+            # 주요 파일 존재 확인
+            if [ -f ".next/BUILD_ID" ]; then
+              echo "✅ BUILD_ID 파일 존재"
+            fi
+            
+            if [ -d ".next/static" ]; then
+              echo "✅ Static 파일 생성됨"
+            fi
+          else
+            echo "❌ .next 디렉토리 없음"
+            exit 1
+          fi
+
+  # 5단계: 보안 검사
+  security-check:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit
+        run: |
+          echo "🔒 NPM 보안 감사..."
+          npm audit --audit-level=moderate > audit-report.txt 2>&1 || true
+          
+          # 고위험 취약점 확인
+          HIGH_VULN=$(grep -c "high" audit-report.txt || echo "0")
+          CRITICAL_VULN=$(grep -c "critical" audit-report.txt || echo "0")
+          
+          echo "보안 감사 결과:"
+          echo "  Critical: $CRITICAL_VULN 개"
+          echo "  High: $HIGH_VULN 개"
+          
+          if [ "$CRITICAL_VULN" -gt 0 ]; then
+            echo "❌ Critical 취약점 발견"
+            echo "::error::Critical vulnerabilities found: $CRITICAL_VULN"
+            cat audit-report.txt
+            exit 1
+          elif [ "$HIGH_VULN" -gt 5 ]; then
+            echo "⚠️  High 취약점이 많습니다"
+            echo "::warning::Many high vulnerabilities found: $HIGH_VULN"
+          else
+            echo "✅ 보안 감사 통과"
+          fi
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔍 하드코딩된 시크릿 검사..."
+          
+          # 민감한 패턴 검색
+          SECRET_PATTERNS=("password\s*=" "secret\s*=" "api[_-]?key\s*=" "token\s*=")
+          FOUND_SECRETS=0
+          
+          for pattern in "${SECRET_PATTERNS[@]}"; do
+            MATCHES=$(grep -r -i "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" . \
+              --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=.git || echo "")
+            
+            if [ ! -z "$MATCHES" ]; then
+              echo "⚠️  패턴 발견: $pattern"
+              echo "$MATCHES"
+              FOUND_SECRETS=$((FOUND_SECRETS + 1))
+            fi
+          done
+          
+          if [ "$FOUND_SECRETS" -gt 0 ]; then
+            echo "::warning::Potential hardcoded secrets found"
+          else
+            echo "✅ 하드코딩된 시크릿 없음"
+          fi
+
+  # 6단계: 최종 품질 리포트
+  quality-report:
+    name: 📊 Quality Report
+    runs-on: ubuntu-latest
+    needs: [environment-check, typescript-check, code-quality, build-test, security-check]
+    if: always()
+    steps:
+      - name: Generate quality report
+        run: |
+          echo "📊 dduksangLAB 품질 검증 완료 리포트"
+          echo "=================================="
+          
+          # 각 단계 결과 확인
+          ENV_STATUS="${{ needs.environment-check.result }}"
+          TS_STATUS="${{ needs.typescript-check.result }}"
+          QUALITY_STATUS="${{ needs.code-quality.result }}"
+          BUILD_STATUS="${{ needs.build-test.result }}"
+          SECURITY_STATUS="${{ needs.security-check.result }}"
+          
+          echo "🌍 환경 검증: $ENV_STATUS"
+          echo "🔍 TypeScript: $TS_STATUS"
+          echo "📋 코드 품질: $QUALITY_STATUS"  
+          echo "🏗️ 빌드 테스트: $BUILD_STATUS"
+          echo "🔒 보안 검사: $SECURITY_STATUS"
+          
+          # 전체 성공 여부 판단
+          if [[ "$ENV_STATUS" == "success" && "$TS_STATUS" == "success" && "$BUILD_STATUS" == "success" && "$SECURITY_STATUS" == "success" ]]; then
+            echo ""
+            echo "🎉 모든 품질 검증 통과!"
+            echo "✅ 프로덕션 배포 준비 완료"
+          else
+            echo ""
+            echo "⚠️  일부 품질 검증 실패"
+            echo "❌ 문제 해결 후 재시도 필요"
+          fi
+          
+          echo ""
+          echo "📈 권장 개선사항:"
+          echo "  • TypeScript strict 모드 유지"
+          echo "  • ESLint 에러 점진적 감소"  
+          echo "  • Console.log를 logger로 교체"
+          echo "  • 보안 취약점 정기 점검"

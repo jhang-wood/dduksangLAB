@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase} from './supabase'
 import { useRouter } from 'next/navigation'
+import { UserProfile, SignUpMetadata, AuthError } from '@/types'
 
 // Validate environment variables at module load
 try {
@@ -15,12 +16,14 @@ try {
   logger.error('Environment validation failed:', error)
 }
 
+// Types are now imported from @/types
+
 interface AuthContextType {
   user: User | null
-  userProfile: any | null
+  userProfile: UserProfile | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
 }
@@ -29,7 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [userProfile, setUserProfile] = useState<any | null>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -116,7 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
+  const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

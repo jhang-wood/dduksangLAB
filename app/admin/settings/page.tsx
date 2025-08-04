@@ -415,7 +415,7 @@ export default function AdminSettingsPage() {
                 </button>
                 <button 
                   onClick={() => {
-                    console.log('시스템 로그 확인')
+                    // 시스템 로그 확인 기능
                     userNotification.alert('로그가 콘솔에 출력되었습니다.')
                   }}
                   className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors">

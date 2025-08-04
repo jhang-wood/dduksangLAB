@@ -23,9 +23,21 @@ async function createAdminUser() {
   try {
     // 1. Auth 사용자 생성
     console.log('1️⃣ Auth 사용자 생성 중...');
+    
+    // 환경 변수에서 관리자 정보 가져오기
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dduksang.com';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminPassword) {
+      console.error('❌ ADMIN_PASSWORD 환경 변수가 설정되지 않았습니다.');
+      console.log('💡 .env.local 파일에 다음을 추가하세요:');
+      console.log('   ADMIN_PASSWORD=your_secure_password_here');
+      process.exit(1);
+    }
+    
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: 'admin@dduksang.com',
-      password: 'dduksang2025!@#',
+      email: adminEmail,
+      password: adminPassword,
       email_confirm: true,
       user_metadata: {
         name: '떡상연구소 관리자'

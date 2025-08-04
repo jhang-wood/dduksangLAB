@@ -36,8 +36,7 @@ const categories = [
   { id: 'career', label: '진로/취업', icon: Briefcase }
 ]
 
-// Force revalidation: 1752976800
-export const revalidate = 0
+// Client component - no revalidate needed
 
 export default function CommunityPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')

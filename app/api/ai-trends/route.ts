@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createServerClient, createAdminClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // GET: Fetch AI trends with pagination and filtering
 export async function GET(request: NextRequest) {
@@ -21,6 +14,9 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * limit
     const to = from + limit - 1
 
+    // Use server client for RLS-aware queries
+    const supabase = createServerClient()
+    
     let query = supabase
       .from('ai_trends')
       .select('*', { count: 'exact' })
@@ -61,8 +57,8 @@ export async function GET(request: NextRequest) {
 // POST: Create new AI trend (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const authSupabase = createServerComponentClient({ cookies })
-    const { data: { user } } = await authSupabase.auth.getUser()
+    const supabase = createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json(
@@ -71,7 +67,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user is admin
+    // Check if user is admin using RLS-aware query
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -112,8 +108,11 @@ export async function POST(request: NextRequest) {
     // Create content hash for duplicate prevention
     const contentHash = await generateContentHash(content)
 
+    // Use admin client only for operations that require bypassing RLS
+    const adminClient = createAdminClient()
+    
     // Check for duplicate
-    const { data: existingHash } = await supabase
+    const { data: existingHash } = await adminClient
       .from('ai_trends_hash')
       .select('id')
       .eq('content_hash', contentHash)
@@ -126,7 +125,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Insert the trend
+    // Insert the trend using user-scoped client for proper RLS
     const { data: trend, error: trendError } = await supabase
       .from('ai_trends')
       .insert({
@@ -151,8 +150,8 @@ export async function POST(request: NextRequest) {
 
     if (trendError) throw trendError
 
-    // Store content hash
-    await supabase
+    // Store content hash using admin client
+    await adminClient
       .from('ai_trends_hash')
       .insert({
         content_hash: contentHash,

@@ -76,6 +76,13 @@ export const SERVER_ENV_VARS = {
   ENCRYPTION_KEY: () => getOptionalEnvVar('ENCRYPTION_KEY'),
   CRON_SECRET: () => getOptionalEnvVar('CRON_SECRET'),
   
+  // Telegram - Server
+  TELEGRAM_WEBHOOK_SECRET: () => getOptionalEnvVar('TELEGRAM_WEBHOOK_SECRET', 'telegram-automation-webhook-secret-2025'),
+  TELEGRAM_ALLOWED_USER_ID: () => getOptionalEnvVar('TELEGRAM_ALLOWED_USER_ID', '7590898112'),
+  
+  // N8N - Server
+  N8N_WEBHOOK_URL: () => getOptionalEnvVar('N8N_WEBHOOK_URL', 'http://localhost:5678/webhook/telegram'),
+  
   // Database - Server
   DATABASE_URL: () => getOptionalEnvVar('DATABASE_URL')
 } as const
@@ -135,6 +142,9 @@ export const env = {
   get jwtSecret() { return SERVER_ENV_VARS.JWT_SECRET() },
   get encryptionKey() { return SERVER_ENV_VARS.ENCRYPTION_KEY() },
   get cronSecret() { return SERVER_ENV_VARS.CRON_SECRET() },
+  get telegramWebhookSecret() { return SERVER_ENV_VARS.TELEGRAM_WEBHOOK_SECRET() },
+  get telegramAllowedUserId() { return SERVER_ENV_VARS.TELEGRAM_ALLOWED_USER_ID() },
+  get n8nWebhookUrl() { return SERVER_ENV_VARS.N8N_WEBHOOK_URL() },
   get databaseUrl() { return SERVER_ENV_VARS.DATABASE_URL() },
   
   // Environment
@@ -168,5 +178,8 @@ export const serverEnv = {
   get jwtSecret() { return SERVER_ENV_VARS.JWT_SECRET() },
   get encryptionKey() { return SERVER_ENV_VARS.ENCRYPTION_KEY() },
   get cronSecret() { return SERVER_ENV_VARS.CRON_SECRET() },
+  get telegramWebhookSecret() { return SERVER_ENV_VARS.TELEGRAM_WEBHOOK_SECRET() },
+  get telegramAllowedUserId() { return SERVER_ENV_VARS.TELEGRAM_ALLOWED_USER_ID() },
+  get n8nWebhookUrl() { return SERVER_ENV_VARS.N8N_WEBHOOK_URL() },
   get databaseUrl() { return SERVER_ENV_VARS.DATABASE_URL() }
 }

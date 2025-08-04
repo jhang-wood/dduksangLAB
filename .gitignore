@@ -67,5 +67,28 @@ dist/
 *key*
 *.pem
 *.key
-credentials/.vercel
-.env.local
+*.cert
+*.crt
+*.p12
+*.pfx
+credentials/
+.credentials.json
+config/secrets/
+
+# Backup files
+*.bak
+*.backup
+*~
+*.swp
+*.swo
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.sql.gz
+
+# Sensitive scripts
+create-admin.js
+init-admin.js
+*admin*.js

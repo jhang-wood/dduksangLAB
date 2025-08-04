@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createServerClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
+    const supabase = createServerClient()
     const { data, error } = await supabase
       .from('system_settings')
       .select('*')
@@ -40,6 +44,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const supabase = createServerClient()
     const body = await request.json()
     
     // Validate required fields
