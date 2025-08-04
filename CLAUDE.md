@@ -1,3 +1,51 @@
+# 🔴 최우선 순위 규칙
+
+## 🚨 절대 건너뛰지 않기 규칙
+**절대 금지**: CI/CD 파이프라인 오류나 테스트 실패를 건너뛰고 다른 작업을 진행하지 말 것!
+
+### ⚠️ 현재 해결 필요한 Critical 이슈들
+1. **CI/CD 파이프라인 실패** - GitHub Actions에서 다음 항목들이 실패:
+   - 보안 스캔 실패
+   - 린트 및 타입 검사 실패  
+   - 보안 점검 실패
+   - **모든 작업이 건너뛰어짐**
+
+2. **Vercel 배포 오류** - 환경변수 관련 배포 실패
+
+### 📝 사용자가 해야 할 작업들
+1. **GitHub 저장소에서 Actions 탭 확인**
+   - https://github.com/jhang-wood/dduksangLAB/actions
+   - 실패한 워크플로우 로그 확인
+   - 구체적인 오류 메시지 파악
+
+2. **Vercel 대시보드에서 배포 로그 확인**
+   - https://vercel.com/dashboard
+   - dduksangLAB 프로젝트의 배포 오류 로그 확인
+   - 누락된 환경변수 식별
+
+3. **환경변수 설정**
+   - Vercel 프로젝트 설정에서 다음 환경변수들 추가 필요:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=실제_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=실제_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=실제_service_key
+   CRON_SECRET=secure_random_string
+   NEXT_PUBLIC_APP_URL=https://dduksang.com
+   ```
+
+## 🔴 작업 우선순위
+1. CI/CD 파이프라인 오류 해결 (최우선)
+2. Vercel 배포 오류 해결 
+3. 모든 테스트 통과 확인
+4. 그 후에만 새로운 기능 개발 진행
+
+## 🚫 절대 하지 말 것
+- 오류가 있는 상태에서 새로운 기능 개발 진행
+- 실패한 테스트나 빌드를 무시하고 다음 작업 진행
+- "나중에 수정하겠다"는 마인드로 문제 방치
+
+---
+
 # Claude 자동 배포 설정
 
 ## dduksangLAB 배포 프로세스
