@@ -176,7 +176,7 @@ export default function SitesPage() {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {throw error}
 
       setSites([data, ...sites])
       setShowCreateModal(false)

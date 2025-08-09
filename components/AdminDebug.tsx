@@ -24,7 +24,7 @@ export default function AdminDebug() {
   }, [user, userProfile, isAdmin])
 
   const updateToAdmin = async () => {
-    if (!user) return
+    if (!user) {return}
 
     setUpdating(true)
     try {
@@ -37,7 +37,7 @@ export default function AdminDebug() {
         userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
         window.location.reload()
       } else {
-        userNotification.alert('오류 발생: ' + error.message)
+        userNotification.alert(`오류 발생: ${  error.message}`)
       }
     } catch (err) {
       logger.error(err)
@@ -47,7 +47,7 @@ export default function AdminDebug() {
     }
   }
 
-  if (!user) return null
+  if (!user) {return null}
 
   return (
     <div className="fixed bottom-4 right-4 bg-deepBlack-900 border-2 border-metallicGold-500 rounded-lg p-4 max-w-sm z-[9999] shadow-2xl">

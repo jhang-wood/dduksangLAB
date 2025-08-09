@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
         redirectTo: `${window.location.origin}/auth/reset-password`
       })
 
-      if (error) throw error
+      if (error) {throw error}
 
       setMessage('비밀번호 재설정 링크를 이메일로 전송했습니다. 이메일을 확인해주세요.')
     } catch (error: any) {

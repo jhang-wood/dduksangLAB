@@ -65,12 +65,12 @@ export async function POST(request: NextRequest) {
         const category = TREND_CATEGORIES[Math.floor(Math.random() * TREND_CATEGORIES.length)]
         
         // Generate slug
-        const slug = trendData.title.toLowerCase()
+        const slug = `${trendData.title.toLowerCase()
           .replace(/[^a-z0-9가-힣\s]/g, '')
           .replace(/\s+/g, '-')
           .replace(/-+/g, '-')
           .replace(/^-|-$/g, '')
-          + '-' + Date.now() + Math.floor(Math.random() * 1000)
+           }-${  Date.now()  }${Math.floor(Math.random() * 1000)}`
 
         // Generate content hash
         const contentHash = await generateContentHash(trendData.content)

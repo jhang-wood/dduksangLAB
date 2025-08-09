@@ -60,7 +60,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .eq('id', params.id)
         .single()
 
-      if (error) throw error
+      if (error) {throw error}
       
       setPost(data)
       
@@ -88,7 +88,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .eq('post_id', params.id)
         .order('created_at', { ascending: true })
 
-      if (error) throw error
+      if (error) {throw error}
       setComments(data || [])
     } catch (error) {
       logger.error('Error fetching comments:', error)
@@ -120,7 +120,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
           content: commentContent
         })
 
-      if (error) throw error
+      if (error) {throw error}
 
       setCommentContent('')
       fetchComments()
@@ -133,7 +133,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
   }
 
   const handleDeletePost = async () => {
-    if (!userNotification.confirm('정말로 이 글을 삭제하시겠습니까?')) return
+    if (!userNotification.confirm('정말로 이 글을 삭제하시겠습니까?')) {return}
 
     try {
       const { error } = await supabase
@@ -141,7 +141,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .delete()
         .eq('id', params.id)
 
-      if (error) throw error
+      if (error) {throw error}
       
       router.push('/community')
     } catch (error) {

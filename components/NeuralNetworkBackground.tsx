@@ -18,10 +18,10 @@ export default function NeuralNetworkBackground() {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {return}
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {return}
 
     // Set canvas size
     const setCanvasSize = () => {
@@ -52,8 +52,8 @@ export default function NeuralNetworkBackground() {
         node.y += node.vy
 
         // Bounce off walls
-        if (node.x <= 0 || node.x >= canvas.width) node.vx *= -1
-        if (node.y <= 0 || node.y >= canvas.height) node.vy *= -1
+        if (node.x <= 0 || node.x >= canvas.width) {node.vx *= -1}
+        if (node.y <= 0 || node.y >= canvas.height) {node.vy *= -1}
 
         // Draw connections to nearby nodes
         nodesRef.current.slice(i + 1).forEach(otherNode => {

@@ -119,7 +119,7 @@ export default function AdminLecturesPage() {
         `)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {throw error}
       setLectures(data || [])
     } catch (error) {
       logger.error('Error fetching lectures:', error)
@@ -147,7 +147,7 @@ export default function AdminLecturesPage() {
         .select()
         .single()
 
-      if (lectureError) throw lectureError
+      if (lectureError) {throw lectureError}
 
       // Create chapters
       if (chapters.length > 0) {
@@ -165,7 +165,7 @@ export default function AdminLecturesPage() {
           .from('lecture_chapters')
           .insert(chaptersData)
 
-        if (chaptersError) throw chaptersError
+        if (chaptersError) {throw chaptersError}
       }
 
       // Reset form
@@ -179,7 +179,7 @@ export default function AdminLecturesPage() {
   }
 
   const handleUpdateLecture = async () => {
-    if (!editingLecture) return
+    if (!editingLecture) {return}
 
     try {
       const totalDuration = chapters.reduce((sum, ch) => sum + ch.duration, 0)
@@ -196,7 +196,7 @@ export default function AdminLecturesPage() {
         })
         .eq('id', editingLecture.id)
 
-      if (updateError) throw updateError
+      if (updateError) {throw updateError}
 
       // Handle chapters update (simplified - in production you'd handle adds/updates/deletes)
       // This is a basic implementation that deletes all and re-inserts
@@ -241,7 +241,7 @@ export default function AdminLecturesPage() {
         .delete()
         .eq('id', lectureId)
 
-      if (error) throw error
+      if (error) {throw error}
       fetchLectures()
     } catch (error) {
       logger.error('Error deleting lecture:', error)
@@ -256,7 +256,7 @@ export default function AdminLecturesPage() {
         .update({ is_published: !lecture.is_published })
         .eq('id', lecture.id)
 
-      if (error) throw error
+      if (error) {throw error}
       fetchLectures()
     } catch (error) {
       logger.error('Error toggling publish status:', error)
@@ -354,7 +354,7 @@ export default function AdminLecturesPage() {
           .eq('lecture_id', lectureId)
           .order('order_index', { ascending: true })
 
-        if (error) throw error
+        if (error) {throw error}
         setLectureChapters(data || [])
       } catch (error) {
         logger.error('Error fetching chapters:', error)
@@ -382,7 +382,7 @@ export default function AdminLecturesPage() {
             is_preview: newChapter.is_preview
           })
 
-        if (error) throw error
+        if (error) {throw error}
 
         setNewChapter({
           title: '',
@@ -408,7 +408,7 @@ export default function AdminLecturesPage() {
           .update(updates)
           .eq('id', chapterId)
 
-        if (error) throw error
+        if (error) {throw error}
 
         fetchChapters()
         onChaptersUpdated()
@@ -430,7 +430,7 @@ export default function AdminLecturesPage() {
           .delete()
           .eq('id', chapterId)
 
-        if (error) throw error
+        if (error) {throw error}
 
         fetchChapters()
         onChaptersUpdated()

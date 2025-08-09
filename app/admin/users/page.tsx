@@ -75,7 +75,7 @@ export default function AdminUsersPage() {
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {throw error}
       
       let filteredUsers = data || []
       
@@ -107,7 +107,7 @@ export default function AdminUsersPage() {
         .update({ role: newRole })
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) {throw error}
       
       fetchUsers()
     } catch (error) {
@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
         .delete()
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) {throw error}
       
       fetchUsers()
     } catch (error) {

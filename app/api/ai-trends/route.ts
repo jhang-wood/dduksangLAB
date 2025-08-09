@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error, count } = await query
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json({
       data,
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (trendError) throw trendError
+    if (trendError) {throw trendError}
 
     // Store content hash using admin client
     await adminClient

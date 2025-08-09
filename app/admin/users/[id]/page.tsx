@@ -92,7 +92,7 @@ export default function AdminUserDetailPage() {
         .eq('id', userId)
         .single()
 
-      if (userError) throw userError
+      if (userError) {throw userError}
       setUserDetail(userData)
 
       if (userData) {
@@ -168,7 +168,7 @@ export default function AdminUserDetailPage() {
         })
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) {throw error}
 
       setEditing(false)
       fetchUserDetail()

@@ -120,7 +120,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   }
 
   const updateProgress = async () => {
-    if (!currentChapter || !user) return
+    if (!currentChapter || !user) {return}
 
     try {
       const completed = currentTime >= duration * 0.9 // 90% 이상 시청시 완료
@@ -146,7 +146,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   }
 
   const handlePreviousChapter = () => {
-    if (!lecture?.chapters || !currentChapter) return
+    if (!lecture?.chapters || !currentChapter) {return}
     const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex > 0) {
       handleChapterSelect(lecture.chapters[currentIndex - 1])
@@ -154,7 +154,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   }
 
   const handleNextChapter = () => {
-    if (!lecture?.chapters || !currentChapter) return
+    if (!lecture?.chapters || !currentChapter) {return}
     const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex < lecture.chapters.length - 1) {
       handleChapterSelect(lecture.chapters[currentIndex + 1])
@@ -167,9 +167,9 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
 
   const getChapterProgress = (chapterId: string) => {
     const chapterProgress = progress.find(p => p.chapter_id === chapterId)
-    if (!chapterProgress) return 0
+    if (!chapterProgress) {return 0}
     const chapter = lecture?.chapters?.find(ch => ch.id === chapterId)
-    if (!chapter) return 0
+    if (!chapter) {return 0}
     return (chapterProgress.watch_time / chapter.duration) * 100
   }
 

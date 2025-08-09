@@ -37,7 +37,7 @@ function PaymentSuccessContent() {
         })
         .eq('id', user.id)
 
-      if (updateError) throw updateError
+      if (updateError) {throw updateError}
 
       // 결제 기록 저장
       const { error: paymentError } = await supabase

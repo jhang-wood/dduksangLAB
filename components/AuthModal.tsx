@@ -30,7 +30,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
     try {
       if (mode === 'signin') {
         const { error } = await signIn(email, password)
-        if (error) throw error
+        if (error) {throw error}
         onClose()
       } else {
         // 회원가입 시 플랜 선택 화면으로
@@ -73,7 +73,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
     }
   }
 
-  if (!isOpen) return null
+  if (!isOpen) {return null}
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

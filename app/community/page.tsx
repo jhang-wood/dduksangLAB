@@ -62,7 +62,7 @@ export default function CommunityPage() {
 
       const { data, error } = await query
 
-      if (error) throw error
+      if (error) {throw error}
       setPosts(data || [])
     } catch (error) {
       logger.error('Error fetching posts:', error)
@@ -88,9 +88,9 @@ export default function CommunityPage() {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 60) return `${diffMins}분 전`
-    if (diffHours < 24) return `${diffHours}시간 전`
-    if (diffDays < 7) return `${diffDays}일 전`
+    if (diffMins < 60) {return `${diffMins}분 전`}
+    if (diffHours < 24) {return `${diffHours}시간 전`}
+    if (diffDays < 7) {return `${diffDays}일 전`}
     return date.toLocaleDateString()
   }
 
