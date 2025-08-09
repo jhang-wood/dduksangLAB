@@ -60,6 +60,8 @@ jobs:
           sed -i 's/your-project/test-project/g' .env.local
           sed -i 's/your-.*-key/test-key-for-ci-pipeline/g' .env.local
           sed -i 's/https:\/\/example/https:\/\/test/g' .env.local
+          echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env.local
+          echo "ENCRYPTION_KEY=$(openssl rand -hex 32)" >> .env.local
           
       - name: Run security validation
         run: |

@@ -57,6 +57,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
           NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
           SUPABASE_SERVICE_ROLE_KEY: test-service-key
+          JWT_SECRET: test-jwt-secret-for-ci-pipeline-validation
+          ENCRYPTION_KEY: test-encryption-key-for-ci-pipeline-validation
           TOSS_SECRET_KEY: test-secret-key
           GEMINI_API_KEY: test-api-key
           CRON_SECRET: test-cron-secret
@@ -206,6 +208,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
           NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
           SUPABASE_SERVICE_ROLE_KEY: test-service-key
+          JWT_SECRET: test-jwt-secret-for-ci-pipeline-validation
+          ENCRYPTION_KEY: test-encryption-key-for-ci-pipeline-validation
           TOSS_SECRET_KEY: test-secret-key
           GEMINI_API_KEY: test-api-key
           CRON_SECRET: test-cron-secret
