@@ -21,7 +21,7 @@ export async function GET(
       .eq('is_published', true)
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     if (!data) {
       return NextResponse.json(

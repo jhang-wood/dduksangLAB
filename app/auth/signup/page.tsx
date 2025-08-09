@@ -52,7 +52,7 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     
-    if (!validateForm()) return
+    if (!validateForm()) {return}
     
     setLoading(true)
 

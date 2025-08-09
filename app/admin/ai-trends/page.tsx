@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Plus, Edit2, Trash2, Eye, EyeOff, Star, RefreshCw } from 'lucide-react'
@@ -49,11 +49,7 @@ export default function AdminAITrendsPage() {
     }
   }, [isAdmin, router])
 
-  useEffect(() => {
-    fetchTrends()
-  }, [selectedCategory, showUnpublished])
-
-  const fetchTrends = async () => {
+  const fetchTrends = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -83,7 +79,11 @@ export default function AdminAITrendsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, showUnpublished])
+
+  useEffect(() => {
+    fetchTrends()
+  }, [fetchTrends])
 
   const handleDelete = async (id: string, title: string) => {
     if (!userNotification.confirm(`정말로 "${title}" 트렌드를 삭제하시겠습니까?`)) {

@@ -76,9 +76,44 @@ npm run build
 
 ## 🔒 보안
 
-- 환경 변수는 절대 커밋하지 마세요
-- `.env.local` 파일은 .gitignore에 포함되어 있습니다
-- 민감한 정보는 Vercel 대시보드에서 관리하세요
+### Public 저장소 보안
+- 🔐 이 프로젝트는 **Public 저장소**로 운영됩니다
+- 🚫 환경 변수는 절대 커밋하지 마세요
+- ✅ 모든 민감 정보는 GitHub Secrets에 저장됩니다
+- 📝 `.env.local` 파일은 .gitignore에 포함되어 있습니다
+- 🛡️ 보안 이슈 발견 시 [Security 탭](.github/SECURITY.md)에서 비공개 보고
+
+### 자동 보안 스캔
+- CodeQL 자동 분석 (매일)
+- Trivy 취약점 스캔
+- Secret 노출 감지
+- 의존성 취약점 모니터링
+
+## 🚦 Merge Queue 시스템
+
+### 작동 방식
+모든 Pull Request는 GitHub Merge Queue를 통해 자동으로 병합됩니다:
+1. PR 리뷰 및 승인
+2. Merge Queue에 추가
+3. 최신 main 브랜치와 자동 병합 테스트
+4. 모든 테스트 통과 시 자동 병합
+
+### 장점
+- ✅ 병합 충돌 자동 해결
+- ✅ main 브랜치 안정성 보장
+- ✅ Race condition 방지
+- ✅ 빌드 실패 최소화
+
+## 🤝 기여하기
+
+프로젝트에 기여하고 싶으신가요? [기여 가이드](CONTRIBUTING.md)를 참고해 주세요.
+
+### 빠른 시작
+1. Fork & Clone
+2. 브랜치 생성 (`feature/기능명`)
+3. 커밋 (`feat: 새로운 기능`)
+4. Pull Request 생성
+5. Merge Queue에서 자동 병합
 
 ## 📞 문의
 

@@ -1,5 +1,6 @@
-import { logger, userNotification } from '@/lib/logger'
 'use client'
+
+import { logger, userNotification } from '@/lib/logger'
 
 import { useState } from 'react'
 import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payapp'

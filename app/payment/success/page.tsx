@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -14,11 +14,7 @@ function PaymentSuccessContent() {
   const [processing, setProcessing] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    handlePaymentSuccess()
-  }, [])
-
-  const handlePaymentSuccess = async () => {
+  const handlePaymentSuccess = useCallback(async () => {
     try {
       const orderId = searchParams.get('order_no')
       const payappOrderId = searchParams.get('payapp_order_id')
@@ -37,7 +33,7 @@ function PaymentSuccessContent() {
         })
         .eq('id', user.id)
 
-      if (updateError) throw updateError
+      if (updateError) {throw updateError}
 
       // 결제 기록 저장
       const { error: paymentError } = await supabase
@@ -64,7 +60,11 @@ function PaymentSuccessContent() {
     } finally {
       setProcessing(false)
     }
-  }
+  }, [searchParams, user, router])
+
+  useEffect(() => {
+    handlePaymentSuccess()
+  }, [handlePaymentSuccess])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4">

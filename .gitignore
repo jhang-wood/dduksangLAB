@@ -53,13 +53,12 @@ dist/
 
 # Environment variables - NEVER COMMIT THESE
 .env
-.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 .env.production
-*.env
+# .env.example should be committed
 
 # API Keys and Secrets
 *secret*

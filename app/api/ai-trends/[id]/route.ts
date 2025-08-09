@@ -22,7 +22,7 @@ export async function GET(
       .eq('id', params.id)
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     if (!data) {
       return NextResponse.json(
@@ -114,7 +114,7 @@ export async function PUT(
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json(data)
   } catch (error) {
@@ -161,7 +161,7 @@ export async function DELETE(
       .delete()
       .eq('id', params.id)
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json({ success: true })
   } catch (error) {

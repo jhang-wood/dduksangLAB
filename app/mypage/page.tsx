@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -59,14 +59,8 @@ export default function MyPage() {
     }
   }, [userProfile])
 
-  useEffect(() => {
-    if (user) {
-      fetchUserData()
-    }
-  }, [user, activeTab])
-
-  const fetchUserData = async () => {
-    if (!user) return
+  const fetchUserData = useCallback(async () => {
+    if (!user) {return}
     
     try {
       if (activeTab === 'lectures') {
@@ -86,7 +80,7 @@ export default function MyPage() {
           .eq('user_id', user.id)
           .order('enrolled_at', { ascending: false })
         
-        if (data) setEnrollments(data)
+        if (data) {setEnrollments(data)}
       } else if (activeTab === 'payments') {
         const { data } = await supabase
           .from('payments')
@@ -99,15 +93,21 @@ export default function MyPage() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
         
-        if (data) setPayments(data)
+        if (data) {setPayments(data)}
       }
     } catch (error) {
       logger.error('Failed to fetch user data:', error)
     }
-  }
+  }, [user, activeTab])
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData()
+    }
+  }, [fetchUserData, user])
 
   const handleProfileUpdate = async () => {
-    if (!user) return
+    if (!user) {return}
     
     setLoading(true)
     try {
@@ -132,7 +132,7 @@ export default function MyPage() {
   }
 
   const makeAdmin = async () => {
-    if (!user) return
+    if (!user) {return}
     
     logger.log('[MyPage] Making user admin:', user.id)
     
@@ -147,7 +147,7 @@ export default function MyPage() {
         
       if (error) {
         logger.error('[MyPage] Error updating role:', error)
-        userNotification.alert('오류가 발생했습니다: ' + error.message)
+        userNotification.alert(`오류가 발생했습니다: ${  error.message}`)
         return
       }
       
