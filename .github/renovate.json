@@ -1,0 +1,105 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":timezone(Asia/Seoul)",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    "group:all"
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
+  "schedule": [
+    "before 4am on Monday"
+  ],
+  "labels": ["dependencies"],
+  "assignees": [],
+  "reviewers": [],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "platformAutomerge": false,
+  "packageRules": [
+    {
+      "description": "자동 병합: 마이너/패치 업데이트",
+      "updateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "메이저 업데이트 자동 병합 비활성화",
+      "updateTypes": ["major"],
+      "automerge": false,
+      "addLabels": ["major-update"],
+      "reviewRequired": true
+    },
+    {
+      "description": "Next.js 관련 패키지",
+      "groupName": "Next.js 패키지",
+      "matchPackagePatterns": ["next", "@next/", "react", "react-dom"],
+      "automerge": false,
+      "addLabels": ["nextjs"],
+      "reviewRequired": true
+    },
+    {
+      "description": "TypeScript 관련 패키지",
+      "groupName": "TypeScript 패키지",
+      "matchPackagePatterns": ["typescript", "@types/", "ts-", "eslint"],
+      "automerge": true
+    },
+    {
+      "description": "테스트 관련 패키지",
+      "groupName": "테스트 패키지",
+      "matchPackagePatterns": ["jest", "playwright", "@playwright/", "testing-library"],
+      "automerge": true,
+      "addLabels": ["testing"]
+    },
+    {
+      "description": "보안 취약점",
+      "matchCurrentVersion": "/.*/",
+      "vulnerabilityAlerts": {
+        "enabled": true
+      },
+      "automerge": true,
+      "addLabels": ["security", "vulnerability"],
+      "prPriority": 10
+    },
+    {
+      "description": "개발 의존성",
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "groupName": "개발 의존성"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 4am on Monday"]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["at any time"]
+  },
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "📦 의존성 업데이트 대시보드",
+  "dependencyDashboardHeader": "이 이슈는 모든 의존성 업데이트 현황을 추적합니다.",
+  "dependencyDashboardFooter": "자세한 정보는 [Renovate 문서](https://docs.renovatebot.com/)를 참고하세요.",
+  "prTitle": "chore(deps): {{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}메이저 {{else}}{{#if isMinor}}마이너 {{else}}패치 {{/if}}{{/if}}업데이트 {{depName}} v{{newVersion}}{{/if}}",
+  "prBodyTemplate": "이 PR은 **{{depName}}**을 {{#unless isPinDigest}}v{{currentVersion}}에서 {{/unless}}{{#if isPinDigest}}{{{currentDigestShort}}}에서 {{{newDigestShort}}}{{else}}v{{newVersion}}{{/if}}으로 업데이트합니다.\n\n{{#if hasReleaseNotes}}\n---\n### 릴리즈 노트\n{{{releaseNotes}}}\n{{/if}}\n\n{{#if hasErrors}}\n---\n### ⚠️ 오류 발생\n{{{errors}}}\n{{/if}}\n\n{{#if hasWarnings}}\n---\n### 경고사항\n{{{warnings}}}\n{{/if}}\n\n---\n\n### 구성 정보\n\n📅 **일정**: {{schedule}}\n🏷️ **분기 이름**: {{branchName}}\n🔧 **자동 병합**: {{#if automerge}}활성화됨{{else}}비활성화됨{{/if}}\n\n자동화된 의존성 업데이트입니다.",
+  "rebaseWhen": "behind-base-branch",
+  "gitAuthor": "renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+  "pinDigests": false,
+  "rollbackPrs": true,
+  "semanticCommitScope": "deps",
+  "separateMajorMinor": true,
+  "separateMinorPatch": false,
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**"
+  ],
+  "ignoreDeps": []
+}

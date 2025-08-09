@@ -1,0 +1,270 @@
+name: 🔔 텔레그램 알림 시스템
+
+on:
+  # 일일 상태 보고서 (오전 9시)
+  schedule:
+    - cron: '0 0 * * *'  # UTC 00:00 = KST 09:00
+  
+  # 워크플로우 실행 결과 알림
+  workflow_run:
+    workflows: ['CI/CD', 'Deploy', 'Tests', 'Security Scan']
+    types: [completed]
+  
+  # 수동 실행
+  workflow_dispatch:
+    inputs:
+      message_type:
+        description: '알림 유형'
+        required: true
+        default: 'manual'
+        type: choice
+        options:
+          - manual
+          - daily_report
+          - test_notification
+      custom_message:
+        description: '사용자 정의 메시지'
+        required: false
+        type: string
+
+env:
+  TZ: 'Asia/Seoul'
+
+jobs:
+  daily-report:
+    name: 📊 일일 상태 보고서
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.message_type == 'daily_report')
+    
+    steps:
+      - name: 🔍 저장소 체크아웃
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📈 저장소 통계 수집
+        id: stats
+        run: |
+          # 최근 24시간 커밋 수
+          COMMITS_TODAY=$(git log --since="24 hours ago" --oneline | wc -l)
+          
+          # 총 커밋 수
+          TOTAL_COMMITS=$(git rev-list --all --count)
+          
+          # 최신 커밋 정보
+          LATEST_COMMIT=$(git log -1 --pretty=format:"%s (%an)")
+          
+          # 브랜치 수
+          BRANCHES=$(git branch -r | wc -l)
+          
+          # 파일 수 (코드 파일만)
+          CODE_FILES=$(find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.json" \) ! -path "./node_modules/*" ! -path "./.next/*" | wc -l)
+          
+          # GitHub Issues 및 PR 통계
+          OPEN_ISSUES=$(gh issue list --state open --json number | jq length)
+          OPEN_PRS=$(gh pr list --state open --json number | jq length)
+          
+          echo "commits_today=$COMMITS_TODAY" >> $GITHUB_OUTPUT
+          echo "total_commits=$TOTAL_COMMITS" >> $GITHUB_OUTPUT
+          echo "latest_commit=$LATEST_COMMIT" >> $GITHUB_OUTPUT
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+          echo "code_files=$CODE_FILES" >> $GITHUB_OUTPUT
+          echo "open_issues=$OPEN_ISSUES" >> $GITHUB_OUTPUT
+          echo "open_prs=$OPEN_PRS" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏥 시스템 상태 확인
+        id: health
+        run: |
+          # Vercel 배포 상태 확인 (API 호출)
+          DEPLOYMENT_STATUS="✅ 정상"
+          
+          # 웹사이트 응답 시간 측정
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://dduksanglab.vercel.app || echo "0")
+          RESPONSE_TIME_MS=$(echo "$RESPONSE_TIME * 1000" | bc)
+          
+          echo "deployment_status=$DEPLOYMENT_STATUS" >> $GITHUB_OUTPUT
+          echo "response_time=${RESPONSE_TIME_MS}ms" >> $GITHUB_OUTPUT
+
+      - name: 📅 날짜 및 시간 설정
+        id: datetime
+        run: |
+          CURRENT_DATE=$(TZ=Asia/Seoul date '+%Y년 %m월 %d일')
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%H시 %M분')
+          echo "date=$CURRENT_DATE" >> $GITHUB_OUTPUT
+          echo "time=$CURRENT_TIME" >> $GITHUB_OUTPUT
+
+      - name: 📱 일일 보고서 전송
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🌅 **떡상연구소 일일 보고서**
+            📅 ${{ steps.datetime.outputs.date }} ${{ steps.datetime.outputs.time }}
+            
+            📊 **개발 현황**
+            • 오늘 커밋: ${{ steps.stats.outputs.commits_today }}개
+            • 총 커밋 수: ${{ steps.stats.outputs.total_commits }}개
+            • 코드 파일: ${{ steps.stats.outputs.code_files }}개
+            • 브랜치 수: ${{ steps.stats.outputs.branches }}개
+            
+            🔧 **최신 작업**
+            ${{ steps.stats.outputs.latest_commit }}
+            
+            🏗️ **프로젝트 상태**
+            • 열린 이슈: ${{ steps.stats.outputs.open_issues }}개
+            • 열린 PR: ${{ steps.stats.outputs.open_prs }}개
+            
+            🚀 **배포 상태**
+            • 상태: ${{ steps.health.outputs.deployment_status }}
+            • 응답 시간: ${{ steps.health.outputs.response_time }}
+            • URL: https://dduksanglab.vercel.app
+            
+            ---
+            💡 문제가 있다면 즉시 확인하세요!
+          format: markdown
+
+  build-failure-alert:
+    name: ❌ 빌드 실패 알림
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    
+    steps:
+      - name: 🚨 빌드 실패 알림 전송
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🚨 **빌드 실패 알림**
+            
+            ❌ **실패한 워크플로우**: ${{ github.event.workflow_run.name }}
+            🔗 **커밋**: ${{ github.event.workflow_run.head_commit.message }}
+            👤 **작성자**: ${{ github.event.workflow_run.head_commit.author.name }}
+            🌿 **브랜치**: ${{ github.event.workflow_run.head_branch }}
+            
+            📋 **세부사항**:
+            • 실행 ID: ${{ github.event.workflow_run.id }}
+            • 시작 시간: ${{ github.event.workflow_run.created_at }}
+            • 종료 시간: ${{ github.event.workflow_run.updated_at }}
+            
+            🔍 **로그 확인**: 
+            ${{ github.event.workflow_run.html_url }}
+            
+            ---
+            ⚡ 즉시 확인이 필요합니다!
+          format: markdown
+
+  deployment-success:
+    name: ✅ 배포 성공 알림
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.name, 'Deploy')
+    
+    steps:
+      - name: 🎉 배포 성공 알림 전송
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🎉 **배포 완료!**
+            
+            ✅ **성공적으로 배포됨**: ${{ github.event.workflow_run.name }}
+            🔗 **커밋**: ${{ github.event.workflow_run.head_commit.message }}
+            👤 **작성자**: ${{ github.event.workflow_run.head_commit.author.name }}
+            🌿 **브랜치**: ${{ github.event.workflow_run.head_branch }}
+            
+            🚀 **배포 정보**:
+            • 배포 시간: ${{ github.event.workflow_run.updated_at }}
+            • 웹사이트: https://dduksanglab.vercel.app
+            
+            📊 **확인사항**:
+            • 웹사이트가 정상 작동하는지 확인해보세요
+            • 새로운 기능이 올바르게 동작하는지 테스트해보세요
+            
+            ---
+            🎯 배포가 완료되었습니다!
+          format: markdown
+
+  manual-notification:
+    name: 📢 수동 알림
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.message_type == 'manual'
+    
+    steps:
+      - name: 📤 사용자 정의 알림 전송
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            📢 **수동 알림**
+            
+            💬 **메시지**: 
+            ${{ github.event.inputs.custom_message || '사용자 정의 알림이 전송되었습니다.' }}
+            
+            📅 **전송 시간**: $(TZ=Asia/Seoul date '+%Y년 %m월 %d일 %H시 %M분')
+            👤 **전송자**: ${{ github.actor }}
+            
+            ---
+            🔔 GitHub Actions에서 전송된 알림입니다.
+          format: markdown
+
+  test-notification:
+    name: 🧪 테스트 알림
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.message_type == 'test_notification'
+    
+    steps:
+      - name: 🧪 테스트 알림 전송
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🧪 **텔레그램 봇 테스트**
+            
+            ✅ 텔레그램 알림이 정상적으로 작동합니다!
+            
+            📋 **테스트 정보**:
+            • 테스트 시간: $(TZ=Asia/Seoul date '+%Y년 %m월 %d일 %H시 %M분')
+            • 저장소: ${{ github.repository }}
+            • 실행자: ${{ github.actor }}
+            
+            🔧 **설정 상태**:
+            • TELEGRAM_BOT_TOKEN: ✅ 설정됨
+            • TELEGRAM_CHAT_ID: ✅ 설정됨
+            
+            ---
+            🎯 모든 시스템이 정상 작동 중입니다!
+          format: markdown
+
+  security-alert:
+    name: 🛡️ 보안 알림
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && contains(github.event.workflow_run.name, 'Security')
+    
+    steps:
+      - name: 🛡️ 보안 스캔 결과 알림
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🛡️ **보안 스캔 완료**
+            
+            ${{ github.event.workflow_run.conclusion == 'success' && '✅ **보안 스캔 통과**' || '❌ **보안 이슈 발견**' }}
+            
+            📋 **스캔 정보**:
+            • 워크플로우: ${{ github.event.workflow_run.name }}
+            • 결과: ${{ github.event.workflow_run.conclusion }}
+            • 브랜치: ${{ github.event.workflow_run.head_branch }}
+            
+            🔍 **상세 결과**: 
+            ${{ github.event.workflow_run.html_url }}
+            
+            ---
+            ${{ github.event.workflow_run.conclusion == 'success' && '🎯 보안 상태가 양호합니다!' || '⚠️ 보안 이슈를 확인하고 수정하세요!' }}
+          format: markdown

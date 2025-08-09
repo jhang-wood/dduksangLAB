@@ -1,0 +1,34 @@
+{
+  "name": "dduksangLAB",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "runArgs": [
+    "-p", "3000:3000"
+  ],
+  "containerEnv": {
+    "NEXT_PUBLIC_SUPABASE_URL": "${localEnv:NEXT_PUBLIC_SUPABASE_URL}",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "${localEnv:NEXT_PUBLIC_SUPABASE_ANON_KEY}",
+    "SUPABASE_SERVICE_ROLE_KEY": "${localEnv:SUPABASE_SERVICE_ROLE_KEY}",
+    "CRON_SECRET": "${localEnv:CRON_SECRET}",
+    "NEXT_PUBLIC_APP_URL": "${localEnv:NEXT_PUBLIC_APP_URL}",
+    "TELEGRAM_BOT_TOKEN": "${localEnv:TELEGRAM_BOT_TOKEN}",
+    "TELEGRAM_CHAT_ID": "${localEnv:TELEGRAM_CHAT_ID}",
+    "PAYAPP_APPLICATION_ID": "${localEnv:PAYAPP_APPLICATION_ID}",
+    "PAYAPP_PRIVATE_KEY": "${localEnv:PAYAPP_PRIVATE_KEY}",
+    "PAYAPP_WEBHOOK_SECRET": "${localEnv:PAYAPP_WEBHOOK_SECRET}",
+    "GOOGLE_AI_API_KEY": "${localEnv:GOOGLE_AI_API_KEY}"
+  },
+  "postCreateCommand": "npm install",
+  "postStartCommand": "echo 'Container ready for dduksangLAB development'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "remoteUser": "node"
+}

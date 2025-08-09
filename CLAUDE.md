@@ -97,3 +97,137 @@ async function verifyDeployment() {
 # 전체 프로세스 자동 실행
 ./deploy-and-verify.sh
 ```
+
+---
+
+# 🤖 자동화 시스템 안내
+
+## 📖 개요
+dduksangLAB 프로젝트는 완전한 자동화 시스템을 구축했습니다. 코드 변경부터 배포, 품질 관리까지 모든 과정이 자동으로 처리됩니다.
+
+## 🚀 GitHub Actions 워크플로우
+
+### 1. 자동 배포 워크플로우 (.github/workflows/deploy.yml)
+- **트리거**: main 브랜치에 푸시할 때 자동 실행
+- **기능**: 
+  - 코드 품질 검사 (ESLint, TypeScript)
+  - 보안 스캔 (npm audit, CodeQL)
+  - Vercel 자동 배포
+  - 텔레그램 알림 발송
+
+### 2. Renovate Bot (.github/renovate.json)
+- **기능**: 의존성 자동 업데이트
+- **스케줄**: 매주 월요일 새벽 2시
+- **특징**: 
+  - 자동 PR 생성
+  - 보안 업데이트 우선 처리
+  - 호환성 검사 후 자동 머지
+
+### 3. Semantic Release (.releaserc.json)
+- **기능**: 버전 자동 관리 및 릴리즈 노트 생성
+- **트리거**: main 브랜치 푸시 시
+- **생성물**: 
+  - 자동 버전 태깅
+  - CHANGELOG.md 업데이트
+  - GitHub 릴리즈 생성
+
+## 📱 텔레그램 알림 시스템
+
+### 알림 유형
+1. **배포 성공/실패 알림**
+   - 배포 상태와 URL 포함
+   - 실패 시 상세 오류 정보 제공
+
+2. **보안 이슈 알림**
+   - 취약점 발견 시 즉시 알림
+   - 심각도별 분류
+
+3. **의존성 업데이트 알림**
+   - Renovate Bot의 업데이트 결과
+   - 중요 업데이트 하이라이트
+
+### 텔레그램 설정
+> ⚠️ **중요**: 모든 텔레그램 정보는 GitHub Secrets에만 저장하세요!
+
+**필수 GitHub Secrets:**
+- `TELEGRAM_BOT_TOKEN`: 봇 토큰
+- `TELEGRAM_CHAT_ID`: 알림 받을 채팅 ID
+
+## 🛠 개발 워크플로우
+
+### 권장 개발 프로세스
+1. **브랜치 생성**
+   ```bash
+   git checkout -b feature/새기능명
+   ```
+
+2. **개발 및 테스트**
+   ```bash
+   npm run dev        # 개발 서버 실행
+   npm run lint       # 코드 품질 검사
+   npm run type-check # 타입 검사
+   ```
+
+3. **커밋 (Semantic Commit)**
+   ```bash
+   git commit -m "feat: 새로운 기능 추가"
+   git commit -m "fix: 버그 수정"
+   git commit -m "docs: 문서 업데이트"
+   ```
+
+4. **Pull Request 생성**
+   - GitHub에서 PR 생성
+   - 자동 검사 통과 확인
+   - 리뷰어 지정 (선택사항)
+
+5. **자동 배포**
+   - main 브랜치 머지 시 자동 배포
+   - 텔레그램으로 결과 알림 수신
+
+## 📊 품질 관리
+
+### 코드 품질 기준
+- **ESLint**: 코드 스타일 및 잠재적 오류 검사
+- **TypeScript**: 타입 안전성 보장
+- **Prettier**: 코드 포매팅 통일
+
+### 보안 검사
+- **npm audit**: 의존성 취약점 검사
+- **CodeQL**: 정적 보안 분석
+- **Renovate**: 보안 업데이트 자동 적용
+
+### 배포 검증
+- **빌드 테스트**: 프로덕션 빌드 성공 확인
+- **타입 검사**: TypeScript 컴파일 오류 검사
+- **린트 검사**: 코드 품질 기준 통과 확인
+
+## 🚨 문제 해결
+
+### 배포 실패 시
+1. **GitHub Actions 로그 확인**
+   - Repository → Actions 탭
+   - 실패한 워크플로우 클릭
+   - 오류 로그 확인
+
+2. **일반적인 오류 유형**
+   - 린트 오류: `npm run lint:fix` 실행
+   - 타입 오류: TypeScript 오류 수정
+   - 빌드 오류: 의존성 또는 구문 오류 확인
+
+3. **Vercel 환경변수 확인**
+   - Vercel Dashboard → Project Settings
+   - Environment Variables 설정 확인
+
+### 텔레그램 알림이 안 올 때
+1. **GitHub Secrets 확인**
+   - Repository Settings → Secrets and variables → Actions
+   - `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` 설정 확인
+
+2. **봇 설정 확인**
+   - 텔레그램에서 봇과 대화 시작
+   - 봇이 그룹에 추가되어 있는지 확인
+
+## 📚 추가 문서
+- [자동화 시스템 사용 가이드](C:\dev\docs\git-automation\USER_GUIDE.md)
+- [GitHub Secrets 설정 가이드](C:\dev\docs\git-automation\secrets-setup.md)
+- [프로젝트 전체 기술 문서](C:\dev\docs\git-automation\PRD.md)

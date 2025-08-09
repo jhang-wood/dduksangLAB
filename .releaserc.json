@@ -1,0 +1,103 @@
+{
+  "branches": [
+    "+([0-9])?(.{+([0-9]),x}).x",
+    "main",
+    {
+      "name": "develop",
+      "prerelease": "beta"
+    },
+    {
+      "name": "alpha",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          { "type": "feat", "release": "minor" },
+          { "type": "fix", "release": "patch" },
+          { "type": "perf", "release": "patch" },
+          { "type": "revert", "release": "patch" },
+          { "type": "docs", "release": false },
+          { "type": "style", "release": false },
+          { "type": "chore", "release": false },
+          { "type": "refactor", "release": "patch" },
+          { "type": "test", "release": false },
+          { "type": "build", "release": false },
+          { "type": "ci", "release": false },
+          { "scope": "no-release", "release": false },
+          { "breaking": true, "release": "major" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            { "type": "feat", "section": "🚀 새로운 기능", "hidden": false },
+            { "type": "fix", "section": "🐛 버그 수정", "hidden": false },
+            { "type": "perf", "section": "⚡ 성능 개선", "hidden": false },
+            { "type": "revert", "section": "⏪ 되돌리기", "hidden": false },
+            { "type": "refactor", "section": "♻️ 코드 리팩터링", "hidden": false },
+            { "type": "security", "section": "🛡️ 보안 개선", "hidden": false },
+            { "type": "docs", "section": "📚 문서", "hidden": true },
+            { "type": "style", "section": "💄 스타일", "hidden": true },
+            { "type": "chore", "section": "🧹 유지보수", "hidden": true },
+            { "type": "test", "section": "✅ 테스트", "hidden": true },
+            { "type": "build", "section": "📦 빌드", "hidden": true },
+            { "type": "ci", "section": "👷 CI/CD", "hidden": true }
+          ]
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md",
+        "changelogTitle": "# 📋 변경사항\n\n모든 주요 변경사항들이 이 파일에 문서화됩니다.\n\n버전 관리는 [Semantic Versioning](https://semver.org/lang/ko/)을 따릅니다."
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false,
+        "tarballDir": "dist"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "successComment": "🎉 이 ${issue.pull_request ? 'PR' : '이슈'}가 포함된 릴리즈가 배포되었습니다!\n\n**릴리즈 버전**: [v${nextRelease.version}](${releases.filter(release => release.name === 'GitHub')[0].url})\n\n감사합니다! 🚀",
+        "failTitle": "❌ 릴리즈 실패: v${nextRelease.version}",
+        "failComment": "😞 불행히도 이 릴리즈는 실패했습니다.\n\n**오류 내용**:\n```\n${errors.map(err => err.message).join('\\n')}\n```\n\n자세한 내용은 [Actions 로그](${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID})에서 확인하세요.",
+        "releasedLabels": ["✅ 릴리즈됨"],
+        "addReleases": "bottom",
+        "assets": [
+          { "path": "dist/*.tgz", "label": "배포 패키지" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "package.json",
+          "package-lock.json"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ],
+  "repositoryUrl": "https://github.com/dduksanglab/dduksangLAB",
+  "tagFormat": "v${version}",
+  "preset": "conventionalcommits",
+  "dryRun": false,
+  "ci": true,
+  "debug": false
+}
