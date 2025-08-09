@@ -74,7 +74,7 @@ export default function AdminLecturesPage() {
     description: "",
     instructor_name: "",
     category: "AI",
-    level: "beginner" as const,
+    level: "beginner" as "beginner" | "intermediate" | "advanced",
     price: 0,
     preview_url: "",
     thumbnail_url: "",
