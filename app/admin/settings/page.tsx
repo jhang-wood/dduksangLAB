@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { userNotification, logger } from '@/lib/logger'
+import { userNotification, logger } from "@/lib/logger";
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import {} from 'framer-motion'
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import {} from "framer-motion";
 import {
   Save,
   RefreshCw,
@@ -12,49 +12,45 @@ import {
   Shield,
   Globe,
   Server,
-  AlertTriangle
-} from 'lucide-react'
-import Header from '@/components/Header'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
+  AlertTriangle,
+} from "lucide-react";
+import Header from "@/components/Header";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 
 interface SystemSettings {
-  siteName: string
-  siteDescription: string
-  adminEmail: string
-  maintenanceMode: boolean
-  allowRegistration: boolean
-  requireEmailVerification: boolean
-  maxFileSize: number
-  allowedFileTypes: string[]
+  siteName: string;
+  siteDescription: string;
+  adminEmail: string;
+  maintenanceMode: boolean;
+  allowRegistration: boolean;
+  requireEmailVerification: boolean;
+  maxFileSize: number;
+  allowedFileTypes: string[];
 }
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SystemSettings>({
-    siteName: '떡상연구소',
-    siteDescription: 'AI 시대를 선도하는 No-Code 교육 플랫폼',
-    adminEmail: 'admin@dduksanglab.com',
+    siteName: "떡상연구소",
+    siteDescription: "AI 시대를 선도하는 No-Code 교육 플랫폼",
+    adminEmail: "admin@dduksanglab.com",
     maintenanceMode: false,
     allowRegistration: true,
     requireEmailVerification: true,
     maxFileSize: 5,
-    allowedFileTypes: ['jpg', 'jpeg', 'png', 'webp']
-  })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<string>('')
-  const router = useRouter()
-  const { user } = useAuth()
-
-  useEffect(() => {
-    checkAdminAccess()
-  }, [checkAdminAccess])
+    allowedFileTypes: ["jpg", "jpeg", "png", "webp"],
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
+  const router = useRouter();
+  const { user } = useAuth();
 
   const loadSettings = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/settings')
-      const result = await response.json()
-      
+      const response = await fetch("/api/admin/settings");
+      const result = await response.json();
+
       if (response.ok && result.data) {
         setSettings({
           siteName: result.data.site_name,
@@ -64,55 +60,60 @@ export default function AdminSettingsPage() {
           allowRegistration: result.data.allow_registration,
           requireEmailVerification: result.data.require_email_verification,
           maxFileSize: result.data.max_file_size,
-          allowedFileTypes: result.data.allowed_file_types
-        })
-        
+          allowedFileTypes: result.data.allowed_file_types,
+        });
+
         if (result.data.updated_at) {
-          setLastUpdated(new Date(result.data.updated_at).toLocaleString('ko-KR'))
+          setLastUpdated(
+            new Date(result.data.updated_at).toLocaleString("ko-KR"),
+          );
         } else {
-          setLastUpdated('처음 설정')
+          setLastUpdated("처음 설정");
         }
       } else {
-        logger.error('Failed to load settings:', result.error)
-        userNotification.alert('설정을 불러오는데 실패했습니다.')
+        logger.error("Failed to load settings:", result.error);
+        userNotification.alert("설정을 불러오는데 실패했습니다.");
       }
     } catch (error) {
-      logger.error('Error loading settings:', error)
-      userNotification.alert('설정을 불러오는데 실패했습니다.')
+      logger.error("Error loading settings:", error);
+      userNotification.alert("설정을 불러오는데 실패했습니다.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const checkAdminAccess = useCallback(async () => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push("/auth/login");
+      return;
     }
 
     // Check if user is admin
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
 
-    if (profile?.role !== 'admin') {
-      router.push('/')
-      return
+    if (profile?.role !== "admin") {
+      router.push("/");
+      return;
     }
 
-    loadSettings()
-  }, [user, router, loadSettings])
+    loadSettings();
+  }, [user, router, loadSettings]);
 
+  useEffect(() => {
+    checkAdminAccess();
+  }, [checkAdminAccess]);
 
   const saveSettings = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'PUT',
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           site_name: settings.siteName,
@@ -122,53 +123,61 @@ export default function AdminSettingsPage() {
           allow_registration: settings.allowRegistration,
           require_email_verification: settings.requireEmailVerification,
           max_file_size: settings.maxFileSize,
-          allowed_file_types: settings.allowedFileTypes
-        })
-      })
+          allowed_file_types: settings.allowedFileTypes,
+        }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
-        setLastUpdated(new Date().toLocaleString('ko-KR'))
-        userNotification.alert('설정이 저장되었습니다.')
+        setLastUpdated(new Date().toLocaleString("ko-KR"));
+        userNotification.alert("설정이 저장되었습니다.");
       } else {
-        logger.error('Failed to save settings:', result.error)
-        userNotification.alert(result.error || '설정 저장 중 오류가 발생했습니다.')
+        logger.error("Failed to save settings:", result.error);
+        userNotification.alert(
+          result.error || "설정 저장 중 오류가 발생했습니다.",
+        );
       }
     } catch (error) {
-      logger.error('Error saving settings:', error)
-      userNotification.alert('설정 저장 중 오류가 발생했습니다.')
+      logger.error("Error saving settings:", error);
+      userNotification.alert("설정 저장 중 오류가 발생했습니다.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const resetToDefaults = () => {
-    if (userNotification.confirm('모든 설정을 기본값으로 되돌리시겠습니까?')) {
+    if (userNotification.confirm("모든 설정을 기본값으로 되돌리시겠습니까?")) {
       setSettings({
-        siteName: '떡상연구소',
-        siteDescription: 'AI 시대를 선도하는 No-Code 교육 플랫폼',
-        adminEmail: 'admin@dduksanglab.com',
+        siteName: "떡상연구소",
+        siteDescription: "AI 시대를 선도하는 No-Code 교육 플랫폼",
+        adminEmail: "admin@dduksanglab.com",
         maintenanceMode: false,
         allowRegistration: true,
         requireEmailVerification: true,
         maxFileSize: 5,
-        allowedFileTypes: ['jpg', 'jpeg', 'png', 'webp']
-      })
+        allowedFileTypes: ["jpg", "jpeg", "png", "webp"],
+      });
     }
-  }
+  };
 
-  const handleArrayFieldChange = (field: keyof SystemSettings, value: string) => {
-    const types = value.split(',').map(t => t.trim()).filter(t => t)
-    setSettings(prev => ({ ...prev, [field]: types }))
-  }
+  const handleArrayFieldChange = (
+    field: keyof SystemSettings,
+    value: string,
+  ) => {
+    const types = value
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t);
+    setSettings((prev) => ({ ...prev, [field]: types }));
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -199,7 +208,9 @@ export default function AdminSettingsPage() {
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Globe className="w-6 h-6 text-metallicGold-500" />
-                <h3 className="text-lg font-semibold text-offWhite-200">사이트 설정</h3>
+                <h3 className="text-lg font-semibold text-offWhite-200">
+                  사이트 설정
+                </h3>
               </div>
 
               <div className="space-y-4">
@@ -210,7 +221,12 @@ export default function AdminSettingsPage() {
                   <input
                     type="text"
                     value={settings.siteName}
-                    onChange={(e) => setSettings(prev => ({ ...prev, siteName: e.target.value }))}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        siteName: e.target.value,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                   />
                 </div>
@@ -221,7 +237,12 @@ export default function AdminSettingsPage() {
                   </label>
                   <textarea
                     value={settings.siteDescription}
-                    onChange={(e) => setSettings(prev => ({ ...prev, siteDescription: e.target.value }))}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        siteDescription: e.target.value,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 h-24"
                   />
                 </div>
@@ -233,7 +254,12 @@ export default function AdminSettingsPage() {
                   <input
                     type="email"
                     value={settings.adminEmail}
-                    onChange={(e) => setSettings(prev => ({ ...prev, adminEmail: e.target.value }))}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        adminEmail: e.target.value,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                   />
                 </div>
@@ -244,20 +270,31 @@ export default function AdminSettingsPage() {
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="w-6 h-6 text-green-500" />
-                <h3 className="text-lg font-semibold text-offWhite-200">보안 설정</h3>
+                <h3 className="text-lg font-semibold text-offWhite-200">
+                  보안 설정
+                </h3>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-offWhite-200 font-medium">회원가입 허용</h4>
-                    <p className="text-sm text-offWhite-600">새로운 사용자의 회원가입을 허용합니다</p>
+                    <h4 className="text-offWhite-200 font-medium">
+                      회원가입 허용
+                    </h4>
+                    <p className="text-sm text-offWhite-600">
+                      새로운 사용자의 회원가입을 허용합니다
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={settings.allowRegistration}
-                      onChange={(e) => setSettings(prev => ({ ...prev, allowRegistration: e.target.checked }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          allowRegistration: e.target.checked,
+                        }))
+                      }
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-deepBlack-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-metallicGold-500"></div>
@@ -266,14 +303,23 @@ export default function AdminSettingsPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-offWhite-200 font-medium">이메일 인증 필수</h4>
-                    <p className="text-sm text-offWhite-600">회원가입 시 이메일 인증을 필수로 합니다</p>
+                    <h4 className="text-offWhite-200 font-medium">
+                      이메일 인증 필수
+                    </h4>
+                    <p className="text-sm text-offWhite-600">
+                      회원가입 시 이메일 인증을 필수로 합니다
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={settings.requireEmailVerification}
-                      onChange={(e) => setSettings(prev => ({ ...prev, requireEmailVerification: e.target.checked }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          requireEmailVerification: e.target.checked,
+                        }))
+                      }
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-deepBlack-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-metallicGold-500"></div>
@@ -286,7 +332,9 @@ export default function AdminSettingsPage() {
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Database className="w-6 h-6 text-blue-500" />
-                <h3 className="text-lg font-semibold text-offWhite-200">파일 업로드 설정</h3>
+                <h3 className="text-lg font-semibold text-offWhite-200">
+                  파일 업로드 설정
+                </h3>
               </div>
 
               <div className="space-y-4">
@@ -297,7 +345,12 @@ export default function AdminSettingsPage() {
                   <input
                     type="number"
                     value={settings.maxFileSize}
-                    onChange={(e) => setSettings(prev => ({ ...prev, maxFileSize: parseInt(e.target.value) || 5 }))}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        maxFileSize: parseInt(e.target.value) || 5,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                     min="1"
                     max="50"
@@ -310,8 +363,10 @@ export default function AdminSettingsPage() {
                   </label>
                   <input
                     type="text"
-                    value={settings.allowedFileTypes.join(', ')}
-                    onChange={(e) => handleArrayFieldChange('allowedFileTypes', e.target.value)}
+                    value={settings.allowedFileTypes.join(", ")}
+                    onChange={(e) =>
+                      handleArrayFieldChange("allowedFileTypes", e.target.value)
+                    }
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                     placeholder="jpg, png, gif, webp"
                   />
@@ -323,19 +378,30 @@ export default function AdminSettingsPage() {
             <div className="bg-deepBlack-300 rounded-xl border border-red-500/30 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <AlertTriangle className="w-6 h-6 text-red-500" />
-                <h3 className="text-lg font-semibold text-offWhite-200">유지보수 모드</h3>
+                <h3 className="text-lg font-semibold text-offWhite-200">
+                  유지보수 모드
+                </h3>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-offWhite-200 font-medium">유지보수 모드 활성화</h4>
-                  <p className="text-sm text-offWhite-600">활성화 시 관리자를 제외한 모든 사용자가 접근할 수 없습니다</p>
+                  <h4 className="text-offWhite-200 font-medium">
+                    유지보수 모드 활성화
+                  </h4>
+                  <p className="text-sm text-offWhite-600">
+                    활성화 시 관리자를 제외한 모든 사용자가 접근할 수 없습니다
+                  </p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={settings.maintenanceMode}
-                    onChange={(e) => setSettings(prev => ({ ...prev, maintenanceMode: e.target.checked }))}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        maintenanceMode: e.target.checked,
+                      }))
+                    }
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-deepBlack-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
@@ -371,7 +437,9 @@ export default function AdminSettingsPage() {
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Server className="w-6 h-6 text-purple-500" />
-                <h3 className="text-lg font-semibold text-offWhite-200">시스템 정보</h3>
+                <h3 className="text-lg font-semibold text-offWhite-200">
+                  시스템 정보
+                </h3>
               </div>
 
               <div className="space-y-3 text-sm">
@@ -396,30 +464,37 @@ export default function AdminSettingsPage() {
 
             {/* Quick Actions */}
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
-              <h3 className="text-lg font-semibold text-offWhite-200 mb-4">빠른 작업</h3>
-              
+              <h3 className="text-lg font-semibold text-offWhite-200 mb-4">
+                빠른 작업
+              </h3>
+
               <div className="space-y-2">
-                <button 
+                <button
                   onClick={() => {
-                    localStorage.clear()
-                    userNotification.alert('캐시가 지워졌습니다.')
+                    localStorage.clear();
+                    userNotification.alert("캐시가 지워졌습니다.");
                   }}
-                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors">
+                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors"
+                >
                   캐시 지우기
                 </button>
-                <button 
+                <button
                   onClick={() => {
-                    userNotification.alert('데이터베이스 백업 기능은 준비 중입니다.')
+                    userNotification.alert(
+                      "데이터베이스 백업 기능은 준비 중입니다.",
+                    );
                   }}
-                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors">
+                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors"
+                >
                   데이터베이스 백업
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     // 시스템 로그 확인 기능
-                    userNotification.alert('로그가 콘솔에 출력되었습니다.')
+                    userNotification.alert("로그가 콘솔에 출력되었습니다.");
                   }}
-                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors">
+                  className="w-full px-4 py-2 text-left text-offWhite-600 hover:text-offWhite-200 hover:bg-deepBlack-600/50 rounded-lg transition-colors"
+                >
                   로그 확인
                 </button>
               </div>
@@ -428,5 +503,5 @@ export default function AdminSettingsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
