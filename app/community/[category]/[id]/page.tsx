@@ -1,175 +1,198 @@
-'use client'
+"use client";
 
-import { userNotification, logger } from '@/lib/logger'
+import { userNotification, logger } from "@/lib/logger";
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ArrowLeft, Eye, MessageSquare, User, Calendar, Trash2} from 'lucide-react'
-import Link from 'next/link'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
-import { supabase } from '@/lib/supabase'
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Eye,
+  MessageSquare,
+  User,
+  Calendar,
+  Trash2,
+} from "lucide-react";
+import Link from "next/link";
+import Header from "@/components/Header";
+import NeuralNetworkBackground from "@/components/NeuralNetworkBackground";
+import { useAuth } from "@/lib/auth-context";
+import { supabase } from "@/lib/supabase";
 
 interface Post {
-  id: string
-  title: string
-  content: string
-  category: string
-  user_id: string
-  view_count: number
-  created_at: string
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  user_id: string;
+  view_count: number;
+  created_at: string;
   profiles: {
-    name: string
-  }
+    name: string;
+  };
 }
 
 interface Comment {
-  id: string
-  content: string
-  user_id: string
-  created_at: string
+  id: string;
+  content: string;
+  user_id: string;
+  created_at: string;
   profiles: {
-    name: string
-  }
+    name: string;
+  };
 }
 
-export default function CommunityPostPage({ params }: { params: { id: string, category: string } }) {
-  const [post, setPost] = useState<Post | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [commentContent, setCommentContent] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [commentLoading, setCommentLoading] = useState(false)
-  const { user } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    fetchPost()
-    fetchComments()
-  }, [fetchPost, fetchComments])
+export default function CommunityPostPage({
+  params,
+}: {
+  params: { id: string; category: string };
+}) {
+  const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentContent, setCommentContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [commentLoading, setCommentLoading] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
 
   const fetchPost = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('community_posts')
-        .select(`
+        .from("community_posts")
+        .select(
+          `
           *,
           profiles (name)
-        `)
-        .eq('id', params.id)
-        .single()
+        `,
+        )
+        .eq("id", params.id)
+        .single();
 
-      if (error) {throw error}
-      
-      setPost(data)
-      
+      if (error) {
+        throw error;
+      }
+
+      setPost(data);
+
       // 조회수 증가
       await supabase
-        .from('community_posts')
+        .from("community_posts")
         .update({ view_count: data.view_count + 1 })
-        .eq('id', params.id)
+        .eq("id", params.id);
     } catch (error) {
-      logger.error('Error fetching post:', error)
-      router.push('/community')
+      logger.error("Error fetching post:", error);
+      router.push("/community");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [params.id, router])
+  }, [params.id, router]);
 
   const fetchComments = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('community_comments')
-        .select(`
+        .from("community_comments")
+        .select(
+          `
           *,
           profiles (name)
-        `)
-        .eq('post_id', params.id)
-        .order('created_at', { ascending: true })
+        `,
+        )
+        .eq("post_id", params.id)
+        .order("created_at", { ascending: true });
 
-      if (error) {throw error}
-      setComments(data || [])
+      if (error) {
+        throw error;
+      }
+      setComments(data || []);
     } catch (error) {
-      logger.error('Error fetching comments:', error)
+      logger.error("Error fetching comments:", error);
     }
-  }, [params.id])
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchPost();
+    fetchComments();
+  }, [fetchPost, fetchComments]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!user) {
-      userNotification.alert('로그인이 필요한 서비스입니다.')
-      router.push('/auth/login')
-      return
+      userNotification.alert("로그인이 필요한 서비스입니다.");
+      router.push("/auth/login");
+      return;
     }
 
     if (!commentContent.trim()) {
-      userNotification.alert('댓글 내용을 입력해주세요.')
-      return
+      userNotification.alert("댓글 내용을 입력해주세요.");
+      return;
     }
 
-    setCommentLoading(true)
+    setCommentLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('community_comments')
-        .insert({
-          post_id: params.id,
-          user_id: user.id,
-          content: commentContent
-        })
+      const { error } = await supabase.from("community_comments").insert({
+        post_id: params.id,
+        user_id: user.id,
+        content: commentContent,
+      });
 
-      if (error) {throw error}
+      if (error) {
+        throw error;
+      }
 
-      setCommentContent('')
-      fetchComments()
+      setCommentContent("");
+      fetchComments();
     } catch (error) {
-      logger.error('Error creating comment:', error)
-      userNotification.alert('댓글 작성 중 오류가 발생했습니다.')
+      logger.error("Error creating comment:", error);
+      userNotification.alert("댓글 작성 중 오류가 발생했습니다.");
     } finally {
-      setCommentLoading(false)
+      setCommentLoading(false);
     }
-  }
+  };
 
   const handleDeletePost = async () => {
-    if (!userNotification.confirm('정말로 이 글을 삭제하시겠습니까?')) {return}
+    if (!userNotification.confirm("정말로 이 글을 삭제하시겠습니까?")) {
+      return;
+    }
 
     try {
       const { error } = await supabase
-        .from('community_posts')
+        .from("community_posts")
         .delete()
-        .eq('id', params.id)
+        .eq("id", params.id);
 
-      if (error) {throw error}
-      
-      router.push('/community')
+      if (error) {
+        throw error;
+      }
+
+      router.push("/community");
     } catch (error) {
-      logger.error('Error deleting post:', error)
-      userNotification.alert('글 삭제 중 오류가 발생했습니다.')
+      logger.error("Error deleting post:", error);
+      userNotification.alert("글 삭제 중 오류가 발생했습니다.");
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+    return new Date(dateString).toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="text-offWhite-500">로딩 중...</div>
       </div>
-    )
+    );
   }
 
   if (!post) {
-    return null
+    return null;
   }
 
   return (
@@ -185,7 +208,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Link 
+              <Link
                 href="/community"
                 className="inline-flex items-center gap-2 text-metallicGold-500 hover:text-metallicGold-400 mb-8"
               >
@@ -195,8 +218,10 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
 
               {/* Post */}
               <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 mb-8">
-                <h1 className="text-3xl font-bold text-offWhite-200 mb-4">{post.title}</h1>
-                
+                <h1 className="text-3xl font-bold text-offWhite-200 mb-4">
+                  {post.title}
+                </h1>
+
                 <div className="flex items-center justify-between flex-wrap gap-4 mb-8 pb-8 border-b border-metallicGold-900/20">
                   <div className="flex items-center gap-4 text-sm text-offWhite-600">
                     <span className="flex items-center gap-1">
@@ -212,7 +237,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                       {post.view_count}
                     </span>
                   </div>
-                  
+
                   {user?.id === post.user_id && (
                     <div className="flex gap-2">
                       <button
@@ -245,7 +270,11 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                     onChange={(e) => setCommentContent(e.target.value)}
                     rows={3}
                     className="w-full px-4 py-3 bg-deepBlack-600/50 border border-metallicGold-900/30 rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent resize-none mb-4"
-                    placeholder={user ? "댓글을 입력하세요" : "로그인 후 댓글을 작성할 수 있습니다"}
+                    placeholder={
+                      user
+                        ? "댓글을 입력하세요"
+                        : "로그인 후 댓글을 작성할 수 있습니다"
+                    }
                     disabled={!user}
                   />
                   <button
@@ -253,16 +282,21 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                     disabled={!user || commentLoading}
                     className="px-6 py-2 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-medium hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50"
                   >
-                    {commentLoading ? '작성 중...' : '댓글 작성'}
+                    {commentLoading ? "작성 중..." : "댓글 작성"}
                   </button>
                 </form>
 
                 {/* Comments List */}
                 <div className="space-y-4">
                   {comments.map((comment) => (
-                    <div key={comment.id} className="p-4 bg-deepBlack-600/30 rounded-xl">
+                    <div
+                      key={comment.id}
+                      className="p-4 bg-deepBlack-600/30 rounded-xl"
+                    >
                       <div className="flex items-center gap-3 mb-2 text-sm text-offWhite-600">
-                        <span className="font-medium text-metallicGold-500">{comment.profiles?.name}</span>
+                        <span className="font-medium text-metallicGold-500">
+                          {comment.profiles?.name}
+                        </span>
                         <span>{formatDate(comment.created_at)}</span>
                       </div>
                       <p className="text-offWhite-400">{comment.content}</p>
@@ -275,5 +309,5 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         </section>
       </div>
     </div>
-  )
+  );
 }
