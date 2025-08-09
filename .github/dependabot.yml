@@ -1,0 +1,58 @@
+# Dependabot 설정 - GitHub 무료 보안 업데이트 자동화
+version: 2
+updates:
+  # npm 의존성 자동 업데이트
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "02:00"
+      timezone: "Asia/Seoul"
+    # 보안 업데이트는 즉시 생성
+    open-pull-requests-limit: 10
+    # PR 라벨 자동 추가
+    labels:
+      - "dependencies"
+      - "security"
+    # 자동 머지 설정 (보안 업데이트만)
+    allow:
+      - dependency-type: "all"
+    # 커밋 메시지 형식
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    # PR 제목 형식
+    pull-request-branch-name:
+      separator: "-"
+    # 그룹화 설정 - 관련 의존성을 하나의 PR로
+    groups:
+      react-dependencies:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      next-dependencies:
+        patterns:
+          - "next"
+          - "@next/*"
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+  
+  # GitHub Actions 워크플로우 업데이트
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "02:00"
+      timezone: "Asia/Seoul"
+    labels:
+      - "github-actions"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

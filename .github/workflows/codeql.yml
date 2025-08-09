@@ -1,0 +1,58 @@
+# CodeQL 보안 분석 - GitHub의 무료 정적 분석 도구
+name: 🔍 CodeQL Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # 매주 화요일 오전 10시 (KST)
+    - cron: '0 1 * * 2'
+  merge_group:
+
+jobs:
+  analyze:
+    name: 🕵️ CodeQL 보안 분석
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+        # CodeQL supports: 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby'
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    # CodeQL 도구 초기화
+    - name: 🔧 Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        # 추가 쿼리 활성화 (보안 강화)
+        queries: +security-extended,security-and-quality
+        
+    # 자동 빌드 (JavaScript/TypeScript는 빌드 불필요)
+    - name: 🔨 Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    # CodeQL 분석 실행
+    - name: 🔍 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+        
+    # 분석 결과 요약
+    - name: 📊 Upload CodeQL results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: codeql-results
+        path: /home/runner/work/_temp/codeql_databases
+        retention-days: 5

@@ -7,8 +7,12 @@ on:
   
   # 워크플로우 실행 결과 알림
   workflow_run:
-    workflows: ['CI/CD', 'Deploy', 'Tests', 'Security Scan']
+    workflows: ['CI/CD Pipeline', 'Deploy to Vercel', 'Security Scan']
     types: [completed]
+  
+  # Merge Queue 이벤트
+  merge_group:
+    types: [checks_requested]
   
   # 수동 실행
   workflow_dispatch:

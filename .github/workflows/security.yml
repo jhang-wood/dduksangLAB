@@ -5,6 +5,8 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
   schedule:
     - cron: '0 2 * * 1'  # Every Monday at 2 AM UTC
   workflow_dispatch:
@@ -78,31 +80,6 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
           exit-code: '0'
 
-  # Snyk Security Scan
-  snyk:
-    name: 🔐 Snyk Security Scan
-    runs-on: ubuntu-latest
-    continue-on-error: true  # Don't fail the workflow if Snyk is not configured
-    
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: 📦 Install dependencies
-        run: npm ci
-
-      - name: 🔍 Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
 
   # GitHub Dependency Review
   dependency-review:
