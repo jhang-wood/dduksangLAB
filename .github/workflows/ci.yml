@@ -9,7 +9,7 @@ on:
     types: [checks_requested]
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   
 jobs:
   # 린트 및 타입 체크

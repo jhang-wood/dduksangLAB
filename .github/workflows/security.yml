@@ -192,7 +192,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: 📦 Install dependencies
@@ -208,7 +208,7 @@ jobs:
   security-summary:
     name: 📊 Security Summary
     runs-on: ubuntu-latest
-    needs: [codeql, trivy, snyk, dependency-review, owasp, scorecard, secret-scan, license-check]
+    needs: [codeql, trivy, dependency-review, owasp, scorecard, secret-scan, license-check]
     if: always()
     
     steps:
@@ -221,7 +221,6 @@ jobs:
           echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| CodeQL | ${{ needs.codeql.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Trivy | ${{ needs.trivy.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Snyk | ${{ needs.snyk.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| OWASP | ${{ needs.owasp.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Scorecard | ${{ needs.scorecard.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Secret Scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
@@ -251,7 +250,7 @@ jobs:
           
           CodeQL: ${{ needs.codeql.result }}
           Trivy: ${{ needs.trivy.result }}
-          Snyk: ${{ needs.snyk.result }}
+          OWASP: ${{ needs.owasp.result }}
           Secret Scan: ${{ needs.secret-scan.result }}
           
           $STATUS_TEXT
