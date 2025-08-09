@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {} from 'framer-motion'
 import {
@@ -48,30 +48,9 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     checkAdminAccess()
-  }, [user])
+  }, [checkAdminAccess])
 
-  const checkAdminAccess = async () => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      router.push('/')
-      return
-    }
-
-    loadSettings()
-  }
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/settings')
       const result = await response.json()
@@ -103,7 +82,29 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  const checkAdminAccess = useCallback(async () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      router.push('/')
+      return
+    }
+
+    loadSettings()
+  }, [user, router, loadSettings])
+
 
   const saveSettings = async () => {
     setSaving(true)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -68,9 +68,9 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
 
   useEffect(() => {
     fetchLectureData()
-  }, [params.id, user])
+  }, [fetchLectureData])
 
-  const fetchLectureData = async () => {
+  const fetchLectureData = useCallback(async () => {
     try {
       // 수강 여부 확인
       if (user) {
@@ -116,7 +116,7 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, params.id, router])
 
   const handleEnrollClick = () => {
     if (!user) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -16,9 +16,9 @@ function PaymentSuccessContent() {
 
   useEffect(() => {
     handlePaymentSuccess()
-  }, [])
+  }, [handlePaymentSuccess])
 
-  const handlePaymentSuccess = async () => {
+  const handlePaymentSuccess = useCallback(async () => {
     try {
       const orderId = searchParams.get('order_no')
       const payappOrderId = searchParams.get('payapp_order_id')
@@ -64,7 +64,7 @@ function PaymentSuccessContent() {
     } finally {
       setProcessing(false)
     }
-  }
+  }, [searchParams, user, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4">

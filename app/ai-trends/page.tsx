@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -41,9 +41,9 @@ export default function AITrendsPage() {
 
   useEffect(() => {
     fetchTrends()
-  }, [selectedCategory, page])
+  }, [fetchTrends])
 
-  const fetchTrends = async () => {
+  const fetchTrends = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -71,7 +71,7 @@ export default function AITrendsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [page, selectedCategory])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -39,9 +39,9 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     checkAdminAccess()
-  }, [user])
+  }, [checkAdminAccess])
 
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -60,9 +60,9 @@ export default function AdminUsersPage() {
     }
 
     fetchUsers()
-  }
+  }, [user, router, fetchUsers])
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       let query = supabase
         .from('profiles')
@@ -92,13 +92,13 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchTerm, roleFilter])
 
   useEffect(() => {
     if (!loading) {
       fetchUsers()
     }
-  }, [searchTerm, roleFilter])
+  }, [fetchUsers, loading])
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {

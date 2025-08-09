@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Save, Eye } from 'lucide-react'
 import Link from 'next/link'
@@ -53,9 +53,9 @@ export default function EditAITrendPage() {
     if (id) {
       fetchTrend()
     }
-  }, [id])
+  }, [id, fetchTrend])
 
-  const fetchTrend = async () => {
+  const fetchTrend = useCallback(async () => {
     try {
       setFetching(true)
       const response = await fetch(`/api/ai-trends/${id}`)
@@ -89,7 +89,7 @@ export default function EditAITrendPage() {
     } finally {
       setFetching(false)
     }
-  }
+  }, [id, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target

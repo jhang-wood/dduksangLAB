@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -32,7 +32,7 @@ interface Lecture {
   is_published: boolean
   created_at: string
   student_count?: number
-  chapters?: any[]
+  chapters?: Chapter[]
   preview_url?: string
   thumbnail_url?: string
   objectives?: string[]
@@ -86,9 +86,9 @@ export default function AdminLecturesPage() {
 
   useEffect(() => {
     checkAdminAccess()
-  }, [user])
+  }, [checkAdminAccess])
 
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -107,9 +107,9 @@ export default function AdminLecturesPage() {
     }
 
     fetchLectures()
-  }
+  }, [user, router, fetchLectures])
 
-  const fetchLectures = async () => {
+  const fetchLectures = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('lectures')
@@ -126,7 +126,7 @@ export default function AdminLecturesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const handleCreateLecture = async () => {
     try {
@@ -291,7 +291,7 @@ export default function AdminLecturesPage() {
     }])
   }
 
-  const updateChapter = (index: number, field: keyof Chapter, value: any) => {
+  const updateChapter = (index: number, field: keyof Chapter, value: string | number | boolean) => {
     const updated = [...chapters]
     updated[index] = { ...updated[index], [field]: value }
     setChapters(updated)
@@ -331,9 +331,9 @@ export default function AdminLecturesPage() {
 
   // Chapter Management Component
   const ChapterManagement = ({ lectureId, onChaptersUpdated }: { lectureId: string, onChaptersUpdated: () => void }) => {
-    const [lectureChapters, setLectureChapters] = useState<any[]>([])
+    const [lectureChapters, setLectureChapters] = useState<Chapter[]>([])
     const [loadingChapters, setLoadingChapters] = useState(true)
-    const [editingChapter, setEditingChapter] = useState<any>(null)
+    const [editingChapter, setEditingChapter] = useState<Chapter | null>(null)
     const [newChapter, setNewChapter] = useState({
       title: '',
       description: '',
@@ -342,11 +342,7 @@ export default function AdminLecturesPage() {
       is_preview: false
     })
 
-    useEffect(() => {
-      fetchChapters()
-    }, [lectureId])
-
-    const fetchChapters = async () => {
+    const fetchChapters = useCallback(async () => {
       try {
         const { data, error } = await supabase
           .from('lecture_chapters')
@@ -361,7 +357,11 @@ export default function AdminLecturesPage() {
       } finally {
         setLoadingChapters(false)
       }
-    }
+    }, [lectureId])
+
+    useEffect(() => {
+      fetchChapters()
+    }, [fetchChapters])
 
     const addNewChapter = async () => {
       if (!newChapter.title || !newChapter.video_url) {
@@ -401,7 +401,7 @@ export default function AdminLecturesPage() {
       }
     }
 
-    const updateChapter = async (chapterId: string, updates: any) => {
+    const updateChapter = async (chapterId: string, updates: Partial<Chapter>) => {
       try {
         const { error } = await supabase
           .from('lecture_chapters')
@@ -652,7 +652,7 @@ export default function AdminLecturesPage() {
                           description: lecture.description,
                           instructor_name: lecture.instructor_name,
                           category: lecture.category,
-                          level: lecture.level as any,
+                          level: lecture.level as keyof typeof levelLabels,
                           price: lecture.price,
                           preview_url: lecture.preview_url || '',
                           thumbnail_url: lecture.thumbnail_url || '',
@@ -812,7 +812,7 @@ export default function AdminLecturesPage() {
                     </label>
                     <select
                       value={formData.level}
-                      onChange={(e) => setFormData({ ...formData, level: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, level: e.target.value as keyof typeof levelLabels })}
                       className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                     >
                       {levels.map(level => (

@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -63,9 +63,9 @@ export default function MyPage() {
     if (user) {
       fetchUserData()
     }
-  }, [user, activeTab])
+  }, [fetchUserData, user])
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!user) {return}
     
     try {
@@ -104,7 +104,7 @@ export default function MyPage() {
     } catch (error) {
       logger.error('Failed to fetch user data:', error)
     }
-  }
+  }, [user, activeTab])
 
   const handleProfileUpdate = async () => {
     if (!user) {return}

@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   ExternalLink,
@@ -70,9 +70,9 @@ export default function SitesPage() {
 
   useEffect(() => {
     fetchSites()
-  }, [selectedCategory, searchTerm])
+  }, [fetchSites])
 
-  const fetchSites = async () => {
+  const fetchSites = useCallback(async () => {
     try {
       let query = supabase
         .from('showcase_sites')
@@ -100,7 +100,7 @@ export default function SitesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, searchTerm])
 
   const uploadThumbnail = async (file: File) => {
     try {

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lucide-react'
@@ -47,9 +47,9 @@ export default function CommunityPage() {
 
   useEffect(() => {
     fetchPosts()
-  }, [selectedCategory])
+  }, [fetchPosts])
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       let query = supabase
         .from('community_posts')
@@ -69,7 +69,7 @@ export default function CommunityPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory])
 
   const handleWriteClick = () => {
     if (!user) {

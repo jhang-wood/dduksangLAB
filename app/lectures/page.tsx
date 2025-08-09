@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { motion } from 'framer-motion'
@@ -76,9 +76,9 @@ export default function LecturesPage() {
 
   useEffect(() => {
     checkEnrollment()
-  }, [user])
+  }, [checkEnrollment])
 
-  const checkEnrollment = async () => {
+  const checkEnrollment = useCallback(async () => {
     if (!user) {
       setLoading(false)
       return
@@ -102,7 +102,7 @@ export default function LecturesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const handleEnrollClick = () => {
     if (!user) {

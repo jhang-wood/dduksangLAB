@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { 
   ArrowLeft,
@@ -46,7 +46,12 @@ export default function AdminUserDetailPage() {
   const userId = params.id as string
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null)
   const [userActivities, setUserActivities] = useState<UserActivity[]>([])
-  const [userLectures, setUserLectures] = useState<any[]>([])
+  const [userLectures, setUserLectures] = useState<Array<{
+    id: string;
+    title: string;
+    enrolled_at: string;
+    progress: number;
+  }>>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({
@@ -60,9 +65,9 @@ export default function AdminUserDetailPage() {
 
   useEffect(() => {
     checkAdminAccess()
-  }, [user])
+  }, [checkAdminAccess])
 
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -81,9 +86,9 @@ export default function AdminUserDetailPage() {
     }
 
     fetchUserDetail()
-  }
+  }, [user, router, fetchUserDetail])
 
-  const fetchUserDetail = async () => {
+  const fetchUserDetail = useCallback(async () => {
     try {
       // Fetch user profile
       const { data: userData, error: userError } = await supabase
@@ -153,7 +158,7 @@ export default function AdminUserDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId])
 
   const handleUpdateUser = async () => {
     try {

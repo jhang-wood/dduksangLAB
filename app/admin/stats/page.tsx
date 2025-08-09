@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -46,13 +46,17 @@ export default function AdminStatsPage() {
     avgRating: 4.8
   })
   const [loading, setLoading] = useState(true)
-  const [recentActivities, setRecentActivities] = useState<any[]>([])
+  const [recentActivities, setRecentActivities] = useState<Array<{
+    type: string;
+    message: string;
+    time: string;
+  }>>([])
   const router = useRouter()
   const { user } = useAuth()
 
   useEffect(() => {
     checkAdminAccess()
-  }, [user])
+  }, [checkAdminAccess])
 
   // Auto refresh every 30 seconds
   useEffect(() => {
@@ -63,9 +67,9 @@ export default function AdminStatsPage() {
     }, 30000)
 
     return () => clearInterval(interval)
-  }, [loading])
+  }, [loading, fetchStats])
 
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -84,9 +88,9 @@ export default function AdminStatsPage() {
     }
 
     fetchStats()
-  }
+  }, [user, router, fetchStats])
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       // Fetch basic stats
       const [
@@ -172,7 +176,7 @@ export default function AdminStatsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

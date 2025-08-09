@@ -2,7 +2,7 @@
 
 import { logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -80,9 +80,9 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
       return
     }
     fetchLectureData()
-  }, [user, params.id])
+  }, [fetchLectureData, user, router])
 
-  const fetchLectureData = async () => {
+  const fetchLectureData = useCallback(async () => {
     try {
       // 수강 권한 확인
       const { data: enrollmentData } = await checkEnrollment(user!.id, params.id)
@@ -117,7 +117,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, params.id, router])
 
   const updateProgress = async () => {
     if (!currentChapter || !user) {return}

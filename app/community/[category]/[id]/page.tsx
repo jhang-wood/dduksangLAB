@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Eye, MessageSquare, User, Calendar, Trash2} from 'lucide-react'
@@ -47,9 +47,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
   useEffect(() => {
     fetchPost()
     fetchComments()
-  }, [params.id])
+  }, [fetchPost, fetchComments])
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('community_posts')
@@ -75,9 +75,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, router])
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('community_comments')
@@ -93,7 +93,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
     } catch (error) {
       logger.error('Error fetching comments:', error)
     }
-  }
+  }, [params.id])
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
