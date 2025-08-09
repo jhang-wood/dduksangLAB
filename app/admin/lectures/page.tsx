@@ -373,7 +373,7 @@ export default function AdminLecturesPage() {
   }) => {
     const [lectureChapters, setLectureChapters] = useState<Chapter[]>([]);
     const [loadingChapters, setLoadingChapters] = useState(true);
-    const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
+    const [editingChapter, setEditingChapter] = useState<string | null>(null);
     const [newChapter, setNewChapter] = useState({
       title: "",
       description: "",
