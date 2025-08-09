@@ -49,12 +49,6 @@ export default function EditAITrendPage() {
     }
   }, [isAdmin, router])
 
-  useEffect(() => {
-    if (id) {
-      fetchTrend()
-    }
-  }, [id, fetchTrend])
-
   const fetchTrend = useCallback(async () => {
     try {
       setFetching(true)
@@ -90,6 +84,12 @@ export default function EditAITrendPage() {
       setFetching(false)
     }
   }, [id, router])
+
+  useEffect(() => {
+    if (id) {
+      fetchTrend()
+    }
+  }, [id, fetchTrend])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target

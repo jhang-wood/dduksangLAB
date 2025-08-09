@@ -43,6 +43,12 @@ jobs:
         run: |
           npm ci --prefer-offline --no-audit
           
+      - name: Create test environment file
+        run: |
+          cp .env.example .env.local
+          sed -i 's/your-project/test-project/g' .env.local
+          sed -i 's/your-.*-key/test-key-for-ci-pipeline/g' .env.local
+          
       - name: Run linting
         run: npm run lint || echo "Lint completed with warnings"
         
