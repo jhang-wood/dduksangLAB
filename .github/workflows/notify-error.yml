@@ -1,0 +1,95 @@
+name: 🚨 오류 알림 강화
+
+on:
+  workflow_run:
+    workflows: ["🚀 Continuous Integration", "🔒 Security Scan", "🔍 CodeQL Analysis"]
+    types: [completed]
+
+env:
+  BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  error-notification:
+    name: 📱 오류 발생 시 상세 알림
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔍 오류 로그 수집
+        id: collect-logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 실패한 워크플로우 정보
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          WORKFLOW_URL="${{ github.event.workflow_run.html_url }}"
+          ACTOR="${{ github.event.workflow_run.triggering_actor.login }}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          
+          # gh CLI로 오류 로그 가져오기
+          echo "🔍 실패한 작업 로그 수집 중..."
+          
+          # 실패한 job 목록 가져오기
+          FAILED_JOBS=$(gh api \
+            "/repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" \
+            --jq '.jobs[] | select(.conclusion == "failure") | .name' || echo "로그 수집 실패")
+          
+          # 간단한 오류 요약 생성
+          ERROR_SUMMARY=""
+          if [ -n "$FAILED_JOBS" ]; then
+            ERROR_SUMMARY="실패한 작업: $FAILED_JOBS"
+          else
+            ERROR_SUMMARY="상세 오류는 GitHub Actions 로그를 확인하세요"
+          fi
+          
+          echo "workflow_name=$WORKFLOW_NAME" >> $GITHUB_OUTPUT
+          echo "workflow_url=$WORKFLOW_URL" >> $GITHUB_OUTPUT
+          echo "actor=$ACTOR" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "error_summary=$ERROR_SUMMARY" >> $GITHUB_OUTPUT
+          
+      - name: 📱 텔레그램으로 오류 알림 전송
+        run: |
+          if [ -z "${{ env.BOT_TOKEN }}" ] || [ -z "${{ env.CHAT_ID }}" ]; then
+            echo "⚠️ 텔레그램 설정이 없어 알림을 건너뜁니다."
+            exit 0
+          fi
+          
+          # 메시지 생성
+          MESSAGE=$(cat << EOF
+          🚨 **빌드 실패 알림**
+          
+          ❌ **${{ steps.collect-logs.outputs.workflow_name }}** 실패
+          
+          📋 **상세 정보**
+          • 실행자: ${{ steps.collect-logs.outputs.actor }}
+          • 브랜치: ${{ steps.collect-logs.outputs.branch }}
+          • 시간: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          
+          🔍 **오류 요약**
+          ${{ steps.collect-logs.outputs.error_summary }}
+          
+          📌 **해결 방법**
+          1. 로그 확인: [GitHub Actions 로그](${{ steps.collect-logs.outputs.workflow_url }})
+          2. 로컬에서 테스트: \`npm run lint && npm run type-check\`
+          3. 수정 후 다시 푸시
+          
+          ---
+          💡 **Tip**: 로컬에서 \`npm run lint:fix\`로 대부분의 린트 오류를 자동 수정할 수 있습니다.
+          EOF
+          )
+          
+          # URL 인코딩
+          ENCODED_MESSAGE=$(echo "$MESSAGE" | curl -s -w '\n' --data-urlencode @- "" | cut -d= -f2-)
+          
+          # 텔레그램 전송
+          curl -s -X POST "https://api.telegram.org/bot${{ env.BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ env.CHAT_ID }}" \
+            -d "text=$ENCODED_MESSAGE" \
+            -d "parse_mode=Markdown" \
+            -d "disable_web_page_preview=false"
