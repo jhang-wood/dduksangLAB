@@ -586,7 +586,9 @@ export default function AdminLecturesPage() {
                     <button
                       onClick={() =>
                         setEditingChapter(
-                          editingChapter === chapter.id ? null : chapter.id,
+                          editingChapter === chapter.id
+                            ? null
+                            : chapter.id || null,
                         )
                       }
                       className="p-1 text-metallicGold-500 hover:text-metallicGold-400"
@@ -594,7 +596,7 @@ export default function AdminLecturesPage() {
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => deleteChapter(chapter.id)}
+                      onClick={() => chapter.id && deleteChapter(chapter.id)}
                       className="p-1 text-red-500 hover:text-red-400"
                     >
                       <Trash2 size={16} />
@@ -624,13 +626,14 @@ export default function AdminLecturesPage() {
                   비디오: {chapter.video_url}
                 </div>
 
-                {editingChapter === chapter.id && (
+                {chapter.id && editingChapter === chapter.id && (
                   <div className="mt-3 pt-3 border-t border-metallicGold-900/30">
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <input
                         type="text"
                         defaultValue={chapter.title}
                         onBlur={(e) =>
+                          chapter.id &&
                           updateChapter(chapter.id, { title: e.target.value })
                         }
                         className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
@@ -639,6 +642,7 @@ export default function AdminLecturesPage() {
                         type="number"
                         defaultValue={chapter.duration}
                         onBlur={(e) =>
+                          chapter.id &&
                           updateChapter(chapter.id, {
                             duration: parseInt(e.target.value) || 0,
                           })
@@ -650,6 +654,7 @@ export default function AdminLecturesPage() {
                       type="text"
                       defaultValue={chapter.video_url}
                       onBlur={(e) =>
+                        chapter.id &&
                         updateChapter(chapter.id, { video_url: e.target.value })
                       }
                       className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3"
@@ -657,6 +662,7 @@ export default function AdminLecturesPage() {
                     <textarea
                       defaultValue={chapter.description || ""}
                       onBlur={(e) =>
+                        chapter.id &&
                         updateChapter(chapter.id, {
                           description: e.target.value,
                         })
