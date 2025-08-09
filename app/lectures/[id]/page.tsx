@@ -74,14 +74,6 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-    fetchLectureData()
-  }, [fetchLectureData, user, router])
-
   const fetchLectureData = useCallback(async () => {
     try {
       // 수강 권한 확인
@@ -118,6 +110,14 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
       setLoading(false)
     }
   }, [user, params.id, router])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+    fetchLectureData()
+  }, [fetchLectureData, user, router])
 
   const updateProgress = async () => {
     if (!currentChapter || !user) {return}

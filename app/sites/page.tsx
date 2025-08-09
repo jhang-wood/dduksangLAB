@@ -68,10 +68,6 @@ export default function SitesPage() {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    fetchSites()
-  }, [fetchSites])
-
   const fetchSites = useCallback(async () => {
     try {
       let query = supabase
@@ -101,6 +97,10 @@ export default function SitesPage() {
       setLoading(false)
     }
   }, [selectedCategory, searchTerm])
+
+  useEffect(() => {
+    fetchSites()
+  }, [fetchSites])
 
   const uploadThumbnail = async (file: File) => {
     try {

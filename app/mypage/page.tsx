@@ -59,12 +59,6 @@ export default function MyPage() {
     }
   }, [userProfile])
 
-  useEffect(() => {
-    if (user) {
-      fetchUserData()
-    }
-  }, [fetchUserData, user])
-
   const fetchUserData = useCallback(async () => {
     if (!user) {return}
     
@@ -105,6 +99,12 @@ export default function MyPage() {
       logger.error('Failed to fetch user data:', error)
     }
   }, [user, activeTab])
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData()
+    }
+  }, [fetchUserData, user])
 
   const handleProfileUpdate = async () => {
     if (!user) {return}

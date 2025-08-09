@@ -45,10 +45,6 @@ export default function CommunityPage() {
   const { user } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    fetchPosts()
-  }, [fetchPosts])
-
   const fetchPosts = useCallback(async () => {
     try {
       let query = supabase
@@ -70,6 +66,10 @@ export default function CommunityPage() {
       setLoading(false)
     }
   }, [selectedCategory])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
 
   const handleWriteClick = () => {
     if (!user) {

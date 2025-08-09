@@ -74,10 +74,6 @@ export default function LecturesPage() {
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    checkEnrollment()
-  }, [checkEnrollment])
-
   const checkEnrollment = useCallback(async () => {
     if (!user) {
       setLoading(false)
@@ -103,6 +99,10 @@ export default function LecturesPage() {
       setLoading(false)
     }
   }, [user])
+
+  useEffect(() => {
+    checkEnrollment()
+  }, [checkEnrollment])
 
   const handleEnrollClick = () => {
     if (!user) {

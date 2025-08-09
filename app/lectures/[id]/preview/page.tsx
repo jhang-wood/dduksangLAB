@@ -66,10 +66,6 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    fetchLectureData()
-  }, [fetchLectureData])
-
   const fetchLectureData = useCallback(async () => {
     try {
       // 수강 여부 확인
@@ -117,6 +113,10 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
       setLoading(false)
     }
   }, [user, params.id, router])
+
+  useEffect(() => {
+    fetchLectureData()
+  }, [fetchLectureData])
 
   const handleEnrollClick = () => {
     if (!user) {

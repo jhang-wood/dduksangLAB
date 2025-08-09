@@ -49,9 +49,17 @@ export default function AdminUserDetailPage() {
   const [userLectures, setUserLectures] = useState<
     Array<{
       id: string;
-      title: string;
-      enrolled_at: string;
-      progress: number;
+      created_at: string;
+      user_id: string;
+      lecture_id: string;
+      status?: string;
+      lectures: {
+        id: string;
+        title: string;
+        thumbnail_url: string | null;
+        instructor_name: string;
+        price: number;
+      } | null;
     }>
   >([]);
   const [loading, setLoading] = useState(true);

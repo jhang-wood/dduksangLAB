@@ -14,10 +14,6 @@ function PaymentSuccessContent() {
   const [processing, setProcessing] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    handlePaymentSuccess()
-  }, [handlePaymentSuccess])
-
   const handlePaymentSuccess = useCallback(async () => {
     try {
       const orderId = searchParams.get('order_no')
@@ -65,6 +61,10 @@ function PaymentSuccessContent() {
       setProcessing(false)
     }
   }, [searchParams, user, router])
+
+  useEffect(() => {
+    handlePaymentSuccess()
+  }, [handlePaymentSuccess])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4">
