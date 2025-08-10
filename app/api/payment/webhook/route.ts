@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
-    const data = rawData as PayAppWebhookData
+    const data = rawData as unknown as PayAppWebhookData
 
     // 결제 상태 확인
     if (data.status === 'paid') {

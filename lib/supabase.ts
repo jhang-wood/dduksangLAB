@@ -36,7 +36,7 @@ export const updateUserProfile = async (userId: string, updates: Partial<UserPro
 }
 
 // Helper function to build query filters
-function applyLectureFilters(query: unknown, filters?: {
+function applyLectureFilters(query: any, filters?: {
   category?: string
   level?: string
   search?: string
@@ -87,7 +87,7 @@ function buildCommunityPostsQuery() {
     .eq('is_published', true)
 }
 
-function applyCommunityFilters(query: unknown, filters?: {
+function applyCommunityFilters(query: any, filters?: {
   category?: string
   search?: string
 }) {
@@ -180,7 +180,7 @@ export const incrementPostViews = async (postId: string) => {
 }
 
 // Helper function for SaaS products filters
-function applySaaSFilters(query: unknown, filters?: {
+function applySaaSFilters(query: any, filters?: {
   category?: string
   search?: string
   featured?: boolean
