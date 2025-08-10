@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payment/payapp'
+// UI components are not used in this modal
+// import Input from '@/components/ui/Input'
+// import Button from '@/components/ui/Button'
+// import { modalStyles, cardStyles } from '@/components/ui'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -30,7 +34,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
     try {
       if (mode === 'signin') {
         const { error } = await signIn(email, password)
-        if (error) throw error
+        if (error) {
+          throw error
+        }
         onClose()
       } else {
         // 회원가입 시 플랜 선택 화면으로
@@ -63,17 +69,17 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
           
           // 모달 닫기
           onClose()
-        } else {
+        } else if (error) {
           throw error
         }
       }
-    } catch (err: any) {
-      setError(err.message || '오류가 발생했습니다.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다.')
       setLoading(false)
     }
   }
 
-  if (!isOpen) return null
+  if (!isOpen) {return null}
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -89,7 +95,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
           {mode === 'signin' ? '로그인' : showPlans ? '플랜 선택' : '회원가입'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => {
+          e.preventDefault()
+          void handleSubmit(e)
+        }} className="space-y-4">
           {mode === 'signup' && !showPlans ? (
             <>
               <div>

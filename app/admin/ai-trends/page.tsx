@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Plus, Edit2, Trash2, Eye, EyeOff, Star, RefreshCw } from 'lucide-react'
@@ -45,15 +45,11 @@ export default function AdminAITrendsPage() {
 
   useEffect(() => {
     if (!isAdmin) {
-      router.push('/admin')
+      void router.push('/admin')
     }
   }, [isAdmin, router])
 
-  useEffect(() => {
-    fetchTrends()
-  }, [selectedCategory, showUnpublished])
-
-  const fetchTrends = async () => {
+  const fetchTrends = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -63,14 +59,14 @@ export default function AdminAITrendsPage() {
       })
 
       // Admin can see unpublished trends
-      const response = await fetch(`/api/ai-trends?${params}`, {
+      const response = await fetch(`/api/ai-trends?${params.toString()}`, {
         headers: {
           'X-Admin-Request': 'true'
         }
       })
       
-      const data = await response.json()
-      let trendsData = data.data || []
+      const data = await response.json() as { data?: AITrend[] }
+      let trendsData = data.data ?? []
       
       // Filter by published status if needed
       if (!showUnpublished) {
@@ -83,9 +79,13 @@ export default function AdminAITrendsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, showUnpublished])
 
-  const handleDelete = async (id: string, title: string) => {
+  useEffect(() => {
+    void fetchTrends()
+  }, [fetchTrends])
+
+  const handleDelete = async (id: string, title: string): Promise<void> => {
     if (!userNotification.confirm(`정말로 "${title}" 트렌드를 삭제하시겠습니까?`)) {
       return
     }
@@ -96,7 +96,7 @@ export default function AdminAITrendsPage() {
       })
 
       if (response.ok) {
-        fetchTrends()
+        await fetchTrends()
       } else {
         userNotification.alert('삭제 실패')
       }
@@ -106,7 +106,7 @@ export default function AdminAITrendsPage() {
     }
   }
 
-  const handleTogglePublish = async (trend: AITrend) => {
+  const handleTogglePublish = async (trend: AITrend): Promise<void> => {
     try {
       const response = await fetch(`/api/ai-trends/${trend.id}`, {
         method: 'PUT',
@@ -120,14 +120,14 @@ export default function AdminAITrendsPage() {
       })
 
       if (response.ok) {
-        fetchTrends()
+        await fetchTrends()
       }
     } catch (error) {
       logger.error('Error toggling publish status:', error)
     }
   }
 
-  const handleToggleFeatured = async (trend: AITrend) => {
+  const handleToggleFeatured = async (trend: AITrend): Promise<void> => {
     try {
       const response = await fetch(`/api/ai-trends/${trend.id}`, {
         method: 'PUT',
@@ -141,14 +141,14 @@ export default function AdminAITrendsPage() {
       })
 
       if (response.ok) {
-        fetchTrends()
+        await fetchTrends()
       }
     } catch (error) {
       logger.error('Error toggling featured status:', error)
     }
   }
 
-  const handleCollectTrends = async () => {
+  const handleCollectTrends = async (): Promise<void> => {
     if (!userNotification.confirm('AI 트렌드를 수집하시겠습니까? (3개의 새로운 트렌드가 생성됩니다)')) {
       return
     }
@@ -158,17 +158,17 @@ export default function AdminAITrendsPage() {
       const response = await fetch('/api/ai-trends/collect', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || 'admin-collect'}`,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET ?? 'admin-collect'}`,
         }
       })
 
-      const result = await response.json()
+      const result = await response.json() as { created?: number; message?: string }
       
       if (response.ok) {
-        userNotification.alert(`${result.created}개의 새로운 트렌드가 수집되었습니다.`)
-        fetchTrends()
+        userNotification.alert(`${result.created ?? 0}개의 새로운 트렌드가 수집되었습니다.`)
+        await fetchTrends()
       } else {
-        userNotification.alert(result.message || '트렌드 수집 실패')
+        userNotification.alert(result.message ?? '트렌드 수집 실패')
       }
     } catch (error) {
       logger.error('Error collecting trends:', error)
@@ -201,7 +201,7 @@ export default function AdminAITrendsPage() {
           <h1 className="text-3xl font-bold text-offWhite-200">AI 트렌드 관리</h1>
           <div className="flex gap-3">
             <button
-              onClick={handleCollectTrends}
+              onClick={() => { void handleCollectTrends(); }}
               disabled={refreshing}
               className="flex items-center gap-2 px-4 py-2 bg-metallicGold-900/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-900/30 transition-colors disabled:opacity-50"
             >
@@ -313,7 +313,7 @@ export default function AdminAITrendsPage() {
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button
-                            onClick={() => handleTogglePublish(trend)}
+                            onClick={() => { void handleTogglePublish(trend); }}
                             className={`p-1 rounded ${
                               trend.is_published
                                 ? 'text-green-500 hover:text-green-400'
@@ -324,7 +324,7 @@ export default function AdminAITrendsPage() {
                             {trend.is_published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                           </button>
                           <button
-                            onClick={() => handleToggleFeatured(trend)}
+                            onClick={() => { void handleToggleFeatured(trend); }}
                             className={`p-1 rounded ${
                               trend.is_featured
                                 ? 'text-yellow-500 hover:text-yellow-400'
@@ -348,7 +348,7 @@ export default function AdminAITrendsPage() {
                             <Edit2 className="w-4 h-4" />
                           </Link>
                           <button
-                            onClick={() => handleDelete(trend.id, trend.title)}
+                            onClick={() => { void handleDelete(trend.id, trend.title); }}
                             className="p-2 text-red-500 hover:text-red-400 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />

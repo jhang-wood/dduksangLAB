@@ -87,13 +87,13 @@ export default function NewAITrendPage() {
         })
       })
 
-      const data = await response.json()
+      const data = await response.json() as { error?: string }
 
       if (response.ok) {
         userNotification.alert('AI 트렌드가 생성되었습니다.')
-        router.push('/admin/ai-trends')
+        void router.push('/admin/ai-trends')
       } else {
-        userNotification.alert(data.error || 'AI 트렌드 생성에 실패했습니다.')
+        userNotification.alert(data.error ?? 'AI 트렌드 생성에 실패했습니다.')
       }
     } catch (error) {
       logger.error('Error creating trend:', error)
@@ -178,7 +178,7 @@ export default function NewAITrendPage() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
             {/* Basic Information */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">기본 정보</h2>

@@ -7,11 +7,11 @@
 
 // 프로덕션 환경을 위한 로그 수집 시스템 (추후 Sentry, LogRocket 등으로 교체)
 const productionLogger = {
-  log: (...args: any[]) => {
+  log: (..._args: any[]) => {
     // 프로덕션에서는 로그를 수집 시스템으로 전송
     // 현재는 무시
   },
-  error: (...args: any[]) => {
+  error: (..._args: any[]) => {
     // 프로덕션에서는 에러 추적 시스템으로 전송
     // 추후 Sentry.captureException() 등으로 교체
     if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
@@ -19,14 +19,14 @@ const productionLogger = {
       // TODO: 에러 추적 서비스 통합
     }
   },
-  warn: (...args: any[]) => {
+  warn: (..._args: any[]) => {
     // 프로덕션에서는 경고를 모니터링 시스템으로 전송
     // 추후 구현 필요
   },
-  info: (...args: any[]) => {
+  info: (..._args: any[]) => {
     // 프로덕션에서는 정보성 로그 무시
   },
-  debug: (...args: any[]) => {
+  debug: (..._args: any[]) => {
     // 프로덕션에서는 디버그 로그 무시
   }
 }

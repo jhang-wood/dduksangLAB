@@ -2,7 +2,7 @@
 
 import { logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -36,7 +36,7 @@ interface Chapter {
   video_url: string
   duration: number
   description?: string
-  resources?: any[]
+  resources?: Array<{ title: string; url: string }>
 }
 
 interface Lecture {
@@ -62,7 +62,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   const [lecture, setLecture] = useState<Lecture | null>(null)
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null)
   const [progress, setProgress] = useState<Progress[]>([])
-  const [_enrollment, setEnrollment] = useState<any>(null)
+  const [_enrollment, setEnrollment] = useState<{ id: string; user_id: string; lecture_id: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
   const [_volume, _setVolume] = useState(1)
@@ -74,53 +74,60 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-    fetchLectureData()
-  }, [user, params.id])
-
-  const fetchLectureData = async () => {
+  const fetchLectureDataCallback = useCallback(async () => {
     try {
       // 수강 권한 확인
-      const { data: enrollmentData } = await checkEnrollment(user!.id, params.id)
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+      
+      const { data: enrollmentData } = await checkEnrollment(user.id, params.id)
 
       if (!enrollmentData) {
         router.push(`/lectures/${params.id}/preview`)
         return
       }
 
-      setEnrollment(enrollmentData)
+      setEnrollment(enrollmentData as { id: string; user_id: string; lecture_id: string })
 
       // 강의 정보 조회 (챕터 포함)
       const { data: lectureData } = await getLectureWithChapters(params.id)
 
       if (lectureData) {
-        setLecture(lectureData)
+        setLecture(lectureData as Lecture)
         
         // 첫 번째 챕터 자동 선택
-        if (lectureData.chapters && lectureData.chapters.length > 0) {
-          setCurrentChapter(lectureData.chapters[0])
+        const typedLectureData = lectureData as Lecture
+        if (typedLectureData.chapters && typedLectureData.chapters.length > 0) {
+          setCurrentChapter(typedLectureData.chapters[0] || null)
         }
       }
 
       // 진도 정보 조회
-      const { data: progressData } = await getLectureProgress(user!.id, params.id)
+      const { data: progressData } = await getLectureProgress(user.id, params.id)
 
       if (progressData) {
-        setProgress(progressData)
+        setProgress(progressData as Progress[])
       }
     } catch (error) {
       logger.error('Error fetching lecture:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, params.id, router])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+    void fetchLectureDataCallback()
+  }, [user, router, fetchLectureDataCallback])
+
 
   const updateProgress = async () => {
-    if (!currentChapter || !user) return
+    if (!currentChapter || !user) {return}
 
     try {
       const completed = currentTime >= duration * 0.9 // 90% 이상 시청시 완료
@@ -139,37 +146,47 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
 
   const handleChapterSelect = (chapter: Chapter) => {
     // 현재 진도 저장
-    updateProgress()
+    void updateProgress()
     setCurrentChapter(chapter)
     setCurrentTime(0)
     setIsPlaying(false)
   }
 
   const handlePreviousChapter = () => {
-    if (!lecture?.chapters || !currentChapter) return
+    if (!lecture?.chapters || !currentChapter) {
+      return
+    }
     const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex > 0) {
-      handleChapterSelect(lecture.chapters[currentIndex - 1])
+      const previousChapter = lecture.chapters[currentIndex - 1]
+      if (previousChapter) {
+        handleChapterSelect(previousChapter)
+      }
     }
   }
 
   const handleNextChapter = () => {
-    if (!lecture?.chapters || !currentChapter) return
+    if (!lecture?.chapters || !currentChapter) {
+      return
+    }
     const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex < lecture.chapters.length - 1) {
-      handleChapterSelect(lecture.chapters[currentIndex + 1])
+      const nextChapter = lecture.chapters[currentIndex + 1]
+      if (nextChapter) {
+        handleChapterSelect(nextChapter)
+      }
     }
   }
 
   const isChapterCompleted = (chapterId: string) => {
-    return progress.find(p => p.chapter_id === chapterId)?.completed || false
+    return progress.find(p => p.chapter_id === chapterId)?.completed ?? false
   }
 
   const getChapterProgress = (chapterId: string) => {
     const chapterProgress = progress.find(p => p.chapter_id === chapterId)
-    if (!chapterProgress) return 0
+    if (!chapterProgress) {return 0}
     const chapter = lecture?.chapters?.find(ch => ch.id === chapterId)
-    if (!chapter) return 0
+    if (!chapter) {return 0}
     return (chapterProgress.watch_time / chapter.duration) * 100
   }
 
@@ -357,7 +374,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
                     학습 자료
                   </h3>
                   <div className="grid gap-4">
-                    {currentChapter.resources.map((resource: any, index: number) => (
+                    {currentChapter.resources.map((resource: { title: string; url: string }, index: number) => (
                       <a
                         key={index}
                         href={resource.url}

@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const update: TelegramUpdate = await request.json()
+    const update = await request.json() as TelegramUpdate
     logger.info('Received Telegram update:', JSON.stringify(update, null, 2))
 
     // 메시지가 있는 경우에만 처리
-    if (update.message && update.message.text) {
+    if (update.message?.text) {
       const message = update.message
-      const allowedUserId = parseInt(serverEnv.telegramAllowedUserId)
+      const allowedUserId = parseInt(serverEnv.telegramAllowedUserId, 10)
       
       // 허용된 사용자인지 확인
       if (message.from.id !== allowedUserId) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET 요청 처리 (헬스체크용)
-export async function GET() {
+export function GET() {
   return NextResponse.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),

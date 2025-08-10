@@ -59,8 +59,8 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
     if (navigator.share) {
       try {
         await navigator.share({
-          title: trend?.title,
-          text: trend?.summary,
+          title: trend?.title ?? '',
+          text: trend?.summary ?? '',
           url: url
         })
       } catch (error) {
@@ -68,9 +68,13 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
       }
     } else {
       // Copy to clipboard as fallback
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      try {
+        await navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      } catch (error) {
+        logger.error('Error copying to clipboard:', error)
+      }
     }
   }
 
@@ -177,7 +181,9 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
               
               <div className="flex items-center gap-3">
                 <button
-                  onClick={handleShare}
+                  onClick={() => {
+                    void handleShare()
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-deepBlack-300/50 text-offWhite-500 rounded-lg hover:bg-deepBlack-300/70 transition-colors"
                 >
                   {copied ? <Copy className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}

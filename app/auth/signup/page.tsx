@@ -52,7 +52,9 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     
-    if (!validateForm()) return
+    if (!validateForm()) {
+      return
+    }
     
     setLoading(true)
 
@@ -63,7 +65,7 @@ export default function SignupPage() {
       })
       
       if (error) {
-        setError(error.message || '회원가입에 실패했습니다.')
+        setError(error.message ?? '회원가입에 실패했습니다.')
       } else {
         setSuccess(true)
         setTimeout(() => {

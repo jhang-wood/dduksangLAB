@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -37,11 +37,39 @@ export default function AdminUsersPage() {
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    checkAdminAccess()
-  }, [user])
+  const fetchUsers = useCallback(async () => {
+    try {
+      let query = supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-  const checkAdminAccess = async () => {
+      if (roleFilter !== 'all') {
+        query = query.eq('role', roleFilter)
+      }
+
+      const { data, error } = await query
+
+      if (error) { throw error }
+      
+      let filteredUsers = data ?? []
+      
+      if (searchTerm) {
+        filteredUsers = filteredUsers.filter(userData => 
+          userData.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          userData.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      }
+      
+      setUsers(filteredUsers)
+    } catch (error) {
+      logger.error('Error fetching users:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [searchTerm, roleFilter])
+
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -59,46 +87,18 @@ export default function AdminUsersPage() {
       return
     }
 
-    fetchUsers()
-  }
+    void fetchUsers()
+  }, [user, router, fetchUsers])
 
-  const fetchUsers = async () => {
-    try {
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (roleFilter !== 'all') {
-        query = query.eq('role', roleFilter)
-      }
-
-      const { data, error } = await query
-
-      if (error) throw error
-      
-      let filteredUsers = data || []
-      
-      if (searchTerm) {
-        filteredUsers = filteredUsers.filter(user => 
-          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      }
-      
-      setUsers(filteredUsers)
-    } catch (error) {
-      logger.error('Error fetching users:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    void checkAdminAccess()
+  }, [checkAdminAccess])
 
   useEffect(() => {
     if (!loading) {
-      fetchUsers()
+      void fetchUsers()
     }
-  }, [searchTerm, roleFilter])
+  }, [fetchUsers, loading])
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -107,9 +107,9 @@ export default function AdminUsersPage() {
         .update({ role: newRole })
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) { throw error }
       
-      fetchUsers()
+      void fetchUsers()
     } catch (error) {
       logger.error('Error updating role:', error)
       userNotification.alert('역할 변경 중 오류가 발생했습니다.')
@@ -127,9 +127,9 @@ export default function AdminUsersPage() {
         .delete()
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) { throw error }
       
-      fetchUsers()
+      void fetchUsers()
     } catch (error) {
       logger.error('Error deleting user:', error)
       userNotification.alert('사용자 삭제 중 오류가 발생했습니다.')
@@ -219,7 +219,7 @@ export default function AdminUsersPage() {
                         </div>
                         <div>
                           <div className="font-medium text-offWhite-200">
-                            {userData.name || '이름 없음'}
+                            {userData.name ?? '이름 없음'}
                           </div>
                           <div className="text-sm text-offWhite-600">
                             {userData.email}
@@ -230,7 +230,7 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4">
                       <select
                         value={userData.role}
-                        onChange={(e) => handleRoleChange(userData.id, e.target.value)}
+                        onChange={(e) => void handleRoleChange(userData.id, e.target.value)}
                         className={`px-3 py-1 rounded-full text-xs font-medium border ${
                           userData.role === 'admin'
                             ? 'bg-red-500/20 text-red-400 border-red-500/30'
@@ -254,7 +254,7 @@ export default function AdminUsersPage() {
                           <Eye size={16} />
                         </button>
                         <button
-                          onClick={() => handleDeleteUser(userData.id)}
+                          onClick={() => void handleDeleteUser(userData.id)}
                           className="p-2 text-offWhite-600 hover:text-red-500 transition-colors"
                           title="삭제"
                           disabled={userData.id === user?.id}

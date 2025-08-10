@@ -14,14 +14,18 @@ interface Node {
 export default function NeuralNetworkBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const nodesRef = useRef<Node[]>([])
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | undefined>()
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      return
+    }
 
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {
+      return
+    }
 
     // Set canvas size
     const setCanvasSize = () => {
@@ -31,29 +35,43 @@ export default function NeuralNetworkBackground() {
     setCanvasSize()
     window.addEventListener('resize', setCanvasSize)
 
-    // Initialize nodes
-    const nodeCount = 50
+    // Initialize nodes with reduced count for better performance
+    const nodeCount = Math.min(30, Math.floor(canvas.width * canvas.height / 20000))
     nodesRef.current = Array.from({ length: nodeCount }, (_, i) => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
       id: `node-${i}`
     }))
 
-    // Animation loop
-    const animate = () => {
+    // Optimized animation loop with frame limiting
+    let lastFrameTime = 0
+    const targetFPS = 30 // Reduced FPS for better performance
+    const frameInterval = 1000 / targetFPS
+    
+    const animate = (currentTime: number = 0) => {
+      if (currentTime - lastFrameTime < frameInterval) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
+      
+      lastFrameTime = currentTime
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Update and draw nodes
+      // Update and draw nodes with performance optimization
       nodesRef.current.forEach((node, i) => {
         // Update position
         node.x += node.vx
         node.y += node.vy
 
         // Bounce off walls
-        if (node.x <= 0 || node.x >= canvas.width) node.vx *= -1
-        if (node.y <= 0 || node.y >= canvas.height) node.vy *= -1
+        if (node.x <= 0 || node.x >= canvas.width) {
+          node.vx *= -1
+        }
+        if (node.y <= 0 || node.y >= canvas.height) {
+          node.vy *= -1
+        }
 
         // Draw connections to nearby nodes
         nodesRef.current.slice(i + 1).forEach(otherNode => {

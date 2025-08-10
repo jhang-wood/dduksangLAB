@@ -45,8 +45,8 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
   const router = useRouter()
 
   useEffect(() => {
-    fetchPost()
-    fetchComments()
+    void fetchPost()
+    void fetchComments()
   }, [params.id])
 
   const fetchPost = async () => {
@@ -60,7 +60,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .eq('id', params.id)
         .single()
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       
       setPost(data)
       
@@ -88,8 +90,10 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .eq('post_id', params.id)
         .order('created_at', { ascending: true })
 
-      if (error) throw error
-      setComments(data || [])
+      if (error) {
+        throw error
+      }
+      setComments(data ?? [])
     } catch (error) {
       logger.error('Error fetching comments:', error)
     }
@@ -120,10 +124,12 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
           content: commentContent
         })
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       setCommentContent('')
-      fetchComments()
+      void fetchComments()
     } catch (error) {
       logger.error('Error creating comment:', error)
       userNotification.alert('댓글 작성 중 오류가 발생했습니다.')
@@ -133,7 +139,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
   }
 
   const handleDeletePost = async () => {
-    if (!userNotification.confirm('정말로 이 글을 삭제하시겠습니까?')) return
+    if (!userNotification.confirm('정말로 이 글을 삭제하시겠습니까?')) {
+      return
+    }
 
     try {
       const { error } = await supabase
@@ -141,7 +149,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         .delete()
         .eq('id', params.id)
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       
       router.push('/community')
     } catch (error) {

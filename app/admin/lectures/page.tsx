@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -32,7 +32,7 @@ interface Lecture {
   is_published: boolean
   created_at: string
   student_count?: number
-  chapters?: any[]
+  chapters?: Chapter[]
   preview_url?: string
   thumbnail_url?: string
   objectives?: string[]
@@ -44,7 +44,7 @@ interface Lecture {
 interface Chapter {
   id?: string
   title: string
-  description?: string
+  description?: string | null
   video_url: string
   duration: number
   order_index: number
@@ -74,7 +74,7 @@ export default function AdminLecturesPage() {
     description: '',
     instructor_name: '',
     category: 'AI',
-    level: 'beginner' as const,
+    level: 'beginner' as 'beginner' | 'intermediate' | 'advanced',
     price: 0,
     preview_url: '',
     thumbnail_url: '',
@@ -84,11 +84,26 @@ export default function AdminLecturesPage() {
   })
   const [chapters, setChapters] = useState<Chapter[]>([])
 
-  useEffect(() => {
-    checkAdminAccess()
-  }, [user])
+  const fetchLectures = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('lectures')
+        .select(`
+          *,
+          chapters:lecture_chapters(count)
+        `)
+        .order('created_at', { ascending: false })
 
-  const checkAdminAccess = async () => {
+      if (error) { throw error }
+      setLectures(data ?? [])
+    } catch (error) {
+      logger.error('Error fetching lectures:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const checkAdminAccess = useCallback(async () => {
     if (!user) {
       router.push('/auth/login')
       return
@@ -106,27 +121,12 @@ export default function AdminLecturesPage() {
       return
     }
 
-    fetchLectures()
-  }
+    void fetchLectures()
+  }, [user, router, fetchLectures])
 
-  const fetchLectures = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('lectures')
-        .select(`
-          *,
-          chapters:lecture_chapters(count)
-        `)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setLectures(data || [])
-    } catch (error) {
-      logger.error('Error fetching lectures:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    void checkAdminAccess()
+  }, [checkAdminAccess])
 
   const handleCreateLecture = async () => {
     try {
@@ -147,14 +147,14 @@ export default function AdminLecturesPage() {
         .select()
         .single()
 
-      if (lectureError) throw lectureError
+      if (lectureError) { throw lectureError }
 
       // Create chapters
       if (chapters.length > 0) {
         const chaptersData = chapters.map((ch, index) => ({
           lecture_id: lecture.id,
           title: ch.title,
-          description: ch.description,
+          description: ch.description || null,
           video_url: ch.video_url,
           duration: ch.duration,
           order_index: index + 1,
@@ -165,13 +165,13 @@ export default function AdminLecturesPage() {
           .from('lecture_chapters')
           .insert(chaptersData)
 
-        if (chaptersError) throw chaptersError
+        if (chaptersError) { throw chaptersError }
       }
 
       // Reset form
       setShowCreateModal(false)
       resetForm()
-      fetchLectures()
+      void fetchLectures()
     } catch (error) {
       logger.error('Error creating lecture:', error)
       userNotification.alert('강의 생성 중 오류가 발생했습니다.')
@@ -179,7 +179,7 @@ export default function AdminLecturesPage() {
   }
 
   const handleUpdateLecture = async () => {
-    if (!editingLecture) return
+    if (!editingLecture) {return}
 
     try {
       const totalDuration = chapters.reduce((sum, ch) => sum + ch.duration, 0)
@@ -196,7 +196,7 @@ export default function AdminLecturesPage() {
         })
         .eq('id', editingLecture.id)
 
-      if (updateError) throw updateError
+      if (updateError) { throw updateError }
 
       // Handle chapters update (simplified - in production you'd handle adds/updates/deletes)
       // This is a basic implementation that deletes all and re-inserts
@@ -209,7 +209,7 @@ export default function AdminLecturesPage() {
         const chaptersData = chapters.map((ch, index) => ({
           lecture_id: editingLecture.id,
           title: ch.title,
-          description: ch.description,
+          description: ch.description || null,
           video_url: ch.video_url,
           duration: ch.duration,
           order_index: index + 1,
@@ -223,7 +223,7 @@ export default function AdminLecturesPage() {
 
       setEditingLecture(null)
       resetForm()
-      fetchLectures()
+      void fetchLectures()
     } catch (error) {
       logger.error('Error updating lecture:', error)
       userNotification.alert('강의 수정 중 오류가 발생했습니다.')
@@ -241,8 +241,8 @@ export default function AdminLecturesPage() {
         .delete()
         .eq('id', lectureId)
 
-      if (error) throw error
-      fetchLectures()
+      if (error) { throw error }
+      void fetchLectures()
     } catch (error) {
       logger.error('Error deleting lecture:', error)
       userNotification.alert('강의 삭제 중 오류가 발생했습니다.')
@@ -256,8 +256,8 @@ export default function AdminLecturesPage() {
         .update({ is_published: !lecture.is_published })
         .eq('id', lecture.id)
 
-      if (error) throw error
-      fetchLectures()
+      if (error) { throw error }
+      void fetchLectures()
     } catch (error) {
       logger.error('Error toggling publish status:', error)
     }
@@ -283,7 +283,7 @@ export default function AdminLecturesPage() {
   const addChapter = () => {
     setChapters([...chapters, {
       title: '',
-      description: '',
+      description: null,
       video_url: '',
       duration: 0,
       order_index: chapters.length + 1,
@@ -291,9 +291,15 @@ export default function AdminLecturesPage() {
     }])
   }
 
-  const updateChapter = (index: number, field: keyof Chapter, value: any) => {
+  const updateChapter = (index: number, field: keyof Chapter, value: string | number | boolean | null) => {
     const updated = [...chapters]
-    updated[index] = { ...updated[index], [field]: value }
+    const updatedChapter = { ...updated[index] } as Chapter
+    if (field === 'description') {
+      updatedChapter[field] = value as string | null
+    } else {
+      (updatedChapter as any)[field] = value
+    }
+    updated[index] = updatedChapter
     setChapters(updated)
   }
 
@@ -331,22 +337,18 @@ export default function AdminLecturesPage() {
 
   // Chapter Management Component
   const ChapterManagement = ({ lectureId, onChaptersUpdated }: { lectureId: string, onChaptersUpdated: () => void }) => {
-    const [lectureChapters, setLectureChapters] = useState<any[]>([])
+    const [lectureChapters, setLectureChapters] = useState<Chapter[]>([])
     const [loadingChapters, setLoadingChapters] = useState(true)
-    const [editingChapter, setEditingChapter] = useState<any>(null)
+    const [editingChapter, setEditingChapter] = useState<string | null>(null)
     const [newChapter, setNewChapter] = useState({
       title: '',
-      description: '',
+      description: '' as string | null,
       video_url: '',
       duration: 0,
       is_preview: false
     })
 
-    useEffect(() => {
-      fetchChapters()
-    }, [lectureId])
-
-    const fetchChapters = async () => {
+    const fetchChapters = useCallback(async () => {
       try {
         const { data, error } = await supabase
           .from('lecture_chapters')
@@ -354,14 +356,18 @@ export default function AdminLecturesPage() {
           .eq('lecture_id', lectureId)
           .order('order_index', { ascending: true })
 
-        if (error) throw error
-        setLectureChapters(data || [])
+        if (error) { throw error }
+        setLectureChapters(data ?? [])
       } catch (error) {
         logger.error('Error fetching chapters:', error)
       } finally {
         setLoadingChapters(false)
       }
-    }
+    }, [lectureId])
+
+    useEffect(() => {
+      void fetchChapters()
+    }, [fetchChapters])
 
     const addNewChapter = async () => {
       if (!newChapter.title || !newChapter.video_url) {
@@ -375,14 +381,14 @@ export default function AdminLecturesPage() {
           .insert({
             lecture_id: lectureId,
             title: newChapter.title,
-            description: newChapter.description,
+            description: newChapter.description || null,
             video_url: newChapter.video_url,
             duration: newChapter.duration,
             order_index: lectureChapters.length + 1,
             is_preview: newChapter.is_preview
           })
 
-        if (error) throw error
+        if (error) { throw error }
 
         setNewChapter({
           title: '',
@@ -392,7 +398,7 @@ export default function AdminLecturesPage() {
           is_preview: false
         })
         
-        fetchChapters()
+        void fetchChapters()
         onChaptersUpdated()
         userNotification.alert('챕터가 추가되었습니다.')
       } catch (error) {
@@ -401,16 +407,16 @@ export default function AdminLecturesPage() {
       }
     }
 
-    const updateChapter = async (chapterId: string, updates: any) => {
+    const updateChapter = async (chapterId: string, updates: Record<string, string | number | boolean | null>) => {
       try {
         const { error } = await supabase
           .from('lecture_chapters')
           .update(updates)
           .eq('id', chapterId)
 
-        if (error) throw error
+        if (error) { throw error }
 
-        fetchChapters()
+        void fetchChapters()
         onChaptersUpdated()
         userNotification.alert('챕터가 수정되었습니다.')
       } catch (error) {
@@ -430,9 +436,9 @@ export default function AdminLecturesPage() {
           .delete()
           .eq('id', chapterId)
 
-        if (error) throw error
+        if (error) { throw error }
 
-        fetchChapters()
+        void fetchChapters()
         onChaptersUpdated()
         userNotification.alert('챕터가 삭제되었습니다.')
       } catch (error) {
@@ -484,8 +490,8 @@ export default function AdminLecturesPage() {
           />
           <textarea
             placeholder="챕터 설명 (선택사항)"
-            value={newChapter.description}
-            onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value })}
+            value={newChapter.description || ''}
+            onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value || null })}
             className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3 h-20"
           />
           <div className="flex items-center justify-between">
@@ -499,7 +505,7 @@ export default function AdminLecturesPage() {
               미리보기 가능
             </label>
             <button
-              onClick={addNewChapter}
+              onClick={() => void addNewChapter()}
               className="px-4 py-2 bg-metallicGold-500 text-deepBlack-900 rounded font-medium hover:bg-metallicGold-400 transition-colors"
             >
               챕터 추가
@@ -512,7 +518,7 @@ export default function AdminLecturesPage() {
           {lectureChapters.length === 0 ? (
             <p className="text-offWhite-600 text-center py-4">등록된 챕터가 없습니다.</p>
           ) : (
-            lectureChapters.map((chapter, _index) => (
+            lectureChapters.map((chapter) => (
               <div key={chapter.id} className="p-4 bg-deepBlack-900 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h6 className="font-medium text-offWhite-200">
@@ -520,13 +526,13 @@ export default function AdminLecturesPage() {
                   </h6>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setEditingChapter(editingChapter === chapter.id ? null : chapter.id)}
+                      onClick={() => setEditingChapter(editingChapter === chapter.id ? null : (chapter.id ?? null))}
                       className="p-1 text-metallicGold-500 hover:text-metallicGold-400"
                     >
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => deleteChapter(chapter.id)}
+                      onClick={() => void deleteChapter(chapter.id ?? '')}
                       className="p-1 text-red-500 hover:text-red-400"
                     >
                       <Trash2 size={16} />
@@ -535,7 +541,7 @@ export default function AdminLecturesPage() {
                 </div>
                 
                 <div className="text-sm text-offWhite-600 mb-2">
-                  <span className="mr-4">재생시간: {Math.floor(chapter.duration / 60)}분 {chapter.duration % 60}초</span>
+                  <span className="mr-4">재생시간: {Math.floor((chapter.duration ?? 0) / 60)}분 {(chapter.duration ?? 0) % 60}초</span>
                   {chapter.is_preview && <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs">미리보기</span>}
                 </div>
 
@@ -553,25 +559,25 @@ export default function AdminLecturesPage() {
                       <input
                         type="text"
                         defaultValue={chapter.title}
-                        onBlur={(e) => updateChapter(chapter.id, { title: e.target.value })}
+                        onBlur={(e) => void updateChapter(chapter.id ?? '', { title: e.target.value })}
                         className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                       />
                       <input
                         type="number"
                         defaultValue={chapter.duration}
-                        onBlur={(e) => updateChapter(chapter.id, { duration: parseInt(e.target.value) || 0 })}
+                        onBlur={(e) => void updateChapter(chapter.id ?? '', { duration: parseInt(e.target.value) || 0 })}
                         className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                       />
                     </div>
                     <input
                       type="text"
                       defaultValue={chapter.video_url}
-                      onBlur={(e) => updateChapter(chapter.id, { video_url: e.target.value })}
+                      onBlur={(e) => void updateChapter(chapter.id ?? '', { video_url: e.target.value })}
                       className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3"
                     />
                     <textarea
-                      defaultValue={chapter.description || ''}
-                      onBlur={(e) => updateChapter(chapter.id, { description: e.target.value })}
+                      defaultValue={chapter.description ?? ''}
+                      onBlur={(e) => void updateChapter(chapter.id ?? '', { description: e.target.value || null })}
                       className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 h-20"
                     />
                   </div>
@@ -632,14 +638,14 @@ export default function AdminLecturesPage() {
                     <div className="flex items-center gap-6 text-sm text-offWhite-600">
                       <span>₩{lecture.price.toLocaleString()}</span>
                       <span>{lecture.duration}분</span>
-                      <span>{lecture.student_count || 0}명 수강</span>
-                      <span>{lecture.chapters?.length || 0}개 챕터</span>
+                      <span>{lecture.student_count ?? 0}명 수강</span>
+                      <span>{lecture.chapters?.length ?? 0}개 챕터</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => togglePublish(lecture)}
+                      onClick={() => void togglePublish(lecture)}
                       className="p-2 text-offWhite-600 hover:text-metallicGold-500 transition-colors"
                     >
                       {lecture.is_published ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -652,13 +658,13 @@ export default function AdminLecturesPage() {
                           description: lecture.description,
                           instructor_name: lecture.instructor_name,
                           category: lecture.category,
-                          level: lecture.level as any,
+                          level: lecture.level as 'beginner' | 'intermediate' | 'advanced',
                           price: lecture.price,
-                          preview_url: lecture.preview_url || '',
-                          thumbnail_url: lecture.thumbnail_url || '',
-                          objectives: lecture.objectives || [''],
-                          requirements: lecture.requirements || [''],
-                          target_audience: lecture.target_audience || ['']
+                          preview_url: lecture.preview_url ?? '',
+                          thumbnail_url: lecture.thumbnail_url ?? '',
+                          objectives: lecture.objectives ?? [''],
+                          requirements: lecture.requirements ?? [''],
+                          target_audience: lecture.target_audience ?? ['']
                         })
                         // Load chapters when editing
                         setExpandedLecture(lecture.id)
@@ -668,7 +674,7 @@ export default function AdminLecturesPage() {
                       <Edit size={20} />
                     </button>
                     <button
-                      onClick={() => handleDeleteLecture(lecture.id)}
+                      onClick={() => void handleDeleteLecture(lecture.id)}
                       className="p-2 text-offWhite-600 hover:text-red-500 transition-colors"
                     >
                       <Trash2 size={20} />
@@ -687,7 +693,7 @@ export default function AdminLecturesPage() {
               {expandedLecture === lecture.id && (
                 <ChapterManagement 
                   lectureId={lecture.id}
-                  onChaptersUpdated={fetchLectures}
+                  onChaptersUpdated={() => void fetchLectures()}
                 />
               )}
             </motion.div>
@@ -812,7 +818,7 @@ export default function AdminLecturesPage() {
                     </label>
                     <select
                       value={formData.level}
-                      onChange={(e) => setFormData({ ...formData, level: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, level: e.target.value as 'beginner' | 'intermediate' | 'advanced' })}
                       className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                     >
                       {levels.map(level => (
@@ -917,7 +923,7 @@ export default function AdminLecturesPage() {
                       <input
                         type="number"
                         value={chapter.duration}
-                        onChange={(e) => updateChapter(index, 'duration', parseInt(e.target.value) || 0)}
+                        onChange={(e) => updateChapter(index, 'duration', parseInt(e.target.value) ?? 0)}
                         className="px-3 py-2 bg-deepBlack-900 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                         placeholder="재생시간 (초)"
                       />
@@ -957,7 +963,7 @@ export default function AdminLecturesPage() {
                   취소
                 </button>
                 <button
-                  onClick={editingLecture ? handleUpdateLecture : handleCreateLecture}
+                  onClick={() => void (editingLecture ? handleUpdateLecture() : handleCreateLecture())}
                   className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all flex items-center gap-2"
                 >
                   <Save size={20} />

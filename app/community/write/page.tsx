@@ -62,7 +62,9 @@ export default function CommunityWritePage() {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       router.push(`/community/${data.category}/${data.id}`)
     } catch (error) {

@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Save, Eye } from 'lucide-react'
 import Link from 'next/link'
@@ -45,51 +45,66 @@ export default function EditAITrendPage() {
 
   useEffect(() => {
     if (!isAdmin) {
-      router.push('/admin')
+      void router.push('/admin')
     }
   }, [isAdmin, router])
 
-  useEffect(() => {
-    if (id) {
-      fetchTrend()
-    }
-  }, [id])
-
-  const fetchTrend = async () => {
+  const fetchTrend = useCallback(async () => {
     try {
       setFetching(true)
-      const response = await fetch(`/api/ai-trends/${id}`)
+      const response = await fetch(`/api/ai-trends/${String(id)}`)
       
       if (!response.ok) {
         throw new Error('Trend not found')
       }
       
-      const data = await response.json()
+      const data = await response.json() as {
+        title?: string;
+        slug?: string;
+        summary?: string;
+        content?: string;
+        thumbnail_url?: string;
+        category?: string;
+        tags?: string[];
+        source_url?: string;
+        source_name?: string;
+        seo_title?: string;
+        seo_description?: string;
+        seo_keywords?: string[];
+        is_featured?: boolean;
+        is_published?: boolean;
+      }
       
       setFormData({
-        title: data.title || '',
-        slug: data.slug || '',
-        summary: data.summary || '',
-        content: data.content || '',
-        thumbnail_url: data.thumbnail_url || '',
-        category: data.category || 'AI 기술',
-        tags: data.tags?.join(', ') || '',
-        source_url: data.source_url || '',
-        source_name: data.source_name || '',
-        seo_title: data.seo_title || '',
-        seo_description: data.seo_description || '',
-        seo_keywords: data.seo_keywords?.join(', ') || '',
-        is_featured: data.is_featured || false,
+        title: data.title ?? '',
+        slug: data.slug ?? '',
+        summary: data.summary ?? '',
+        content: data.content ?? '',
+        thumbnail_url: data.thumbnail_url ?? '',
+        category: data.category ?? 'AI 기술',
+        tags: data.tags?.join(', ') ?? '',
+        source_url: data.source_url ?? '',
+        source_name: data.source_name ?? '',
+        seo_title: data.seo_title ?? '',
+        seo_description: data.seo_description ?? '',
+        seo_keywords: data.seo_keywords?.join(', ') ?? '',
+        is_featured: data.is_featured ?? false,
         is_published: data.is_published !== false
       })
     } catch (error) {
       logger.error('Error fetching trend:', error)
       userNotification.alert('트렌드를 불러오는데 실패했습니다.')
-      router.push('/admin/ai-trends')
+      void router.push('/admin/ai-trends')
     } finally {
       setFetching(false)
     }
-  }
+  }, [id, router])
+
+  useEffect(() => {
+    if (id) {
+      void fetchTrend()
+    }
+  }, [id, fetchTrend])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -115,7 +130,7 @@ export default function EditAITrendPage() {
       const tags = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
       const seoKeywords = formData.seo_keywords.split(',').map(keyword => keyword.trim()).filter(Boolean)
 
-      const response = await fetch(`/api/ai-trends/${id}`, {
+      const response = await fetch(`/api/ai-trends/${String(id)}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -129,13 +144,13 @@ export default function EditAITrendPage() {
         })
       })
 
-      const data = await response.json()
+      const data = await response.json() as { error?: string }
 
       if (response.ok) {
         userNotification.alert('AI 트렌드가 수정되었습니다.')
-        router.push('/admin/ai-trends')
+        void router.push('/admin/ai-trends')
       } else {
-        userNotification.alert(data.error || 'AI 트렌드 수정에 실패했습니다.')
+        userNotification.alert(data.error ?? 'AI 트렌드 수정에 실패했습니다.')
       }
     } catch (error) {
       logger.error('Error updating trend:', error)
@@ -224,7 +239,7 @@ export default function EditAITrendPage() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
             {/* Basic Information */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">기본 정보</h2>

@@ -16,7 +16,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 4,
   
   // 리포터 설정
   reporter: [
@@ -165,7 +165,7 @@ export default defineConfig({
     toHaveScreenshot: {
       threshold: 0.2,
       maxDiffPixels: 1000,
-      animationHandling: 'disable'
+      animations: 'disabled'
     },
     toMatchSnapshot: {
       threshold: 0.2,

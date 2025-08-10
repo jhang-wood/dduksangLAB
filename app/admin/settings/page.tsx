@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {} from 'framer-motion'
 import {
@@ -46,35 +46,20 @@ export default function AdminSettingsPage() {
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    checkAdminAccess()
-  }, [user])
-
-  const checkAdminAccess = async () => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      router.push('/')
-      return
-    }
-
-    loadSettings()
-  }
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/settings')
-      const result = await response.json()
+      const result: { data?: { 
+        site_name: string; 
+        site_description: string; 
+        admin_email: string; 
+        maintenance_mode: boolean; 
+        allow_registration: boolean; 
+        require_email_verification: boolean; 
+        max_file_size: number; 
+        allowed_file_types: string[]; 
+        updated_at?: string;
+      }; error?: string } = await response.json()
       
       if (response.ok && result.data) {
         setSettings({
@@ -103,7 +88,32 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  const checkAdminAccess = useCallback(async () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      router.push('/')
+      return
+    }
+
+    void loadSettings()
+  }, [user, router, loadSettings])
+
+  useEffect(() => {
+    void checkAdminAccess()
+  }, [checkAdminAccess])
 
   const saveSettings = async () => {
     setSaving(true)
@@ -125,14 +135,14 @@ export default function AdminSettingsPage() {
         })
       })
 
-      const result = await response.json()
+      const result: { error?: string } = await response.json()
 
       if (response.ok) {
         setLastUpdated(new Date().toLocaleString('ko-KR'))
         userNotification.alert('설정이 저장되었습니다.')
       } else {
         logger.error('Failed to save settings:', result.error)
-        userNotification.alert(result.error || '설정 저장 중 오류가 발생했습니다.')
+        userNotification.alert(result.error ?? '설정 저장 중 오류가 생했습니다.')
       }
     } catch (error) {
       logger.error('Error saving settings:', error)
@@ -296,7 +306,7 @@ export default function AdminSettingsPage() {
                   <input
                     type="number"
                     value={settings.maxFileSize}
-                    onChange={(e) => setSettings(prev => ({ ...prev, maxFileSize: parseInt(e.target.value) || 5 }))}
+                    onChange={(e) => setSettings(prev => ({ ...prev, maxFileSize: parseInt(e.target.value) ?? 5 }))}
                     className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                     min="1"
                     max="50"
@@ -348,7 +358,7 @@ export default function AdminSettingsPage() {
             {/* Save Button */}
             <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
               <button
-                onClick={saveSettings}
+                onClick={() => void saveSettings()}
                 disabled={saving}
                 className="w-full px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >

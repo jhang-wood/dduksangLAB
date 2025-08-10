@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -32,6 +32,12 @@ interface Stats {
   avgRating: number
 }
 
+interface Activity {
+  type: string;
+  message: string;
+  time: string;
+}
+
 export default function AdminStatsPage() {
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
@@ -46,47 +52,11 @@ export default function AdminStatsPage() {
     avgRating: 4.8
   })
   const [loading, setLoading] = useState(true)
-  const [recentActivities, setRecentActivities] = useState<any[]>([])
+  const [recentActivities, setRecentActivities] = useState<Activity[]>([])
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    checkAdminAccess()
-  }, [user])
-
-  // Auto refresh every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!loading) {
-        fetchStats()
-      }
-    }, 30000)
-
-    return () => clearInterval(interval)
-  }, [loading])
-
-  const checkAdminAccess = async () => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      router.push('/')
-      return
-    }
-
-    fetchStats()
-  }
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       // Fetch basic stats
       const [
@@ -103,11 +73,11 @@ export default function AdminStatsPage() {
         supabase.from('payments').select('id, amount, status, created_at').eq('status', 'completed')
       ])
 
-      const users = usersResult.data || []
-      const lectures = lecturesResult.data || []
-      const posts = postsResult.data || []
-      const sites = sitesResult.data || []
-      const payments = paymentsResult.data || []
+      const users = usersResult.data ?? []
+      const lectures = lecturesResult.data ?? []
+      const posts = postsResult.data ?? []
+      const sites = sitesResult.data ?? []
+      const payments = paymentsResult.data ?? []
 
       // Calculate today's signups
       const today = new Date()
@@ -120,11 +90,11 @@ export default function AdminStatsPage() {
       const publishedLectures = lectures.filter(lecture => lecture.is_published).length
 
       // Calculate average rating
-      const ratingsSum = lectures.reduce((sum, lecture) => sum + (lecture.rating || 0), 0)
+      const ratingsSum = lectures.reduce((sum, lecture) => sum + (lecture.rating ?? 0), 0)
       const avgRating = lectures.length > 0 ? ratingsSum / lectures.length : 0
 
       // Calculate total revenue
-      const totalRevenue = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0)
+      const totalRevenue = payments.reduce((sum, payment) => sum + (payment.amount ?? 0), 0)
 
       setStats({
         totalUsers: users.length,
@@ -158,7 +128,7 @@ export default function AdminStatsPage() {
         })),
         ...payments.slice(0, 2).map(payment => ({
           type: 'payment',
-          message: `₩${payment.amount?.toLocaleString()} 결제가 완료되었습니다`,
+          message: `₩${(payment.amount ?? 0).toLocaleString()} 결제가 완료되었습니다`,
           time: payment.created_at
         }))
       ]
@@ -172,7 +142,43 @@ export default function AdminStatsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  const checkAdminAccess = useCallback(async () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      router.push('/')
+      return
+    }
+
+    void fetchStats()
+  }, [user, router, fetchStats])
+
+  useEffect(() => {
+    void checkAdminAccess()
+  }, [checkAdminAccess])
+
+  // Auto refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!loading) {
+        void fetchStats()
+      }
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [loading, fetchStats])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -182,9 +188,9 @@ export default function AdminStatsPage() {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 60) return `${diffMins}분 전`
-    if (diffHours < 24) return `${diffHours}시간 전`
-    if (diffDays < 7) return `${diffDays}일 전`
+    if (diffMins < 60) {return `${diffMins}분 전`}
+    if (diffHours < 24) {return `${diffHours}시간 전`}
+    if (diffDays < 7) {return `${diffDays}일 전`}
     return date.toLocaleDateString()
   }
 
@@ -331,7 +337,7 @@ export default function AdminStatsPage() {
           <h1 className="text-3xl font-bold text-offWhite-200">사이트 통계</h1>
           <div className="flex items-center gap-4">
             <button
-              onClick={fetchStats}
+              onClick={() => void fetchStats()}
               className="px-4 py-2 bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-colors flex items-center gap-2"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />

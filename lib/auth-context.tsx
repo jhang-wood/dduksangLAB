@@ -4,10 +4,10 @@ import { logger } from '@/lib/logger'
 import { validateRequiredEnvVars } from '@/lib/env'
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
-import { User } from '@supabase/supabase-js'
+import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 import { supabase} from './supabase'
 import { useRouter } from 'next/navigation'
-import { UserProfile, SignUpMetadata, AuthError } from '@/types'
+import { UserProfile, SignUpMetadata } from '@/types'
 
 // Validate environment variables at module load
 try {
@@ -22,8 +22,8 @@ interface AuthContextType {
   user: User | null
   userProfile: UserProfile | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ error: SupabaseAuthError | null }>
+  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: SupabaseAuthError | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
 }
@@ -120,13 +120,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
+    const { data, error } = await supabase.auth.signUp(
+      metadata ? {
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      } : {
+        email,
+        password
       }
-    })
+    )
 
     if (data.user && !error) {
       // 사용자 프로필 생성

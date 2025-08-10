@@ -66,6 +66,39 @@ npm run dev
 npm run build
 ```
 
+## 🤖 자동화 시스템
+
+dduksangLAB은 각 역할에 특화된 자동화 에이전트들로 구성된 통합 자동화 시스템을 제공합니다.
+
+### 자동화 에이전트
+
+- **QA Agent**: 환경 변수 검증 및 품질 검사
+- **Security Agent**: 취약점 스캔 및 보안 검사
+- **Performance Agent**: 성능 분석 및 최적화 권장
+- **DevOps Agent**: 배포 모니터링 및 건강성 체크
+
+### 실행 명령어
+
+```bash
+# 개별 에이전트 실행
+npm run automation:qa              # QA 검증
+npm run automation:security        # 보안 스캔
+npm run automation:performance     # 성능 분석
+npm run automation:devops          # 배포 상태 확인
+
+# 통합 워크플로우 실행
+npm run automation:workflow:quick  # 빠른 검사 (QA + Security)
+npm run automation:workflow:full   # 전체 검사 (모든 에이전트)
+npm run test:all                   # 모든 테스트 실행
+```
+
+### GitHub Actions 워크플로우
+
+- **CI Pipeline**: PR 및 push 시 자동 QA 검증
+- **Security Scan**: 주기적 보안 취약점 검사  
+- **Deployment Pipeline**: 배포 시 성능 검증 및 모니터링
+- **Full Automation**: 수동/야간 전체 자동화 실행
+
 ## 📚 문서
 
 - [개발 워크플로우](docs/project/DEVELOPMENT_WORKFLOW.md) ⭐ **필수 읽기**

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
+import { AITrend } from '@/types'
 
 const supabase = createClient(
   env.supabaseUrl,
@@ -21,7 +22,7 @@ export async function GET(
       .eq('is_published', true)
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     if (!data) {
       return NextResponse.json(
@@ -31,7 +32,7 @@ export async function GET(
     }
 
     // Increment view count
-    await supabase.rpc('increment_ai_trend_views', { trend_id: data.id })
+    await supabase.rpc('increment_ai_trend_views', { trend_id: (data as AITrend).id })
 
     return NextResponse.json(data)
   } catch (error) {
