@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
-import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payapp'
+import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payment/payapp'
 
 interface AuthModalProps {
   isOpen: boolean

@@ -2,7 +2,7 @@ import { logger, userNotification } from '@/lib/logger'
 'use client'
 
 import { useState } from 'react'
-import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payapp'
+import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp'
 import { useAuth } from '@/lib/auth-context'
 
 interface PaymentButtonProps {

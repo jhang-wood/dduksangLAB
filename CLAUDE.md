@@ -1,233 +1,184 @@
-# 🔴 최우선 순위 규칙
+# CLAUDE.md
 
-## 🚨 절대 건너뛰지 않기 규칙
-**절대 금지**: CI/CD 파이프라인 오류나 테스트 실패를 건너뛰고 다른 작업을 진행하지 말 것!
+이 파일은 Claude Code(claude.ai/code)가 이 저장소에서 작업할 때 참고하는 가이드입니다.
 
-### ⚠️ 현재 해결 필요한 Critical 이슈들
-1. **CI/CD 파이프라인 실패** - GitHub Actions에서 다음 항목들이 실패:
-   - 보안 스캔 실패
-   - 린트 및 타입 검사 실패  
-   - 보안 점검 실패
-   - **모든 작업이 건너뛰어짐**
+## 🚨 중요한 주의사항
 
-2. **Vercel 배포 오류** - 환경변수 관련 배포 실패
+### CI/CD 파이프라인 이슈
+현재 GitHub Actions 워크플로우가 실패하고 있습니다. 새로운 기능 개발 전에 반드시 다음 문제들을 해결해야 합니다:
+- 보안 스캔 실패
+- 린트 및 타입 검사 실패
+- Vercel 배포 시 환경변수 누락
 
-### 📝 사용자가 해야 할 작업들
-1. **GitHub 저장소에서 Actions 탭 확인**
-   - https://github.com/jhang-wood/dduksangLAB/actions
-   - 실패한 워크플로우 로그 확인
-   - 구체적인 오류 메시지 파악
+### 필수 환경변수 설정
+Vercel 대시보드에서 다음 환경변수들을 설정해야 합니다:
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+CRON_SECRET
+NEXT_PUBLIC_APP_URL=https://dduksang.com
+```
 
-2. **Vercel 대시보드에서 배포 로그 확인**
-   - https://vercel.com/dashboard
-   - dduksangLAB 프로젝트의 배포 오류 로그 확인
-   - 누락된 환경변수 식별
+## 📋 개발 명령어
 
-3. **환경변수 설정**
-   - Vercel 프로젝트 설정에서 다음 환경변수들 추가 필요:
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=실제_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=실제_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=실제_service_key
-   CRON_SECRET=secure_random_string
-   NEXT_PUBLIC_APP_URL=https://dduksang.com
-   ```
-
-## 🔴 작업 우선순위
-1. CI/CD 파이프라인 오류 해결 (최우선)
-2. Vercel 배포 오류 해결 
-3. 모든 테스트 통과 확인
-4. 그 후에만 새로운 기능 개발 진행
-
-## 🚫 절대 하지 말 것
-- 오류가 있는 상태에서 새로운 기능 개발 진행
-- 실패한 테스트나 빌드를 무시하고 다음 작업 진행
-- "나중에 수정하겠다"는 마인드로 문제 방치
-
----
-
-# Claude 자동 배포 설정
-
-## dduksangLAB 배포 프로세스
-
-### 1. Git 푸시
+### 개발 서버 실행
 ```bash
-git add -A
-git commit -m "deploy: Update dates and fix 404 pages"
-git push origin main
+# Windows PowerShell
+scripts\dev.ps1
+
+# 또는 직접 실행
+npm run dev
 ```
 
-### 2. Vercel 자동 배포
-- Git 푸시 시 Vercel이 자동으로 배포 시작
-- 배포 완료까지 약 2-3분 대기
-
-### 3. 배포 확인
+### 빌드 및 타입 검사
 ```bash
-# Vercel 배포 상태 확인
-vercel --prod
+# 프로덕션 빌드
+npm run build
+
+# 타입 검사
+npm run type-check
+
+# 린트 검사
+npm run lint
+
+# 환경변수 유효성 검사
+npm run env:validate
 ```
 
-### 4. PlaywrightMCP로 변경사항 확인
-```javascript
-// 배포 후 실제 사이트 검증
-const { chromium } = require('playwright');
+### 🤖 Git 워크플로우 (Claude 자동화)
 
-async function verifyDeployment() {
-  const browser = await chromium.launch({ headless: false });
-  const page = await browser.newPage();
-  
-  // dduksang.com 확인
-  await page.goto('https://dduksang.com');
-  
-  // 날짜 변경 확인
-  const dateText = await page.textContent('text=8월 5일');
-  console.log('날짜 변경 확인:', dateText ? '✅ 성공' : '❌ 실패');
-  
-  // 404 페이지 확인
-  await page.goto('https://dduksang.com/dashboard');
-  const is404 = await page.title().then(title => title.includes('404'));
-  console.log('대시보드 페이지:', is404 ? '❌ 404' : '✅ 정상');
-  
-  await browser.close();
-}
-```
-
-## 자동 실행 명령어
+#### ⚡ 빠른 실행 (권장)
+모든 작업 완료 후 한 줄로 모든 것을 처리:
 ```bash
-# 전체 프로세스 자동 실행
-./deploy-and-verify.sh
+npm run claude:deploy
+```
+이 명령어 하나로:
+- ✅ ESLint 자동 수정
+- ✅ TypeScript 타입 체크
+- ✅ 자동 커밋 (메시지 자동 생성)
+- ✅ GitHub 푸시
+- ✅ 자동 배포 시작
+
+#### 📝 개별 명령어 (필요시)
+```bash
+# 코드 검증만
+npm run claude:fix
+
+# 커밋만 (메시지 자동 생성)
+npm run claude:commit
+
+# 빌드 테스트 포함 배포
+npm run claude:deploy-full
 ```
 
----
+#### 🔴 중요: Claude Code 작업 규칙
+1. **모든 코드 수정 후 반드시 실행**: `npm run claude:deploy`
+2. **실패 시 자동 수정**: ESLint 오류는 자동으로 수정됨
+3. **수정 불가능한 오류**: 사용자에게 보고 후 수정 요청
+4. **절대 금지**: 검증 없이 직접 git push 하지 마세요
 
-# 🤖 자동화 시스템 안내
+### 커밋 타입
+- `feat`: 새로운 기능 추가
+- `fix`: 버그 수정
+- `docs`: 문서 수정
+- `style`: 코드 스타일 변경 (포맷팅 등)
+- `refactor`: 리팩토링
+- `test`: 테스트 추가/수정
+- `chore`: 빌드 프로세스, 패키지 설정 등
 
-## 📖 개요
-dduksangLAB 프로젝트는 완전한 자동화 시스템을 구축했습니다. 코드 변경부터 배포, 품질 관리까지 모든 과정이 자동으로 처리됩니다.
+## 🏗️ 프로젝트 구조
 
-## 🚀 GitHub Actions 워크플로우
+### 핵심 디렉토리
+```
+dduksangLAB/
+├── app/                    # Next.js 14 App Router
+│   ├── admin/             # 관리자 페이지 (인증 필요)
+│   ├── ai-trends/         # AI 트렌드 콘텐츠
+│   ├── api/               # API 라우트
+│   ├── auth/              # 인증 관련 페이지
+│   ├── community/         # 커뮤니티 기능
+│   └── lectures/          # 강의 시스템
+├── components/            # 재사용 가능한 React 컴포넌트
+├── lib/                   # 유틸리티 함수
+│   ├── supabase-*.ts     # Supabase 클라이언트 설정
+│   ├── env.ts            # 환경변수 로더
+│   └── payment/          # 결제 시스템 (PayApp)
+├── docs/                  # 프로젝트 문서
+│   ├── project/          # 개발 워크플로우, PRD
+│   ├── guides/           # 환경 설정 가이드
+│   └── vercel/           # 배포 관련 문서
+└── supabase/             # DB 스키마 및 마이그레이션
+```
 
-### 1. 자동 배포 워크플로우 (.github/workflows/deploy.yml)
-- **트리거**: main 브랜치에 푸시할 때 자동 실행
-- **기능**: 
-  - 코드 품질 검사 (ESLint, TypeScript)
-  - 보안 스캔 (npm audit, CodeQL)
-  - Vercel 자동 배포
-  - 텔레그램 알림 발송
+## 🔑 주요 시스템 아키텍처
 
-### 2. Renovate Bot (.github/renovate.json)
-- **기능**: 의존성 자동 업데이트
-- **스케줄**: 매주 월요일 새벽 2시
-- **특징**: 
-  - 자동 PR 생성
-  - 보안 업데이트 우선 처리
-  - 호환성 검사 후 자동 머지
+### 인증 시스템
+- **Supabase Auth** 사용
+- 관리자 권한: `profiles` 테이블의 `is_admin` 필드로 관리
+- 보호된 라우트: `/admin/*` 경로는 `ProtectedRoute` 컴포넌트로 보호
 
-### 3. Semantic Release (.releaserc.json)
-- **기능**: 버전 자동 관리 및 릴리즈 노트 생성
-- **트리거**: main 브랜치 푸시 시
-- **생성물**: 
-  - 자동 버전 태깅
-  - CHANGELOG.md 업데이트
-  - GitHub 릴리즈 생성
+### 데이터베이스 구조
+주요 테이블:
+- `profiles`: 사용자 프로필 및 권한
+- `ai_trends`: AI 트렌드 콘텐츠
+- `lectures`: 강의 정보
+- `lecture_chapters`: 강의 챕터
+- `community_posts`: 커뮤니티 게시글
+- `system_settings`: 시스템 설정 (단일 레코드)
+- `payments`: 결제 내역
 
-## 📱 텔레그램 알림 시스템
+### 결제 시스템
+- **PayApp** 통합
+- 웹훅 엔드포인트: `/api/payment/webhook`
+- 결제 프로세스: 주문 생성 → PayApp 리다이렉트 → 콜백 처리 → 웹훅 검증
 
-### 알림 유형
-1. **배포 성공/실패 알림**
-   - 배포 상태와 URL 포함
-   - 실패 시 상세 오류 정보 제공
+### 관리자 기능
+- `/admin`: 대시보드 (통계, 차트)
+- `/admin/users`: 사용자 관리
+- `/admin/lectures`: 강의 관리
+- `/admin/ai-trends`: AI 트렌드 관리
+- `/admin/settings`: 시스템 설정
+- `/admin/stats`: 상세 통계
 
-2. **보안 이슈 알림**
-   - 취약점 발견 시 즉시 알림
-   - 심각도별 분류
+## ⚠️ 주의사항
 
-3. **의존성 업데이트 알림**
-   - Renovate Bot의 업데이트 결과
-   - 중요 업데이트 하이라이트
-
-### 텔레그램 설정
-> ⚠️ **중요**: 모든 텔레그램 정보는 GitHub Secrets에만 저장하세요!
-
-**필수 GitHub Secrets:**
-- `TELEGRAM_BOT_TOKEN`: 봇 토큰
-- `TELEGRAM_CHAT_ID`: 알림 받을 채팅 ID
-
-## 🛠 개발 워크플로우
-
-### 권장 개발 프로세스
-1. **브랜치 생성**
-   ```bash
-   git checkout -b feature/새기능명
-   ```
-
-2. **개발 및 테스트**
-   ```bash
-   npm run dev        # 개발 서버 실행
-   npm run lint       # 코드 품질 검사
-   npm run type-check # 타입 검사
-   ```
-
-3. **커밋 (Semantic Commit)**
-   ```bash
-   git commit -m "feat: 새로운 기능 추가"
-   git commit -m "fix: 버그 수정"
-   git commit -m "docs: 문서 업데이트"
-   ```
-
-4. **Pull Request 생성**
-   - GitHub에서 PR 생성
-   - 자동 검사 통과 확인
-   - 리뷰어 지정 (선택사항)
-
-5. **자동 배포**
-   - main 브랜치 머지 시 자동 배포
-   - 텔레그램으로 결과 알림 수신
-
-## 📊 품질 관리
-
-### 코드 품질 기준
-- **ESLint**: 코드 스타일 및 잠재적 오류 검사
-- **TypeScript**: 타입 안전성 보장
-- **Prettier**: 코드 포매팅 통일
-
-### 보안 검사
-- **npm audit**: 의존성 취약점 검사
-- **CodeQL**: 정적 보안 분석
-- **Renovate**: 보안 업데이트 자동 적용
+### 환경변수 보안
+- `.env.local` 파일은 절대 커밋하지 마세요
+- Service Role Key는 서버 사이드에서만 사용
+- `NEXT_PUBLIC_` 접두사가 붙은 변수만 클라이언트에서 접근 가능
 
 ### 배포 검증
-- **빌드 테스트**: 프로덕션 빌드 성공 확인
-- **타입 검사**: TypeScript 컴파일 오류 검사
-- **린트 검사**: 코드 품질 기준 통과 확인
+Git 푸시 후 반드시 확인:
+1. Vercel 대시보드에서 빌드 성공 확인
+2. https://dduksang.com 에서 실제 동작 테스트
+3. 새로 구현한 기능이 프로덕션에서 정상 작동하는지 확인
 
-## 🚨 문제 해결
+### 개발 규칙
+1. **작업 완료 정의**: 코드 작성 → 테스트 → 커밋 → 푸시 → 배포 확인
+2. **문서 업데이트**: 중요한 변경사항은 관련 문서 업데이트 필수
+3. **타입 안전성**: TypeScript 타입 검사 통과 필수
+4. **코드 품질**: ESLint 규칙 준수
+
+## 📚 참고 문서
+- [개발 워크플로우](docs/project/DEVELOPMENT_WORKFLOW.md) - **필독**
+- [환경변수 설정 가이드](docs/guides/SUPABASE_ENV_GUIDE.md)
+- [Vercel 배포 가이드](docs/vercel/VERCEL_BUILD_FIX.md)
+- [보안 가이드](docs/guides/SECURITY_CLEANUP.md)
+
+## 🔧 문제 해결
+
+### 빌드 실패 시
+1. `npm run type-check`로 타입 오류 확인
+2. `npm run lint`로 린트 오류 확인
+3. 환경변수 설정 확인
 
 ### 배포 실패 시
-1. **GitHub Actions 로그 확인**
-   - Repository → Actions 탭
-   - 실패한 워크플로우 클릭
-   - 오류 로그 확인
+1. Vercel 대시보드에서 빌드 로그 확인
+2. 환경변수가 모두 설정되어 있는지 확인
+3. `npm run build` 로컬에서 성공하는지 테스트
 
-2. **일반적인 오류 유형**
-   - 린트 오류: `npm run lint:fix` 실행
-   - 타입 오류: TypeScript 오류 수정
-   - 빌드 오류: 의존성 또는 구문 오류 확인
-
-3. **Vercel 환경변수 확인**
-   - Vercel Dashboard → Project Settings
-   - Environment Variables 설정 확인
-
-### 텔레그램 알림이 안 올 때
-1. **GitHub Secrets 확인**
-   - Repository Settings → Secrets and variables → Actions
-   - `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` 설정 확인
-
-2. **봇 설정 확인**
-   - 텔레그램에서 봇과 대화 시작
-   - 봇이 그룹에 추가되어 있는지 확인
-
-## 📚 추가 문서
-- [자동화 시스템 사용 가이드](C:\dev\docs\git-automation\USER_GUIDE.md)
-- [GitHub Secrets 설정 가이드](C:\dev\docs\git-automation\secrets-setup.md)
-- [프로젝트 전체 기술 문서](C:\dev\docs\git-automation\PRD.md)
+### Supabase 연결 오류
+1. 환경변수 값이 올바른지 확인
+2. Supabase 대시보드에서 프로젝트 상태 확인
+3. Service Role Key와 Anon Key를 혼동하지 않았는지 확인

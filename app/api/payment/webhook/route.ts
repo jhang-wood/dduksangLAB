@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { verifyPayAppWebhook } from '@/lib/payapp'
+import { verifyPayAppWebhook } from '@/lib/payment/payapp'
 import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
