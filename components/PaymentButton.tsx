@@ -25,26 +25,24 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
 
     setLoading(true)
     
-    void (async () => {
-      try {
-        const orderId = generateOrderId()
-        const paymentUrl = generatePayAppUrl({
-          orderId,
-          userName: user.user_metadata?.name ?? user.email?.split('@')[0] ?? '고객',
-          userEmail: user.email ?? '',
-          planId,
-          amount: plan.price
-        })
+    try {
+      const orderId = generateOrderId()
+      const paymentUrl = generatePayAppUrl({
+        orderId,
+        userName: (user.user_metadata?.name as string) ?? user.email?.split('@')[0] ?? '고객',
+        userEmail: user.email ?? '',
+        planId,
+        amount: plan.price
+      })
 
-        // 새 창에서 결제 페이지 열기
-        window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
-      } catch (error) {
-        logger.error('결제 URL 생성 실패:', error)
-        userNotification.alert('결제 처리 중 오류가 발생했습니다.')
-      } finally {
-        setLoading(false)
-      }
-    })()
+      // 새 창에서 결제 페이지 열기
+      window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
+    } catch (error) {
+      logger.error('결제 URL 생성 실패:', error)
+      userNotification.alert('결제 처리 중 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

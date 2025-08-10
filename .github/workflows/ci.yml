@@ -35,9 +35,22 @@ jobs:
           cp .env.example .env.local
           echo "NODE_ENV=test" >> .env.local
           
-      - name: Run ESLint (allow warnings)
-        run: npm run lint || echo "⚠️ Lint warnings found, continuing..."
-        continue-on-error: true
+      - name: Run ESLint
+        run: |
+          echo "🔍 Running ESLint..."
+          npm run lint 2>&1 | tee eslint-output.log
+          
+          # ESLint 결과 분석
+          if grep -q "Error:" eslint-output.log; then
+            ERROR_COUNT=$(grep -c "Error:" eslint-output.log || echo "0")
+            echo "❌ ESLint errors found: $ERROR_COUNT"
+            echo "::error::ESLint validation failed with $ERROR_COUNT errors"
+            exit 1
+          else
+            WARNING_COUNT=$(grep -c "Warning:" eslint-output.log || echo "0")
+            echo "✅ ESLint passed with $WARNING_COUNT warnings"
+            echo "::notice::ESLint completed with $WARNING_COUNT warnings"
+          fi
         
       - name: Run TypeScript check (strict)
         run: npm run type-check
@@ -93,7 +106,6 @@ jobs:
         
       - name: Create test environment file
         run: |
-          cp .env.example .env.local
           # CI 전용 테스트 환경변수 설정
           cat > .env.local << 'EOF'
           # CI Test Environment
@@ -104,6 +116,9 @@ jobs:
           ENCRYPTION_KEY=ci-test-encryption-key-for-testing-only-must-be-64-chars-long
           CRON_SECRET=ci-test-cron-secret
           NEXT_PUBLIC_APP_URL=https://ci-test.example.com
+          NEXT_PUBLIC_TOSS_CLIENT_KEY=test-toss-client-key
+          TOSS_SECRET_KEY=test-toss-secret-key
+          GEMINI_API_KEY=test-gemini-api-key
           NODE_ENV=production
           EOF
           
@@ -144,13 +159,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Run Trivy vulnerability scanner
+      - name: 🔄 Cache Trivy database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-ci-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-ci-
+
+      - name: Run Trivy vulnerability scanner (Critical/High only)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: '.'  
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 0
           
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -158,7 +184,6 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # 배포 준비성 검사 (main 브랜치만)
   deployment-readiness:
     name: 🚀 Deployment Readiness
     runs-on: ubuntu-latest

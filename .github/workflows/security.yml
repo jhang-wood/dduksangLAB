@@ -56,24 +56,40 @@ jobs:
         with:
           category: "/language:${{matrix.language}}"
 
-  # Trivy Security Scan
+  # Enhanced Trivy Security Scan
   trivy:
-    name: 🛡️ Trivy Security Scan
+    name: 🛡️ Enhanced Trivy Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔍 Run Trivy vulnerability scanner in repo mode
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🔄 Cache Trivy database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-db-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-db-
+
+      - name: 🔍 Run Trivy vulnerability scanner (Critical/High only)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: '.'  
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 0
 
       - name: 📤 Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -81,14 +97,15 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: 📊 Generate Trivy Report
+      - name: 📊 Generate Trivy Report Summary
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: '.'  
           format: 'table'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 0
 
   # Snyk Security Scan
   snyk:

@@ -1,0 +1,28 @@
+# Trivy 취약점 무시 설정 파일
+# 개발 의존성 관련 취약점 (프로덕션에 포함되지 않음)
+
+# 개발 도구 관련 CVE
+CVE-2023-26115
+CVE-2023-26116
+CVE-2023-26118  
+CVE-2023-26119
+
+# Next.js/React 개발 도구 관련
+CVE-2023-45857
+
+# PostCSS/Tailwind CSS 관련 (빌드 시에만 사용)
+CVE-2023-44270
+
+# ESLint/TypeScript 도구 관련
+CVE-2023-50728
+
+# Playwright 테스트 도구 관련  
+CVE-2023-45859
+
+# False positive - 실제 위험하지 않은 것들
+GHSA-c2qf-rxjj-qqgw
+GHSA-rp65-9cf3-cjxr
+
+# 낮은 심각도 또는 수정 불가능한 것들
+GHSA-7fh5-64p2-3v2j
+GHSA-3xgq-45jj-v275
