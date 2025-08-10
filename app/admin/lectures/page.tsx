@@ -154,7 +154,7 @@ export default function AdminLecturesPage() {
         const chaptersData = chapters.map((ch, index) => ({
           lecture_id: lecture.id,
           title: ch.title,
-          description: ch.description || null,
+          description: ch.description ?? null,
           video_url: ch.video_url,
           duration: ch.duration,
           order_index: index + 1,
@@ -209,7 +209,7 @@ export default function AdminLecturesPage() {
         const chaptersData = chapters.map((ch, index) => ({
           lecture_id: editingLecture.id,
           title: ch.title,
-          description: ch.description || null,
+          description: ch.description ?? null,
           video_url: ch.video_url,
           duration: ch.duration,
           order_index: index + 1,
@@ -296,8 +296,14 @@ export default function AdminLecturesPage() {
     const updatedChapter = { ...updated[index] } as Chapter
     if (field === 'description') {
       updatedChapter[field] = value as string | null
-    } else {
-      (updatedChapter as any)[field] = value
+    } else if (field === 'title') {
+      updatedChapter[field] = value as string
+    } else if (field === 'video_url') {
+      updatedChapter[field] = value as string
+    } else if (field === 'duration' || field === 'order_index') {
+      updatedChapter[field] = value as number
+    } else if (field === 'is_preview') {
+      updatedChapter[field] = value as boolean
     }
     updated[index] = updatedChapter
     setChapters(updated)
@@ -381,7 +387,7 @@ export default function AdminLecturesPage() {
           .insert({
             lecture_id: lectureId,
             title: newChapter.title,
-            description: newChapter.description || null,
+            description: newChapter.description ?? null,
             video_url: newChapter.video_url,
             duration: newChapter.duration,
             order_index: lectureChapters.length + 1,
@@ -490,7 +496,7 @@ export default function AdminLecturesPage() {
           />
           <textarea
             placeholder="챕터 설명 (선택사항)"
-            value={newChapter.description || ''}
+            value={newChapter.description ?? ''}
             onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value || null })}
             className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3 h-20"
           />

@@ -44,7 +44,7 @@ export function useOptimizedQuery<T>({
   const cacheKey = useMemo(() => getCacheKey(deps), deps)
 
   const executeQuery = useCallback(async () => {
-    if (!enabled) return
+    if (!enabled) {return}
 
     // 캐시 확인
     const cached = queryCache.get(cacheKey)

@@ -73,11 +73,11 @@ export default function AdminStatsPage() {
         supabase.from('payments').select('id, amount, status, created_at').eq('status', 'completed')
       ])
 
-      const users = usersResult.data ?? []
-      const lectures = lecturesResult.data ?? []
-      const posts = postsResult.data ?? []
-      const sites = sitesResult.data ?? []
-      const payments = paymentsResult.data ?? []
+      const users = (usersResult.data ?? []) as Array<{id: string; created_at: string}>
+      const lectures = (lecturesResult.data ?? []) as Array<{id: string; is_published: boolean; rating?: number}>
+      const posts = (postsResult.data ?? []) as Array<{id: string; created_at: string}>
+      const sites = (sitesResult.data ?? []) as Array<{id: string; created_at: string}>
+      const payments = (paymentsResult.data ?? []) as Array<{id: string; amount: number; created_at: string}>
 
       // Calculate today's signups
       const today = new Date()
