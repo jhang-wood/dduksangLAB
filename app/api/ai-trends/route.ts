@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient, createAdminClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
+import { AITrend } from '@/types'
 
 // GET: Fetch AI trends with pagination and filtering
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '12')
+    const page = parseInt(searchParams.get('page') ?? '1', 10)
+    const limit = parseInt(searchParams.get('limit') ?? '12', 10)
     const category = searchParams.get('category')
     const featured = searchParams.get('featured')
     
@@ -34,15 +35,15 @@ export async function GET(request: NextRequest) {
 
     const { data, error, count } = await query
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json({
       data,
       pagination: {
         page,
         limit,
-        total: count || 0,
-        totalPages: Math.ceil((count || 0) / limit)
+        total: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / limit)
       }
     })
   } catch (error) {
@@ -81,7 +82,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
+    const body = await request.json() as {
+      title: string
+      slug?: string
+      summary: string
+      content: string
+      thumbnail_url?: string
+      category: string
+      tags?: string[]
+      source_url?: string
+      source_name?: string
+      seo_title?: string
+      seo_description?: string
+      seo_keywords?: string[]
+      is_featured?: boolean
+      is_published?: boolean
+    }
     const {
       title,
       slug,
@@ -100,7 +116,7 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Generate slug if not provided
-    const finalSlug = slug || title.toLowerCase()
+    const finalSlug = slug ?? title.toLowerCase()
       .replace(/[^a-z0-9가-힣]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')
@@ -135,27 +151,27 @@ export async function POST(request: NextRequest) {
         content,
         thumbnail_url,
         category,
-        tags: tags || [],
+        tags: tags ?? [],
         source_url,
         source_name,
-        seo_title: seo_title || title.substring(0, 70),
-        seo_description: seo_description || summary.substring(0, 160),
-        seo_keywords: seo_keywords || tags || [],
-        is_featured: is_featured || false,
+        seo_title: seo_title ?? title.substring(0, 70),
+        seo_description: seo_description ?? summary.substring(0, 160),
+        seo_keywords: seo_keywords ?? tags ?? [],
+        is_featured: is_featured ?? false,
         is_published: is_published !== false,
         created_by: user.id
       })
       .select()
       .single()
 
-    if (trendError) throw trendError
+    if (trendError) {throw trendError}
 
     // Store content hash using admin client
     await adminClient
       .from('ai_trends_hash')
       .insert({
         content_hash: contentHash,
-        trend_id: trend.id
+        trend_id: (trend as AITrend).id
       })
 
     return NextResponse.json(trend)

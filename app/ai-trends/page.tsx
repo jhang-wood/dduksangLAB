@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -39,19 +39,17 @@ export default function AITrendsPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    fetchTrends()
-  }, [selectedCategory, page])
-
-  const fetchTrends = async () => {
+  const fetchTrends = useCallback(async () => {
     try {
       setLoading(true)
       
       // Fetch featured trends
       if (page === 1 && selectedCategory === 'all') {
         const featuredRes = await fetch('/api/ai-trends?featured=true&limit=3')
-        const featuredData = await featuredRes.json()
-        setFeaturedTrends(featuredData.data || [])
+        if (featuredRes.ok) {
+          const featuredData = await featuredRes.json() as { data?: AITrend[] }
+          setFeaturedTrends(featuredData.data ?? [])
+        }
       }
 
       // Fetch regular trends
@@ -61,17 +59,26 @@ export default function AITrendsPage() {
         ...(selectedCategory !== 'all' && { category: selectedCategory })
       })
       
-      const response = await fetch(`/api/ai-trends?${params}`)
-      const data = await response.json()
-      
-      setTrends(data.data || [])
-      setTotalPages(data.pagination?.totalPages || 1)
+      const response = await fetch(`/api/ai-trends?${params.toString()}`)
+      if (response.ok) {
+        const data = await response.json() as { data?: AITrend[]; pagination?: { totalPages: number } }
+        
+        setTrends(data.data ?? [])
+        setTotalPages(data.pagination?.totalPages ?? 1)
+      } else {
+        setTrends([])
+        setTotalPages(1)
+      }
     } catch (error) {
       logger.error('Error fetching trends:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, page])
+
+  useEffect(() => {
+    void fetchTrends()
+  }, [fetchTrends])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

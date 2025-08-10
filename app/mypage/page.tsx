@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -38,8 +38,19 @@ export default function MyPage() {
     phone: '',
     bio: ''
   })
-  const [enrollments, setEnrollments] = useState<any[]>([])
-  const [payments, setPayments] = useState<any[]>([])
+  const [enrollments, setEnrollments] = useState<Array<{
+    id: string;
+    lectures: { id: string; title: string; thumbnail_url?: string; instructor_id: string; duration: number; level: string } | null;
+    progress_percentage: number;
+    status: string;
+  }>>([])
+  const [payments, setPayments] = useState<Array<{
+    id: string;
+    lectures: { title: string } | null;
+    amount: number;
+    status: string;
+    created_at: string;
+  }>>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -51,22 +62,16 @@ export default function MyPage() {
   useEffect(() => {
     if (userProfile) {
       setProfileData({
-        name: userProfile.name || '',
-        email: userProfile.email || '',
-        phone: userProfile.phone || '',
-        bio: userProfile.bio || ''
+        name: userProfile.name ?? '',
+        email: userProfile.email ?? '',
+        phone: userProfile.phone ?? '',
+        bio: userProfile.bio ?? ''
       })
     }
   }, [userProfile])
 
-  useEffect(() => {
-    if (user) {
-      fetchUserData()
-    }
-  }, [user, activeTab])
-
-  const fetchUserData = async () => {
-    if (!user) return
+  const fetchUserData = useCallback(async () => {
+    if (!user) {return}
     
     try {
       if (activeTab === 'lectures') {
@@ -86,7 +91,14 @@ export default function MyPage() {
           .eq('user_id', user.id)
           .order('enrolled_at', { ascending: false })
         
-        if (data) setEnrollments(data)
+        if (data) {
+          setEnrollments(data as Array<{
+            id: string;
+            lectures: { id: string; title: string; thumbnail_url?: string; instructor_id: string; duration: number; level: string } | null;
+            progress_percentage: number;
+            status: string;
+          }>)
+        }
       } else if (activeTab === 'payments') {
         const { data } = await supabase
           .from('payments')
@@ -99,15 +111,30 @@ export default function MyPage() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
         
-        if (data) setPayments(data)
+        if (data) {
+          setPayments(data as Array<{
+            id: string;
+            lectures: { title: string } | null;
+            amount: number;
+            status: string;
+            created_at: string;
+          }>)
+        }
       }
     } catch (error) {
       logger.error('Failed to fetch user data:', error)
     }
-  }
+  }, [user, activeTab])
+
+  useEffect(() => {
+    if (user) {
+      void fetchUserData()
+    }
+  }, [fetchUserData, user])
+
 
   const handleProfileUpdate = async () => {
-    if (!user) return
+    if (!user) {return}
     
     setLoading(true)
     try {
@@ -132,7 +159,7 @@ export default function MyPage() {
   }
 
   const makeAdmin = async () => {
-    if (!user) return
+    if (!user) {return}
     
     logger.log('[MyPage] Making user admin:', user.id)
     
@@ -147,14 +174,14 @@ export default function MyPage() {
         
       if (error) {
         logger.error('[MyPage] Error updating role:', error)
-        userNotification.alert('오류가 발생했습니다: ' + error.message)
+        userNotification.alert(`오류가 발생했습니다: ${  error.message}`)
         return
       }
       
       logger.log('[MyPage] Profile updated:', data)
       
       // 프로필 다시 가져오기
-      await fetchUserData()
+      void fetchUserData()
       
       userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
       
@@ -212,7 +239,9 @@ export default function MyPage() {
                 
                 <div className="mt-8 pt-8 border-t border-metallicGold-900/30">
                   <button
-                    onClick={signOut}
+                    onClick={() => {
+                      void signOut()
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
                   >
                     <LogOut className="w-5 h-5" />
@@ -231,7 +260,9 @@ export default function MyPage() {
                       <h2 className="text-2xl font-semibold text-offWhite-200">프로필 정보</h2>
                       {!editMode ? (
                         <button
-                          onClick={() => setEditMode(true)}
+                          onClick={() => {
+                            setEditMode(true)
+                          }}
                           className="px-4 py-2 text-sm bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-all"
                         >
                           수정
@@ -239,7 +270,9 @@ export default function MyPage() {
                       ) : (
                         <div className="flex gap-2">
                           <button
-                            onClick={handleProfileUpdate}
+                            onClick={() => {
+                              void handleProfileUpdate()
+                            }}
                             disabled={loading}
                             className="px-4 py-2 text-sm bg-metallicGold-500 text-deepBlack-900 rounded-lg hover:bg-metallicGold-400 transition-all disabled:opacity-50"
                           >
@@ -249,10 +282,10 @@ export default function MyPage() {
                             onClick={() => {
                               setEditMode(false)
                               setProfileData({
-                                name: userProfile?.name || '',
-                                email: userProfile?.email || '',
-                                phone: userProfile?.phone || '',
-                                bio: userProfile?.bio || ''
+                                name: userProfile?.name ?? '',
+                                email: userProfile?.email ?? '',
+                                phone: userProfile?.phone ?? '',
+                                bio: userProfile?.bio ?? ''
                               })
                             }}
                             className="px-4 py-2 text-sm bg-deepBlack-600 text-offWhite-500 rounded-lg hover:bg-deepBlack-900 transition-all"
@@ -310,11 +343,13 @@ export default function MyPage() {
                       
                       {/* 임시 관리자 권한 버튼 */}
                       <div className="pt-4 border-t border-metallicGold-900/30">
-                        <p className="text-sm text-offWhite-600 mb-2">현재 역할: {userProfile?.role || 'user'}</p>
+                        <p className="text-sm text-offWhite-600 mb-2">현재 역할: {userProfile?.role ?? 'user'}</p>
                         {userProfile?.role !== 'admin' ? (
                           <>
                             <button
-                              onClick={makeAdmin}
+                              onClick={() => {
+                                void makeAdmin()
+                              }}
                               className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg font-semibold hover:from-red-400 hover:to-red-600 transition-all shadow-lg"
                             >
                               🔧 관리자 권한 부여 (임시)
@@ -336,7 +371,7 @@ export default function MyPage() {
                             className="w-full mt-1 px-4 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                           />
                         ) : (
-                          <p className="text-offWhite-200 font-medium">{profileData.phone || '등록된 번호가 없습니다'}</p>
+                          <p className="text-offWhite-200 font-medium">{profileData.phone ?? '등록된 번호가 없습니다'}</p>
                         )}
                       </div>
                       
@@ -351,7 +386,7 @@ export default function MyPage() {
                             placeholder="자기소개를 입력하세요"
                           />
                         ) : (
-                          <p className="text-offWhite-200 font-medium">{profileData.bio || '소개가 없습니다'}</p>
+                          <p className="text-offWhite-200 font-medium">{profileData.bio ?? '소개가 없습니다'}</p>
                         )}
                       </div>
                       
@@ -380,7 +415,7 @@ export default function MyPage() {
                             className="bg-deepBlack-600 rounded-lg p-4 border border-metallicGold-900/30"
                           >
                             <h3 className="text-lg font-medium text-offWhite-200 mb-2">
-                              {enrollment.lectures?.title}
+                              {enrollment.lectures?.title ?? '제목 없음'}
                             </h3>
                             <div className="flex items-center justify-between text-sm text-offWhite-600">
                               <span>진행률: {enrollment.progress_percentage}%</span>
@@ -421,7 +456,7 @@ export default function MyPage() {
                           >
                             <div>
                               <h3 className="text-lg font-medium text-offWhite-200">
-                                {payment.lectures?.title || '강의'}
+                                {payment.lectures?.title ?? '강의'}
                               </h3>
                               <p className="text-sm text-offWhite-600">
                                 {new Date(payment.created_at).toLocaleDateString()}

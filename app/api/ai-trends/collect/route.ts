@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
+import { AITrend } from '@/types'
 
 // AI 트렌드 수집을 위한 실제 데이터 소스들 (향후 확장용)
 // const AI_NEWS_SOURCES = [
@@ -53,11 +54,11 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const trendsToCreate = 5 - (count || 0)
+    const trendsToCreate = 5 - (count ?? 0)
     const createdTrends = []
 
     // Generate intelligent AI trends using actual data
-    const aiTrends = await generateIntelligentAITrends(trendsToCreate)
+    const aiTrends = generateIntelligentAITrends(trendsToCreate)
 
     // Create trends in database
     for (const trendData of aiTrends) {
@@ -65,12 +66,12 @@ export async function POST(request: NextRequest) {
         const category = TREND_CATEGORIES[Math.floor(Math.random() * TREND_CATEGORIES.length)]
         
         // Generate slug
-        const slug = trendData.title.toLowerCase()
+        const slug = `${trendData.title.toLowerCase()
           .replace(/[^a-z0-9가-힣\s]/g, '')
           .replace(/\s+/g, '-')
           .replace(/-+/g, '-')
           .replace(/^-|-$/g, '')
-          + '-' + Date.now() + Math.floor(Math.random() * 1000)
+           }-${  Date.now()  }${Math.floor(Math.random() * 1000)}`
 
         // Generate content hash
         const contentHash = await generateContentHash(trendData.content)
@@ -92,13 +93,13 @@ export async function POST(request: NextRequest) {
               summary: trendData.summary,
               content: trendData.content,
               category,
-              tags: trendData.tags || [],
-              source_name: trendData.source_name || 'AI 트렌드 연구소',
+              tags: trendData.tags ?? [],
+              source_name: trendData.source_name ?? 'AI 트렌드 연구소',
               seo_title: trendData.title.substring(0, 70),
               seo_description: trendData.summary.substring(0, 160),
-              seo_keywords: trendData.tags || [],
+              seo_keywords: trendData.tags ?? [],
               is_published: true,
-              thumbnail_url: `/images/ai-trends/default-${category.toLowerCase().replace(/\s+/g, '-')}.jpg`
+              thumbnail_url: `/images/ai-trends/default-${(category ?? 'ai').toLowerCase().replace(/\s+/g, '-')}.jpg`
             })
             .select()
             .single()
@@ -109,11 +110,11 @@ export async function POST(request: NextRequest) {
               .from('ai_trends_hash')
               .insert({
                 content_hash: contentHash,
-                trend_id: trend.id
+                trend_id: (trend as AITrend).id
               })
 
             createdTrends.push(trend)
-            logger.info(`Created AI trend: ${trend.title}`)
+            logger.info(`Created AI trend: ${(trend as AITrend).title}`)
           } else {
             logger.error('Error inserting trend:', trendError)
           }
@@ -128,7 +129,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: 'AI trends collected successfully',
       created: createdTrends.length,
-      trends: createdTrends.map(t => ({ id: t.id, title: t.title, slug: t.slug }))
+      trends: createdTrends.map(t => ({ 
+        id: (t as AITrend).id, 
+        title: (t as AITrend).title, 
+        slug: (t as AITrend).slug 
+      }))
     })
   } catch (error) {
     logger.error('Error collecting AI trends:', error)
@@ -140,7 +145,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Intelligent AI trend generation
-async function generateIntelligentAITrends(count: number) {
+function generateIntelligentAITrends(count: number) {
   const currentMonth = new Date().getMonth() + 1
   const currentYear = new Date().getFullYear()
 
@@ -210,7 +215,13 @@ async function generateIntelligentAITrends(count: number) {
   }))
 }
 
-function generateDetailedContent(topic: any): string {
+function generateDetailedContent(topic: {
+  title: string
+  summary: string
+  baseContent: string
+  tags: string[]
+  category: string
+}): string {
   const sections = [
     `<h2>개요</h2><p>${topic.baseContent}</p>`,
     `<h2>주요 트렌드</h2><p>현재 ${topic.category} 분야에서는 다음과 같은 주요 변화들이 일어나고 있습니다:</p>

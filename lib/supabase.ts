@@ -1,110 +1,61 @@
 // Re-export client functions only
 export { supabase, signUp, signIn, signOut, getCurrentUser } from './supabase-client'
 
-// Database Types
-export interface User {
-  id: string
-  email: string
-  name: string
-  user_type: 'visitor' | 'student' | 'admin'
-  created_at: string
-  updated_at: string
-  last_login: string
-  is_active: boolean
-}
+// Re-export unified types
+export type {
+  UserProfile as User,
+  AITrend,
+  SystemSettings,
+  APIResponse,
+  PaginationInfo,
+  PaginatedResponse
+} from '@/types'
 
-export interface Lecture {
-  id: string
-  title: string
-  description: string
-  instructor: string
-  duration: number
-  price: number
-  thumbnail_url: string
-  video_url: string
-  category: string
-  tags: string[]
-  level: 'beginner' | 'intermediate' | 'advanced'
-  created_at: string
-  updated_at: string
-  is_published: boolean
-}
-
-export interface CommunityPost {
-  id: string
-  title: string
-  content: string
-  author_id: string
-  category: string
-  tags: string[]
-  likes: number
-  views: number
-  created_at: string
-  updated_at: string
-  is_published: boolean
-}
-
-export interface CommunityComment {
-  id: string
-  post_id: string
-  author_id: string
-  content: string
-  parent_id: string | null
-  likes: number
-  is_published: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface SaaSProduct {
-  id: string
-  name: string
-  description: string
-  website_url: string
-  logo_url: string
-  category: string
-  tags: string[]
-  price: string
-  rating: number
-  users_count: number
-  creator_id: string
-  created_at: string
-  updated_at: string
-  is_approved: boolean
-  is_featured: boolean
-  is_trending: boolean
-}
-
-export interface UserProgress {
-  id: string
-  user_id: string
-  lecture_id: string
-  progress_percentage: number
-  completed_at: string | null
-  created_at: string
-  updated_at: string
-}
+// Database helpers with unified types
 
 // Import supabase client for database operations
 import { supabase } from './supabase-client'
+import type { UserProfile } from '@/types'
 
-// Database helpers
 export const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
-    .from('users')
+    .from('profiles')
     .select('*')
     .eq('id', userId)
     .single()
-  return { data, error }
+  return { data: data as UserProfile | null, error }
 }
 
-export const updateUserProfile = async (userId: string, updates: Partial<User>) => {
+export const updateUserProfile = async (userId: string, updates: Partial<UserProfile>) => {
   const { data, error } = await supabase
-    .from('users')
+    .from('profiles')
     .update(updates)
     .eq('id', userId)
     .single()
-  return { data, error }
+  return { data: data as UserProfile | null, error }
+}
+
+// Helper function to build query filters
+function applyLectureFilters(query: any, filters?: {
+  category?: string
+  level?: string
+  search?: string
+}) {
+  if (!filters) {return query}
+  
+  if (filters.category) {
+    query = query.eq('category', filters.category)
+  }
+  
+  if (filters.level) {
+    query = query.eq('level', filters.level)
+  }
+  
+  if (filters.search) {
+    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+  }
+  
+  return query
 }
 
 export const getLectures = async (filters?: {
@@ -113,28 +64,15 @@ export const getLectures = async (filters?: {
   search?: string
 }) => {
   let query = supabase.from('lectures').select('*').eq('is_published', true)
-  
-  if (filters?.category) {
-    query = query.eq('category', filters.category)
-  }
-  
-  if (filters?.level) {
-    query = query.eq('level', filters.level)
-  }
-  
-  if (filters?.search) {
-    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
-  }
+  query = applyLectureFilters(query, filters)
   
   const { data, error } = await query.order('created_at', { ascending: false })
   return { data, error }
 }
 
-export const getCommunityPosts = async (filters?: {
-  category?: string
-  search?: string
-}) => {
-  let query = supabase
+// Helper function for community posts query building
+function buildCommunityPostsQuery() {
+  return supabase
     .from('community_posts')
     .select(`
       *,
@@ -147,14 +85,31 @@ export const getCommunityPosts = async (filters?: {
       )
     `)
     .eq('is_published', true)
+}
+
+function applyCommunityFilters(query: any, filters?: {
+  category?: string
+  search?: string
+}) {
+  if (!filters) {return query}
   
-  if (filters?.category && filters.category !== '전체') {
+  if (filters.category && filters.category !== '전체') {
     query = query.eq('category', filters.category)
   }
   
-  if (filters?.search) {
+  if (filters.search) {
     query = query.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`)
   }
+  
+  return query
+}
+
+export const getCommunityPosts = async (filters?: {
+  category?: string
+  search?: string
+}) => {
+  let query = buildCommunityPostsQuery()
+  query = applyCommunityFilters(query, filters)
   
   const { data, error } = await query.order('created_at', { ascending: false })
   return { data, error }
@@ -224,6 +179,34 @@ export const incrementPostViews = async (postId: string) => {
   return { data, error }
 }
 
+// Helper function for SaaS products filters
+function applySaaSFilters(query: any, filters?: {
+  category?: string
+  search?: string
+  featured?: boolean
+  trending?: boolean
+}) {
+  if (!filters) {return query}
+  
+  if (filters.category) {
+    query = query.eq('category', filters.category)
+  }
+  
+  if (filters.search) {
+    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+  }
+  
+  if (filters.featured) {
+    query = query.eq('is_featured', true)
+  }
+  
+  if (filters.trending) {
+    query = query.eq('is_trending', true)
+  }
+  
+  return query
+}
+
 export const getSaaSProducts = async (filters?: {
   category?: string
   search?: string
@@ -231,22 +214,7 @@ export const getSaaSProducts = async (filters?: {
   trending?: boolean
 }) => {
   let query = supabase.from('saas_products').select('*').eq('is_approved', true)
-  
-  if (filters?.category) {
-    query = query.eq('category', filters.category)
-  }
-  
-  if (filters?.search) {
-    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
-  }
-  
-  if (filters?.featured) {
-    query = query.eq('is_featured', true)
-  }
-  
-  if (filters?.trending) {
-    query = query.eq('is_trending', true)
-  }
+  query = applySaaSFilters(query, filters)
   
   const { data, error } = await query.order('created_at', { ascending: false })
   return { data, error }
@@ -295,7 +263,7 @@ export const getLectureWithChapters = async (lectureId: string) => {
     .single()
   
   if (data) {
-    data.chapters = data.chapters?.sort((a: any, b: any) => a.order_index - b.order_index) || []
+    data.chapters = data.chapters?.sort((a: { order_index: number }, b: { order_index: number }) => a.order_index - b.order_index) || []
   }
   
   return { data, error }

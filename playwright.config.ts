@@ -16,7 +16,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 4,
   
   // 리포터 설정
   reporter: [
@@ -35,7 +35,7 @@ export default defineConfig({
   // 전역 설정
   use: {
     // 기본 URL
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
     
     // 브라우저 설정
     headless: !!process.env.CI,
@@ -150,7 +150,7 @@ export default defineConfig({
   // 웹 서버 설정 (개발 서버 자동 시작)
   webServer: {
     command: process.env.CI ? 'npm run build && npm start' : 'npm run dev',
-    url: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    url: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     stdout: 'pipe',
@@ -165,7 +165,7 @@ export default defineConfig({
     toHaveScreenshot: {
       threshold: 0.2,
       maxDiffPixels: 1000,
-      animationHandling: 'disable'
+      animations: 'disabled'
     },
     toMatchSnapshot: {
       threshold: 0.2,
@@ -180,8 +180,8 @@ export default defineConfig({
   // 메타데이터 (Argos CI 연동을 위한 설정)
   metadata: {
     project: 'dduksangLAB',
-    environment: process.env.NODE_ENV || 'test',
-    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV ?? 'test',
+    version: process.env.npm_package_version ?? '1.0.0',
     // Argos CI 스크린샷 업로드를 위한 설정
     argos: {
       token: process.env.ARGOS_TOKEN,

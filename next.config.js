@@ -6,7 +6,8 @@ const nextConfig = {
     unoptimized: true,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // ESLint는 별도 단계에서 실행
+    dirs: ['app', 'lib', 'components'],
   },
   typescript: {
     ignoreBuildErrors: false,

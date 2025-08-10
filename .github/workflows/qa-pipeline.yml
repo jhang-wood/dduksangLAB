@@ -8,7 +8,7 @@ on:
     branches: [ main, develop ]
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # 1단계: 기본 환경 검증
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
           NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
 
       - name: Run environment test scenarios
-        run: node scripts/qa/test-env-scenarios.js
+        run: npm run automation:qa
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
@@ -73,7 +73,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -118,7 +118,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -151,11 +151,10 @@ jobs:
       - name: Console.log usage check
         run: |
           echo "🔍 Console.log 사용 검사..."
-          ./scripts/qa/check-console-usage.sh > console-report.txt 2>&1
           
           # 스크립트 폴더 제외한 console 사용 개수 확인
           CONSOLE_COUNT=$(grep -r "console\." --include="*.tsx" --include="*.ts" . \
-            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=scripts | wc -l)
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=scripts 2>/dev/null | wc -l || echo "0")
           
           echo "Console 사용 현황: $CONSOLE_COUNT 개"
           
@@ -167,7 +166,11 @@ jobs:
             echo "✅ Console.log 사용 개수 양호"
           fi
           
-          cat console-report.txt
+          # 상위 10개 파일 출력
+          echo "Console 사용이 많은 파일들:"
+          grep -r "console\." --include="*.tsx" --include="*.ts" . \
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=scripts 2>/dev/null | \
+            head -10 || echo "검색 결과 없음"
 
   # 4단계: 빌드 테스트
   build-test:
@@ -184,16 +187,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Create environment file for build
+        run: |
+          cat > .env.local << 'EOF'
+          # QA Test Environment
+          NEXT_PUBLIC_SUPABASE_URL=https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=test-anon-key
+          NEXT_PUBLIC_TOSS_CLIENT_KEY=test-client-key
+          NEXT_PUBLIC_APP_URL=https://test.example.com
+          SUPABASE_SERVICE_ROLE_KEY=test-service-key
+          TOSS_SECRET_KEY=test-secret-key
+          GEMINI_API_KEY=test-api-key
+          JWT_SECRET=test-jwt-secret-for-testing-only-32chars
+          ENCRYPTION_KEY=test-encryption-key-for-testing-only-must-be-64-chars-long
+          CRON_SECRET=test-cron-secret
+          NODE_ENV=${{ matrix.node-env }}
+          EOF
+
       - name: Build application (${{ matrix.node-env }})
         run: |
           echo "🏗️ ${{ matrix.node-env }} 환경 빌드 테스트..."
-          NODE_ENV=${{ matrix.node-env }} npm run build
+          npm run build
           
           if [ $? -eq 0 ]; then
             echo "✅ ${{ matrix.node-env }} 빌드 성공"
@@ -201,14 +221,6 @@ jobs:
             echo "❌ ${{ matrix.node-env }} 빌드 실패"
             exit 1
           fi
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
-          NEXT_PUBLIC_TOSS_CLIENT_KEY: test-client-key
-          SUPABASE_SERVICE_ROLE_KEY: test-service-key
-          TOSS_SECRET_KEY: test-secret-key
-          GEMINI_API_KEY: test-api-key
-          CRON_SECRET: test-cron-secret
 
       - name: Check build output
         run: |
@@ -246,7 +258,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies

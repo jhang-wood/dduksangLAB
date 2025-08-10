@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   ExternalLink,
@@ -68,11 +68,7 @@ export default function SitesPage() {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    fetchSites()
-  }, [selectedCategory, searchTerm])
-
-  const fetchSites = async () => {
+  const fetchSites = useCallback(async () => {
     try {
       let query = supabase
         .from('showcase_sites')
@@ -93,14 +89,19 @@ export default function SitesPage() {
       if (error) {
         logger.error('Error fetching sites:', error)
       } else {
-        setSites(data || [])
+        setSites(data ?? [])
       }
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, searchTerm])
+
+  useEffect(() => {
+    void fetchSites()
+  }, [fetchSites])
+
 
   const uploadThumbnail = async (file: File) => {
     try {
@@ -126,7 +127,7 @@ export default function SitesPage() {
         .getPublicUrl(filePath)
 
       return publicUrl
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error uploading thumbnail:', error)
       throw error
     } finally {
@@ -166,7 +167,7 @@ export default function SitesPage() {
           category: formData.category,
           tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
           creator_id: user.id,
-          creator_name: profile?.name || user.email?.split('@')[0] || '익명',
+          creator_name: profile?.name ?? user.email?.split('@')[0] ?? '익명',
           views: 0,
           likes: 0,
           is_featured: false,
@@ -176,12 +177,12 @@ export default function SitesPage() {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {throw error}
 
       setSites([data, ...sites])
       setShowCreateModal(false)
       resetForm()
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error creating site:', error)
       userNotification.alert('사이트 등록 중 오류가 발생했습니다.')
     } finally {
@@ -225,7 +226,9 @@ export default function SitesPage() {
       // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
-        setThumbnailPreview(e.target?.result as string)
+        if (e.target?.result && typeof e.target.result === 'string') {
+          setThumbnailPreview(e.target.result)
+        }
       }
       reader.readAsDataURL(file)
       
@@ -258,7 +261,7 @@ export default function SitesPage() {
           site.id === siteId ? { ...site, likes: site.likes + 1 } : site
         ))
       }
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error liking site:', error)
     }
   }
@@ -269,7 +272,7 @@ export default function SitesPage() {
       await supabase.rpc('increment_site_views', {
         site_id: site.id
       })
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error incrementing views:', error)
     }
 
@@ -440,7 +443,9 @@ export default function SitesPage() {
                       {/* View Button */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() => handleView(site)}
+                          onClick={() => {
+                            void handleView(site)
+                          }}
                           className="px-6 py-3 bg-metallicGold-500 text-deepBlack-900 rounded-lg font-bold hover:bg-metallicGold-400 transition-colors flex items-center gap-2"
                         >
                           <Eye size={20} />
@@ -488,14 +493,18 @@ export default function SitesPage() {
 
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleView(site)}
+                          onClick={() => {
+                            void handleView(site)
+                          }}
                           className="flex-1 px-3 sm:px-4 py-2 bg-deepBlack-600 text-offWhite-300 rounded-lg hover:bg-deepBlack-900 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                         >
                           <ExternalLink size={16} />
                           <span>방문하기</span>
                         </button>
                         <button
-                          onClick={() => handleLike(site.id)}
+                          onClick={() => {
+                            void handleLike(site.id)
+                          }}
                           className="px-3 sm:px-4 py-2 bg-deepBlack-600 text-offWhite-300 rounded-lg hover:bg-red-500/20 hover:text-red-400 transition-colors"
                         >
                           <Heart size={16} />
@@ -590,13 +599,13 @@ export default function SitesPage() {
                 {/* File Upload Area */}
                 <div className="space-y-4">
                   {/* Preview Area */}
-                  {(thumbnailPreview || formData.thumbnail_url) && (
+                  {(thumbnailPreview ?? formData.thumbnail_url) && (
                     <div className="relative">
                       <div className="relative aspect-video bg-deepBlack-600 rounded-lg overflow-hidden border border-metallicGold-900/30">
                         <div
                           className="w-full h-full bg-cover bg-center"
                           style={{
-                            backgroundImage: `url(${thumbnailPreview || formData.thumbnail_url})`
+                            backgroundImage: `url(${thumbnailPreview ?? formData.thumbnail_url})`
                           }}
                         />
                         <button
@@ -715,7 +724,9 @@ export default function SitesPage() {
                   취소
                 </button>
                 <button
-                  onClick={handleCreateSite}
+                  onClick={() => {
+                    void handleCreateSite()
+                  }}
                   disabled={!formData.name || !formData.description || !formData.url || uploading}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >

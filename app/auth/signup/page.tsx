@@ -52,7 +52,9 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     
-    if (!validateForm()) return
+    if (!validateForm()) {
+      return
+    }
     
     setLoading(true)
 
@@ -63,7 +65,7 @@ export default function SignupPage() {
       })
       
       if (error) {
-        setError(error.message || '회원가입에 실패했습니다.')
+        setError(error.message ?? '회원가입에 실패했습니다.')
       } else {
         setSuccess(true)
         setTimeout(() => {
@@ -105,7 +107,7 @@ export default function SignupPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={(e) => void handleSubmit(e)}>
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}

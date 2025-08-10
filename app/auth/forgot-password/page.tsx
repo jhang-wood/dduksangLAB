@@ -25,11 +25,13 @@ export default function ForgotPasswordPage() {
         redirectTo: `${window.location.origin}/auth/reset-password`
       })
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       setMessage('비밀번호 재설정 링크를 이메일로 전송했습니다. 이메일을 확인해주세요.')
-    } catch (error: any) {
-      setError(error.message || '오류가 발생했습니다.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : '오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -72,7 +74,7 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
 
-              <form onSubmit={handleResetPassword} className="space-y-6">
+              <form onSubmit={(e) => void handleResetPassword(e)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-offWhite-500 mb-2">
                     이메일

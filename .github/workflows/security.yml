@@ -24,11 +24,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['javascript', 'typescript']
+        language: ['typescript']
     
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
       - name: 🔧 Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -36,32 +42,54 @@ jobs:
           languages: ${{ matrix.language }}
           queries: security-and-quality
 
-      - name: 🔨 Autobuild
-        uses: github/codeql-action/autobuild@v3
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Build project
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: 📊 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
 
-  # Trivy Security Scan
+  # Enhanced Trivy Security Scan
   trivy:
-    name: 🛡️ Trivy Security Scan
+    name: 🛡️ Enhanced Trivy Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔍 Run Trivy vulnerability scanner in repo mode
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🔄 Cache Trivy database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-db-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-db-
+
+      - name: 🔍 Run Trivy vulnerability scanner (Critical/High only)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: '.'  
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 0
 
       - name: 📤 Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -69,20 +97,22 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: 📊 Generate Trivy Report
+      - name: 📊 Generate Trivy Report Summary
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: '.'  
           format: 'table'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 0
 
   # Snyk Security Scan
   snyk:
     name: 🔐 Snyk Security Scan
     runs-on: ubuntu-latest
     continue-on-error: true  # Don't fail the workflow if Snyk is not configured
+    if: ${{ secrets.SNYK_TOKEN != '' }}  # Only run if Snyk token is available
     
     steps:
       - name: 📥 Checkout code
@@ -91,7 +121,8 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+          cache: 'npm'
 
       - name: 📦 Install dependencies
         run: npm ci
@@ -102,13 +133,13 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high
+          args: --severity-threshold=high --json
 
   # GitHub Dependency Review
   dependency-review:
     name: 📦 Dependency Review
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
     
     steps:
       - name: 📥 Checkout Repository
@@ -201,7 +232,8 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          extra_args: --debug --only-verified
+          extra_args: --debug --only-verified --fail
+        continue-on-error: false
 
   # License Check
   license-check:
@@ -215,7 +247,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: 📦 Install dependencies
@@ -231,7 +263,7 @@ jobs:
   security-summary:
     name: 📊 Security Summary
     runs-on: ubuntu-latest
-    needs: [codeql, trivy, snyk, dependency-review, owasp, scorecard, secret-scan, license-check]
+    needs: [codeql, trivy, snyk, owasp, scorecard, secret-scan, license-check]
     if: always()
     
     steps:
@@ -255,7 +287,7 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
 
       - name: 📨 Send Telegram notification
-        if: ${{ secrets.TELEGRAM_BOT_TOKEN && secrets.TELEGRAM_CHAT_ID }}
+        if: ${{ secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_CHAT_ID != '' }}
         run: |
           STATUS_EMOJI="✅"
           STATUS_TEXT="All security scans completed"

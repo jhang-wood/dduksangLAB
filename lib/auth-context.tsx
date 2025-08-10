@@ -4,10 +4,10 @@ import { logger } from '@/lib/logger'
 import { validateRequiredEnvVars } from '@/lib/env'
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
-import { User } from '@supabase/supabase-js'
+import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 import { supabase} from './supabase'
 import { useRouter } from 'next/navigation'
-import { UserProfile, SignUpMetadata, AuthError } from '@/types'
+import { UserProfile, SignUpMetadata } from '@/types'
 
 // Validate environment variables at module load
 try {
@@ -22,8 +22,8 @@ interface AuthContextType {
   user: User | null
   userProfile: UserProfile | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ error: SupabaseAuthError | null }>
+  signUp: (email: string, password: string, metadata?: SignUpMetadata) => Promise<{ error: SupabaseAuthError | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
 }
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .insert({
               id: userId,
               email: userData.user.email,
-              name: userData.user.email?.split('@')[0] || 'User',
+              name: userData.user.email?.split('@')[0] ?? 'User',
               role: 'user',
               created_at: new Date().toISOString()
             })
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserProfile(null)
           } else {
             logger.log('[Auth] Profile created:', newProfile)
-            setUserProfile(newProfile)
+            setUserProfile(newProfile as UserProfile)
           }
         }
       } else {
@@ -79,25 +79,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (data) {
       logger.log('[Auth] Profile fetched:', data)
       logger.log('[Auth] User role:', data.role)
-      setUserProfile(data)
+      setUserProfile(data as UserProfile)
     }
   }
 
   useEffect(() => {
     // 초기 세션 확인
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    void supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        fetchUserProfile(session.user.id)
+        void fetchUserProfile(session.user.id)
       }
       setLoading(false)
     })
 
     // 인증 상태 변경 리스너
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        await fetchUserProfile(session.user.id)
+        void fetchUserProfile(session.user.id)
       } else {
         setUserProfile(null)
       }
@@ -120,13 +120,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
+    const { data, error } = await supabase.auth.signUp(
+      metadata ? {
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      } : {
+        email,
+        password
       }
-    })
+    )
 
     if (data.user && !error) {
       // 사용자 프로필 생성
@@ -135,8 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .insert({
           id: data.user.id,
           email: data.user.email,
-          name: metadata?.name || email.split('@')[0],
-          phone: metadata?.phone || '',
+          name: metadata?.name ?? email.split('@')[0],
+          phone: metadata?.phone ?? '',
           role: 'user',
           created_at: new Date().toISOString()
         })

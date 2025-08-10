@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lucide-react'
@@ -45,11 +45,7 @@ export default function CommunityPage() {
   const { user } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    fetchPosts()
-  }, [selectedCategory])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       let query = supabase
         .from('community_posts')
@@ -62,14 +58,20 @@ export default function CommunityPage() {
 
       const { data, error } = await query
 
-      if (error) throw error
-      setPosts(data || [])
+      if (error) {
+        throw error
+      }
+      setPosts(data ?? [])
     } catch (error) {
       logger.error('Error fetching posts:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory])
+
+  useEffect(() => {
+    void fetchPosts()
+  }, [fetchPosts])
 
   const handleWriteClick = () => {
     if (!user) {
@@ -88,9 +90,15 @@ export default function CommunityPage() {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 60) return `${diffMins}분 전`
-    if (diffHours < 24) return `${diffHours}시간 전`
-    if (diffDays < 7) return `${diffDays}일 전`
+    if (diffMins < 60) {
+      return `${diffMins}분 전`
+    }
+    if (diffHours < 24) {
+      return `${diffHours}시간 전`
+    }
+    if (diffDays < 7) {
+      return `${diffDays}일 전`
+    }
     return date.toLocaleDateString()
   }
 

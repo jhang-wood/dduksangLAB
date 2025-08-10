@@ -8,7 +8,13 @@ import { supabase } from '@/lib/supabase'
 
 export default function AdminDebug() {
   const { user, userProfile, isAdmin } = useAuth()
-  const [debugInfo, setDebugInfo] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<{
+    userId: string;
+    email: string | undefined;
+    profileRole: string | undefined;
+    isAdmin: boolean;
+    profileName: string | undefined;
+  } | null>(null)
   const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
@@ -24,7 +30,7 @@ export default function AdminDebug() {
   }, [user, userProfile, isAdmin])
 
   const updateToAdmin = async () => {
-    if (!user) return
+    if (!user) {return}
 
     setUpdating(true)
     try {
@@ -37,9 +43,9 @@ export default function AdminDebug() {
         userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
         window.location.reload()
       } else {
-        userNotification.alert('오류 발생: ' + error.message)
+        userNotification.alert(`오류 발생: ${  error.message}`)
       }
-    } catch (err) {
+    } catch (err: unknown) {
       logger.error(err)
       userNotification.alert('업데이트 중 오류가 발생했습니다.')
     } finally {
@@ -47,7 +53,7 @@ export default function AdminDebug() {
     }
   }
 
-  if (!user) return null
+  if (!user) {return null}
 
   return (
     <div className="fixed bottom-4 right-4 bg-deepBlack-900 border-2 border-metallicGold-500 rounded-lg p-4 max-w-sm z-[9999] shadow-2xl">
@@ -55,14 +61,16 @@ export default function AdminDebug() {
       <div className="text-xs text-offWhite-400 space-y-1">
         <p>User ID: {debugInfo?.userId}</p>
         <p>Email: {debugInfo?.email}</p>
-        <p>Profile Role: {debugInfo?.profileRole || 'null'}</p>
+        <p>Profile Role: {debugInfo?.profileRole ?? 'null'}</p>
         <p>Is Admin: {debugInfo?.isAdmin ? 'Yes' : 'No'}</p>
-        <p>Name: {debugInfo?.profileName || 'null'}</p>
+        <p>Name: {debugInfo?.profileName ?? 'null'}</p>
       </div>
       
       {!isAdmin && (
         <button
-          onClick={updateToAdmin}
+          onClick={() => {
+            void updateToAdmin()
+          }}
           disabled={updating}
           className="mt-3 w-full px-3 py-1 bg-metallicGold-500 text-deepBlack-900 text-xs font-semibold rounded hover:bg-metallicGold-600 disabled:opacity-50"
         >

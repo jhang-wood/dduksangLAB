@@ -62,7 +62,9 @@ export default function CommunityWritePage() {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       router.push(`/community/${data.category}/${data.id}`)
     } catch (error) {
@@ -98,7 +100,7 @@ export default function CommunityWritePage() {
                 새 글 작성
               </h1>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-offWhite-500 mb-3">
                     카테고리

@@ -95,7 +95,7 @@ export default function AdminPage() {
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto mb-4">
-                환영합니다, {userProfile?.name || '관리자'}님
+                환영합니다, {userProfile?.name ?? '관리자'}님
               </p>
               <p className="text-sm text-offWhite-600">
                 현재 역할: {userProfile?.role === 'admin' ? '최고 관리자' : '일반 관리자'}

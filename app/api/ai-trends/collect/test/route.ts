@@ -12,11 +12,11 @@ export async function GET(_request: NextRequest) {
     }
 
     // Call the collect endpoint
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/ai-trends/collect`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.CRON_SECRET || 'admin-collect'}`,
+        'Authorization': `Bearer ${process.env.CRON_SECRET ?? 'admin-collect'}`,
         'Content-Type': 'application/json'
       }
     })

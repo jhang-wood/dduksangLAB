@@ -9,7 +9,25 @@
     "lint": "next lint",
     "env:validate": "node scripts/validate-env.js",
     "env:check": "npm run env:validate",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "claude": "node scripts/claude-helper.js",
+    "claude:fix": "node scripts/claude-helper.js fix",
+    "claude:commit": "node scripts/claude-helper.js commit",
+    "claude:deploy": "node scripts/claude-helper.js deploy",
+    "claude:deploy-full": "node scripts/claude-helper.js deploy --build",
+    "automation:qa": "node scripts/qa/test-env-scenarios.js",
+    "automation:security": "node scripts/security/vulnerability-scanner.js",
+    "automation:performance": "node scripts/performance/performance-analyzer.js",
+    "automation:devops": "node scripts/devops/deployment-monitor.js check",
+    "automation:devops:monitor": "node scripts/devops/deployment-monitor.js monitor",
+    "automation:workflow": "node scripts/integration/workflow-orchestrator.js",
+    "automation:workflow:quick": "node scripts/integration/workflow-orchestrator.js quick",
+    "automation:workflow:full": "node scripts/integration/workflow-orchestrator.js full",
+    "automation:health": "node scripts/integration/workflow-orchestrator.js --help",
+    "test:qa": "npm run automation:qa",
+    "test:security": "npm run automation:security",
+    "test:performance": "npm run automation:performance",
+    "test:all": "npm run automation:workflow:full"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -24,6 +42,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

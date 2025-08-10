@@ -12,7 +12,7 @@ export async function GET() {
       .from('system_settings')
       .select('*')
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('Error fetching system settings:', error)
@@ -42,10 +42,21 @@ export async function GET() {
   }
 }
 
+interface SettingsUpdateBody {
+  site_name: string;
+  site_description?: string;
+  admin_email: string;
+  maintenance_mode?: boolean;
+  allow_registration?: boolean;
+  require_email_verification?: boolean;
+  max_file_size?: number;
+  allowed_file_types?: string[];
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const supabase = createServerClient()
-    const body = await request.json()
+    const body = await request.json() as SettingsUpdateBody
     
     // Validate required fields
     if (!body.site_name || !body.admin_email) {
@@ -78,13 +89,13 @@ export async function PUT(request: NextRequest) {
 
     const updateData = {
       site_name: body.site_name,
-      site_description: body.site_description || '',
+      site_description: body.site_description ?? '',
       admin_email: body.admin_email,
       maintenance_mode: Boolean(body.maintenance_mode),
       allow_registration: Boolean(body.allow_registration),
       require_email_verification: Boolean(body.require_email_verification),
-      max_file_size: parseInt(body.max_file_size) || 5,
-      allowed_file_types: body.allowed_file_types || ['jpg', 'jpeg', 'png', 'webp'],
+      max_file_size: parseInt(String(body.max_file_size)) || 5,
+      allowed_file_types: body.allowed_file_types ?? ['jpg', 'jpeg', 'png', 'webp'],
       updated_at: new Date().toISOString()
     }
 
@@ -93,7 +104,7 @@ export async function PUT(request: NextRequest) {
       .from('system_settings')
       .select('id')
       .limit(1)
-      .single()
+      .maybeSingle()
 
     let result
 

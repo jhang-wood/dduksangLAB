@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createServerClient, createAdminClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
-
-const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseServiceKey
-)
 
 // GET: Fetch single AI trend
 export async function GET(
@@ -16,13 +8,16 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const supabase = createServerClient()
+    
     const { data, error } = await supabase
       .from('ai_trends')
       .select('*')
       .eq('id', params.id)
+      .eq('is_published', true)
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     if (!data) {
       return NextResponse.json(
@@ -31,8 +26,9 @@ export async function GET(
       )
     }
 
-    // Increment view count
-    await supabase.rpc('increment_ai_trend_views', { trend_id: params.id })
+    // Increment view count using admin client for write operation
+    const adminClient = createAdminClient()
+    await adminClient.rpc('increment_ai_trend_views', { trend_id: params.id })
 
     return NextResponse.json(data)
   } catch (error) {
@@ -50,8 +46,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const authSupabase = createServerComponentClient({ cookies })
-    const { data: { user } } = await authSupabase.auth.getUser()
+    const supabase = createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json(
@@ -60,7 +56,7 @@ export async function PUT(
       )
     }
 
-    // Check if user is admin
+    // Check if user is admin using RLS-aware query
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -74,7 +70,22 @@ export async function PUT(
       )
     }
 
-    const body = await request.json()
+    const body = await request.json() as {
+      title?: string
+      slug?: string
+      summary?: string
+      content?: string
+      thumbnail_url?: string
+      category?: string
+      tags?: string[]
+      source_url?: string
+      source_name?: string
+      seo_title?: string
+      seo_description?: string
+      seo_keywords?: string[]
+      is_featured?: boolean
+      is_published?: boolean
+    }
     const {
       title,
       slug,
@@ -92,6 +103,7 @@ export async function PUT(
       is_published
     } = body
 
+    // Update using user-scoped client to respect RLS
     const { data, error } = await supabase
       .from('ai_trends')
       .update({
@@ -108,13 +120,14 @@ export async function PUT(
         seo_description,
         seo_keywords,
         is_featured,
-        is_published
+        is_published,
+        updated_at: new Date().toISOString()
       })
       .eq('id', params.id)
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json(data)
   } catch (error) {
@@ -132,8 +145,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const authSupabase = createServerComponentClient({ cookies })
-    const { data: { user } } = await authSupabase.auth.getUser()
+    const supabase = createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json(
@@ -142,7 +155,7 @@ export async function DELETE(
       )
     }
 
-    // Check if user is admin
+    // Check if user is admin using RLS-aware query
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -156,12 +169,13 @@ export async function DELETE(
       )
     }
 
+    // Delete using user-scoped client to respect RLS
     const { error } = await supabase
       .from('ai_trends')
       .delete()
       .eq('id', params.id)
 
-    if (error) throw error
+    if (error) {throw error}
 
     return NextResponse.json({ success: true })
   } catch (error) {

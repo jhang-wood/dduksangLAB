@@ -3,17 +3,20 @@
  * Ensures required environment variables are present and properly separated
  */
 
-// Validate environment variable separation in development (server-side only)
+// 개발 환경에서 환경 변수 분리 검증 (서버 사이드만)
 if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
-  // Dynamic import to avoid bundling fs in client-side code
+  // 클라이언트 번들에 fs가 포함되지 않도록 동적 import 사용
   import('./env-loader').then(({ validateEnvSeparation }) => {
     try {
       validateEnvSeparation()
     } catch (error) {
-      console.error('⚠️ Environment Security Warning:', error)
+      // 프로덕션 환경을 위해 logger 사용
+      void import('./logger').then(({ logger }) => {
+        logger.error('⚠️ 환경 변수 보안 경고:', error)
+      })
     }
   }).catch(() => {
-    // Ignore import errors in client-side builds
+    // 클라이언트 사이드 빌드에서는 import 에러 무시
   })
 }
 
@@ -26,7 +29,7 @@ export const getEnvVar = (key: string): string => {
 }
 
 export const getOptionalEnvVar = (key: string, defaultValue: string = ''): string => {
-  return process.env[key] || defaultValue
+  return process.env[key] ?? defaultValue
 }
 
 export const getClientEnvVar = (key: string): string => {

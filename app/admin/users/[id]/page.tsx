@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { 
   ArrowLeft,
@@ -41,12 +41,23 @@ interface UserActivity {
   created_at: string
 }
 
+interface EnrollmentData {
+  id: string;
+  status: string;
+  created_at: string;
+  lectures: {
+    title: string;
+    instructor_name: string;
+    price: number;
+  } | null;
+}
+
 export default function AdminUserDetailPage() {
   const params = useParams()
   const userId = params.id as string
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null)
   const [userActivities, setUserActivities] = useState<UserActivity[]>([])
-  const [userLectures, setUserLectures] = useState<any[]>([])
+  const [userLectures, setUserLectures] = useState<EnrollmentData[]>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({
@@ -58,32 +69,7 @@ export default function AdminUserDetailPage() {
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    checkAdminAccess()
-  }, [user])
-
-  const checkAdminAccess = async () => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      router.push('/')
-      return
-    }
-
-    fetchUserDetail()
-  }
-
-  const fetchUserDetail = async () => {
+  const fetchUserDetail = useCallback(async () => {
     try {
       // Fetch user profile
       const { data: userData, error: userError } = await supabase
@@ -92,15 +78,15 @@ export default function AdminUserDetailPage() {
         .eq('id', userId)
         .single()
 
-      if (userError) throw userError
-      setUserDetail(userData)
+      if (userError) { throw userError }
+      setUserDetail(userData as UserDetail)
 
       if (userData) {
         setEditForm({
-          name: userData.name || '',
-          email: userData.email || '',
-          phone: userData.phone || '',
-          role: userData.role || 'user'
+          name: userData.name ?? '',
+          email: userData.email ?? '',
+          phone: userData.phone ?? '',
+          role: userData.role ?? 'user'
         })
       }
 
@@ -121,7 +107,7 @@ export default function AdminUserDetailPage() {
         .order('created_at', { ascending: false })
 
       if (!lecturesError) {
-        setUserLectures(lecturesData || [])
+        setUserLectures(lecturesData ?? [])
       }
 
       // Generate mock activities (in real app, you'd have an activities table)
@@ -153,7 +139,32 @@ export default function AdminUserDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId])
+
+  const checkAdminAccess = useCallback(async () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      router.push('/')
+      return
+    }
+
+    void fetchUserDetail()
+  }, [user, router, fetchUserDetail])
+
+  useEffect(() => {
+    void checkAdminAccess()
+  }, [checkAdminAccess])
 
   const handleUpdateUser = async () => {
     try {
@@ -168,10 +179,10 @@ export default function AdminUserDetailPage() {
         })
         .eq('id', userId)
 
-      if (error) throw error
+      if (error) { throw error }
 
       setEditing(false)
-      fetchUserDetail()
+      void fetchUserDetail()
       userNotification.alert('사용자 정보가 수정되었습니다.')
     } catch (error) {
       logger.error('Error updating user:', error)
@@ -300,7 +311,7 @@ export default function AdminUserDetailPage() {
                   </div>
                   <div className="flex gap-3 pt-4">
                     <button
-                      onClick={handleUpdateUser}
+                      onClick={() => void handleUpdateUser()}
                       className="px-4 py-2 bg-metallicGold-500 text-deepBlack-900 rounded-lg font-medium hover:bg-metallicGold-400 transition-colors flex items-center gap-2"
                     >
                       <Save size={16} />
@@ -322,7 +333,7 @@ export default function AdminUserDetailPage() {
                     </div>
                     <div>
                       <h4 className="text-xl font-bold text-offWhite-200">
-                        {userDetail.name || '이름 없음'}
+                        {userDetail.name ?? '이름 없음'}
                       </h4>
                       <div className="flex items-center gap-2 mt-1">
                         {userDetail.role === 'admin' ? (
@@ -390,7 +401,7 @@ export default function AdminUserDetailPage() {
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-medium text-metallicGold-500">
-                          ₩{enrollment.lectures?.price?.toLocaleString()}
+                          ₩{enrollment.lectures?.price?.toLocaleString() ?? '0'}
                         </div>
                         <div className={`text-xs px-2 py-1 rounded-full ${
                           enrollment.status === 'active' 
@@ -420,7 +431,7 @@ export default function AdminUserDetailPage() {
                 <div className="flex justify-between">
                   <span className="text-offWhite-600">총 결제금액</span>
                   <span className="text-offWhite-200 font-semibold">
-                    ₩{userLectures.reduce((sum, e) => sum + (e.lectures?.price || 0), 0).toLocaleString()}
+                    ₩{userLectures.reduce((sum, e) => sum + (e.lectures?.price ?? 0), 0).toLocaleString()}
                   </span>
                 </div>
               </div>

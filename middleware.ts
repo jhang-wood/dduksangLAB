@@ -65,7 +65,7 @@ export function middleware(request: NextRequest) {
 
   // Cron 엔드포인트 보안 강화
   if (request.nextUrl.pathname.startsWith('/api/cron/')) {
-    const cronSecret = request.headers.get('authorization') || request.nextUrl.searchParams.get('secret');
+    const cronSecret = request.headers.get('authorization') ?? request.nextUrl.searchParams.get('secret');
     const expectedSecret = process.env.CRON_SECRET;
     
     if (!cronSecret || !expectedSecret || cronSecret !== expectedSecret) {
@@ -76,8 +76,8 @@ export function middleware(request: NextRequest) {
   // 관리자 페이지 접근 제한
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // 프로덕션에서는 IP 화이트리스트 체크 가능
-    const adminAllowedIPs = process.env.ADMIN_ALLOWED_IPS?.split(',') || [];
-    const clientIP = request.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
+    const adminAllowedIPs = process.env.ADMIN_ALLOWED_IPS?.split(',') ?? [];
+    const clientIP = request.ip ?? request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip');
     
     if (process.env.NODE_ENV === 'production' && adminAllowedIPs.length > 0) {
       if (!clientIP || !adminAllowedIPs.includes(clientIP)) {

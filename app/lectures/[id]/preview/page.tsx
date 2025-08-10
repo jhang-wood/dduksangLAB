@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -66,11 +66,7 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
   const router = useRouter()
   const { user } = useAuth()
 
-  useEffect(() => {
-    fetchLectureData()
-  }, [params.id, user])
-
-  const fetchLectureData = async () => {
+  const fetchLectureData = useCallback(async () => {
     try {
       // 수강 여부 확인
       if (user) {
@@ -108,15 +104,20 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
       if (lectureData) {
         setLecture({
           ...lectureData,
-          chapters: lectureData.chapters?.sort((a: any, b: any) => a.order_index - b.order_index) || []
-        })
+          chapters: lectureData.chapters?.sort((a: Chapter, b: Chapter) => a.order_index - b.order_index) ?? []
+        } as Lecture)
       }
     } catch (error) {
       logger.error('Error fetching lecture:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, user, router])
+
+  useEffect(() => {
+    void fetchLectureData()
+  }, [fetchLectureData])
+
 
   const handleEnrollClick = () => {
     if (!user) {
@@ -125,9 +126,9 @@ export default function LecturePreviewPage({ params }: { params: { id: string } 
     }
   }
 
-  const totalDuration = lecture?.chapters?.reduce((sum, ch) => sum + ch.duration, 0) || 0
-  const totalChapters = lecture?.chapters?.length || 0
-  const previewChapters = lecture?.chapters?.filter(ch => ch.is_preview) || []
+  const totalDuration = lecture?.chapters?.reduce((sum, ch) => sum + ch.duration, 0) ?? 0
+  const totalChapters = lecture?.chapters?.length ?? 0
+  const previewChapters = lecture?.chapters?.filter(ch => ch.is_preview) ?? []
 
   if (loading) {
     return (
