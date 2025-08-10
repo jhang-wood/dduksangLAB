@@ -165,7 +165,7 @@ export default defineConfig({
     toHaveScreenshot: {
       threshold: 0.2,
       maxDiffPixels: 1000,
-      animationHandling: 'disable'
+      animations: 'disabled'
     },
     toMatchSnapshot: {
       threshold: 0.2,

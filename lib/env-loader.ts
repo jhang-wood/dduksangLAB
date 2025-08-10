@@ -12,7 +12,7 @@ type EnvType = 'client' | 'server' | 'all'
  * Load environment variables from specific files
  */
 export function loadEnvVars(type: EnvType = 'all') {
-  const envFiles = []
+  const envFiles: string[] = []
   
   if (type === 'client' || type === 'all') {
     envFiles.push('.env.client')

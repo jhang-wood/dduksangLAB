@@ -103,7 +103,7 @@ export default async function AITrendDetailPage({ params }: Props) {
   await supabase.rpc('increment_ai_trend_views', { trend_id: trend.id })
 
   // Fetch related trends
-  let relatedTrends = []
+  let relatedTrends: any[] = []
   if (trend.category) {
     const { data } = await supabase
       .from('ai_trends')

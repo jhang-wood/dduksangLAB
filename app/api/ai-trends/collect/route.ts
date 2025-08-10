@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const trendsToCreate = 5 - (count || 0)
-    const createdTrends = []
+    const createdTrends: any[] = []
 
     // Generate intelligent AI trends using actual data
     const aiTrends = await generateIntelligentAITrends(trendsToCreate)
