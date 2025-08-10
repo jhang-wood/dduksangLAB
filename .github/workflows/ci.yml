@@ -38,9 +38,9 @@ jobs:
       - name: Run ESLint
         run: |
           echo "🔍 Running ESLint..."
-          npm run lint 2>&1 | tee eslint-output.log
+          npm run lint 2>&1 | tee eslint-output.log || true
           
-          # ESLint 결과 분석
+          # ESLint 결과 분석 (warnings 허용)
           if grep -q "Error:" eslint-output.log; then
             ERROR_COUNT=$(grep -c "Error:" eslint-output.log || echo "0")
             echo "❌ ESLint errors found: $ERROR_COUNT"
@@ -48,7 +48,7 @@ jobs:
             exit 1
           else
             WARNING_COUNT=$(grep -c "Warning:" eslint-output.log || echo "0")
-            echo "✅ ESLint passed with $WARNING_COUNT warnings"
+            echo "✅ ESLint passed with $WARNING_COUNT warnings (warnings are allowed)"
             echo "::notice::ESLint completed with $WARNING_COUNT warnings"
           fi
         

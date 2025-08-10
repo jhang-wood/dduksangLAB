@@ -407,7 +407,7 @@ export async function initiateLecturePayment(
 export function generatePayAppSignature(params: Record<string, unknown>): string {
   const sortedKeys = Object.keys(params).sort()
   const queryString = sortedKeys
-    .map(key => `${key}=${params[key]}`)
+    .map(key => `${key}=${String(params[key])}`)
     .join('&')
   
   const message = queryString + PAYAPP_CONFIG.value
