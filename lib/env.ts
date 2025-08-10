@@ -11,7 +11,7 @@ if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
       validateEnvSeparation()
     } catch (error) {
       // 프로덕션 환경을 위해 logger 사용
-      import('./logger').then(({ logger }) => {
+      void import('./logger').then(({ logger }) => {
         logger.error('⚠️ 환경 변수 보안 경고:', error)
       })
     }
@@ -29,7 +29,7 @@ export const getEnvVar = (key: string): string => {
 }
 
 export const getOptionalEnvVar = (key: string, defaultValue: string = ''): string => {
-  return process.env[key] || defaultValue
+  return process.env[key] ?? defaultValue
 }
 
 export const getClientEnvVar = (key: string): string => {

@@ -263,7 +263,7 @@ export const getLectureWithChapters = async (lectureId: string) => {
     .single()
   
   if (data) {
-    data.chapters = data.chapters?.sort((a: any, b: any) => a.order_index - b.order_index) || []
+    data.chapters = data.chapters?.sort((a: { order_index: number }, b: { order_index: number }) => a.order_index - b.order_index) || []
   }
   
   return { data, error }

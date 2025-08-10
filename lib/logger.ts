@@ -33,10 +33,15 @@ const productionLogger = {
 
 // 개발 환경을 위한 console 래퍼
 const developmentLogger = {
+  // eslint-disable-next-line no-console
   log: console.log.bind(console),
+  // eslint-disable-next-line no-console
   error: console.error.bind(console),
+  // eslint-disable-next-line no-console
   warn: console.warn.bind(console),
+  // eslint-disable-next-line no-console
   info: console.info.bind(console),
+  // eslint-disable-next-line no-console
   debug: console.debug.bind(console)
 }
 
@@ -58,7 +63,7 @@ export const userNotification = {
       // TODO: Toast 알림 라이브러리 통합 (예: react-toastify)
       if (typeof window !== 'undefined') {
         // 임시: localStorage에 알림 저장
-        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]')
+        const notifications = JSON.parse(localStorage.getItem('notifications') ?? '[]')
         notifications.push({ message, timestamp: Date.now(), type: 'alert' })
         localStorage.setItem('notifications', JSON.stringify(notifications))
       }

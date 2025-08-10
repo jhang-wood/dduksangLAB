@@ -85,8 +85,8 @@ class PayAppService {
 
   constructor() {
     this.config = {
-      secretKey: process.env.PAYAPP_SECRET_KEY || '',
-      value: process.env.PAYAPP_VALUE || '',
+      secretKey: process.env.PAYAPP_SECRET_KEY ?? '',
+      value: process.env.PAYAPP_VALUE ?? '',
       baseUrl: 'https://api.payapp.kr/v2'
     }
   }
@@ -167,7 +167,7 @@ class PayAppService {
           approvalUrl: result.online_url
         }
       } else {
-        throw new Error(result.errorMessage || '결제 요청 실패')
+        throw new Error(result.errorMessage ?? '결제 요청 실패')
       }
     } catch (error) {
       logger.error('PayApp payment creation error:', error)
@@ -188,7 +188,7 @@ class PayAppService {
         .eq('id', orderId)
         .single()
 
-      if (error || !payment) {
+      if (error ?? !payment) {
         throw new Error('결제 정보를 찾을 수 없습니다')
       }
 
@@ -247,7 +247,7 @@ class PayAppService {
 
         return {
           success: false,
-          error: result.errorMessage || '결제가 완료되지 않았습니다'
+          error: result.errorMessage ?? '결제가 완료되지 않았습니다'
         }
       }
     } catch (error) {
@@ -269,7 +269,7 @@ class PayAppService {
         .eq('id', orderId)
         .single()
 
-      if (error || !payment) {
+      if (error ?? !payment) {
         throw new Error('결제 정보를 찾을 수 없습니다')
       }
 
@@ -317,7 +317,7 @@ class PayAppService {
           success: true
         }
       } else {
-        throw new Error(result.errorMessage || '결제 취소 실패')
+        throw new Error(result.errorMessage ?? '결제 취소 실패')
       }
     } catch (error) {
       logger.error('PayApp payment cancellation error:', error)
@@ -329,13 +329,13 @@ class PayAppService {
   }
 
   // 해시 생성
-  private generateHash(data: any): string {
+  private generateHash(data: Record<string, unknown>): string {
     const hashString = Object.values(data).join('') + this.config.secretKey
     return crypto.createHash('sha256').update(hashString).digest('hex')
   }
 
   // 웹훅 검증
-  verifyWebhook(data: any, signature: string): boolean {
+  verifyWebhook(data: Record<string, unknown>, signature: string): boolean {
     const expectedSignature = this.generateHash(data)
     return expectedSignature === signature
   }
@@ -357,7 +357,7 @@ export async function initiateLecturePayment(
     .eq('id', lectureId)
     .single()
 
-  if (lectureError || !lecture) {
+  if (lectureError ?? !lecture) {
     throw new Error('강의 정보를 찾을 수 없습니다')
   }
 
@@ -404,7 +404,7 @@ export async function initiateLecturePayment(
 // ===== 컴포넌트용 함수들 (기존 lib/payapp.ts에서 이동) =====
 
 // PayApp 서명 생성 (컴포넌트용)
-export function generatePayAppSignature(params: any): string {
+export function generatePayAppSignature(params: Record<string, unknown>): string {
   const sortedKeys = Object.keys(params).sort()
   const queryString = sortedKeys
     .map(key => `${key}=${params[key]}`)
@@ -412,7 +412,7 @@ export function generatePayAppSignature(params: any): string {
   
   const message = queryString + PAYAPP_CONFIG.value
   const signature = crypto
-    .createHmac('sha256', PAYAPP_CONFIG.secretKey || '')
+    .createHmac('sha256', PAYAPP_CONFIG.secretKey ?? '')
     .update(message)
     .digest('base64')
   
@@ -436,9 +436,9 @@ export function generatePayAppUrl(orderData: {
     order_no: orderData.orderId,
     user_name: orderData.userName,
     user_email: orderData.userEmail,
-    return_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/payment/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/payment/cancel`,
-    noti_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/payment/webhook`,
+    return_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/payment/success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/payment/cancel`,
+    noti_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/payment/webhook`,
     test_mode: PAYAPP_CONFIG.testMode ? 'Y' : 'N',
     timestamp: Math.floor(Date.now() / 1000)
   }
@@ -456,7 +456,7 @@ export function generatePayAppUrl(orderData: {
 }
 
 // 결제 검증 (webhook용)
-export function verifyPayAppWebhook(data: any, signature: string): boolean {
+export function verifyPayAppWebhook(data: Record<string, unknown>, signature: string): boolean {
   const calculatedSignature = generatePayAppSignature(data)
   return calculatedSignature === signature
 }
@@ -484,7 +484,7 @@ export async function completeLectureEnrollment(orderId: string) {
     .eq('id', orderId)
     .single()
 
-  if (error || !payment) {
+  if (error ?? !payment) {
     throw new Error('결제 정보를 찾을 수 없습니다')
   }
 

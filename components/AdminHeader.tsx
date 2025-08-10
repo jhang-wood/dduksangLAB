@@ -59,7 +59,7 @@ export default function AdminHeader() {
             </nav>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => void handleLogout()}
             className="flex items-center space-x-2 text-offWhite-300 hover:text-metallicGold-500 transition-colors"
           >
             <LogOut size={18} />

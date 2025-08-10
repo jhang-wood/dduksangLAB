@@ -86,7 +86,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   className="flex items-center gap-2 px-4 py-2 text-sm text-offWhite-500 hover:text-metallicGold-500 transition-colors"
                 >
                   <User size={18} />
-                  <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
+                  <span>{userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}</span>
                 </button>
                 
                 {isUserMenuOpen && (
@@ -105,7 +105,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                         마이페이지
                       </button>
                       <button
-                        onClick={handleSignOut}
+                        onClick={() => void handleSignOut()}
                         className="w-full px-4 py-2 text-sm text-left text-offWhite-500 hover:bg-deepBlack-600/50 hover:text-red-400 transition-colors flex items-center gap-2"
                       >
                         <LogOut size={16} />
@@ -158,7 +158,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                 {user ? (
                   <div className="space-y-2">
                     <div className="text-sm text-offWhite-600 mb-2">
-                      {userProfile?.name || user.email?.split('@')[0] || '사용자'}
+                      {userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}
                     </div>
                     <button
                       onClick={() => {
@@ -171,7 +171,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                     </button>
                     <button
                       onClick={() => {
-                        handleSignOut()
+                        void handleSignOut()
                         setIsMenuOpen(false)
                       }}
                       className="block w-full py-2 text-sm text-left text-red-400 hover:text-red-300"

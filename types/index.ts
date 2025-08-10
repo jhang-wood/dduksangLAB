@@ -48,7 +48,7 @@ export interface SystemSettings {
 }
 
 // API Response Types
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   data?: T
   error?: string
   message?: string

@@ -2,7 +2,7 @@
 
 import { userNotification, logger } from '@/lib/logger'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Eye, MessageSquare, User, Calendar, Trash2} from 'lucide-react'
@@ -44,12 +44,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
   const { user } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    void fetchPost()
-    void fetchComments()
-  }, [params.id])
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('community_posts')
@@ -64,7 +59,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
         throw error
       }
       
-      setPost(data)
+      setPost(data as Post)
       
       // 조회수 증가
       await supabase
@@ -77,9 +72,9 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, router])
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('community_comments')
@@ -97,7 +92,14 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
     } catch (error) {
       logger.error('Error fetching comments:', error)
     }
-  }
+  }, [params.id])
+
+  useEffect(() => {
+    void fetchPost()
+    void fetchComments()
+  }, [fetchPost, fetchComments])
+
+
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -226,7 +228,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                   {user?.id === post.user_id && (
                     <div className="flex gap-2">
                       <button
-                        onClick={handleDeletePost}
+                        onClick={() => void handleDeletePost()}
                         className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all flex items-center gap-2"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -249,7 +251,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                 </h2>
 
                 {/* Comment Form */}
-                <form onSubmit={handleCommentSubmit} className="mb-8">
+                <form onSubmit={(e) => void handleCommentSubmit(e)} className="mb-8">
                   <textarea
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}

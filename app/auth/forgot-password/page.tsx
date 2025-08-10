@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
 
-              <form onSubmit={handleResetPassword} className="space-y-6">
+              <form onSubmit={(e) => void handleResetPassword(e)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-offWhite-500 mb-2">
                     이메일

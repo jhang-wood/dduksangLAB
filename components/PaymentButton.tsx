@@ -1,5 +1,6 @@
-import { logger, userNotification } from '@/lib/logger'
 'use client'
+
+import { logger, userNotification } from '@/lib/logger'
 
 import { useState } from 'react'
 import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp'
@@ -16,7 +17,7 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
   const { user } = useAuth()
   const plan = PRICING_PLANS[planId]
 
-  const handlePayment = async () => {
+  const handlePayment = async (): Promise<void> => {
     if (!user) {
       userNotification.alert('로그인이 필요합니다.')
       return
@@ -28,8 +29,8 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
       const orderId = generateOrderId()
       const paymentUrl = generatePayAppUrl({
         orderId,
-        userName: user.user_metadata?.name || user.email?.split('@')[0] || '고객',
-        userEmail: user.email || '',
+        userName: user.user_metadata?.name ?? user.email?.split('@')[0] ?? '고객',
+        userEmail: user.email ?? '',
         planId,
         amount: plan.price
       })
@@ -46,11 +47,11 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
 
   return (
     <button
-      onClick={handlePayment}
+      onClick={() => void handlePayment()}
       disabled={loading}
-      className={className || "px-6 py-3 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"}
+      className={className ?? "px-6 py-3 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"}
     >
-      {loading ? '처리 중...' : children || `${plan.name} 구매하기`}
+      {loading ? '처리 중...' : children ?? `${plan.name} 구매하기`}
     </button>
   )
 }

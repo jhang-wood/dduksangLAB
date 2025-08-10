@@ -34,7 +34,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param wait 대기 시간 (ms)
  * @returns 디바운스된 함수
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -93,13 +93,13 @@ export function deepClone<T>(obj: T): T {
   }
   
   if (typeof obj === 'object') {
-    const cloned: any = {}
+    const cloned: Record<string, unknown> = {}
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        cloned[key] = deepClone(obj[key])
+        cloned[key] = deepClone((obj as Record<string, unknown>)[key])
       }
     }
-    return cloned
+    return cloned as T
   }
   
   return obj
@@ -257,12 +257,12 @@ export function isValidEmail(email: string): boolean {
  * @param obj 정리할 객체
  * @returns 빈 값이 제거된 객체
  */
-export function removeEmptyValues<T extends Record<string, any>>(obj: T): Partial<T> {
+export function removeEmptyValues<T extends Record<string, unknown>>(obj: T): Partial<T> {
   const result: Partial<T> = {}
   
   for (const [key, value] of Object.entries(obj)) {
     if (value !== null && value !== undefined && value !== '') {
-      result[key as keyof T] = value
+      (result as any)[key] = value
     }
   }
   

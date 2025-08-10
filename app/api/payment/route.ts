@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
     const result = await initiateLecturePayment(
       lectureId,
       user.id,
-      user.email!,
-      profile.name || user.email!
+      user.email ?? '',
+      profile.name ?? user.email ?? ''
     )
 
     if (result.success) {

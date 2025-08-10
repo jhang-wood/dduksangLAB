@@ -2,7 +2,7 @@
 
 import { logger, userNotification } from '@/lib/logger'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -70,13 +70,7 @@ export default function MyPage() {
     }
   }, [userProfile])
 
-  useEffect(() => {
-    if (user) {
-      void fetchUserData()
-    }
-  }, [user, activeTab])
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!user) {return}
     
     try {
@@ -119,7 +113,14 @@ export default function MyPage() {
     } catch (error) {
       logger.error('Failed to fetch user data:', error)
     }
-  }
+  }, [user, activeTab, enrollments, payments])
+
+  useEffect(() => {
+    if (user) {
+      void fetchUserData()
+    }
+  }, [fetchUserData, user])
+
 
   const handleProfileUpdate = async () => {
     if (!user) {return}
@@ -227,7 +228,9 @@ export default function MyPage() {
                 
                 <div className="mt-8 pt-8 border-t border-metallicGold-900/30">
                   <button
-                    onClick={signOut}
+                    onClick={() => {
+                      void signOut()
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
                   >
                     <LogOut className="w-5 h-5" />

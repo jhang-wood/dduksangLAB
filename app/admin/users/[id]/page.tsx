@@ -79,7 +79,7 @@ export default function AdminUserDetailPage() {
         .single()
 
       if (userError) { throw userError }
-      setUserDetail(userData)
+      setUserDetail(userData as UserDetail)
 
       if (userData) {
         setEditForm({
