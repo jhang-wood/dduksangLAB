@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Home, TrendingUp, FileText, Users, BarChart3, Settings, LogOut } from 'lucide-react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { logger } from '@/lib/logger'
 
 export default function AdminHeader() {
   const router = useRouter()
@@ -14,10 +15,7 @@ export default function AdminHeader() {
     const { error } = await supabase.auth.signOut()
     if (error) {
       // 에러가 있어도 홈으로 이동
-      // logger를 사용하여 에러 로깅 (프로덕션 환경 대응)
-      if (process.env.NODE_ENV === 'development') {
-        console.error('로그아웃 에러:', error)
-      }
+      logger.error('로그아웃 에러:', error)
     }
     router.push('/')
     router.refresh() // 서버 컴포넌트 새로고침

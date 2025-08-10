@@ -1,111 +1,89 @@
 /**
- * 전역 상수 정의
- * 애플리케이션 전반에서 사용되는 상수값들
+ * 공통 상수 정의
+ * 프로젝트 전체에서 사용되는 상수들을 중앙 집중화하여 관리
  */
 
-// 애플리케이션 기본 설정
-export const APP_CONFIG = {
-  NAME: 'dduksangLAB',
-  DESCRIPTION: 'AI 트렌드 및 강의 플랫폼',
-  VERSION: '1.0.0',
-  AUTHOR: 'dduksangLAB Team'
+// AI 트렌드 카테고리
+export const AI_TRENDS_CATEGORIES = [
+  "AI/ML",
+  "자동화",
+  "데이터분석",
+  "프롬프트엔지니어링",
+  "노코드",
+  "생산성도구"
+] as const
+
+// 커뮤니티 카테고리  
+export const COMMUNITY_CATEGORIES = [
+  "질문",
+  "정보공유",
+  "프로젝트",
+  "스터디",
+  "기타"
+] as const
+
+// 강의 카테고리
+export const LECTURE_CATEGORIES = [
+  "AI",
+  "노코드",
+  "자동화",
+  "마케팅",
+  "개발"
+] as const
+
+// 터미널 색상 코드 (스크립트용)
+export const TERMINAL_COLORS = {
+  reset: '\x1b[0m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m',
+  white: '\x1b[37m',
+  gray: '\x1b[90m'
 } as const
 
 // 페이지네이션 설정
 export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 12,
-  MAX_PAGE_SIZE: 50,
+  DEFAULT_PAGE_SIZE: 10,
+  MAX_PAGE_SIZE: 100,
   MIN_PAGE_SIZE: 5
 } as const
 
-// 캐시 설정
-export const CACHE_TIMES = {
-  SHORT: 1 * 60 * 1000, // 1분
-  MEDIUM: 5 * 60 * 1000, // 5분
-  LONG: 30 * 60 * 1000, // 30분
-  VERY_LONG: 60 * 60 * 1000 // 1시간
+// 파일 업로드 제한
+export const FILE_UPLOAD = {
+  MAX_SIZE: 5 * 1024 * 1024, // 5MB
+  ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  ALLOWED_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.gif', '.webp']
 } as const
 
-// API 엔드포인트
-export const API_ENDPOINTS = {
-  AI_TRENDS: '/api/ai-trends',
-  PAYMENT: '/api/payment',
-  WEBHOOK: '/api/webhook',
-  ADMIN: '/api/admin'
+// API 응답 상태
+export const API_STATUS = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+  PENDING: 'pending',
+  LOADING: 'loading'
 } as const
 
 // 사용자 역할
 export const USER_ROLES = {
-  USER: 'user',
   ADMIN: 'admin',
-  MODERATOR: 'moderator'
+  USER: 'user',
+  GUEST: 'guest'
 } as const
 
-// HTTP 상태 코드
-export const HTTP_STATUS = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500
+// 애플리케이션 메타데이터
+export const APP_METADATA = {
+  TITLE: '떡상연구소',
+  DESCRIPTION: 'AI와 노코드로 함께 성장하는 커뮤니티',
+  URL: 'https://dduksang.com',
+  KEYWORDS: ['AI', '노코드', '자동화', '프롬프트엔지니어링', '생산성']
 } as const
 
-// 에러 메시지
-export const ERROR_MESSAGES = {
-  // 인증 에러
-  UNAUTHORIZED: '로그인이 필요합니다.',
-  FORBIDDEN: '권한이 부족합니다.',
-  INVALID_CREDENTIALS: '이메일 또는 비밀번호가 잘못되었습니다.',
-  
-  // 데이터 에러
-  NOT_FOUND: '요청하신 데이터를 찾을 수 없습니다.',
-  DUPLICATE_CONTENT: '이미 존재하는 컨텐츠입니다.',
-  INVALID_INPUT: '입력값이 잘못되었습니다.',
-  
-  // 서버 에러
-  INTERNAL_ERROR: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-  NETWORK_ERROR: '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.'
-} as const
-
-// 성공 메시지
-export const SUCCESS_MESSAGES = {
-  CREATED: '성공적으로 생성되었습니다.',
-  UPDATED: '성공적으로 수정되었습니다.',
-  DELETED: '성공적으로 삭제되었습니다.',
-  SAVED: '성공적으로 저장되었습니다.'
-} as const
-
-// 에니메이션 설정
-export const ANIMATION_DURATIONS = {
-  FAST: 150,
-  NORMAL: 300,
-  SLOW: 500
-} as const
-
-// 브레이크포인트
-export const BREAKPOINTS = {
-  SM: 640,
-  MD: 768,
-  LG: 1024,
-  XL: 1280,
-  '2XL': 1536
-} as const
-
-// 파일 업로드 제한
-export const FILE_LIMITS = {
-  MAX_SIZE: 5 * 1024 * 1024, // 5MB
-  ALLOWED_TYPES: [
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-    'image/gif'
-  ]
-} as const
-
-// Type definitions for constants
+// Type exports for TypeScript
+export type AITrendsCategory = typeof AI_TRENDS_CATEGORIES[number]
+export type CommunityCategory = typeof COMMUNITY_CATEGORIES[number]
+export type LectureCategory = typeof LECTURE_CATEGORIES[number]
+export type ApiStatus = typeof API_STATUS[keyof typeof API_STATUS]
 export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES]
-export type HttpStatus = typeof HTTP_STATUS[keyof typeof HTTP_STATUS]
-export type ApiEndpoint = typeof API_ENDPOINTS[keyof typeof API_ENDPOINTS]
