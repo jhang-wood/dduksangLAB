@@ -52,8 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .order('published_at', { ascending: false })
 
   const trendPages = (trends ?? []).map((trend) => ({
-    url: `${baseUrl}/ai-trends/${trend.slug}`,
-    lastModified: new Date(trend.updated_at ?? new Date()),
+    url: `${baseUrl}/ai-trends/${trend.slug as string}`,
+    lastModified: new Date((trend.updated_at as string) ?? new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))

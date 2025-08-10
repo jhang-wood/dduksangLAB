@@ -17,7 +17,7 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
   const { user } = useAuth()
   const plan = PRICING_PLANS[planId]
 
-  const handlePayment = async (): Promise<void> => {
+  const handlePayment = (): void => {
     if (!user) {
       userNotification.alert('로그인이 필요합니다.')
       return
@@ -25,29 +25,31 @@ export default function PaymentButton({ planId, className, children }: PaymentBu
 
     setLoading(true)
     
-    try {
-      const orderId = generateOrderId()
-      const paymentUrl = generatePayAppUrl({
-        orderId,
-        userName: user.user_metadata?.name ?? user.email?.split('@')[0] ?? '고객',
-        userEmail: user.email ?? '',
-        planId,
-        amount: plan.price
-      })
+    void (async () => {
+      try {
+        const orderId = generateOrderId()
+        const paymentUrl = generatePayAppUrl({
+          orderId,
+          userName: user.user_metadata?.name ?? user.email?.split('@')[0] ?? '고객',
+          userEmail: user.email ?? '',
+          planId,
+          amount: plan.price
+        })
 
-      // 새 창에서 결제 페이지 열기
-      window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
-    } catch (error) {
-      logger.error('결제 URL 생성 실패:', error)
-      userNotification.alert('결제 처리 중 오류가 발생했습니다.')
-    } finally {
-      setLoading(false)
-    }
+        // 새 창에서 결제 페이지 열기
+        window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
+      } catch (error) {
+        logger.error('결제 URL 생성 실패:', error)
+        userNotification.alert('결제 처리 중 오류가 발생했습니다.')
+      } finally {
+        setLoading(false)
+      }
+    })()
   }
 
   return (
     <button
-      onClick={() => void handlePayment()}
+      onClick={handlePayment}
       disabled={loading}
       className={className ?? "px-6 py-3 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"}
     >

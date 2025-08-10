@@ -92,7 +92,12 @@ export default function MyPage() {
           .order('enrolled_at', { ascending: false })
         
         if (data) {
-          setEnrollments(data as typeof enrollments)
+          setEnrollments(data as Array<{
+            id: string;
+            lectures: { id: string; title: string; thumbnail_url?: string; instructor_id: string; duration: number; level: string } | null;
+            progress_percentage: number;
+            status: string;
+          }>)
         }
       } else if (activeTab === 'payments') {
         const { data } = await supabase
@@ -107,13 +112,19 @@ export default function MyPage() {
           .order('created_at', { ascending: false })
         
         if (data) {
-          setPayments(data as typeof payments)
+          setPayments(data as Array<{
+            id: string;
+            lectures: { title: string } | null;
+            amount: number;
+            status: string;
+            created_at: string;
+          }>)
         }
       }
     } catch (error) {
       logger.error('Failed to fetch user data:', error)
     }
-  }, [user, activeTab, enrollments, payments])
+  }, [user, activeTab])
 
   useEffect(() => {
     if (user) {

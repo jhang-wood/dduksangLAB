@@ -167,7 +167,7 @@ class PayAppService {
           approvalUrl: result.online_url
         }
       } else {
-        throw new Error(result.errorMessage ?? '결제 요청 실패')
+        throw new Error((result.errorMessage as string) ?? '결제 요청 실패')
       }
     } catch (error) {
       logger.error('PayApp payment creation error:', error)
@@ -240,14 +240,14 @@ class PayAppService {
           .from('payments')
           .update({
             status,
-            error_message: result.errorMessage,
+            error_message: result.errorMessage as string,
             updated_at: new Date().toISOString()
           })
           .eq('id', orderId)
 
         return {
           success: false,
-          error: result.errorMessage ?? '결제가 완료되지 않았습니다'
+          error: (result.errorMessage as string) ?? '결제가 완료되지 않았습니다'
         }
       }
     } catch (error) {
@@ -317,7 +317,7 @@ class PayAppService {
           success: true
         }
       } else {
-        throw new Error(result.errorMessage ?? '결제 취소 실패')
+        throw new Error((result.errorMessage as string) ?? '결제 취소 실패')
       }
     } catch (error) {
       logger.error('PayApp payment cancellation error:', error)

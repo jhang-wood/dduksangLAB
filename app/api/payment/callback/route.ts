@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('x-payapp-signature') ?? ''
 
     // 웹훅 검증
-    if (!payapp.verifyWebhook(data, signature)) {
+    if (!payapp.verifyWebhook(data as Record<string, unknown>, signature)) {
       return NextResponse.json(
         { error: '잘못된 요청입니다' },
         { status: 401 }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // 결제 완료시 수강 등록
     if (status === 'completed') {
       try {
-        await completeLectureEnrollment(orderid)
+        await completeLectureEnrollment(orderid as string)
       } catch (error) {
         logger.error('Enrollment error:', error)
       }

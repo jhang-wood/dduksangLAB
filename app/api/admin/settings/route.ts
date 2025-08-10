@@ -12,7 +12,7 @@ export async function GET() {
       .from('system_settings')
       .select('*')
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('Error fetching system settings:', error)
@@ -104,7 +104,7 @@ export async function PUT(request: NextRequest) {
       .from('system_settings')
       .select('id')
       .limit(1)
-      .single()
+      .maybeSingle()
 
     let result
 

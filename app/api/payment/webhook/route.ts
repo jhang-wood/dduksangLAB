@@ -5,15 +5,25 @@ import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 
+interface PayAppWebhookData {
+  status: string
+  user_email: string
+  order_no: string
+  payapp_order_id: string
+  amount: number
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
+    const rawData = await request.json() as Record<string, unknown>
     const signature = request.headers.get('X-PayApp-Signature')
 
     // 서명 검증
-    if (!signature || !verifyPayAppWebhook(data, signature)) {
+    if (!signature || !verifyPayAppWebhook(rawData, signature)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
+
+    const data = rawData as PayAppWebhookData
 
     // 결제 상태 확인
     if (data.status === 'paid') {
@@ -43,7 +53,7 @@ export async function POST(request: NextRequest) {
         await supabase
           .from('payments')
           .insert({
-            user_id: userData.id,
+            user_id: (userData as { id: string }).id,
             order_id: data.order_no,
             payapp_order_id: data.payapp_order_id,
             amount: data.amount,

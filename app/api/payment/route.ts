@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single()
+      .single() as { data: { name?: string } | null }
 
     if (!profile) {
       return NextResponse.json(
@@ -32,21 +32,22 @@ export async function POST(request: NextRequest) {
     }
 
     // 요청 바디 파싱
-    const { lectureId } = await request.json()
+    const requestBody = await request.json() as { lectureId?: unknown }
+    const { lectureId } = requestBody
     
-    if (!lectureId) {
+    if (!lectureId || typeof lectureId !== 'string') {
       return NextResponse.json(
-        { error: '강의 ID가 필요합니다' },
+        { error: '올바른 강의 ID가 필요합니다' },
         { status: 400 }
       )
     }
 
-    // 결제 요청 생성
+    // 결제 요청 생성  
     const result = await initiateLecturePayment(
       lectureId,
       user.id,
       user.email ?? '',
-      profile.name ?? user.email ?? ''
+      profile?.name ?? user.email ?? ''
     )
 
     if (result.success) {
