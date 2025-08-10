@@ -25,7 +25,7 @@ export default function HomePage() {
         <Header currentPage="home" />
 
         {/* Hero Section - 역사적인 시작을 알리는 초대장 */}
-        <section className="min-h-screen flex items-center justify-center px-4 py-20">
+        <section className="min-h-screen flex items-center justify-center px-4 pt-32 pb-20">
           <div className="container mx-auto max-w-7xl">
             <motion.div
               initial={{ opacity: 0 }}
@@ -74,7 +74,7 @@ export default function HomePage() {
               >
                 <p className="text-lg text-offWhite-500 mb-8 tracking-[0.3em] uppercase">Grand Open D-Day</p>
                 <CountdownTimer />
-                <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">2025년 8월 5일 (화) 오후 7시</p>
+                <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">2025년 8월 12일 (화) 오후 7시</p>
               </motion.div>
 
               {/* CTA Button */}
