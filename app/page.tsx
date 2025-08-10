@@ -12,7 +12,6 @@ import {
   Brain,
   Rocket
 } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
@@ -41,21 +40,6 @@ export default function HomePage() {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="font-montserrat font-bold mb-8 relative"
               >
-                {/* Background Logo Watermark */}
-                <motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 0.05 }}
-                  transition={{ delay: 0.2, duration: 1.2 }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                >
-                  <Image
-                    src="/images/떡상연구소_로고-removebg-preview.png"
-                    alt=""
-                    width={400}
-                    height={400}
-                    className="object-contain"
-                  />
-                </motion.div>
                 
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight mb-4 relative">
                   AI 300만원짜리 강의,
@@ -64,23 +48,6 @@ export default function HomePage() {
                   더 이상 돈 주고 듣지 마세요.
                 </span>
                 
-                {/* Signature Logo */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.8, duration: 0.5 }}
-                  className="absolute -bottom-8 right-0 md:right-10 flex items-center gap-2"
-                >
-                  <div className="relative w-12 h-12 md:w-16 md:h-16">
-                    <Image
-                      src="/images/떡상연구소_로고-removebg-preview.png"
-                      alt="떡상연구소"
-                      fill
-                      className="object-contain filter drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]"
-                    />
-                  </div>
-                  <span className="text-sm md:text-base text-metallicGold-500 font-bold">떡상연구소</span>
-                </motion.div>
               </motion.h1>
 
               {/* Subtitle - 압도적인 차별점 제시 */}
@@ -501,18 +468,10 @@ export default function HomePage() {
           <div className="container mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <div className="relative w-12 h-12">
-                  <Image
-                    src="/images/떡상연구소_로고-removebg-preview.png"
-                    alt="떡상연구소"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <span className="text-xl font-semibold text-metallicGold-500">떡상연구소</span>
+                <span className="text-xl font-semibold text-metallicGold-500">dduksangLAB</span>
               </div>
               <p className="text-offWhite-600 text-sm">
-                © 2025 떡상연구소. All rights reserved.
+                © 2025 dduksangLAB. All rights reserved.
               </p>
             </div>
           </div>
