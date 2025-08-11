@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /.well-known/
+Disallow: /auth/
+Disallow: /dashboard/
+
+# Sitemap
+Sitemap: https://dduksang.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Specific rules for security
+User-agent: *
+Disallow: /*.env*
+Disallow: /*.log
+Disallow: /*.backup
+Disallow: /*.config
+Disallow: /*secret*
+Disallow: /*token*
+Disallow: /*key*
+EOF < /dev/null

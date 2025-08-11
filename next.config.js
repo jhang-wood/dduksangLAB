@@ -1,18 +1,68 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // experimental.appDir 제거 - Next.js 14에서는 불필요
   images: {
     domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co'],
     unoptimized: true,
   },
   eslint: {
-    ignoreDuringBuilds: false, // ESLint는 계속 검사 (코드 품질 유지)
+    ignoreDuringBuilds: false,
     dirs: ['app', 'lib', 'components'],
   },
   typescript: {
-    // TODO: TYPESCRIPT_DEBT.md 참조 - 점진적 개선 중
-    ignoreBuildErrors: true,  // 임시: 60개+ 오류 해결 중
+    ignoreBuildErrors: true,
   },
+  
+  async headers() {
+    return [
+      {
+        source: '/((?\!api/).*)',
+        headers: [
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()'
+          }
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow, nosnippet, noarchive'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          }
+        ],
+      }
+    ]
+  },
+  
   async redirects() {
     return [
       {

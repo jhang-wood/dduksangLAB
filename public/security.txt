@@ -1,0 +1,22 @@
+Contact: mailto:security@dduksang.com
+Preferred-Languages: ko, en
+Canonical: https://dduksang.com/.well-known/security.txt
+Policy: https://dduksang.com/security-policy
+Hiring: https://dduksang.com/careers
+
+# 보안 취약점 신고 방법
+# Security vulnerability reporting
+
+# 이 사이트의 보안 취약점을 발견하신 경우:
+# If you discover a security vulnerability on this site:
+
+# 1. security@dduksang.com 으로 신고해 주세요
+# 2. 상세한 재현 단계를 포함해 주세요
+# 3. 24시간 내 응답드리겠습니다
+
+# 1. Please report to security@dduksang.com
+# 2. Please include detailed reproduction steps
+# 3. We will respond within 24 hours
+
+Acknowledgments: https://dduksang.com/security-acknowledgments
+EOF < /dev/null

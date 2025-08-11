@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
     } = body
 
     logger.log('[API] Processing request body, title:', title)
-    console.log('[API] Processing request body, title:', title)
+    logger.log('[API] Processing request body, title:', title)
 
     // Generate slug if not provided
     const finalSlug = slug ?? title.toLowerCase()
@@ -262,22 +262,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(trend)
   } catch (error) {
     logger.error('[API] Error creating AI trend:', error)
-    console.error('[API] Error creating AI trend:', error)
-    console.error('[API] Error stack:', error instanceof Error ? error.stack : 'No stack available')
+    logger.error('[API] Error creating AI trend:', error)
     
     // Extract meaningful error information
     let errorMessage = 'Unknown error'
     let errorDetails = null
     
     if (error && typeof error === 'object') {
-      console.log('[API] Error object keys:', Object.keys(error))
       if ('message' in error) {errorMessage = String(error.message)}
       if ('code' in error) {errorDetails = { code: error.code }}
       if ('details' in error) {errorDetails = { ...errorDetails, details: error.details }}
       if ('hint' in error) {errorDetails = { ...errorDetails, hint: error.hint }}
     }
-    
-    console.log('[API] Final error response:', { errorMessage, errorDetails })
     
     return NextResponse.json(
       { 

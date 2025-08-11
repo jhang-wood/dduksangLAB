@@ -65,7 +65,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={(e) => void handleSubmit(e)}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} method="POST">
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
