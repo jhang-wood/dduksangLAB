@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient, createAdminClient } from '@/lib/supabase-server'
+import { createServerClient, createActionClient, createAdminClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
 import { AITrend } from '@/types'
 
@@ -58,26 +58,49 @@ export async function GET(request: NextRequest) {
 // POST: Create new AI trend (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    // Use createActionClient for better cookie handling in API routes
+    const supabase = createActionClient()
+    
+    // Debug: Check cookies
+    const cookieStore = request.cookies
+    const sessionCookie = cookieStore.get('supabase-auth-token') || 
+                          cookieStore.get('sb-access-token') ||
+                          cookieStore.get('sb-refresh-token')
+    
+    logger.log('[API] Session cookie found:', !!sessionCookie)
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    logger.log('[API] Auth check result:', { 
+      user: user?.email, 
+      error: authError?.message 
+    })
 
     if (!user) {
+      logger.error('[API] No authenticated user found')
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - No session found' },
         { status: 401 }
       )
     }
 
-    // Check if user is admin using RLS-aware query
-    const { data: profile } = await supabase
+    // Check if user is admin using admin client to bypass RLS
+    const adminClient = createAdminClient()
+    const { data: profile, error: profileError } = await adminClient
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    logger.log('[API] Profile check result:', { 
+      profile: profile?.role, 
+      error: profileError?.message 
+    })
+
+    if (profileError || !profile || profile.role !== 'admin') {
+      logger.error('[API] Admin access denied:', { profile, error: profileError })
       return NextResponse.json(
-        { error: 'Forbidden' },
+        { error: 'Forbidden - Admin access required' },
         { status: 403 }
       )
     }
@@ -124,10 +147,7 @@ export async function POST(request: NextRequest) {
     // Create content hash for duplicate prevention
     const contentHash = await generateContentHash(content)
 
-    // Use admin client only for operations that require bypassing RLS
-    const adminClient = createAdminClient()
-    
-    // Check for duplicate
+    // Check for duplicate using existing admin client
     const { data: existingHash } = await adminClient
       .from('ai_trends_hash')
       .select('id')
