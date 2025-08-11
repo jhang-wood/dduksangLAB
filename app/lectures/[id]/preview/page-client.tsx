@@ -99,58 +99,6 @@ const levelLabels = {
   'advanced': '고급'
 }
 
-// 비개발자 타겟 강의 데이터 (Claude Code CLI 모든 것)
-const COURSE_DATA = {
-  title: "비개발자도 클로드코드CLI 한개로 모든것을 다한다!",
-  subtitle: "3개월차 비개발자가 알려주는 진짜 실무 자동화",
-  originalPrice: 299000,
-  currentPrice: 149000,
-  discountPercent: 50,
-  launchSpecial: true,
-  instructor: "떡상연구소",
-  duration: "6시간 30분",
-  studentCount: 0, // 신규 강의
-  parts: [
-    {
-      title: "Part 1: 기초 환경 구축 (비개발자도 30분만에)",
-      chapters: [
-        { title: "MCP 서버 설치와 설정 (화면 공유로 따라하기)", duration: "25분" },
-        { title: "Git 자동화 시스템 세팅 (클릭 한번으로)", duration: "20분" },
-        { title: "첫 번째 자동화 성공 (성취감 UP!)", duration: "15분" }
-      ]
-    },
-    {
-      title: "Part 2: 서브에이전트와 협업하기 (마법같은 경험)",
-      chapters: [
-        { title: "서브에이전트가 뭔가요? (쉬운 설명)", duration: "20분" },
-        { title: "여러 에이전트에게 동시에 일시키기", duration: "35분" },
-        { title: "실제 프로젝트를 에이전트들이 완성하는 과정", duration: "40분" }
-      ]
-    },
-    {
-      title: "Part 3: 실무 자동화 워크플로우 (바로 써먹기)",
-      chapters: [
-        { title: "n8n으로 업무 자동화 (노코드)", duration: "45분" },
-        { title: "Langchain 활용법 (개념부터 실습까지)", duration: "50분" },
-        { title: "RAG 시스템 구축 (나만의 AI 비서 만들기)", duration: "40분" }
-      ]
-    }
-  ],
-  features: [
-    "✅ 코딩 몰라도 OK! 화면공유로 따라하기만 하면 됩니다",
-    "✅ 실제 3개월차 비개발자의 시행착오 노하우 모두 공개",
-    "✅ 바로 써먹을 수 있는 템플릿과 설정파일 제공",
-    "✅ 막힐 때마다 도움받을 수 있는 커뮤니티 제공",
-    "✅ 업데이트될 때마다 새로운 내용 무료 추가"
-  ],
-  targetAudience: [
-    "개발은 모르지만 AI로 뭔가 해보고 싶은 분",
-    "반복 업무에 지쳐서 자동화하고 싶은 직장인",
-    "ChatGPT보다 더 강력한 도구를 찾는 분",
-    "혼자 끙끙대지 말고 제대로 배우고 싶은 분"
-  ]
-}
-
 export default function LecturePreviewClient({ params }: { params: { id: string } }) {
   const [lecture, setLecture] = useState<Lecture | null>(null)
   const [loading, setLoading] = useState(true)
@@ -159,45 +107,11 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [recommendedLectures, setRecommendedLectures] = useState<RecommendedLecture[]>([])
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
-  const [isSpecialCourse, setIsSpecialCourse] = useState(false)
   const router = useRouter()
   const { user } = useAuth()
 
   const fetchLectureData = useCallback(async () => {
     try {
-      // 특별 강의 ID 체크 (claude-code-nondev)
-      if (params.id === 'claude-code-nondev') {
-        setIsSpecialCourse(true)
-        // 특별 강의는 하드코딩된 데이터 사용
-        setLecture({
-          id: params.id,
-          title: COURSE_DATA.title,
-          description: COURSE_DATA.subtitle,
-          instructor_name: COURSE_DATA.instructor,
-          category: "AI 자동화",
-          level: "beginner",
-          duration: 390, // 6시간 30분
-          price: COURSE_DATA.currentPrice,
-          student_count: COURSE_DATA.studentCount,
-          rating: 5.0,
-          tags: ["Claude Code", "AI 자동화", "비개발자", "MCP", "n8n", "RAG"],
-          objectives: COURSE_DATA.features,
-          target_audience: COURSE_DATA.targetAudience,
-          chapters: COURSE_DATA.parts.flatMap((part, partIndex) => 
-            part.chapters.map((chapter, chapterIndex) => ({
-              id: `${partIndex}-${chapterIndex}`,
-              title: chapter.title,
-              order_index: partIndex * 10 + chapterIndex,
-              duration: parseInt(chapter.duration.replace('분', '')),
-              is_preview: partIndex === 0 && chapterIndex === 0 // 첫 번째 챕터만 미리보기
-            }))
-          )
-        } as Lecture)
-        setLoading(false)
-        return
-      }
-
-      // 일반 강의 처리
       // 수강 여부 확인
       if (user) {
         const { data: enrollment } = await supabase
@@ -209,11 +123,13 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           .single()
 
         if (enrollment) {
+          // 이미 수강중이면 강의 페이지로 리다이렉트
           router.push(`/lectures/${params.id}`)
           return
         }
       }
 
+      // 강의 정보 조회
       const { data: lectureData } = await supabase
         .from('lectures')
         .select(`
@@ -235,6 +151,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           chapters: lectureData.chapters?.sort((a: Chapter, b: Chapter) => a.order_index - b.order_index) ?? []
         } as Lecture)
         
+        // 태그 데이터 생성
         if (lectureData.tags && Array.isArray(lectureData.tags)) {
           const tags: Tag[] = lectureData.tags.map((tag: string, index: number) => ({
             id: `tag-${index}`,
@@ -247,6 +164,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
         }
       }
       
+      // 추천 강의 로드
       await fetchRecommendedLectures()
     } catch (error) {
       logger.error('Error fetching lecture:', error)
@@ -423,472 +341,385 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
         </>
       )}
 
-      {/* FastCampus Style Hero Section */}
-      <section className="relative pt-16 pb-8 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-4xl mx-auto">
+      {/* Enhanced Hero Section with FastCampus-style layout */}
+      <section className="relative pt-20 pb-0 overflow-hidden">
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-deepBlack-900" />
+        
+        {/* Hero content container */}
+        <div className="relative z-10">
+          <div className="container mx-auto px-4">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 text-offWhite-600 hover:text-metallicGold-500 mb-8 transition-colors"
+            >
+              <ArrowLeft size={20} />
+              뒤로 가기
+            </button>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Left Column - Course Info */}
+              <div className="lg:col-span-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {/* Course badges */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 text-metallicGold-400 rounded-full text-sm font-medium border border-metallicGold-500/30">
+                      {lecture.category}
+                    </span>
+                    <span className={`px-4 py-2 rounded-full text-sm font-medium border ${
+                      lecture.level === "beginner" 
+                        ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                        : lecture.level === "intermediate" 
+                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" 
+                        : "bg-red-500/20 text-red-400 border-red-500/30"
+                    }`}>
+                      {levelLabels[lecture.level as keyof typeof levelLabels]}
+                    </span>
+                  </div>
+
+                  {/* Course title */}
+                  <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold text-offWhite-200 mb-6 leading-tight">
+                    {lecture.title}
+                  </h1>
+
+                  {/* Course description */}
+                  <p className="text-lg lg:text-xl text-offWhite-500 mb-8 leading-relaxed">
+                    {lecture.description}
+                  </p>
+
+                  {/* Course stats */}
+                  <div className="flex flex-wrap items-center gap-6 mb-8">
+                    <div className="flex items-center gap-2 text-offWhite-400">
+                      <Award className="text-metallicGold-500" size={20} />
+                      <span className="font-medium">{lecture.instructor_name}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-offWhite-400">
+                      <Clock className="text-metallicGold-500" size={20} />
+                      <span>{Math.ceil(totalDuration / 60)}분</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-offWhite-400">
+                      <BookOpen className="text-metallicGold-500" size={20} />
+                      <span>{totalChapters}개 챕터</span>
+                    </div>
+                    {lecture.student_count && lecture.student_count > 0 && (
+                      <div className="flex items-center gap-2 text-offWhite-400">
+                        <Users className="text-metallicGold-500" size={20} />
+                        <span>{lecture.student_count.toLocaleString()}명 수강</span>
+                      </div>
+                    )}
+                    {lecture.rating && (
+                      <div className="flex items-center gap-2 text-offWhite-400">
+                        <Star className="text-yellow-500 fill-current" size={20} />
+                        <span>{lecture.rating}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tags */}
+                  {lecture.tags && lecture.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-3 mb-8">
+                      {lecture.tags.map((tag, index) => (
+                        <span 
+                          key={index} 
+                          className="px-3 py-1 bg-deepBlack-600/50 backdrop-blur-sm text-offWhite-500 rounded-full text-sm border border-deepBlack-300"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Right Column - Video & Pricing Card */}
+              <div className="lg:col-span-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="sticky top-24"
+                >
+                  {/* Video preview card */}
+                  <div className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-4 border border-metallicGold-900/30 mb-6">
+                    <div className="relative aspect-video bg-deepBlack-600 rounded-xl overflow-hidden mb-4">
+                      {lecture.preview_url ? (
+                        <video
+                          className="w-full h-full object-cover"
+                          controls
+                          poster={lecture.thumbnail_url}
+                        >
+                          <source src={lecture.preview_url} type="video/mp4" />
+                        </video>
+                      ) : lecture.thumbnail_url ? (
+                        <>
+                          <div
+                            className="w-full h-full object-cover bg-cover bg-center"
+                            style={{
+                              backgroundImage: `url(${lecture.thumbnail_url})`
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <div className="w-16 h-16 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-full flex items-center justify-center shadow-xl">
+                              <Play className="text-deepBlack-900 ml-1" size={28} />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 flex items-center justify-center">
+                          <div className="w-16 h-16 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-full flex items-center justify-center shadow-xl">
+                            <Play className="text-deepBlack-900 ml-1" size={28} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Pricing section */}
+                    <div className="text-center mb-6">
+                      <p className="text-offWhite-600 text-sm mb-2">수강료</p>
+                      <p className="text-3xl font-bold text-metallicGold-500">
+                        ₩{lecture.price.toLocaleString()}
+                      </p>
+                    </div>
+
+                    {/* CTA Button */}
+                    {user ? (
+                      <PaymentButton
+                        lectureId={lecture.id}
+                        price={lecture.price}
+                        className="w-full px-6 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
+                      >
+                        <ShoppingCart size={20} className="inline mr-2" />
+                        지금 수강 신청하기
+                      </PaymentButton>
+                    ) : (
+                      <button
+                        onClick={handleEnrollClick}
+                        className="w-full px-6 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
+                      >
+                        로그인하고 수강 신청하기
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Course Content with Card-based Sections */}
+      <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Learning Objectives Card */}
+              {lecture.objectives && lecture.objectives.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-8 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center">
+                      <Target className="text-deepBlack-900" size={24} />
+                    </div>
+                    <h2 className="text-2xl font-bold text-offWhite-200">학습 목표</h2>
+                  </div>
+                  <ul className="space-y-4">
+                    {lecture.objectives.map((objective, index) => (
+                      <motion.li 
+                        key={index} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + index * 0.1 }}
+                        className="flex items-start gap-4"
+                      >
+                        <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <CheckCircle className="text-green-500" size={16} />
+                        </div>
+                        <span className="text-offWhite-300 leading-relaxed">{objective}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+
+              {/* Enhanced Curriculum with Accordion */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="mb-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center">
+                      <BookOpen className="text-deepBlack-900" size={24} />
+                    </div>
+                    <h2 className="text-2xl font-bold text-offWhite-200">상세 커리큘럼</h2>
+                  </div>
+                  <p className="text-offWhite-500 mb-6">
+                    체계적으로 구성된 커리큘럼으로 단계별 학습이 가능합니다. 미리보기가 가능한 챕터를 먼저 확인해보세요.
+                  </p>
+                </div>
+                
+                <CurriculumAccordion 
+                  sections={curriculumSections}
+                  showPreviewOnly={false}
+                  className="mb-8"
+                />
+              </motion.div>
+
+              {/* Requirements Card */}
+              {lecture.requirements && lecture.requirements.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-8 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center">
+                      <BarChart className="text-deepBlack-900" size={24} />
+                    </div>
+                    <h2 className="text-2xl font-bold text-offWhite-200">수강 전 필요사항</h2>
+                  </div>
+                  <ul className="space-y-4">
+                    {lecture.requirements.map((req, index) => (
+                      <motion.li 
+                        key={index} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        className="flex items-start gap-4"
+                      >
+                        <div className="w-2 h-2 bg-metallicGold-500 rounded-full mt-3 flex-shrink-0" />
+                        <span className="text-offWhite-300 leading-relaxed">{req}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+              
+              {/* Interactive Tag System */}
+              {availableTags.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-8 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center">
+                      <Hash className="text-deepBlack-900" size={24} />
+                    </div>
+                    <h2 className="text-2xl font-bold text-offWhite-200">관련 태그</h2>
+                  </div>
+                  <p className="text-offWhite-500 mb-6">
+                    이 강의와 관련된 태그를 클릭하여 비슷한 강의를 찾아보세요.
+                  </p>
+                  
+                  <TagSystem
+                    tags={availableTags}
+                    selectedTags={selectedTags}
+                    onTagSelect={handleTagSelect}
+                    onTagRemove={handleTagRemove}
+                    onSearch={handleTagSearch}
+                    maxVisibleTags={12}
+                    showSearch={false}
+                    showCategories={false}
+                  />
+                </motion.div>
+              )}
+            </div>
+
+            {/* Enhanced Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-6">
+                {/* Instructor Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
+                >
+                  <h3 className="text-xl font-bold text-offWhite-200 mb-6">강사 소개</h3>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 flex items-center justify-center shadow-xl">
+                      <Award className="text-deepBlack-900" size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-offWhite-200 text-lg">{lecture.instructor_name}</h4>
+                      <p className="text-sm text-metallicGold-400 font-medium">전문 강사</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Target Audience Card */}
+                {lecture.target_audience && lecture.target_audience.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
+                  >
+                    <h3 className="text-xl font-bold text-offWhite-200 mb-6">이런 분들께 추천해요</h3>
+                    <ul className="space-y-4">
+                      {lecture.target_audience.map((audience, index) => (
+                        <motion.li 
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.7 + index * 0.1 }}
+                          className="flex items-start gap-3"
+                        >
+                          <div className="w-6 h-6 bg-metallicGold-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Users className="text-metallicGold-500" size={14} />
+                          </div>
+                          <span className="text-sm text-offWhite-300 leading-relaxed">{audience}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Related Courses Recommendation Section */}
+      {recommendedLectures.length > 0 && (
+        <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-300/20 to-deepBlack-900">
+          <div className="container mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* 마켓 헤시태그 */}
-              {isSpecialCourse && (
-                <div className="flex flex-wrap justify-center gap-2 mb-8">
-                  {['#비개발자', '#ClaudeCode', '#3개월차노하우', '#실무자동화'].map((hashtag, index) => (
-                    <span 
-                      key={index} 
-                      className="px-3 py-1 bg-metallicGold-500/20 text-metallicGold-400 rounded-full text-sm font-medium border border-metallicGold-500/30"
-                    >
-                      {hashtag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* 메인 제목 */}
-              <h1 className="text-4xl lg:text-6xl font-bold text-offWhite-100 mb-6 leading-tight">
-                {isSpecialCourse ? (
-                  <>
-                    <span className="text-metallicGold-500">비개발자도</span> 클로드코드CLI<br />
-                    <span className="text-2xl lg:text-4xl text-offWhite-300">한개로 모든것을 다한다!</span>
-                  </>
-                ) : (
-                  lecture.title
-                )}
-              </h1>
-
-              {/* 서브 타이틀 */}
-              <p className="text-xl lg:text-2xl text-offWhite-400 mb-12 leading-relaxed">
-                {isSpecialCourse ? COURSE_DATA.subtitle : lecture.description}
-              </p>
-
-              {/* 가격 정보 - FastCampus 스타일 */}
-              <div className="bg-deepBlack-300/50 backdrop-blur-sm rounded-3xl p-8 border border-metallicGold-900/30 max-w-md mx-auto mb-8">
-                {isSpecialCourse && COURSE_DATA.launchSpecial && (
-                  <div className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-400 text-deepBlack-900 px-4 py-2 rounded-full text-sm font-bold mb-4 inline-block">
-                    특별 런칭 할인 {COURSE_DATA.discountPercent}%
-                  </div>
-                )}
-                
-                <div className="text-center">
-                  {isSpecialCourse ? (
-                    <>
-                      <div className="text-offWhite-500 text-lg line-through mb-2">
-                        정가 {COURSE_DATA.originalPrice.toLocaleString()}원
-                      </div>
-                      <div className="text-4xl font-bold text-metallicGold-500 mb-4">
-                        {COURSE_DATA.currentPrice.toLocaleString()}원
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-4xl font-bold text-metallicGold-500 mb-4">
-                      {lecture.price.toLocaleString()}원
-                    </div>
-                  )}
-                  
-                  {/* CTA 버튼 */}
-                  {user ? (
-                    <PaymentButton
-                      lectureId={lecture.id}
-                      price={isSpecialCourse ? COURSE_DATA.currentPrice : lecture.price}
-                      className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-2xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
-                    >
-                      수강권 선택하기
-                    </PaymentButton>
-                  ) : (
-                    <button
-                      onClick={handleEnrollClick}
-                      className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-2xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
-                    >
-                      수강권 선택하기
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* 강의 정보 */}
-              <div className="flex flex-wrap justify-center items-center gap-8 text-offWhite-400">
-                <div className="flex items-center gap-2">
-                  <Clock className="text-metallicGold-500" size={20} />
-                  <span>{isSpecialCourse ? COURSE_DATA.duration : `${Math.ceil(totalDuration / 60)}분`}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <BookOpen className="text-metallicGold-500" size={20} />
-                  <span>{totalChapters}개 챕터</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Award className="text-metallicGold-500" size={20} />
-                  <span>{lecture.instructor_name}</span>
-                </div>
-                {lecture.rating && (
-                  <div className="flex items-center gap-2">
-                    <Star className="text-yellow-500 fill-current" size={20} />
-                    <span>{lecture.rating}</span>
-                  </div>
-                )}
-              </div>
+              <RecommendationSlider
+                lectures={recommendedLectures}
+                title="이런 강의도 좋아요"
+                subtitle={`${lecture?.category ?? ''} 강의를 더 학습하고 싶다면, 이 강의들을 추천드려요`}
+                onLectureClick={handleRecommendedLectureClick}
+                slidesPerView={3}
+                spaceBetween={24}
+                showPagination={true}
+                autoplay={true}
+                autoplayDelay={6000}
+                showReasonBadge={true}
+              />
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 이 강의를 들으면 얻을 수 있는 것들 */}
-      <section className="py-16 bg-gradient-to-b from-deepBlack-900 to-deepBlack-800">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              이 강의를 들으면 <span className="text-metallicGold-500">얻을 수 있는 것들</span>
-            </h2>
-            <p className="text-lg text-offWhite-400">
-              3개월차 비개발자가 실제로 경험한 변화를 공유합니다
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {lecture.objectives?.map((objective, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/20 hover:border-metallicGold-500/40 transition-all hover:transform hover:scale-105"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="text-metallicGold-500" size={24} />
-                  </div>
-                  <div>
-                    <p className="text-offWhite-200 font-medium leading-relaxed">
-                      {objective}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )) || []}
-          </div>
-        </div>
-      </section>
-
-      {/* 커리큘럼 섹션 - FastCampus 방식 */}
-      <section className="py-16 bg-gradient-to-b from-deepBlack-800 to-deepBlack-700">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              <span className="text-metallicGold-500">단계별</span> 학습 커리큘럼
-            </h2>
-            <p className="text-lg text-offWhite-400">
-              비개발자도 쉬게 따라할 수 있도록 3단계로 구성했습니다
-            </p>
-          </motion.div>
-
-          {isSpecialCourse && COURSE_DATA.parts.map((part, partIndex) => (
-            <motion.div
-              key={partIndex}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: partIndex * 0.2 }}
-              className="mb-8 bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl border border-metallicGold-900/20 overflow-hidden"
-            >
-              <div className="bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 p-6 border-b border-metallicGold-900/20">
-                <h3 className="text-xl lg:text-2xl font-bold text-offWhite-100 mb-2">
-                  {part.title}
-                </h3>
-              </div>
-              
-              <div className="p-6 space-y-4">
-                {part.chapters.map((chapter, chapterIndex) => (
-                  <div
-                    key={chapterIndex}
-                    className="flex items-center justify-between p-4 bg-deepBlack-600/30 rounded-xl hover:bg-deepBlack-600/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-lg flex items-center justify-center text-sm font-bold text-metallicGold-400">
-                        {chapterIndex + 1}
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-offWhite-200">
-                          {chapter.title}
-                        </h4>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-offWhite-500">
-                      <Clock className="text-metallicGold-500" size={16} />
-                      <span className="text-sm">{chapter.duration}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* 이런 분들께 추천 */}
-      <section className="py-16 bg-gradient-to-b from-deepBlack-700 to-deepBlack-900">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              <span className="text-metallicGold-500">이런 분들께</span> 추천합니다
-            </h2>
-            <p className="text-lg text-offWhite-400">
-              진짜 비개발자도 따라할 수 있게 만들었습니다
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {lecture.target_audience?.map((audience, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/20 hover:border-metallicGold-500/40 transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Users className="text-metallicGold-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-offWhite-200 font-medium leading-relaxed">
-                      {audience}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )) || []}
-          </div>
-        </div>
-      </section>
-
-      {/* 강사 소개 섹션 */}
-      <section className="py-16 bg-deepBlack-900">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              강사 소개
-            </h2>
-            <p className="text-lg text-offWhite-400">
-              3개월차 비개발자가 알려주는 진짜 이야기
-            </p>
-          </motion.div>
-
-          <div className="max-w-2xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-8 border border-metallicGold-900/20 text-center"
-            >
-              <div className="w-24 h-24 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                <Award className="text-deepBlack-900" size={32} />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-offWhite-100 mb-2">
-                {lecture.instructor_name}
-              </h3>
-              
-              <p className="text-metallicGold-400 font-medium mb-6">
-                3개월차 비개발자 · 떡상연구소 운영자
-              </p>
-              
-              <div className="bg-deepBlack-600/30 rounded-xl p-6 text-left">
-                <p className="text-offWhite-300 leading-relaxed">
-                  "저도 3개월 전까지는 코딩을 몰랐습니다. 그래서 비개발자 입장에서 어디서 막히고, 뭘 모르는지 너무 잘 알아요. 
-                  어려운 개발 용어 대신 일상 언어로 설명드리고, 실제로 써먹을 수 있는 내용만 엄선해서 알려드립니다."
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* 이미지 플레이스홀더 섹션들 */}
-      <section className="py-16 bg-gradient-to-b from-deepBlack-900 to-deepBlack-800">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              실제 화면으로 보는 <span className="text-metallicGold-500">수강 예시</span>
-            </h2>
-            <p className="text-lg text-offWhite-400">
-              비개발자도 따라할 수 있도록 화면 공유로 진행합니다
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            {/* 예시 이미지 플레이스홀더 */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/20"
-            >
-              <div className="aspect-video bg-deepBlack-600/50 rounded-xl mb-4 flex items-center justify-center border border-metallicGold-900/30">
-                <div className="text-center">
-                  <Play className="w-16 h-16 text-metallicGold-500 mx-auto mb-2" />
-                  <p className="text-offWhite-400 text-sm">
-                    MCP 서버 설치 시연 영상<br />
-                    (화면 공유로 따라하기)
-                  </p>
-                </div>
-              </div>
-              <h4 className="font-bold text-offWhite-200 mb-2">
-                1단계: 기초 환경 세팅
-              </h4>
-              <p className="text-offWhite-400 text-sm">
-                코딩 몰라도 OK! 클릭만 하면 됩니다.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/20"
-            >
-              <div className="aspect-video bg-deepBlack-600/50 rounded-xl mb-4 flex items-center justify-center border border-metallicGold-900/30">
-                <div className="text-center">
-                  <Play className="w-16 h-16 text-metallicGold-500 mx-auto mb-2" />
-                  <p className="text-offWhite-400 text-sm">
-                    에이전트 협업 데모<br />
-                    (마법같은 자동화 경험)
-                  </p>
-                </div>
-              </div>
-              <h4 className="font-bold text-offWhite-200 mb-2">
-                2단계: AI 에이전트 활용
-              </h4>
-              <p className="text-offWhite-400 text-sm">
-                여러 에이전트가 동시에 일하는 모습을 볼 수 있어요.
-              </p>
-            </motion.div>
-          </div>
-
-          {/* GIF 플레이스홀더 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-deepBlack-300/30 backdrop-blur-sm rounded-2xl p-8 border border-metallicGold-900/20 text-center"
-          >
-            <div className="max-w-4xl mx-auto">
-              <div className="aspect-video bg-deepBlack-600/50 rounded-xl mb-6 flex items-center justify-center border border-metallicGold-900/30">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Play className="w-12 h-12 text-metallicGold-500" />
-                  </div>
-                  <p className="text-offWhite-400">
-                    전체 워크플로우 데모 영상<br />
-                    (처음부터 끝까지 한 번에)
-                  </p>
-                </div>
-              </div>
-              <h4 className="text-xl font-bold text-offWhite-200 mb-3">
-                3단계: 실무 자동화 완성 과정
-              </h4>
-              <p className="text-offWhite-400">
-                n8n + RAG + Langchain을 활용한 완전한 자동화 시스템을 처음부터 끝까지 함께 만들어보세요.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* 마지막 CTA 섹션 - FastCampus 스타일 */}
-      <section className="py-20 bg-gradient-to-b from-deepBlack-800 to-deepBlack-900">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-2xl mx-auto"
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-offWhite-100 mb-4">
-              지금 시작하면
-            </h2>
-            <h3 className="text-2xl lg:text-3xl font-bold text-metallicGold-500 mb-8">
-              이미 미래에 한 발짝 다가간 것입니다
-            </h3>
-            
-            <div className="bg-deepBlack-300/30 backdrop-blur-sm rounded-3xl p-8 border border-metallicGold-900/30 mb-8">
-              {isSpecialCourse && COURSE_DATA.launchSpecial && (
-                <div className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-400 text-deepBlack-900 px-6 py-3 rounded-full text-lg font-bold mb-6 inline-block">
-                  특별 런칭 할인 {COURSE_DATA.discountPercent}% | 오늘만!
-                </div>
-              )}
-              
-              <div className="text-center mb-6">
-                {isSpecialCourse ? (
-                  <>
-                    <div className="text-offWhite-500 text-xl line-through mb-2">
-                      정가 {COURSE_DATA.originalPrice.toLocaleString()}원
-                    </div>
-                    <div className="text-5xl font-bold text-metallicGold-500 mb-2">
-                      {COURSE_DATA.currentPrice.toLocaleString()}원
-                    </div>
-                    <div className="text-metallicGold-400 font-medium">
-                      {(COURSE_DATA.originalPrice - COURSE_DATA.currentPrice).toLocaleString()}원 절약
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-5xl font-bold text-metallicGold-500">
-                    {lecture.price.toLocaleString()}원
-                  </div>
-                )}
-              </div>
-              
-              {/* 최종 CTA 버튼 */}
-              {user ? (
-                <PaymentButton
-                  lectureId={lecture.id}
-                  price={isSpecialCourse ? COURSE_DATA.currentPrice : lecture.price}
-                  className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-2xl font-bold text-xl hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
-                >
-                  지금 바로 수강 시작하기
-                </PaymentButton>
-              ) : (
-                <button
-                  onClick={handleEnrollClick}
-                  className="w-full px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-2xl font-bold text-xl hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
-                >
-                  지금 바로 수강 시작하기
-                </button>
-              )}
-            </div>
-            
-            <p className="text-offWhite-400 text-sm">
-              30일 무조건 환불 보장 · 평생 업데이트 제공
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Sticky CTA Button - FastCampus 스타일 */}
+      {/* Sticky CTA Button */}
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ 
@@ -902,17 +733,19 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           <div className="flex items-center justify-between gap-4">
             {/* Course info */}
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="flex-shrink-0">
-                <div className="text-sm text-offWhite-500">수강료</div>
-                <div className="font-bold text-metallicGold-500">
-                  {isSpecialCourse ? `${COURSE_DATA.currentPrice.toLocaleString()}원` : `${lecture.price.toLocaleString()}원`}
+              <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                <BookOpen className="text-deepBlack-900" size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-offWhite-200 truncate">{lecture?.title}</h3>
+                <div className="flex items-center gap-4 text-sm text-offWhite-500">
+                  <span>₩{lecture?.price.toLocaleString()}</span>
+                  <span>•</span>
+                  <span>{Math.ceil(totalDuration / 60)}분</span>
+                  <span>•</span>
+                  <span>{totalChapters}개 챕터</span>
                 </div>
               </div>
-              {isSpecialCourse && COURSE_DATA.launchSpecial && (
-                <div className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-400 text-deepBlack-900 px-3 py-1 rounded-full text-xs font-bold">
-                  {COURSE_DATA.discountPercent}% 할인
-                </div>
-              )}
             </div>
             
             {/* CTA Button */}
@@ -920,17 +753,18 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
               {user ? (
                 <PaymentButton
                   lectureId={lecture.id}
-                  price={isSpecialCourse ? COURSE_DATA.currentPrice : lecture.price}
+                  price={lecture.price}
                   className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 whitespace-nowrap"
                 >
-                  수강 시작하기
+                  <ShoppingCart size={18} className="inline mr-2" />
+                  수강 신청하기
                 </PaymentButton>
               ) : (
                 <button
                   onClick={handleEnrollClick}
                   className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 whitespace-nowrap"
                 >
-                  수강 시작하기
+                  수강 신청하기
                 </button>
               )}
             </div>

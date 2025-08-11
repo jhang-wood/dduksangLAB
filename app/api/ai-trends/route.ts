@@ -61,39 +61,63 @@ export async function POST(request: NextRequest) {
     // Check for Authorization header first (Bearer token)
     const authHeader = request.headers.get('authorization')
     let user = null
-    let authError = null
+    let userSupabase = null
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       // Extract token from Authorization header
       const token = authHeader.substring(7)
       logger.log('[API] Using Authorization header token')
       
-      // Create supabase client with token
-      const supabase = createActionClient()
-      const { data: tokenUser, error: tokenError } = await supabase.auth.getUser(token)
-      user = tokenUser.user
-      authError = tokenError
+      // Create supabase client with the specific token
+      const { createClient } = await import('@supabase/supabase-js')
+      const tokenSupabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        }
+      )
       
-      logger.log('[API] Authorization header auth result:', { 
-        user: user?.email, 
-        error: authError?.message 
-      })
+      const { data: { user: tokenUser }, error: tokenError } = await tokenSupabase.auth.getUser()
+      
+      if (tokenUser && !tokenError) {
+        user = tokenUser
+        userSupabase = tokenSupabase
+        logger.log('[API] Authorization header auth result:', { 
+          user: user.email, 
+          success: true 
+        })
+      } else {
+        logger.log('[API] Authorization header auth failed:', { 
+          error: tokenError?.message 
+        })
+      }
     }
 
     // Fallback to cookie-based auth if no Authorization header or token auth failed
     if (!user) {
       const supabase = createActionClient()
       const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser()
-      user = cookieUser
-      authError = cookieError
       
-      logger.log('[API] Cookie-based auth result:', { 
-        user: user?.email, 
-        error: authError?.message 
-      })
+      if (cookieUser && !cookieError) {
+        user = cookieUser
+        userSupabase = supabase
+        logger.log('[API] Cookie-based auth result:', { 
+          user: user.email, 
+          success: true 
+        })
+      } else {
+        logger.log('[API] Cookie-based auth failed:', { 
+          error: cookieError?.message 
+        })
+      }
     }
 
-    if (!user) {
+    if (!user || !userSupabase) {
       logger.error('[API] No authenticated user found via token or cookies')
       return NextResponse.json(
         { error: 'Unauthorized - No session found' },
@@ -155,21 +179,30 @@ export async function POST(request: NextRequest) {
       is_published
     } = body
 
+    logger.log('[API] Processing request body, title:', title)
+    console.log('[API] Processing request body, title:', title)
+
     // Generate slug if not provided
     const finalSlug = slug ?? title.toLowerCase()
       .replace(/[^a-z0-9가-힣]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')
 
+    logger.log('[API] Generated slug:', finalSlug)
+
     // Create content hash for duplicate prevention
     const contentHash = await generateContentHash(content)
+    logger.log('[API] Generated content hash:', `${contentHash.substring(0, 16)  }...`)
 
     // Check for duplicate using existing admin client
+    logger.log('[API] Checking for duplicate content...')
     const { data: existingHash } = await adminClient
       .from('ai_trends_hash')
       .select('id')
       .eq('content_hash', contentHash)
       .single()
+
+    logger.log('[API] Duplicate check result:', existingHash ? 'Found duplicate' : 'No duplicate')
 
     if (existingHash) {
       return NextResponse.json(
@@ -178,11 +211,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create supabase client for insertion
-    const insertSupabase = createActionClient()
-    
-    // Insert the trend using user-scoped client for proper RLS
-    const { data: trend, error: trendError } = await insertSupabase
+    // Insert the trend using the authenticated client (token or cookie-based)
+    logger.log('[API] Inserting trend into database...')
+    const { data: trend, error: trendError } = await userSupabase
       .from('ai_trends')
       .insert({
         title,
@@ -204,21 +235,56 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (trendError) {throw trendError}
+    logger.log('[API] Database insert result:', trendError ? 'ERROR' : 'SUCCESS', trendError || 'Trend created')
+
+    if (trendError) {
+      logger.error('[API] Trend insertion failed:', trendError)
+      throw trendError
+    }
+
+    logger.log('[API] Trend created successfully:', (trend as AITrend).id)
 
     // Store content hash using admin client
-    await adminClient
+    const { error: hashError } = await adminClient
       .from('ai_trends_hash')
       .insert({
         content_hash: contentHash,
         trend_id: (trend as AITrend).id
       })
 
+    if (hashError) {
+      logger.error('[API] Hash insertion failed:', hashError)
+      // Don't throw here, trend is already created
+    } else {
+      logger.log('[API] Content hash stored successfully')
+    }
+
     return NextResponse.json(trend)
   } catch (error) {
-    logger.error('Error creating AI trend:', error)
+    logger.error('[API] Error creating AI trend:', error)
+    console.error('[API] Error creating AI trend:', error)
+    console.error('[API] Error stack:', error instanceof Error ? error.stack : 'No stack available')
+    
+    // Extract meaningful error information
+    let errorMessage = 'Unknown error'
+    let errorDetails = null
+    
+    if (error && typeof error === 'object') {
+      console.log('[API] Error object keys:', Object.keys(error))
+      if ('message' in error) {errorMessage = String(error.message)}
+      if ('code' in error) {errorDetails = { code: error.code }}
+      if ('details' in error) {errorDetails = { ...errorDetails, details: error.details }}
+      if ('hint' in error) {errorDetails = { ...errorDetails, hint: error.hint }}
+    }
+    
+    console.log('[API] Final error response:', { errorMessage, errorDetails })
+    
     return NextResponse.json(
-      { error: 'Failed to create AI trend' },
+      { 
+        error: 'Failed to create AI trend',
+        message: errorMessage,
+        details: errorDetails
+      },
       { status: 500 }
     )
   }

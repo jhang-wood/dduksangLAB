@@ -1,10 +1,17 @@
 name: Deploy to Vercel
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  # 자동 배포 비활성화 - 수동 배포만 허용
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '배포 환경'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - preview
 
 # Prevent multiple deployments from running simultaneously
 concurrency:
