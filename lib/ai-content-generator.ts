@@ -151,7 +151,7 @@ export class AIContentGenerator {
         const service = availableServices[i % availableServices.length]
         const keyword = selectedKeywords[i]
         
-        if (!service ?? !keyword) {continue}
+        if (!service || !keyword) {continue}
         const content = await this.generateSingleContent(service, keyword)
         if (content) {
           contents.push(content)

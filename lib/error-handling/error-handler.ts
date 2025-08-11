@@ -123,13 +123,13 @@ export class ErrorHandler {
         await this.handleCriticalError(error);
         break;
       case ErrorSeverity.ERROR:
-        await this.handleError(error);
+        await this.handleError('system' as ServiceType, new Error(error.message));
         break;
       case ErrorSeverity.WARN:
-        await this.handleWarning(error);
+        console.warn('[Warning]', error.message, error);
         break;
       case ErrorSeverity.INFO:
-        await this.handleInfo(error);
+        console.info('[Info]', error.message, error);
         break;
     }
   }
@@ -227,7 +227,7 @@ export class ErrorHandler {
    * 유틸리티 메서드들
    */
   private generateErrorId(): string {
-    return ;
+    return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   private shouldAttemptRecovery(error: SystemError): boolean {

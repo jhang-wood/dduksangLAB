@@ -727,7 +727,7 @@ export default function SitesPage() {
                   onClick={() => {
                     void handleCreateSite()
                   }}
-                  disabled={!formData.name ?? !formData.description ?? !formData.url ?? uploading}
+                  disabled={!formData.name || !formData.description || !formData.url || uploading}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {uploading ? (

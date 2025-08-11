@@ -262,7 +262,7 @@ export default function CommunityPostPage({ params }: { params: { id: string, ca
                   />
                   <button
                     type="submit"
-                    disabled={!user ?? commentLoading}
+                    disabled={!user || commentLoading}
                     className="px-6 py-2 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-medium hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50"
                   >
                     {commentLoading ? '작성 중...' : '댓글 작성'}

@@ -4,7 +4,8 @@
  */
 
 import { logger } from '@/lib/logger';
-import { getOrchestrator, LoginCredentials } from '@/lib/mcp/orchestrator';
+import { getOrchestrator } from '@/lib/mcp/orchestrator';
+import { LoginCredentials } from '@/lib/mcp/playwright-controller';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
 import { ContentPublishOptions } from '@/lib/mcp/playwright-controller';
 import { handleAutomationError } from '@/lib/mcp/error-handler';

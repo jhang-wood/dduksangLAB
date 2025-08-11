@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json() as SettingsUpdateBody
     
     // Validate required fields
-    if (!body.site_name ?? !body.admin_email) {
+    if (!body.site_name || !body.admin_email) {
       return NextResponse.json({ 
         error: 'Site name and admin email are required' 
       }, { status: 400 })
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Validate file size (1-50 MB)
-    if (body.max_file_size && (body.max_file_size < 1 ?? body.max_file_size > 50)) {
+    if (body.max_file_size && (body.max_file_size < 1 || body.max_file_size > 50)) {
       return NextResponse.json({ 
         error: 'Max file size must be between 1 and 50 MB' 
       }, { status: 400 })

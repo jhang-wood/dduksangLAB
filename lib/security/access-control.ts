@@ -201,8 +201,8 @@ export class AccessControlManager {
       const supabaseController = getSupabaseController();
       
       await supabaseController.logAutomation({
-        type: 'security',
-        status: event.severity === 'critical' || event.severity === 'high' ? 'error' : 'info',
+        type: 'error',
+        status: event.severity === 'critical' || event.severity === 'high' ? 'failure' : 'info',
         message: event.description,
         metadata: {
           security_event_type: event.type,

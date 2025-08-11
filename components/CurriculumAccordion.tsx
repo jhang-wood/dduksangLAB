@@ -71,7 +71,7 @@ export default function CurriculumAccordion({
 
   const getChapterProgress = (chapterId: string, duration: number) => {
     const chapterProgress = progress[chapterId]
-    if (!chapterProgress ?? !duration) {return 0}
+    if (!chapterProgress || !duration) {return 0}
     return Math.min(100, (chapterProgress.watch_time / duration) * 100)
   }
 

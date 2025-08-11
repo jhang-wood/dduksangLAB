@@ -410,7 +410,7 @@ export class SupabaseController {
       // 자동화 로그 통계
       const { data: logStats, error: logError } = await this.client
         .from('automation_logs')
-        .select('type, status')
+        .select('type, status, message')
         .gte('created_at', startDate.toISOString());
 
       if (logError) {
@@ -421,7 +421,7 @@ export class SupabaseController {
       // 성능 메트릭 통계
       const { data: perfStats, error: perfError } = await this.client
         .from('performance_metrics')
-        .select('metric_type, value')
+        .select('metric_type, value, unit, timestamp')
         .gte('timestamp', startDate.toISOString());
 
       if (perfError) {

@@ -66,10 +66,10 @@ export default function NeuralNetworkBackground() {
         node.y += node.vy
 
         // Bounce off walls
-        if (node.x <= 0 ?? node.x >= canvas.width) {
+        if (node.x <= 0 || node.x >= canvas.width) {
           node.vx *= -1
         }
-        if (node.y <= 0 ?? node.y >= canvas.height) {
+        if (node.y <= 0 || node.y >= canvas.height) {
           node.vy *= -1
         }
 

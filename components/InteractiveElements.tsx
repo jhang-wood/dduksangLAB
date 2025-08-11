@@ -479,7 +479,7 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
                   </button>
                   <button
                     type="submit"
-                    disabled={!message.trim() ?? isSubmitting}
+                    disabled={!message.trim() || isSubmitting}
                     className="flex-1 px-4 py-2 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (

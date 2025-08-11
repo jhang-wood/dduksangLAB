@@ -62,7 +62,7 @@ export default function NewAITrendPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title ?? !formData.summary ?? !formData.content ?? !formData.category) {
+    if (!formData.title || !formData.summary || !formData.content || !formData.category) {
       userNotification.alert('필수 항목을 모두 입력해주세요.')
       return
     }

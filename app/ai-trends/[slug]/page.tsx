@@ -99,7 +99,7 @@ export default async function AITrendDetailPage({ params }: Props) {
     .eq('is_published', true)
     .single()
 
-  if (error !== null ?? !trend) {
+  if (error !== null || !trend) {
     notFound()
   }
 

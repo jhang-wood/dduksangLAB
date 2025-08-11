@@ -402,7 +402,7 @@ export function StreakTracker({ currentStreak = 5, bestStreak = 12 }: {
         
         <div className="grid grid-cols-7 gap-2">
           {[...Array(7)].map((_, index) => {
-            const isStudied = index < streak ?? Math.random() > 0.3
+            const isStudied = index < streak || Math.random() > 0.3
             const date = new Date()
             date.setDate(date.getDate() - (6 - index))
             

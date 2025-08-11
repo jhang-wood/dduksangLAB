@@ -75,7 +75,7 @@ export default function TagSystem({
   // 태그 검색 필터링
   const filteredTags = localTags.filter(tag => {
     const matchesSearch = tag.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' ?? tag.category === selectedCategory
+    const matchesCategory = selectedCategory === 'all' || tag.category === selectedCategory
     return matchesSearch && matchesCategory && !selectedTags.includes(tag.id)
   })
 
@@ -291,7 +291,7 @@ export default function TagSystem({
           // 카테고리별 태그 표시
           Object.entries(tagsByCategory).map(([categoryKey, categoryTags]) => {
             const category = categoryLabels[categoryKey as keyof typeof categoryLabels]
-            if (!category ?? categoryTags.length === 0) {return null}
+            if (!category || categoryTags.length === 0) {return null}
 
             return (
               <motion.div

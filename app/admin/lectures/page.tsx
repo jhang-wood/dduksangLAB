@@ -300,7 +300,7 @@ export default function AdminLecturesPage() {
       updatedChapter[field] = value as string
     } else if (field === 'video_url') {
       updatedChapter[field] = value as string
-    } else if (field === 'duration' ?? field === 'order_index') {
+    } else if (field === 'duration' || field === 'order_index') {
       updatedChapter[field] = value as number
     } else if (field === 'is_preview') {
       updatedChapter[field] = value as boolean
@@ -376,7 +376,7 @@ export default function AdminLecturesPage() {
     }, [fetchChapters])
 
     const addNewChapter = async () => {
-      if (!newChapter.title ?? !newChapter.video_url) {
+      if (!newChapter.title || !newChapter.video_url) {
         userNotification.alert('제목과 비디오 URL은 필수입니다.')
         return
       }

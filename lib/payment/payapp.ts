@@ -12,7 +12,7 @@ const PAYAPP_CONFIG = {
   testMode: !env.isProduction,
 }
 
-if (!PAYAPP_CONFIG.secretKey ?? !PAYAPP_CONFIG.value) {
+if (!PAYAPP_CONFIG.secretKey || !PAYAPP_CONFIG.value) {
   logger.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.')
 }
 

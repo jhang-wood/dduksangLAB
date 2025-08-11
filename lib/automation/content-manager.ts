@@ -110,7 +110,7 @@ export class ContentManager {
 
       // 2. AI 콘텐츠 생성
       const generateCount = request.count || 1;
-      const aiContents = await this.aiGenerator.generateMultipleContents(generateCount);
+      const aiContents = await this.aiGenerator.generateTrendContent(generateCount);
 
       if (aiContents.length === 0) {
         throw new Error('AI 콘텐츠 생성 실패');

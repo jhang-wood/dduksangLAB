@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('X-PayApp-Signature')
 
     // 서명 검증
-    if (!signature ?? !verifyPayAppWebhook(rawData, signature)) {
+    if (!signature || !verifyPayAppWebhook(rawData, signature)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 

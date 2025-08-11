@@ -127,7 +127,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
 
 
   const updateProgress = async () => {
-    if (!currentChapter ?? !user) {return}
+    if (!currentChapter || !user) {return}
 
     try {
       const completed = currentTime >= duration * 0.9 // 90% 이상 시청시 완료
@@ -153,12 +153,12 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   }
 
   const handlePreviousChapter = () => {
-    if (!lecture?.chapters ?? !currentChapter) {
+    if (!lecture?.chapters || !currentChapter) {
       return
     }
-    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
+    const currentIndex = lecture.chapters!.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex > 0) {
-      const previousChapter = lecture.chapters[currentIndex - 1]
+      const previousChapter = lecture.chapters![currentIndex - 1]
       if (previousChapter) {
         handleChapterSelect(previousChapter)
       }
@@ -166,12 +166,12 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   }
 
   const handleNextChapter = () => {
-    if (!lecture?.chapters ?? !currentChapter) {
+    if (!lecture?.chapters || !currentChapter) {
       return
     }
-    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
-    if (currentIndex < lecture.chapters.length - 1) {
-      const nextChapter = lecture.chapters[currentIndex + 1]
+    const currentIndex = lecture.chapters!.findIndex(ch => ch.id === currentChapter.id)
+    if (currentIndex < lecture.chapters!.length - 1) {
+      const nextChapter = lecture.chapters![currentIndex + 1]
       if (nextChapter) {
         handleChapterSelect(nextChapter)
       }

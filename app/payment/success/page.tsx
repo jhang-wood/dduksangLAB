@@ -19,7 +19,7 @@ function PaymentSuccessContent() {
       const orderId = searchParams.get('order_no')
       const payappOrderId = searchParams.get('payapp_order_id')
       
-      if (!orderId ?? !user) {
+      if (!orderId || !user) {
         throw new Error('잘못된 접근입니다.')
       }
 

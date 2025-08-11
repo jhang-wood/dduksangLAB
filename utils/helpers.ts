@@ -80,7 +80,7 @@ export function chunk<T>(array: T[], size: number): T[][] {
  * @returns 복사된 객체
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null ?? typeof obj !== 'object') {
+  if (obj === null || typeof obj !== 'object') {
     return obj
   }
   

@@ -14,11 +14,11 @@ type EnvType = 'client' | 'server' | 'all'
 export function loadEnvVars(type: EnvType = 'all') {
   const envFiles = []
   
-  if (type === 'client' ?? type === 'all') {
+  if (type === 'client' || type === 'all') {
     envFiles.push('.env.client')
   }
   
-  if (type === 'server' ?? type === 'all') {
+  if (type === 'server' || type === 'all') {
     envFiles.push('.env.server')
   }
   

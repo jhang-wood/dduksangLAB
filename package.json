@@ -17,7 +17,16 @@
     "claude:deploy-full": "node scripts/claude-helper.js deploy --build",
     "claude:deploy-v2": "node scripts/claude-helper-v2.js deploy",
     "claude:rollback": "node scripts/claude-helper-v2.js rollback",
-    "claude:status": "node scripts/claude-helper-v2.js status"
+    "claude:status": "node scripts/claude-helper-v2.js status",
+    "prepare": "husky install",
+    "pre-commit": "npm run type-check",
+    "fix:typescript": "node scripts/typescript-fix.js",
+    "fix:auto": "npm run fix:typescript && npm run type-check"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run type-check"
+    }
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -45,6 +54,7 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8.48.0",
     "eslint-config-next": "14.0.0",
+    "husky": "^8.0.3",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.0.0"

@@ -23,16 +23,6 @@ if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
 export const getEnvVar = (key: string): string => {
   const value = process.env[key]
   if (!value) {
-    // Fallback 값 제공
-    if (key === 'NEXT_PUBLIC_SUPABASE_URL') {
-      return 'https://wpzvocfgfwvsxmpckdnu.supabase.co'
-    }
-    if (key === 'NEXT_PUBLIC_SUPABASE_ANON_KEY') {
-      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0ODczNDQsImV4cCI6MjA0OTA2MzM0NH0.aEvk3fQSNSwOvQhU0yaxE_0UdJGqChhGyQtQPzSZlqU'
-    }
-    if (key === 'SUPABASE_SERVICE_ROLE_KEY') {
-      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMzQ4NzM0NCwiZXhwIjoyMDQ5MDYzMzQ0fQ.jyQQCpS-lAHvOpqZwBmQzOPwMv-nEtJlT7bsBA7TNVE'
-    }
     throw new Error(`Missing environment variable: ${key}`)
   }
   return value
@@ -46,28 +36,18 @@ export const getClientEnvVar = (key: string): string => {
   if (!key.startsWith('NEXT_PUBLIC_')) {
     throw new Error(`Client environment variable must start with NEXT_PUBLIC_: ${key}`)
   }
-  // 환경변수가 없을 때 fallback 사용
   const value = process.env[key]
   if (!value) {
-    if (key === 'NEXT_PUBLIC_SUPABASE_URL') {
-      return 'https://wpzvocfgfwvsxmpckdnu.supabase.co'
-    }
-    if (key === 'NEXT_PUBLIC_SUPABASE_ANON_KEY') {
-      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0ODczNDQsImV4cCI6MjA0OTA2MzM0NH0.aEvk3fQSNSwOvQhU0yaxE_0UdJGqChhGyQtQPzSZlqU'
-    }
+    throw new Error(`Missing environment variable: ${key}`)
   }
-  return value || ''
+  return value
 }
 
 export const getServerEnvVar = (key: string): string => {
   if (key.startsWith('NEXT_PUBLIC_')) {
     throw new Error(`Server environment variable should not start with NEXT_PUBLIC_: ${key}`)
   }
-  // 환경변수가 없을 때 fallback 사용
   const value = process.env[key]
-  if (!value && key === 'SUPABASE_SERVICE_ROLE_KEY') {
-    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMzQ4NzM0NCwiZXhwIjoyMDQ5MDYzMzQ0fQ.jyQQCpS-lAHvOpqZwBmQzOPwMv-nEtJlT7bsBA7TNVE'
-  }
   return value || ''
 }
 

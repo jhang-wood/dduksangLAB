@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 커밋 전 TypeScript 검증 시작..."
+
+# TypeScript 컴파일 체크
+if ! npm run type-check; then
+    echo ""
+    echo "❌ TypeScript 오류가 발견되었습니다!"
+    echo "💡 자동 수정을 시도합니다..."
+    
+    # Nullish coalescing 자동 수정
+    find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | xargs sed -i 's/!\([a-zA-Z._]*\)\s*??\s*!/!\1 || !/g' 2>/dev/null || true
+    find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | xargs sed -i 's/\([a-zA-Z._]*\)\s*===\s*\(.*\)\s*??\s*\([a-zA-Z._]*\)\s*===\s*\(.*\)/\1 === \2 || \3 === \4/g' 2>/dev/null || true
+    
+    # 다시 체크
+    if npm run type-check; then
+        echo "✅ 자동 수정 성공! 변경된 파일을 스테이징에 추가합니다."
+        git add -A
+        echo "🎉 이제 커밋을 진행합니다."
+    else
+        echo ""
+        echo "❌ 자동 수정에 실패했습니다."
+        echo "📝 다음 파일들을 수동으로 확인하세요:"
+        npm run type-check 2>&1 | grep "error TS" | cut -d: -f1 | sort -u || true
+        echo ""
+        echo "💻 수정 후 다시 커밋해주세요."
+        exit 1
+    fi
+fi
+
+echo "✅ TypeScript 검증 통과!"
+echo "🚀 커밋을 진행합니다..."

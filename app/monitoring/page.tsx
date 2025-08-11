@@ -104,6 +104,7 @@ export default function MonitoringDashboard() {
       const interval = setInterval(loadDashboardData, 30000); // 30초마다
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh]);
 
   // 상태별 색상 및 아이콘

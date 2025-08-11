@@ -50,10 +50,6 @@
   "exclude": [
     "node_modules",
     "lib/monitoring/**/*.ts",
-    "lib/queue/**/*.ts",
-    "lib/automation/**/*.ts",
-    "lib/mcp/**/*.ts",
-    "lib/orchestrator/**/*.ts",
-    "lib/workers/**/*.ts"
+    "lib/queue/**/*.ts"
   ]
 }

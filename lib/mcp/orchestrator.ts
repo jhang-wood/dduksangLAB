@@ -278,8 +278,8 @@ export class AutomationOrchestrator {
 
         return {
           success: true,
-          contentId,
-          publishedUrl,
+          contentId: contentId || undefined,
+          publishedUrl: publishedUrl || undefined,
           performanceMetrics
         };
       }, context, { maxRetries: this.config.retryCount });

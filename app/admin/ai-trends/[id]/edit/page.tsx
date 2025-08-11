@@ -119,7 +119,7 @@ export default function EditAITrendPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title ?? !formData.summary ?? !formData.content ?? !formData.category) {
+    if (!formData.title || !formData.summary || !formData.content || !formData.category) {
       userNotification.alert('필수 항목을 모두 입력해주세요.')
       return
     }
@@ -196,7 +196,7 @@ export default function EditAITrendPage() {
       })
   }
 
-  if (!isAdmin ?? fetching) {
+  if (!isAdmin || fetching) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="text-offWhite-600">로딩 중...</div>
