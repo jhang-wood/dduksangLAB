@@ -56,8 +56,16 @@ export function middleware(request: NextRequest) {
     // API 엔드포인트 검색 엔진 인덱싱 방지
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, nosnippet, noarchive');
     
-    // CORS 기본 설정
-    response.headers.set('Access-Control-Allow-Origin', 'https://dduksang.com');
+    // CORS 기본 설정 - www 서브도메인 포함
+    const origin = request.headers.get('origin');
+    const allowedOrigins = ['https://dduksang.com', 'https://www.dduksang.com'];
+    
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+    } else {
+      response.headers.set('Access-Control-Allow-Origin', 'https://www.dduksang.com');
+    }
+    
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     response.headers.set('Access-Control-Allow-Credentials', 'true');
