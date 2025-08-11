@@ -24,8 +24,8 @@ NEXT_PUBLIC_APP_URL=https://dduksang.com
 NEXT_PUBLIC_SITE_URL=https://dduksang.com
 
 # 관리자 계정 (선택사항)
-ADMIN_EMAIL=admin@dduksang.com
-ADMIN_PASSWORD=dduksang2025!@#
+ADMIN_EMAIL=[ADMIN_EMAIL_ADDRESS]
+ADMIN_PASSWORD=[ADMIN_PASSWORD]
 
 # 보안 키 (선택사항 - 추천)
 JWT_SECRET=dduksang-jwt-secret-2025-secure-token-min-32chars
@@ -43,8 +43,8 @@ CRON_SECRET=dduksang-cron-secret-2025-secure
 
 1. 배포 완료 후 https://dduksang.com 접속
 2. 로그인 페이지에서 테스트
-   - 이메일: admin@dduksang.com
-   - 비밀번호: dduksang2025!@#
+   - 이메일: [ADMIN_EMAIL_ADDRESS]
+   - 비밀번호: [ADMIN_PASSWORD]
 
 ## ⚠️ 주의사항
 

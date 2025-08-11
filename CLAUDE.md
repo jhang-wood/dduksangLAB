@@ -16,8 +16,8 @@
 **올바른 예시**:
 ```markdown
 # 잘못된 예
-Email: admin@dduksang.com
-Password: dduksang2025!@#
+Email: [실제_이메일_주소]
+Password: [실제_비밀번호]
 
 # 올바른 예
 Email: .env.local 파일의 ADMIN_EMAIL 참조
