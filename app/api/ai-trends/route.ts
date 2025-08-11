@@ -58,36 +58,43 @@ export async function GET(request: NextRequest) {
 // POST: Create new AI trend (admin only)
 export async function POST(request: NextRequest) {
   try {
-    // Use createActionClient for better cookie handling in API routes
-    const supabase = createActionClient()
-    
-    // Debug: Check cookies with expanded patterns
-    const cookieStore = request.cookies
-    const allCookies = cookieStore.getAll()
-    const sessionCookieNames = allCookies
-      .filter(cookie => cookie.name.includes('sb-') || cookie.name.includes('auth'))
-      .map(c => `${c.name}: ${c.value?.substring(0, 30)}...`)
-    
-    logger.log('[API] All relevant cookies:', sessionCookieNames)
-    
-    // Try various cookie name patterns including the client-side storageKey
-    const sessionCookie = cookieStore.get('sb-dduksang-auth-token') || 
-                          cookieStore.get('supabase-auth-token') || 
-                          cookieStore.get('sb-access-token') ||
-                          cookieStore.get('sb-refresh-token') ||
-                          allCookies.find(c => c.name.startsWith('sb-') && c.name.includes('auth'))
-    
-    logger.log('[API] Session cookie found:', !!sessionCookie, sessionCookie?.name)
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
-    logger.log('[API] Auth check result:', { 
-      user: user?.email, 
-      error: authError?.message 
-    })
+    // Check for Authorization header first (Bearer token)
+    const authHeader = request.headers.get('authorization')
+    let user = null
+    let authError = null
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      // Extract token from Authorization header
+      const token = authHeader.substring(7)
+      logger.log('[API] Using Authorization header token')
+      
+      // Create supabase client with token
+      const supabase = createActionClient()
+      const { data: tokenUser, error: tokenError } = await supabase.auth.getUser(token)
+      user = tokenUser.user
+      authError = tokenError
+      
+      logger.log('[API] Authorization header auth result:', { 
+        user: user?.email, 
+        error: authError?.message 
+      })
+    }
+
+    // Fallback to cookie-based auth if no Authorization header or token auth failed
+    if (!user) {
+      const supabase = createActionClient()
+      const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser()
+      user = cookieUser
+      authError = cookieError
+      
+      logger.log('[API] Cookie-based auth result:', { 
+        user: user?.email, 
+        error: authError?.message 
+      })
+    }
 
     if (!user) {
-      logger.error('[API] No authenticated user found')
+      logger.error('[API] No authenticated user found via token or cookies')
       return NextResponse.json(
         { error: 'Unauthorized - No session found' },
         { status: 401 }
@@ -171,8 +178,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create supabase client for insertion
+    const insertSupabase = createActionClient()
+    
     // Insert the trend using user-scoped client for proper RLS
-    const { data: trend, error: trendError } = await supabase
+    const { data: trend, error: trendError } = await insertSupabase
       .from('ai_trends')
       .insert({
         title,
