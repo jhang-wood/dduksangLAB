@@ -156,9 +156,9 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
     if (!lecture?.chapters || !currentChapter) {
       return
     }
-    const currentIndex = lecture.chapters!.findIndex(ch => ch.id === currentChapter.id)
+    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
     if (currentIndex > 0) {
-      const previousChapter = lecture.chapters![currentIndex - 1]
+      const previousChapter = lecture.chapters[currentIndex - 1]
       if (previousChapter) {
         handleChapterSelect(previousChapter)
       }
@@ -169,9 +169,9 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
     if (!lecture?.chapters || !currentChapter) {
       return
     }
-    const currentIndex = lecture.chapters!.findIndex(ch => ch.id === currentChapter.id)
-    if (currentIndex < lecture.chapters!.length - 1) {
-      const nextChapter = lecture.chapters![currentIndex + 1]
+    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
+    if (currentIndex < lecture.chapters.length - 1) {
+      const nextChapter = lecture.chapters[currentIndex + 1]
       if (nextChapter) {
         handleChapterSelect(nextChapter)
       }

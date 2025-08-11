@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
       let filteredUsers = data ?? []
       
       if (searchTerm) {
-        filteredUsers = filteredUsers.filter(userData => 
+        filteredUsers = filteredUsers.filter((userData: any) => 
           userData.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           userData.name?.toLowerCase().includes(searchTerm.toLowerCase())
         )

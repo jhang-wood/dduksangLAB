@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // 초기 세션 확인
-    void supabase.auth.getSession().then(({ data: { session } }) => {
+    void supabase.auth.getSession().then(({ data: { session } }: any) => {
       setUser(session?.user ?? null)
       if (session?.user) {
         void fetchUserProfile(session.user.id)
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     // 인증 상태 변경 리스너
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null)
       if (session?.user) {
         void fetchUserProfile(session.user.id)
