@@ -11,6 +11,13 @@ jobs:
     name: TypeScript 타입 체크
     runs-on: ubuntu-latest
     
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key' }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://dduksang.com' }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET || 'placeholder-cron-secret' }}
+    
     steps:
       - name: 체크아웃
         uses: actions/checkout@v3
@@ -51,6 +58,13 @@ jobs:
     runs-on: ubuntu-latest
     if: failure() && github.event_name == 'push'
     needs: [typescript-check]
+    
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key' }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://dduksang.com' }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET || 'placeholder-cron-secret' }}
     
     steps:
       - name: 체크아웃
