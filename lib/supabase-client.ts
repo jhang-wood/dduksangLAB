@@ -23,7 +23,14 @@ const createSupabaseClient = () => {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storageKey: 'sb-dduksang-auth-token',
+        flowType: 'pkce'
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'dduksang-lab@0.1.0'
+        }
       }
     })
   }
