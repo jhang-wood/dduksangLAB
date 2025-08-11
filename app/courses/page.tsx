@@ -392,7 +392,7 @@ export default function CoursesPage() {
               subtitle="모든 강의 최대 40% 할인 + 평생 업데이트 보장"
               endDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
               ctaText="지금 바로 수강하기"
-              onCTAClick={() => console.log('CTA 클릭')}
+              onCTAClick={() => {}}
               variant="banner"
             />
           </motion.div>

@@ -135,7 +135,6 @@ export const ENV_VARS = {
 export const validateRequiredEnvVars = (): void => {
   // 프로덕션에서는 환경변수 검증을 완화
   if (process.env.NODE_ENV === 'production') {
-    console.log('프로덕션 환경: 환경변수 fallback 사용')
     return
   }
   

@@ -1,9 +1,8 @@
 /**
  * 모니터링 API 엔드포인트 (기본 상태 응답)
- * TODO: 향후 완전한 모니터링 시스템 구현
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {

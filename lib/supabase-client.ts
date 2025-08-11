@@ -1,6 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
 
 // Initialize Supabase client with validated environment variables
 // 직접 process.env에서 읽기 (Next.js는 빌드 시점에 이를 처리)
