@@ -5,7 +5,7 @@
 -- Email: [ADMIN_EMAIL_ADDRESS]
 -- Password: [ADMIN_PASSWORD]
 
--- 2. 프로필에 관리자 권한 부여 (auth.users 테이블에서 admin@dduksang.com의 ID를 찾아 아래 쿼리 실행)
+-- 2. 프로필에 관리자 권한 부여 (auth.users 테이블에서 [ADMIN_EMAIL_ADDRESS]의 ID를 찾아 아래 쿼리 실행)
 -- UPDATE public.profiles 
 -- SET role = 'admin' 
 -- WHERE email = '[ADMIN_EMAIL_ADDRESS]';
