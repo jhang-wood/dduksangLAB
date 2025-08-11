@@ -15,13 +15,10 @@
     "claude:commit": "node scripts/claude-helper.js commit",
     "claude:deploy": "node scripts/claude-helper.js deploy",
     "claude:deploy-full": "node scripts/claude-helper.js deploy --build",
-    "claude:deploy-v2": "node scripts/claude-helper-v2.js deploy",
-    "claude:rollback": "node scripts/claude-helper-v2.js rollback",
-    "claude:status": "node scripts/claude-helper-v2.js status",
+    "claude:rollback": "node scripts/claude-helper.js rollback",
+    "claude:status": "node scripts/claude-helper.js status",
     "prepare": "husky install",
-    "pre-commit": "npm run type-check",
-    "fix:typescript": "node scripts/typescript-fix.js",
-    "fix:auto": "npm run fix:typescript && npm run type-check"
+    "pre-commit": "npm run type-check"
   },
   "husky": {
     "hooks": {

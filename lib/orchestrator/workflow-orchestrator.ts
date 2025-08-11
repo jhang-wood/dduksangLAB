@@ -7,7 +7,6 @@ export class WorkflowOrchestrator {
     
     this.startTime = new Date();
     this.isRunning = true;
-    console.log("워크플로우 시작");
   }
 
   getSystemStatus() {

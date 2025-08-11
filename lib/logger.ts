@@ -34,7 +34,7 @@ const productionLogger = {
 // 개발 환경을 위한 console 래퍼
 const developmentLogger = {
   // eslint-disable-next-line no-console
-  log: console.log.bind(console),
+  log: process.env.NODE_ENV === 'development' ? console.log.bind(console) : () => {},
   // eslint-disable-next-line no-console
   error: console.error.bind(console),
   // eslint-disable-next-line no-console
