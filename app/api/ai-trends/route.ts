@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient, createActionClient, createAdminClient } from '@/lib/supabase-server'
+import { createActionClient, createAdminClient } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
 import { AITrend } from '@/types'
 
@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * limit
     const to = from + limit - 1
 
-    // Use server client for RLS-aware queries
-    const supabase = createServerClient()
+    // Use action client for RLS-aware queries  
+    const supabase = createActionClient()
     
     let query = supabase
       .from('ai_trends')
@@ -61,13 +61,23 @@ export async function POST(request: NextRequest) {
     // Use createActionClient for better cookie handling in API routes
     const supabase = createActionClient()
     
-    // Debug: Check cookies
+    // Debug: Check cookies with expanded patterns
     const cookieStore = request.cookies
-    const sessionCookie = cookieStore.get('supabase-auth-token') || 
-                          cookieStore.get('sb-access-token') ||
-                          cookieStore.get('sb-refresh-token')
+    const allCookies = cookieStore.getAll()
+    const sessionCookieNames = allCookies
+      .filter(cookie => cookie.name.includes('sb-') || cookie.name.includes('auth'))
+      .map(c => `${c.name}: ${c.value?.substring(0, 30)}...`)
     
-    logger.log('[API] Session cookie found:', !!sessionCookie)
+    logger.log('[API] All relevant cookies:', sessionCookieNames)
+    
+    // Try various cookie name patterns including the client-side storageKey
+    const sessionCookie = cookieStore.get('sb-dduksang-auth-token') || 
+                          cookieStore.get('supabase-auth-token') || 
+                          cookieStore.get('sb-access-token') ||
+                          cookieStore.get('sb-refresh-token') ||
+                          allCookies.find(c => c.name.startsWith('sb-') && c.name.includes('auth'))
+    
+    logger.log('[API] Session cookie found:', !!sessionCookie, sessionCookie?.name)
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
