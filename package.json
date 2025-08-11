@@ -17,20 +17,7 @@
     "claude:deploy-full": "node scripts/claude-helper.js deploy --build",
     "claude:deploy-v2": "node scripts/claude-helper-v2.js deploy",
     "claude:rollback": "node scripts/claude-helper-v2.js rollback",
-    "claude:status": "node scripts/claude-helper-v2.js status",
-    "automation:qa": "node scripts/qa/test-env-scenarios.js",
-    "automation:security": "node scripts/security/vulnerability-scanner.js",
-    "automation:performance": "node scripts/performance/performance-analyzer.js",
-    "automation:devops": "node scripts/devops/deployment-monitor.js check",
-    "automation:devops:monitor": "node scripts/devops/deployment-monitor.js monitor",
-    "automation:workflow": "node scripts/integration/workflow-orchestrator.js",
-    "automation:workflow:quick": "node scripts/integration/workflow-orchestrator.js quick",
-    "automation:workflow:full": "node scripts/integration/workflow-orchestrator.js full",
-    "automation:health": "node scripts/integration/workflow-orchestrator.js --help",
-    "test:qa": "npm run automation:qa",
-    "test:security": "npm run automation:security",
-    "test:performance": "npm run automation:performance",
-    "test:all": "npm run automation:workflow:full"
+    "claude:status": "node scripts/claude-helper-v2.js status"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
