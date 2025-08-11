@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // 2. 요청 본문 파싱
     const body = await request.json();
-    const { posts, options = {} } = body;
+    const { posts } = body;
 
     if (!posts || !Array.isArray(posts) || posts.length === 0) {
       return NextResponse.json(

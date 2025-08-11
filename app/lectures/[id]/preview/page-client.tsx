@@ -171,7 +171,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
     } finally {
       setLoading(false)
     }
-  }, [params.id, user, router])
+  }, [params.id, user, router, fetchRecommendedLectures])
   
   const getTagCategory = (tag: string): Tag['category'] => {
     const languageKeywords = ['javascript', 'python', 'react', 'vue', 'angular', 'typescript', 'java', 'c++', 'html', 'css']
@@ -270,7 +270,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
     setSelectedTags(selectedTags.filter(id => id !== tagId))
   }
   
-  const handleTagSearch = (query: string) => {
+  const handleTagSearch = (_query: string) => {
     // 태그 검색 로직 추가 가능
   }
   

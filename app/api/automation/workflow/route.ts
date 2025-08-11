@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   const { action } = await request.json();
   
   return NextResponse.json({

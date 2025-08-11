@@ -18,8 +18,8 @@ import {
   Wifi,
   Globe,
   RefreshCw,
-  Bell,
-  Settings
+  Bell
+  // Settings
 } from 'lucide-react';
 
 interface DashboardData {
@@ -278,7 +278,7 @@ export default function MonitoringDashboard() {
             >
               <h2 className="text-xl font-bold text-gray-900 mb-4">서비스 상태</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.services.map((service, index) => (
+                {data.services.map((service) => (
                   <div key={service.service} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function MonitoringDashboard() {
               >
                 <h2 className="text-xl font-bold text-gray-900 mb-4">최근 에러</h2>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {data.recentErrors.map((error, index) => (
+                  {data.recentErrors.map((error) => (
                     <div key={error.id} className="border-l-4 border-l-red-500 pl-4 py-2">
                       <div className="flex items-center justify-between mb-1">
                         <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(error.severity)}`}>
@@ -352,7 +352,7 @@ export default function MonitoringDashboard() {
               >
                 <h2 className="text-xl font-bold text-gray-900 mb-4">알림 히스토리</h2>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {data.notifications.map((notification, index) => (
+                  {data.notifications.map((notification) => (
                     <div key={notification.id} className="border rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
                         <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(notification.severity)}`}>

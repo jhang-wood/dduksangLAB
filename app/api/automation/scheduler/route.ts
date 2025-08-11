@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/automation/scheduler';
 import { logger } from '@/lib/logger';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const scheduler = getScheduler();
     

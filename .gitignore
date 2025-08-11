@@ -106,3 +106,5 @@ create-admin.js
 init-admin.js
 *admin*.js
 tsconfig.tsbuildinfo
+.env.local
+.env.local.backup
