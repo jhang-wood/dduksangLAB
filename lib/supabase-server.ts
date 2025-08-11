@@ -1,14 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
-import { createServerComponentClient, createServerActionClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { logger } from '@/lib/logger'
 
 // Environment variables validation
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable')
+}
+
+if (!supabaseAnonKey) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable')
 }
 
 if (!supabaseServiceKey) {
@@ -31,12 +35,57 @@ export const createAdminClient = () => {
   return adminClientInstance
 }
 
-// Server component client (respects RLS) - Always create new instance for cookies
+// Custom server client for Next.js 14 App Router
 export const createServerClient = () => {
-  return createServerComponentClient({ cookies })
+  const cookieStore = cookies()
+
+  // Get all cookies that start with 'sb-'
+  const supabaseCookies = cookieStore.getAll()
+    .filter(cookie => cookie.name.startsWith('sb-'))
+    .reduce((acc, cookie) => {
+      acc[cookie.name] = cookie.value
+      return acc
+    }, {} as Record<string, string>)
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+      storage: {
+        getItem: (key: string) => {
+          // Try different cookie name patterns
+          const cookieNames = [
+            key,
+            `sb-${key}`,
+            `sb-${supabaseUrl?.split('//')[1]?.split('.')[0]}-${key}`
+          ]
+          
+          for (const cookieName of cookieNames) {
+            const value = supabaseCookies[cookieName] || cookieStore.get(cookieName)?.value
+            if (value) {
+              logger.log(`[Server] Found cookie ${cookieName}:`, value?.substring(0, 50) + '...')
+              return value
+            }
+          }
+          return null
+        },
+        setItem: (key: string, value: string) => {
+          // No-op for server side
+        },
+        removeItem: (key: string) => {
+          // No-op for server side
+        }
+      }
+    },
+    global: {
+      headers: {
+        // Pass cookies as headers
+        'Cookie': cookieStore.toString()
+      }
+    }
+  })
 }
 
-// Server action client (respects RLS) - Always create new instance for cookies  
-export const createActionClient = () => {
-  return createServerActionClient({ cookies })
-}
+// Server action client - same as server client for API routes
+export const createActionClient = createServerClient
