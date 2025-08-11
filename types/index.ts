@@ -127,4 +127,122 @@ export interface ServerEnvVars {
   TELEGRAM_ALLOWED_USER_ID: string
   N8N_WEBHOOK_URL: string
   DATABASE_URL?: string
+  
+  // MCP Automation
+  ADMIN_EMAIL?: string
+  ADMIN_PASSWORD?: string
+  TELEGRAM_BOT_TOKEN?: string
+  TELEGRAM_CHAT_ID?: string
+  SLACK_WEBHOOK_URL?: string
+}
+
+// MCP Automation Types
+export interface AutomationLog {
+  id?: string
+  type: 'login' | 'publish' | 'error' | 'performance' | 'health_check'
+  status: 'success' | 'failure' | 'warning' | 'info'
+  message: string
+  metadata?: Record<string, any>
+  created_at?: string
+  user_id?: string
+}
+
+export interface ContentItem {
+  id?: string
+  title: string
+  content: string
+  category?: string
+  tags?: string[]
+  status: 'draft' | 'published' | 'scheduled' | 'archived'
+  published_at?: string
+  created_at?: string
+  updated_at?: string
+  author_id?: string
+  metadata?: Record<string, any>
+}
+
+export interface PerformanceMetric {
+  id?: string
+  metric_type: string
+  value: number
+  unit: string
+  page_url?: string
+  timestamp: string
+  metadata?: Record<string, any>
+}
+
+export interface HealthCheckResult {
+  id?: string
+  service: string
+  status: 'healthy' | 'unhealthy' | 'degraded'
+  response_time?: number
+  error_message?: string
+  checked_at: string
+  metadata?: Record<string, any>
+}
+
+export interface NotificationMessage {
+  id?: string
+  title: string
+  message: string
+  severity: 'info' | 'success' | 'warning' | 'error' | 'critical'
+  channels: NotificationChannel[]
+  metadata?: Record<string, any>
+  retryCount?: number
+  scheduledAt?: Date
+}
+
+export interface NotificationChannel {
+  type: 'email' | 'slack' | 'telegram' | 'webhook' | 'sms'
+  config: {
+    recipient?: string
+    webhook_url?: string
+    chat_id?: string
+    phone_number?: string
+    [key: string]: any
+  }
+  enabled: boolean
+}
+
+export interface BlogPostData {
+  id?: string
+  title: string
+  content: string
+  summary?: string
+  category?: string
+  tags?: string[]
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string[]
+  featured?: boolean
+  publishDate?: Date
+  authorId?: string
+  status?: 'draft' | 'scheduled' | 'published'
+}
+
+export interface SystemHealth {
+  overall: 'healthy' | 'degraded' | 'unhealthy'
+  timestamp: Date
+  services: ServiceHealth[]
+  alerts: HealthAlert[]
+  recommendations: string[]
+}
+
+export interface ServiceHealth {
+  name: string
+  status: 'healthy' | 'degraded' | 'unhealthy'
+  responseTime: number
+  lastCheck: Date
+  errorMessage?: string
+  metadata?: Record<string, any>
+}
+
+export interface HealthAlert {
+  id: string
+  severity: 'info' | 'warning' | 'critical'
+  service: string
+  message: string
+  timestamp: Date
+  resolved: boolean
+  metadata?: Record<string, any>
 }

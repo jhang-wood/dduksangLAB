@@ -473,7 +473,7 @@ export class BlogPublisher {
       const now = new Date();
 
       const duePosts = scheduledPosts.filter(post => {
-        if (!post.published_at) return false;
+        if (!post.published_at) {return false;}
         return new Date(post.published_at) <= now;
       });
 

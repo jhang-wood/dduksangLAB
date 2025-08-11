@@ -4,6 +4,26 @@
 
 **🚀 Git 자동화 완료!** - 모든 사이트 관련 수정사항이 자동으로 처리됩니다.
 
+## 🔐 보안 규칙
+
+### 민감 정보 관리
+**절대 금지사항**:
+- `.md` 파일에 실제 이메일 주소나 비밀번호를 하드코딩하지 마세요
+- 모든 인증 정보는 `.env.local` 파일에만 저장
+- 문서에서는 `[ADMIN_EMAIL]`, `[ADMIN_PASSWORD]` 같은 플레이스홀더 사용
+- Git에 커밋되는 파일에 민감 정보 포함 금지
+
+**올바른 예시**:
+```markdown
+# 잘못된 예
+Email: admin@dduksang.com
+Password: dduksang2025!@#
+
+# 올바른 예
+Email: .env.local 파일의 ADMIN_EMAIL 참조
+Password: .env.local 파일의 ADMIN_PASSWORD 참조
+```
+
 ## 🚨 중요한 주의사항
 
 ### CI/CD 파이프라인 이슈

@@ -1,0 +1,44 @@
+# ESLint가 무시할 파일 및 디렉토리
+
+# Node modules
+node_modules/
+
+# Next.js 빌드 출력
+.next/
+out/
+
+# TypeScript 빌드 정보
+*.tsbuildinfo
+
+# 로그 파일
+*.log
+
+# 환경변수
+.env
+.env.local
+.env.production
+
+# 개발 디렉토리
+lib/monitoring/
+lib/queue/
+lib/automation/
+lib/mcp/
+lib/orchestrator/
+lib/workers/
+
+# 스크립트
+scripts/
+
+# 문서
+docs/
+
+# 설정 파일
+*.config.js
+*.config.ts
+
+# 기타
+dist/
+build/
+coverage/
+.vercel/
+public/

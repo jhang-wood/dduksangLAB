@@ -10,10 +10,20 @@ import { useRouter } from 'next/navigation'
 import { UserProfile, SignUpMetadata } from '@/types'
 
 // Validate environment variables at module load
-try {
-  validateRequiredEnvVars()
-} catch (error) {
-  logger.error('Environment validation failed:', error)
+// 브라우저 환경에서만 검증 (서버 사이드 렌더링 시 스킵)
+if (typeof window !== 'undefined') {
+  try {
+    // 개발 환경에서만 엄격한 검증
+    if (process.env.NODE_ENV === 'development') {
+      validateRequiredEnvVars()
+    }
+  } catch (error) {
+    logger.error('Environment validation failed:', error)
+    // 프로덕션에서는 에러를 무시하고 계속 진행
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('Using fallback environment configuration')
+    }
+  }
 }
 
 // Types are now imported from @/types

@@ -272,7 +272,6 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
   
   const handleTagSearch = (query: string) => {
     // 태그 검색 로직 추가 가능
-    // console.log('Tag search:', query)
   }
   
   const handleRecommendedLectureClick = (lectureId: string) => {

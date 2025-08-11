@@ -397,7 +397,6 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
     setIsModalOpen(false)
     
     // 성공 알림 표시
-    // alert('질문이 전송되었습니다. 빠른 시일 내에 답변을 받으실 수 있습니다!')
   }
 
   return (

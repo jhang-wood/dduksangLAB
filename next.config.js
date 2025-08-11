@@ -6,11 +6,11 @@ const nextConfig = {
     unoptimized: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, // ESLint는 별도 단계에서 실행
+    ignoreDuringBuilds: false, // ESLint 검사 활성화
     dirs: ['app', 'lib', 'components'],
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // TypeScript 검사 활성화
   },
   async redirects() {
     return [

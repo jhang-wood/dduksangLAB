@@ -34,7 +34,7 @@
 
 ```sql
 -- 현재 사용자의 프로필이 있는지 확인
-SELECT * FROM auth.users WHERE email = 'admin@dduksang.com';
+SELECT * FROM auth.users WHERE email = '[ADMIN_EMAIL]';
 
 -- 프로필이 없다면 생성
 INSERT INTO public.profiles (id, email, name, role)
@@ -44,7 +44,7 @@ SELECT
   '떡상연구소 관리자',
   'admin'
 FROM auth.users 
-WHERE email = 'admin@dduksang.com'
+WHERE email = '[ADMIN_EMAIL]'
 ON CONFLICT (id) DO UPDATE
 SET role = 'admin';
 ```

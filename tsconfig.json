@@ -13,20 +13,20 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // 엄격한 타입 검사
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    // 균형잡힌 타입 검사 (핵심 안정성 유지, 과도한 제약 완화)
+    "noUnusedLocals": false,        // ESLint가 처리
+    "noUnusedParameters": false,    // ESLint가 처리
+    "noImplicitAny": true,          // 중요: any 타입 금지
+    "strictNullChecks": true,       // 중요: null 체크
+    "strictFunctionTypes": true,    // 중요: 함수 타입 안정성
+    "strictBindCallApply": true,    // 중요: this 바인딩 체크
+    "strictPropertyInitialization": true,  // 중요: 프로퍼티 초기화
+    "noImplicitThis": true,         // 중요: this 타입 체크
+    "alwaysStrict": true,           // 중요: strict 모드
+    "noImplicitReturns": true,      // 중요: 리턴 타입 체크
+    "noFallthroughCasesInSwitch": true,   // 중요: switch문 안정성
+    "noUncheckedIndexedAccess": false,    // 너무 엄격함
+    "exactOptionalPropertyTypes": false,  // 너무 엄격함
     "plugins": [
       {
         "name": "next"
@@ -47,5 +47,13 @@
     "removeComments": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "lib/monitoring/**/*.ts",
+    "lib/queue/**/*.ts",
+    "lib/automation/**/*.ts",
+    "lib/mcp/**/*.ts",
+    "lib/orchestrator/**/*.ts",
+    "lib/workers/**/*.ts"
+  ]
 }

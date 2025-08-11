@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase 로그인 테스트</title>
+</head>
+<body>
+    <h1>Supabase 연결 테스트</h1>
+    <div id="status">연결 상태 확인 중...</div>
+    <div id="result"></div>
+
+    <script type="module">
+        // Supabase 설정 확인
+        const SUPABASE_URL = 'https://wpzvocfgfwvsxmpckdnu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0ODczNDQsImV4cCI6MjA0OTA2MzM0NH0.aEvk3fQSNSwOvQhU0yaxE_0UdJGqChhGyQtQPzSZlqU';
+
+        // 연결 테스트
+        async function testConnection() {
+            const statusEl = document.getElementById('status');
+            const resultEl = document.getElementById('result');
+            
+            try {
+                // Supabase Health Check
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    statusEl.innerHTML = '✅ Supabase 연결 성공!';
+                    statusEl.style.color = 'green';
+                    
+                    // 로그인 테스트
+                    const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY
+                        },
+                        body: JSON.stringify({
+                            email: 'admin@dduksang.com',
+                            password: 'dduksang2025!@#'
+                        })
+                    });
+                    
+                    const authData = await authResponse.json();
+                    
+                    if (authResponse.ok) {
+                        resultEl.innerHTML = `
+                            <h2>✅ 로그인 테스트 성공!</h2>
+                            <p>이제 dduksangLAB 사이트에서 정상적으로 로그인할 수 있습니다.</p>
+                            <pre>${JSON.stringify(authData, null, 2)}</pre>
+                        `;
+                        resultEl.style.color = 'green';
+                    } else {
+                        resultEl.innerHTML = `
+                            <h2>⚠️ 로그인 실패</h2>
+                            <p>사용자 계정이 존재하지 않거나 비밀번호가 틀립니다.</p>
+                            <pre>${JSON.stringify(authData, null, 2)}</pre>
+                        `;
+                        resultEl.style.color = 'orange';
+                    }
+                } else {
+                    statusEl.innerHTML = '❌ Supabase 연결 실패';
+                    statusEl.style.color = 'red';
+                    resultEl.innerHTML = `<p>응답 상태: ${response.status}</p>`;
+                }
+            } catch (error) {
+                statusEl.innerHTML = '❌ 연결 오류 발생';
+                statusEl.style.color = 'red';
+                resultEl.innerHTML = `<pre>${error.message}</pre>`;
+            }
+        }
+
+        // 페이지 로드 시 테스트 실행
+        testConnection();
+    </script>
+</body>
+</html>

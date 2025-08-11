@@ -58,7 +58,7 @@
 [Auth] Profile fetched: {id: "abc123", role: "admin", ...}
 [Auth] User role: admin
 [Auth] isAdmin calculation: {userProfile: {...}, role: "admin", isAdmin: true}
-[Header] Auth state: {user: "admin@dduksang.com", role: "admin", isAdmin: true}
+[Header] Auth state: {user: "[ADMIN_EMAIL]", role: "admin", isAdmin: true}
 [Header] Nav items: [..., {id: "admin", label: "관리", href: "/admin"}]
 ```
 

@@ -51,7 +51,6 @@ export default function BookmarkButton({
 
     if (!user) {
       // 로그인 모달 또는 로그인 페이지로 리디렉션
-      // alert('로그인 후 이용 가능합니다.')
       return
     }
 

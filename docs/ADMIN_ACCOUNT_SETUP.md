@@ -5,8 +5,8 @@
 이 가이드는 dduksangLAB 프로젝트에 관리자 계정을 생성하는 방법을 설명합니다.
 
 **관리자 계정 정보:**
-- **Email**: admin@dduksang.com
-- **Password**: dduksang2025!@#
+- **Email**: `.env.local` 파일 참조 (`ADMIN_EMAIL`)
+- **Password**: `.env.local` 파일 참조 (`ADMIN_PASSWORD`)
 - **Role**: admin
 - **Name**: 떡상연구소 관리자
 
@@ -37,15 +37,15 @@ node scripts/create-admin.js
    - `Authentication` > `Users` 탭으로 이동
    - `Create new user` 버튼 클릭
    - 다음 정보 입력:
-     - Email: `admin@dduksang.com`
-     - Password: `dduksang2025!@#`
+     - Email: `.env.local` 파일의 `ADMIN_EMAIL` 값
+     - Password: `.env.local` 파일의 `ADMIN_PASSWORD` 값
      - Auto Confirm Email: ✅ 체크
 
 3. **사용자 ID 확인**
    - `SQL Editor` 탭으로 이동
    - 다음 쿼리 실행:
    ```sql
-   SELECT id, email FROM auth.users WHERE email = 'admin@dduksang.com';
+   SELECT id, email FROM auth.users WHERE email = '[ADMIN_EMAIL]';
    ```
    - 결과에서 `id` 값을 복사
 
@@ -55,7 +55,7 @@ node scripts/create-admin.js
    INSERT INTO public.profiles (id, email, name, phone, role, created_at, updated_at)
    VALUES (
      'YOUR-USER-ID',
-     'admin@dduksang.com',
+     '[ADMIN_EMAIL]',
      '떡상연구소 관리자',
      '010-0000-0000',
      'admin',
@@ -91,7 +91,7 @@ SELECT
   u.last_sign_in_at
 FROM public.profiles p
 JOIN auth.users u ON p.id = u.id
-WHERE p.email = 'admin@dduksang.com';
+WHERE p.email = '[ADMIN_EMAIL]';
 ```
 
 ## 🔐 보안 주의사항

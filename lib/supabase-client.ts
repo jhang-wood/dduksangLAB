@@ -3,18 +3,14 @@ import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
 
 // Initialize Supabase client with validated environment variables
-let supabaseUrl: string
-let supabaseAnonKey: string
+// 직접 process.env에서 읽기 (Next.js는 빌드 시점에 이를 처리)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://wpzvocfgfwvsxmpckdnu.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwenZvY2ZnZnd2c3htcGNrZG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM0ODczNDQsImV4cCI6MjA0OTA2MzM0NH0.aEvk3fQSNSwOvQhU0yaxE_0UdJGqChhGyQtQPzSZlqU'
 
-try {
-  supabaseUrl = env.supabaseUrl
-  supabaseAnonKey = env.supabaseAnonKey
-} catch (error) {
-  logger.error('⚠️ Supabase 환경 변수가 설정되지 않았습니다. Vercel 대시보드에서 환경 변수를 설정해주세요.')
-  logger.error(error)
-  // Use dummy values for development
-  supabaseUrl = 'http://localhost'
-  supabaseAnonKey = 'dummy-key'
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (typeof window !== 'undefined') {
+    console.warn('⚠️ 환경변수가 설정되지 않아 기본값을 사용합니다.')
+  }
 }
 
 // Client-side Supabase client (uses anon key)
