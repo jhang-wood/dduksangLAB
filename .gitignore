@@ -93,3 +93,4 @@ config/secrets/
 create-admin.js
 init-admin.js
 *admin*.js
+tsconfig.tsbuildinfo
