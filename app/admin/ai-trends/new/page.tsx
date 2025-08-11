@@ -62,7 +62,7 @@ export default function NewAITrendPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title || !formData.summary || !formData.content || !formData.category) {
+    if (!formData.title ?? !formData.summary ?? !formData.content ?? !formData.category) {
       userNotification.alert('필수 항목을 모두 입력해주세요.')
       return
     }
@@ -82,8 +82,8 @@ export default function NewAITrendPage() {
           ...formData,
           tags,
           seo_keywords: seoKeywords,
-          seo_title: formData.seo_title || formData.title.substring(0, 70),
-          seo_description: formData.seo_description || formData.summary.substring(0, 160)
+          seo_title: formData.seo_title ?? formData.title.substring(0, 70),
+          seo_description: formData.seo_description ?? formData.summary.substring(0, 160)
         })
       })
 
@@ -171,10 +171,10 @@ export default function NewAITrendPage() {
 
         {preview ? (
           <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-offWhite-200 mb-4">{formData.title || '제목'}</h2>
-            <p className="text-xl text-offWhite-500 mb-6">{formData.summary || '요약'}</p>
+            <h2 className="text-3xl font-bold text-offWhite-200 mb-4">{formData.title ?? '제목'}</h2>
+            <p className="text-xl text-offWhite-500 mb-6">{formData.summary ?? '요약'}</p>
             <div className="prose prose-invert max-w-none">
-              {renderContent(formData.content || '내용이 여기에 표시됩니다.')}
+              {renderContent(formData.content ?? '내용이 여기에 표시됩니다.')}
             </div>
           </div>
         ) : (

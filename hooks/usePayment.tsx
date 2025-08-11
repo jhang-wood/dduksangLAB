@@ -37,7 +37,7 @@ export function usePayment(options?: PaymentOptions) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || '결제 요청에 실패했습니다')
+        throw new Error(data.error ?? '결제 요청에 실패했습니다')
       }
 
       if (data.success && data.approvalUrl) {
@@ -91,7 +91,7 @@ export function PaymentButton({
           결제 처리 중...
         </>
       ) : (
-        children || `₩${price.toLocaleString()} 결제하기`
+        children ?? `₩${price.toLocaleString()} 결제하기`
       )}
     </button>
   )

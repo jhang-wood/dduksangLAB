@@ -68,7 +68,7 @@ export function middleware(request: NextRequest) {
     const cronSecret = request.headers.get('authorization') ?? request.nextUrl.searchParams.get('secret');
     const expectedSecret = process.env.CRON_SECRET;
     
-    if (!cronSecret || !expectedSecret || cronSecret !== expectedSecret) {
+    if (!cronSecret ?? !expectedSecret ?? cronSecret !== expectedSecret) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
   }
@@ -80,7 +80,7 @@ export function middleware(request: NextRequest) {
     const clientIP = request.ip ?? request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip');
     
     if (process.env.NODE_ENV === 'production' && adminAllowedIPs.length > 0) {
-      if (!clientIP || !adminAllowedIPs.includes(clientIP)) {
+      if (!clientIP ?? !adminAllowedIPs.includes(clientIP)) {
         return new NextResponse('Forbidden', { status: 403 });
       }
     }

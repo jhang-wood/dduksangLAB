@@ -252,7 +252,7 @@ export default function SignupPage() {
           <div>
             <button
               type="submit"
-              disabled={loading || success}
+              disabled={loading ?? success}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-deepBlack-900 font-medium bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 hover:from-metallicGold-400 hover:to-metallicGold-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-metallicGold-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {loading ? (

@@ -43,7 +43,7 @@ export default function CommunityWritePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.title.trim() ?? !formData.content.trim()) {
       userNotification.alert('제목과 내용을 모두 입력해주세요.')
       return
     }

@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ 
-      data: data || {
+      data: data ?? {
         site_name: '떡상연구소',
         site_description: 'AI 시대를 선도하는 No-Code 교육 플랫폼',
         admin_email: 'admin@dduksanglab.com',
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json() as SettingsUpdateBody
     
     // Validate required fields
-    if (!body.site_name || !body.admin_email) {
+    if (!body.site_name ?? !body.admin_email) {
       return NextResponse.json({ 
         error: 'Site name and admin email are required' 
       }, { status: 400 })
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Validate file size (1-50 MB)
-    if (body.max_file_size && (body.max_file_size < 1 || body.max_file_size > 50)) {
+    if (body.max_file_size && (body.max_file_size < 1 ?? body.max_file_size > 50)) {
       return NextResponse.json({ 
         error: 'Max file size must be between 1 and 50 MB' 
       }, { status: 400 })
@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest) {
       maintenance_mode: Boolean(body.maintenance_mode),
       allow_registration: Boolean(body.allow_registration),
       require_email_verification: Boolean(body.require_email_verification),
-      max_file_size: parseInt(String(body.max_file_size)) || 5,
+      max_file_size: parseInt(String(body.max_file_size)) ?? 5,
       allowed_file_types: body.allowed_file_types ?? ['jpg', 'jpeg', 'png', 'webp'],
       updated_at: new Date().toISOString()
     }

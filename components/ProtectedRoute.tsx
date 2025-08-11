@@ -33,7 +33,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
     )
   }
 
-  if (!user || (requireAdmin && userProfile?.role !== 'admin')) {
+  if (!user ?? (requireAdmin && userProfile?.role !== 'admin')) {
     return null
   }
 

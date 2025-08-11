@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const requestBody = await request.json() as { lectureId?: unknown }
     const { lectureId } = requestBody
     
-    if (!lectureId || typeof lectureId !== 'string') {
+    if (!lectureId ?? typeof lectureId !== 'string') {
       return NextResponse.json(
         { error: '올바른 강의 ID가 필요합니다' },
         { status: 400 }

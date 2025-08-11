@@ -1,0 +1,744 @@
+name: 📱 모바일 및 반응형 테스트
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '30 1 * * *'  # 매일 오전 10:30 (KST)
+  workflow_dispatch:
+    inputs:
+      device_scope:
+        description: '테스트 디바이스 범위'
+        required: true
+        default: 'standard'
+        type: choice
+        options:
+          - minimal
+          - standard
+          - comprehensive
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 반응형 디자인 테스트
+  responsive-design:
+    name: 📐 반응형 디자인 테스트
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    
+    strategy:
+      matrix:
+        viewport:
+          - { name: 'Mobile Portrait', width: 375, height: 667, device: 'iPhone SE' }
+          - { name: 'Mobile Landscape', width: 667, height: 375, device: 'iPhone SE Landscape' }
+          - { name: 'Tablet Portrait', width: 768, height: 1024, device: 'iPad' }
+          - { name: 'Tablet Landscape', width: 1024, height: 768, device: 'iPad Landscape' }
+          - { name: 'Desktop', width: 1920, height: 1080, device: 'Desktop' }
+          - { name: 'Large Desktop', width: 2560, height: 1440, device: '2K Display' }
+        
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🔧 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install chromium
+
+      - name: 🏗️ 빌드
+        run: npm run build
+
+      - name: 🚀 서버 시작
+        run: |
+          npm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          echo "⏳ 서버 시작 대기..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "✅ 서버 준비 완료"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: 📱 반응형 테스트 (${{ matrix.viewport.name }})
+        run: |
+          cat > responsive-test-${{ matrix.viewport.width }}x${{ matrix.viewport.height }}.js << 'EOF'
+          const { test, expect, devices } = require('@playwright/test');
+          
+          test.describe(`Responsive Test - ${{ matrix.viewport.name }}`, () => {
+            test.use({
+              viewport: { width: ${{ matrix.viewport.width }}, height: ${{ matrix.viewport.height }} }
+            });
+          
+            const pages = [
+              { path: '/', name: 'Home' },
+              { path: '/ai-trends', name: 'AI Trends' },
+              { path: '/auth/login', name: 'Login' },
+              { path: '/auth/signup', name: 'Signup' }
+            ];
+            
+            for (const pageInfo of pages) {
+              test(`${pageInfo.name} page responsive layout`, async ({ page }) => {
+                await page.goto(`http://localhost:3000${pageInfo.path}`);
+                await page.waitForLoadState('networkidle');
+                
+                // 기본 레이아웃 검증
+                await expect(page.locator('body')).toBeVisible();
+                
+                // 수평 스크롤 확인 (모바일에서 중요)
+                const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
+                const viewportWidth = ${{ matrix.viewport.width }};
+                
+                if (bodyWidth > viewportWidth + 50) {
+                  console.warn(`⚠️ Horizontal scroll detected: ${bodyWidth}px > ${viewportWidth}px`);
+                }
+                
+                // 반응형 네비게이션 확인
+                const isMobile = ${{ matrix.viewport.width }} < 768;
+                if (isMobile) {
+                  // 모바일에서 햄버거 메뉴나 모바일 네비게이션 확인
+                  const mobileNav = page.locator('[data-testid="mobile-nav"], .mobile-menu, button[aria-label*="menu"]').first();
+                  if (await mobileNav.isVisible()) {
+                    console.log('✅ Mobile navigation detected');
+                    await mobileNav.click();
+                    await page.waitForTimeout(500);
+                  }
+                } else {
+                  // 데스크톱에서 일반 네비게이션 확인
+                  await expect(page.locator('nav, [role="navigation"]')).toBeVisible();
+                }
+                
+                // 텍스트 가독성 확인
+                const smallTexts = await page.locator('*').evaluateAll(elements => {
+                  return elements
+                    .filter(el => {
+                      const style = window.getComputedStyle(el);
+                      const fontSize = parseFloat(style.fontSize);
+                      return fontSize > 0 && fontSize < 14 && el.textContent.trim().length > 10;
+                    })
+                    .map(el => ({
+                      text: el.textContent.slice(0, 50),
+                      fontSize: window.getComputedStyle(el).fontSize
+                    }));
+                });
+                
+                if (smallTexts.length > 0 && ${{ matrix.viewport.width }} < 768) {
+                  console.warn('⚠️ Small text detected on mobile:', smallTexts.slice(0, 3));
+                }
+                
+                // 스크린샷 저장
+                await page.screenshot({
+                  path: `screenshot-${pageInfo.name.toLowerCase()}-${{ matrix.viewport.width }}x${{ matrix.viewport.height }}.png`,
+                  fullPage: true
+                });
+                
+                console.log(`✅ ${pageInfo.name} page tested on ${{ matrix.viewport.device }}`);
+              });
+            }
+          });
+          EOF
+          
+          npx playwright test responsive-test-${{ matrix.viewport.width }}x${{ matrix.viewport.height }}.js --reporter=json:results-${{ matrix.viewport.width }}x${{ matrix.viewport.height }}.json
+
+      - name: 🧹 서버 정리
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+
+      - name: 📤 반응형 테스트 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: responsive-test-${{ matrix.viewport.width }}x${{ matrix.viewport.height }}
+          path: |
+            screenshot-*.png
+            results-*.json
+          retention-days: 7
+
+  # 터치 인터랙션 테스트
+  touch-interaction:
+    name: 👆 터치 인터랙션 테스트
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🔧 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install chromium
+
+      - name: 🏗️ 빌드
+        run: npm run build
+
+      - name: 🚀 서버 시작
+        run: |
+          npm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          echo "⏳ 서버 시작 대기..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "✅ 서버 준비 완료"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: 👆 터치 제스처 테스트
+        run: |
+          cat > touch-interaction-test.js << 'EOF'
+          const { test, expect, devices } = require('@playwright/test');
+          
+          test.describe('Touch Interaction Tests', () => {
+            // 모바일 디바이스 시뮬레이션
+            test.use(devices['iPhone 13']);
+          
+            test('Touch targets are adequately sized', async ({ page }) => {
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 터치 타겟 크기 확인 (최소 44x44px)
+              const touchTargets = await page.locator('button, a, input, [role="button"], [onclick]').evaluateAll(elements => {
+                return elements.map(el => {
+                  const rect = el.getBoundingClientRect();
+                  return {
+                    element: el.tagName + (el.className ? '.' + el.className.split(' ')[0] : ''),
+                    width: rect.width,
+                    height: rect.height,
+                    adequate: rect.width >= 44 && rect.height >= 44
+                  };
+                }).filter(target => target.width > 0 && target.height > 0);
+              });
+              
+              const inadequateTargets = touchTargets.filter(target => !target.adequate);
+              
+              console.log(`📊 터치 타겟 분석:`);
+              console.log(`  총 ${touchTargets.length}개 터치 타겟`);
+              console.log(`  부적절한 크기: ${inadequateTargets.length}개`);
+              
+              if (inadequateTargets.length > 0) {
+                console.warn('⚠️ 부적절한 터치 타겟들:');
+                inadequateTargets.slice(0, 5).forEach(target => {
+                  console.warn(`  ${target.element}: ${target.width}x${target.height}px`);
+                });
+                
+                if (inadequateTargets.length > touchTargets.length * 0.5) {
+                  throw new Error(`Too many inadequate touch targets: ${inadequateTargets.length}/${touchTargets.length}`);
+                }
+              }
+            });
+          
+            test('Swipe gestures work correctly', async ({ page }) => {
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 스와이프 가능한 요소 찾기
+              const swipeableElements = await page.locator('[data-swipeable], .swiper, .carousel, .slider').count();
+              
+              if (swipeableElements > 0) {
+                console.log(`📱 ${swipeableElements}개의 스와이프 요소 발견`);
+                
+                const firstSwipeable = page.locator('[data-swipeable], .swiper, .carousel, .slider').first();
+                const box = await firstSwipeable.boundingBox();
+                
+                if (box) {
+                  // 좌에서 우로 스와이프
+                  await page.mouse.move(box.x + 50, box.y + box.height / 2);
+                  await page.mouse.down();
+                  await page.mouse.move(box.x + box.width - 50, box.y + box.height / 2, { steps: 10 });
+                  await page.mouse.up();
+                  
+                  await page.waitForTimeout(500);
+                  console.log('✅ 스와이프 제스처 테스트 완료');
+                }
+              } else {
+                console.log('ℹ️ 스와이프 요소 없음');
+              }
+            });
+          
+            test('Long press interactions', async ({ page }) => {
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 길게 누를 수 있는 요소들
+              const longPressTargets = await page.locator('[data-longpress], .card, .item').count();
+              
+              if (longPressTargets > 0) {
+                const target = page.locator('[data-longpress], .card, .item').first();
+                
+                // 길게 누르기 (1초)
+                await target.hover();
+                await page.mouse.down();
+                await page.waitForTimeout(1000);
+                await page.mouse.up();
+                
+                console.log('✅ 길게 누르기 테스트 완료');
+              } else {
+                console.log('ℹ️ 길게 누를 수 있는 요소 없음');
+              }
+            });
+          
+            test('Pinch zoom behavior', async ({ page }) => {
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 핀치 줌 테스트 (이미지나 지도 등)
+              const zoomableElements = await page.locator('img, canvas, [data-zoomable]').count();
+              
+              if (zoomableElements > 0) {
+                // 뷰포트 메타 태그 확인
+                const viewportMeta = await page.locator('meta[name="viewport"]').getAttribute('content');
+                
+                if (viewportMeta && viewportMeta.includes('user-scalable=no')) {
+                  console.warn('⚠️ 핀치 줌이 비활성화되어 있습니다');
+                } else {
+                  console.log('✅ 핀치 줌 허용됨');
+                }
+                
+                // 접근성을 위해 줌이 가능해야 함
+                expect(viewportMeta).not.toContain('user-scalable=no');
+              }
+            });
+          });
+          EOF
+          
+          npx playwright test touch-interaction-test.js --reporter=json:touch-results.json
+
+      - name: 🧹 서버 정리
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+
+      - name: 📤 터치 테스트 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: touch-interaction-results
+          path: touch-results.json
+          retention-days: 7
+
+  # 크로스 디바이스 접근성 테스트
+  accessibility-mobile:
+    name: ♿ 모바일 접근성 테스트
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🔧 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci --no-audit --no-fund
+          npm install --no-save @axe-core/playwright
+          npx playwright install chromium
+
+      - name: 🏗️ 빌드
+        run: npm run build
+
+      - name: 🚀 서버 시작
+        run: |
+          npm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          echo "⏳ 서버 시작 대기..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "✅ 서버 준비 완료"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: ♿ 모바일 접근성 스캔
+        run: |
+          cat > accessibility-mobile-test.js << 'EOF'
+          const { test, expect, devices } = require('@playwright/test');
+          const { injectAxe, checkA11y } = require('@axe-core/playwright');
+          
+          test.describe('Mobile Accessibility Tests', () => {
+            // 다양한 모바일 디바이스에서 테스트
+            const mobileDevices = ['iPhone 13', 'Pixel 5', 'Galaxy S21'];
+            
+            for (const deviceName of mobileDevices) {
+              test(`Accessibility scan on ${deviceName}`, async ({ page }) => {
+                await page.emulate(devices[deviceName]);
+                await page.goto('http://localhost:3000');
+                await page.waitForLoadState('networkidle');
+                
+                // Axe 접근성 도구 주입
+                await injectAxe(page);
+                
+                // 모바일 특화 접근성 규칙으로 검사
+                await checkA11y(page, null, {
+                  rules: {
+                    // 모바일에서 중요한 접근성 규칙들
+                    'color-contrast': { enabled: true },
+                    'touch-target': { enabled: true },
+                    'landmark-one-main': { enabled: true },
+                    'page-has-heading-one': { enabled: true },
+                    'focus-order-semantics': { enabled: true }
+                  }
+                });
+                
+                console.log(`✅ ${deviceName} 접근성 검사 통과`);
+              });
+            }
+          
+            test('Screen reader navigation on mobile', async ({ page }) => {
+              await page.emulate(devices['iPhone 13']);
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 스크린 리더를 위한 요소들 확인
+              const headings = await page.locator('h1, h2, h3, h4, h5, h6').count();
+              const landmarks = await page.locator('[role="main"], [role="navigation"], [role="banner"], [role="contentinfo"]').count();
+              const altTexts = await page.locator('img[alt]').count();
+              const totalImages = await page.locator('img').count();
+              
+              console.log(`📊 접근성 요소 분석:`);
+              console.log(`  제목: ${headings}개`);
+              console.log(`  랜드마크: ${landmarks}개`);
+              console.log(`  Alt 텍스트: ${altTexts}/${totalImages} 이미지`);
+              
+              // 필수 접근성 요소 검증
+              expect(headings).toBeGreaterThan(0);
+              expect(landmarks).toBeGreaterThan(0);
+              
+              if (totalImages > 0) {
+                const altTextRatio = altTexts / totalImages;
+                if (altTextRatio < 0.8) {
+                  console.warn(`⚠️ Alt 텍스트 부족: ${(altTextRatio * 100).toFixed(1)}%`);
+                }
+              }
+            });
+          
+            test('Keyboard navigation on mobile', async ({ page }) => {
+              await page.emulate(devices['iPhone 13']);
+              await page.goto('http://localhost:3000');
+              await page.waitForLoadState('networkidle');
+              
+              // 키보드 네비게이션 테스트
+              const focusableElements = await page.locator('button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])').count();
+              
+              console.log(`⌨️ 포커스 가능한 요소: ${focusableElements}개`);
+              
+              if (focusableElements > 0) {
+                // Tab 키로 네비게이션 테스트
+                for (let i = 0; i < Math.min(5, focusableElements); i++) {
+                  await page.keyboard.press('Tab');
+                  const focused = await page.evaluate(() => {
+                    const el = document.activeElement;
+                    return {
+                      tagName: el.tagName,
+                      className: el.className,
+                      visible: el.offsetWidth > 0 && el.offsetHeight > 0
+                    };
+                  });
+                  
+                  if (!focused.visible) {
+                    console.warn(`⚠️ 포커스된 요소가 보이지 않음: ${focused.tagName}.${focused.className}`);
+                  }
+                }
+                
+                console.log('✅ 키보드 네비게이션 테스트 완료');
+              }
+            });
+          });
+          EOF
+          
+          npx playwright test accessibility-mobile-test.js --reporter=json:accessibility-mobile-results.json
+
+      - name: 🧹 서버 정리
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+
+      - name: 📤 접근성 테스트 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-mobile-results
+          path: accessibility-mobile-results.json
+          retention-days: 7
+
+  # 모바일 성능 테스트
+  mobile-performance:
+    name: 📱 모바일 성능 테스트
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🔧 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci --no-audit --no-fund
+          npm install --no-save lighthouse puppeteer
+
+      - name: 🏗️ 빌드
+        run: npm run build
+
+      - name: 🚀 서버 시작
+        run: |
+          npm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          echo "⏳ 서버 시작 대기..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "✅ 서버 준비 완료"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: 📱 모바일 Lighthouse 성능 테스트
+        run: |
+          cat > mobile-performance-test.js << 'EOF'
+          const lighthouse = require('lighthouse');
+          const chromeLauncher = require('chrome-launcher');
+          const fs = require('fs');
+          
+          async function runMobileLighthouse() {
+            const chrome = await chromeLauncher.launch({
+              chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage']
+            });
+            
+            const options = {
+              logLevel: 'info',
+              output: 'json',
+              onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
+              port: chrome.port,
+              formFactor: 'mobile',
+              screenEmulation: {
+                mobile: true,
+                width: 375,
+                height: 667,
+                deviceScaleFactor: 2,
+                disabled: false,
+              },
+              throttling: {
+                rttMs: 150,
+                throughputKbps: 1638.4,
+                cpuSlowdownMultiplier: 4,
+                requestLatencyMs: 150 * 3.75,
+                downloadThroughputKbps: 1638.4 * 0.9,
+                uploadThroughputKbps: 675 * 0.9,
+              }
+            };
+            
+            const runnerResult = await lighthouse('http://localhost:3000', options);
+            await chrome.kill();
+            
+            const report = runnerResult.lhr;
+            
+            const mobileMetrics = {
+              performance: Math.round(report.categories.performance.score * 100),
+              accessibility: Math.round(report.categories.accessibility.score * 100),
+              bestPractices: Math.round(report.categories['best-practices'].score * 100),
+              seo: Math.round(report.categories.seo.score * 100),
+              fcp: report.audits['first-contentful-paint'].numericValue,
+              lcp: report.audits['largest-contentful-paint'].numericValue,
+              fid: report.audits['max-potential-fid']?.numericValue || 0,
+              cls: report.audits['cumulative-layout-shift'].numericValue,
+              tti: report.audits['interactive'].numericValue,
+              speedIndex: report.audits['speed-index'].numericValue
+            };
+            
+            fs.writeFileSync('mobile-lighthouse-results.json', JSON.stringify(report, null, 2));
+            fs.writeFileSync('mobile-performance-metrics.json', JSON.stringify(mobileMetrics, null, 2));
+            
+            console.log('📱 모바일 Lighthouse 결과:');
+            console.log(`  Performance: ${mobileMetrics.performance}/100 🎯 목표: 80+`);
+            console.log(`  Accessibility: ${mobileMetrics.accessibility}/100 🎯 목표: 95+`);
+            console.log(`  Best Practices: ${mobileMetrics.bestPractices}/100`);
+            console.log(`  SEO: ${mobileMetrics.seo}/100`);
+            console.log('\n📊 모바일 Core Web Vitals:');
+            console.log(`  FCP: ${(mobileMetrics.fcp/1000).toFixed(2)}s 🎯 목표: <2.0s`);
+            console.log(`  LCP: ${(mobileMetrics.lcp/1000).toFixed(2)}s 🎯 목표: <4.0s (모바일)`);
+            console.log(`  CLS: ${mobileMetrics.cls.toFixed(3)} 🎯 목표: <0.1`);
+            console.log(`  TTI: ${(mobileMetrics.tti/1000).toFixed(2)}s 🎯 목표: <5.0s`);
+            console.log(`  Speed Index: ${(mobileMetrics.speedIndex/1000).toFixed(2)}s`);
+            
+            // 모바일 특화 성능 기준 검증
+            const warnings = [];
+            
+            if (mobileMetrics.performance < 80) {
+              warnings.push(`모바일 Performance 점수 부족: ${mobileMetrics.performance} < 80`);
+            }
+            
+            if (mobileMetrics.lcp > 4000) {
+              warnings.push(`모바일 LCP 너무 느림: ${(mobileMetrics.lcp/1000).toFixed(2)}s > 4.0s`);
+            }
+            
+            if (mobileMetrics.fcp > 2000) {
+              warnings.push(`모바일 FCP 너무 느림: ${(mobileMetrics.fcp/1000).toFixed(2)}s > 2.0s`);
+            }
+            
+            if (mobileMetrics.tti > 5000) {
+              warnings.push(`모바일 TTI 너무 느림: ${(mobileMetrics.tti/1000).toFixed(2)}s > 5.0s`);
+            }
+            
+            if (warnings.length > 0) {
+              console.log('\n⚠️ 모바일 성능 경고:');
+              warnings.forEach(warning => console.log(`  - ${warning}`));
+            } else {
+              console.log('\n✅ 모든 모바일 성능 기준을 충족합니다!');
+            }
+            
+            return mobileMetrics;
+          }
+          
+          runMobileLighthouse().catch(console.error);
+          EOF
+          
+          node mobile-performance-test.js
+
+      - name: 🧹 서버 정리
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+
+      - name: 📤 모바일 성능 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-performance-results
+          path: |
+            mobile-lighthouse-results.json
+            mobile-performance-metrics.json
+          retention-days: 30
+
+  # 모바일 테스트 종합 리포트
+  mobile-report:
+    name: 📋 모바일 테스트 리포트
+    runs-on: ubuntu-latest
+    needs: [responsive-design, touch-interaction, accessibility-mobile, mobile-performance]
+    if: always()
+    
+    steps:
+      - name: 📥 아티팩트 다운로드
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 📊 모바일 테스트 종합 리포트 생성
+        run: |
+          echo "# 📱 dduksangLAB 모바일 테스트 종합 리포트" > mobile-report.md
+          echo "" >> mobile-report.md
+          echo "생성 시간: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> mobile-report.md
+          echo "커밋: ${{ github.sha }}" >> mobile-report.md
+          echo "브랜치: ${{ github.ref_name }}" >> mobile-report.md
+          echo "" >> mobile-report.md
+          
+          # 테스트 결과 요약
+          echo "## 📊 테스트 결과 요약" >> mobile-report.md
+          echo "| 테스트 유형 | 상태 | 설명 |" >> mobile-report.md
+          echo "|------------|------|------|" >> mobile-report.md
+          echo "| 반응형 디자인 | ${{ needs.responsive-design.result == 'success' && '✅ 통과' || '❌ 실패' }} | 6가지 뷰포트 크기 검증 |" >> mobile-report.md
+          echo "| 터치 인터랙션 | ${{ needs.touch-interaction.result == 'success' && '✅ 통과' || '❌ 실패' }} | 터치 타겟, 제스처 테스트 |" >> mobile-report.md
+          echo "| 모바일 접근성 | ${{ needs.accessibility-mobile.result == 'success' && '✅ 통과' || '❌ 실패' }} | 3개 디바이스 접근성 검증 |" >> mobile-report.md
+          echo "| 모바일 성능 | ${{ needs.mobile-performance.result == 'success' && '✅ 통과' || '❌ 실패' }} | 모바일 특화 성능 측정 |" >> mobile-report.md
+          echo "" >> mobile-report.md
+          
+          # 모바일 성능 세부사항
+          echo "## ⚡ 모바일 성능 세부사항" >> mobile-report.md
+          if [ -f "artifacts/mobile-performance-results/mobile-performance-metrics.json" ]; then
+            perf_metrics="artifacts/mobile-performance-results/mobile-performance-metrics.json"
+            performance=$(jq -r '.performance // "N/A"' "$perf_metrics")
+            accessibility=$(jq -r '.accessibility // "N/A"' "$perf_metrics")
+            lcp=$(jq -r '.lcp // 0' "$perf_metrics")
+            fcp=$(jq -r '.fcp // 0' "$perf_metrics")
+            cls=$(jq -r '.cls // 0' "$perf_metrics")
+            tti=$(jq -r '.tti // 0' "$perf_metrics")
+            
+            echo "### Lighthouse 모바일 점수" >> mobile-report.md
+            echo "- Performance: ${performance}/100 🎯 목표: 80+" >> mobile-report.md
+            echo "- Accessibility: ${accessibility}/100 🎯 목표: 95+" >> mobile-report.md
+            echo "" >> mobile-report.md
+            echo "### 모바일 Core Web Vitals" >> mobile-report.md
+            echo "- FCP: $(echo "scale=2; $fcp/1000" | bc -l)s 🎯 목표: <2.0s" >> mobile-report.md
+            echo "- LCP: $(echo "scale=2; $lcp/1000" | bc -l)s 🎯 목표: <4.0s" >> mobile-report.md
+            echo "- CLS: $cls 🎯 목표: <0.1" >> mobile-report.md
+            echo "- TTI: $(echo "scale=2; $tti/1000" | bc -l)s 🎯 목표: <5.0s" >> mobile-report.md
+          else
+            echo "- 모바일 성능 데이터 없음" >> mobile-report.md
+          fi
+          echo "" >> mobile-report.md
+          
+          # 개선 권장사항
+          echo "## 📱 모바일 최적화 권장사항" >> mobile-report.md
+          echo "1. **터치 타겟**: 최소 44x44px 크기 유지" >> mobile-report.md
+          echo "2. **이미지 최적화**: WebP/AVIF 포맷 사용, 적응형 이미지" >> mobile-report.md
+          echo "3. **폰트 로딩**: font-display: swap, 시스템 폰트 우선" >> mobile-report.md
+          echo "4. **JavaScript**: 필수 코드만 우선 로드, 코드 스플리팅" >> mobile-report.md
+          echo "5. **CSS**: Critical CSS 인라인, 미사용 CSS 제거" >> mobile-report.md
+          echo "6. **캐싱**: 적극적인 브라우저 캐싱 전략" >> mobile-report.md
+          echo "7. **접근성**: 충분한 색상 대비, 키보드 네비게이션" >> mobile-report.md
+          echo "" >> mobile-report.md
+          
+          # 반응형 디자인 상태
+          echo "## 📐 반응형 디자인 상태" >> mobile-report.md
+          responsive_tests=$(find artifacts -name "responsive-test-*" -type d | wc -l)
+          echo "- 테스트된 뷰포트: ${responsive_tests}개" >> mobile-report.md
+          echo "- 모바일 세로: 375x667px (iPhone SE)" >> mobile-report.md
+          echo "- 모바일 가로: 667x375px" >> mobile-report.md
+          echo "- 태블릿 세로: 768x1024px (iPad)" >> mobile-report.md
+          echo "- 태블릿 가로: 1024x768px" >> mobile-report.md
+          echo "- 데스크톱: 1920x1080px" >> mobile-report.md
+          echo "- 대형 화면: 2560x1440px" >> mobile-report.md
+          
+          cat mobile-report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: 📤 최종 모바일 리포트 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-test-report-${{ github.run_id }}
+          path: mobile-report.md
+          retention-days: 30

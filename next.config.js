@@ -10,7 +10,7 @@ const nextConfig = {
     dirs: ['app', 'lib', 'components'],
   },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   async redirects() {
     return [

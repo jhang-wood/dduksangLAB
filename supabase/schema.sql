@@ -470,11 +470,314 @@ CREATE POLICY "Admins can update settings" ON admin_settings
     )
   );
 
+-- ===============================
+-- FASTCAMPUS STYLE UX 확장 테이블들
+-- ===============================
+
+-- 찜하기/북마크 시스템
+CREATE TABLE IF NOT EXISTS bookmarks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, lecture_id)
+);
+
+-- 강의 리뷰 시스템
+CREATE TABLE IF NOT EXISTS lecture_reviews (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    title TEXT,
+    content TEXT,
+    is_verified BOOLEAN DEFAULT false, -- 실제 수강생 인증
+    helpful_count INTEGER DEFAULT 0,
+    tags TEXT[] DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, lecture_id)
+);
+
+-- 리뷰 도움됨 평가
+CREATE TABLE IF NOT EXISTS review_helpfulness (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    review_id UUID REFERENCES lecture_reviews(id) ON DELETE CASCADE,
+    is_helpful BOOLEAN NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, review_id)
+);
+
+-- 배지 정의
+CREATE TABLE IF NOT EXISTS badge_definitions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    color TEXT NOT NULL,
+    rarity TEXT CHECK (rarity IN ('common', 'rare', 'epic', 'legendary')) DEFAULT 'common',
+    requirements JSONB, -- 획득 조건
+    points INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 사용자 배지 획득
+CREATE TABLE IF NOT EXISTS user_badges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    badge_id UUID REFERENCES badge_definitions(id) ON DELETE CASCADE,
+    earned_at TIMESTAMPTZ DEFAULT NOW(),
+    progress INTEGER DEFAULT 0,
+    max_progress INTEGER DEFAULT 0,
+    UNIQUE(user_id, badge_id)
+);
+
+-- 학습 목표
+CREATE TABLE IF NOT EXISTS learning_goals (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    target_value INTEGER NOT NULL,
+    current_value INTEGER DEFAULT 0,
+    unit TEXT NOT NULL, -- 'minutes', 'courses', 'certificates'
+    period TEXT CHECK (period IN ('daily', 'weekly', 'monthly')) NOT NULL,
+    is_completed BOOLEAN DEFAULT false,
+    deadline DATE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 학습 활동 로그
+CREATE TABLE IF NOT EXISTS learning_activities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    activity_type TEXT NOT NULL, -- 'lesson_completed', 'course_enrolled', 'badge_earned', etc.
+    activity_data JSONB,
+    points_earned INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 실시간 활동 피드
+CREATE TABLE IF NOT EXISTS activity_feed (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id),
+    user_name TEXT NOT NULL,
+    activity_type TEXT NOT NULL, -- 'enrollment', 'completion', 'review', 'achievement'
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    lecture_title TEXT NOT NULL,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    message TEXT,
+    is_public BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 할인 캠페인
+CREATE TABLE IF NOT EXISTS discount_campaigns (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    discount_percentage INTEGER NOT NULL CHECK (discount_percentage > 0 AND discount_percentage <= 100),
+    start_date TIMESTAMPTZ NOT NULL,
+    end_date TIMESTAMPTZ NOT NULL,
+    max_enrollments INTEGER,
+    current_enrollments INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 얼리버드 단계 관리
+CREATE TABLE IF NOT EXISTS early_bird_stages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    campaign_id UUID REFERENCES discount_campaigns(id) ON DELETE CASCADE,
+    stage_name TEXT NOT NULL,
+    discount_percentage INTEGER NOT NULL,
+    max_slots INTEGER NOT NULL,
+    current_slots INTEGER DEFAULT 0,
+    end_date TIMESTAMPTZ NOT NULL,
+    order_index INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 강사 질문/답변
+CREATE TABLE IF NOT EXISTS instructor_qa (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    student_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    instructor_id UUID REFERENCES profiles(id),
+    question TEXT NOT NULL,
+    answer TEXT,
+    is_answered BOOLEAN DEFAULT false,
+    is_public BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    answered_at TIMESTAMPTZ
+);
+
+-- 무료 체험 기록
+CREATE TABLE IF NOT EXISTS free_trial_access (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES profiles(id),
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE,
+    ip_address INET,
+    access_duration INTEGER DEFAULT 0, -- minutes
+    converted_to_paid BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, lecture_id) -- 사용자당 한 번만 무료 체험
+);
+
+-- 강의 통계 (실시간 업데이트용)
+CREATE TABLE IF NOT EXISTS lecture_stats (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lecture_id UUID REFERENCES lectures(id) ON DELETE CASCADE UNIQUE,
+    active_users_count INTEGER DEFAULT 0,
+    completion_count_today INTEGER DEFAULT 0,
+    total_enrollments INTEGER DEFAULT 0,
+    average_completion_time INTEGER DEFAULT 0, -- minutes
+    last_updated TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 사용자 프로필 확장 (학습 정보)
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS learning_streak INTEGER DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS total_learning_hours INTEGER DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS experience_points INTEGER DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS best_streak INTEGER DEFAULT 0;
+
+-- 북마크 인덱스
+CREATE INDEX IF NOT EXISTS idx_bookmarks_user_id ON bookmarks(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_lecture_id ON bookmarks(lecture_id);
+
+-- 리뷰 관련 인덱스
+CREATE INDEX IF NOT EXISTS idx_reviews_lecture ON lecture_reviews(lecture_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_rating ON lecture_reviews(rating);
+CREATE INDEX IF NOT EXISTS idx_reviews_helpful ON lecture_reviews(helpful_count DESC);
+
+-- 활동 피드 인덱스
+CREATE INDEX IF NOT EXISTS idx_activity_feed_public ON activity_feed(created_at DESC) WHERE is_public = true;
+CREATE INDEX IF NOT EXISTS idx_learning_activities_user ON learning_activities(user_id, created_at DESC);
+
+-- RLS 정책 추가
+ALTER TABLE bookmarks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lecture_reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE review_helpfulness ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_badges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE learning_goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE learning_activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE instructor_qa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE free_trial_access ENABLE ROW LEVEL SECURITY;
+
+-- 북마크 정책
+CREATE POLICY "Users can manage own bookmarks" ON bookmarks
+    FOR ALL USING (auth.uid() = user_id);
+
+-- 리뷰 정책
+CREATE POLICY "Users can view all reviews" ON lecture_reviews
+    FOR SELECT USING (true);
+
+CREATE POLICY "Users can manage own reviews" ON lecture_reviews
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own reviews" ON lecture_reviews
+    FOR UPDATE USING (auth.uid() = user_id);
+
+-- 배지 정책
+CREATE POLICY "Users can view own badges" ON user_badges
+    FOR SELECT USING (auth.uid() = user_id);
+
+-- 학습 목표 정책
+CREATE POLICY "Users can manage own goals" ON learning_goals
+    FOR ALL USING (auth.uid() = user_id);
+
+-- 학습 활동 정책
+CREATE POLICY "Users can view own activities" ON learning_activities
+    FOR SELECT USING (auth.uid() = user_id);
+
+-- 강사 Q&A 정책
+CREATE POLICY "Users can view public QA" ON instructor_qa
+    FOR SELECT USING (is_public = true OR auth.uid() = student_id);
+
+CREATE POLICY "Students can ask questions" ON instructor_qa
+    FOR INSERT WITH CHECK (auth.uid() = student_id);
+
+-- 활동 피드 정책
+CREATE POLICY "Everyone can view public feed" ON activity_feed
+    FOR SELECT USING (is_public = true);
+
+-- 리뷰 평점 업데이트 함수
+CREATE OR REPLACE FUNCTION update_lecture_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE lectures
+    SET 
+        view_count = (
+            SELECT COALESCE(AVG(rating), 0)::NUMERIC(3,2)
+            FROM lecture_reviews
+            WHERE lecture_id = COALESCE(NEW.lecture_id, OLD.lecture_id)
+        ),
+        updated_at = NOW()
+    WHERE id = COALESCE(NEW.lecture_id, OLD.lecture_id);
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+-- 리뷰 추가/수정/삭제 시 평점 업데이트 트리거
+CREATE TRIGGER update_lecture_rating_on_review
+    AFTER INSERT OR UPDATE OR DELETE ON lecture_reviews
+    FOR EACH ROW EXECUTE PROCEDURE update_lecture_rating();
+
+-- 수강 시작 시 활동 피드 추가
+CREATE OR REPLACE FUNCTION add_enrollment_activity()
+RETURNS TRIGGER AS $$
+DECLARE
+    lecture_title_var TEXT;
+    user_name_var TEXT;
+BEGIN
+    -- 강의 제목 가져오기
+    SELECT title INTO lecture_title_var
+    FROM lectures
+    WHERE id = NEW.lecture_id;
+    
+    -- 사용자 이름 가져오기
+    SELECT name INTO user_name_var
+    FROM profiles
+    WHERE id = NEW.user_id;
+    
+    -- 익명화된 사용자명으로 피드 추가
+    INSERT INTO activity_feed (user_id, user_name, activity_type, lecture_id, lecture_title)
+    VALUES (
+        NEW.user_id,
+        SUBSTRING(user_name_var FROM 1 FOR 1) || '**님',
+        'enrollment',
+        NEW.lecture_id,
+        lecture_title_var
+    );
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER on_enrollment_activity
+    AFTER INSERT ON lecture_enrollments
+    FOR EACH ROW EXECUTE PROCEDURE add_enrollment_activity();
+
+-- 기본 배지 데이터 삽입
+INSERT INTO badge_definitions (name, display_name, description, icon, color, rarity, points) VALUES
+('first_steps', '첫 발걸음', '첫 강의를 완료했습니다', '👶', 'from-green-500 to-emerald-500', 'common', 10),
+('ai_explorer', 'AI 탐험가', 'AI 관련 강의 3개를 완료했습니다', '🤖', 'from-blue-500 to-cyan-500', 'rare', 50),
+('speed_learner', '스피드 러너', '하루에 3시간 이상 학습했습니다', '⚡', 'from-yellow-500 to-orange-500', 'rare', 100),
+('streak_master', '연속 학습 마스터', '7일 연속 학습했습니다', '🔥', 'from-red-500 to-pink-500', 'epic', 200),
+('perfectionist', '완벽주의자', '모든 퀴즈를 100% 정답으로 통과했습니다', '💎', 'from-purple-500 to-indigo-500', 'legendary', 500)
+ON CONFLICT (name) DO NOTHING;
+
 -- Insert default admin settings
 INSERT INTO admin_settings (key, value, description) VALUES
   ('site_maintenance', '{"enabled": false, "message": ""}', '사이트 유지보수 모드 설정'),
   ('payment_config', '{"min_amount": 1000, "commission_rate": 0.1}', '결제 관련 설정'),
-  ('email_config', '{"from_email": "noreply@dduksang.com", "from_name": "떡상연구소"}', '이메일 발송 설정')
+  ('email_config', '{"from_email": "noreply@dduksang.com", "from_name": "떡상연구소"}', '이메일 발송 설정'),
+  ('ux_features', '{"bookmarks_enabled": true, "gamification_enabled": true, "social_proof_enabled": true}', 'UX 기능 활성화 설정')
 ON CONFLICT (key) DO NOTHING;
 
 -- 프로필 자동 생성 함수

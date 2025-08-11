@@ -300,7 +300,7 @@ export default function AdminLecturesPage() {
       updatedChapter[field] = value as string
     } else if (field === 'video_url') {
       updatedChapter[field] = value as string
-    } else if (field === 'duration' || field === 'order_index') {
+    } else if (field === 'duration' ?? field === 'order_index') {
       updatedChapter[field] = value as number
     } else if (field === 'is_preview') {
       updatedChapter[field] = value as boolean
@@ -376,7 +376,7 @@ export default function AdminLecturesPage() {
     }, [fetchChapters])
 
     const addNewChapter = async () => {
-      if (!newChapter.title || !newChapter.video_url) {
+      if (!newChapter.title ?? !newChapter.video_url) {
         userNotification.alert('제목과 비디오 URL은 필수입니다.')
         return
       }
@@ -483,7 +483,7 @@ export default function AdminLecturesPage() {
               type="number"
               placeholder="재생시간 (초)"
               value={newChapter.duration}
-              onChange={(e) => setNewChapter({ ...newChapter, duration: parseInt(e.target.value) || 0 })}
+              onChange={(e) => setNewChapter({ ...newChapter, duration: parseInt(e.target.value) ?? 0 })}
               className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
             />
           </div>
@@ -497,7 +497,7 @@ export default function AdminLecturesPage() {
           <textarea
             placeholder="챕터 설명 (선택사항)"
             value={newChapter.description ?? ''}
-            onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value || null })}
+            onChange={(e) => setNewChapter({ ...newChapter, description: e.target.value ?? null })}
             className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 mb-3 h-20"
           />
           <div className="flex items-center justify-between">
@@ -571,7 +571,7 @@ export default function AdminLecturesPage() {
                       <input
                         type="number"
                         defaultValue={chapter.duration}
-                        onBlur={(e) => void updateChapter(chapter.id ?? '', { duration: parseInt(e.target.value) || 0 })}
+                        onBlur={(e) => void updateChapter(chapter.id ?? '', { duration: parseInt(e.target.value) ?? 0 })}
                         className="px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                       />
                     </div>
@@ -583,7 +583,7 @@ export default function AdminLecturesPage() {
                     />
                     <textarea
                       defaultValue={chapter.description ?? ''}
-                      onBlur={(e) => void updateChapter(chapter.id ?? '', { description: e.target.value || null })}
+                      onBlur={(e) => void updateChapter(chapter.id ?? '', { description: e.target.value ?? null })}
                       className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 h-20"
                     />
                   </div>
@@ -719,7 +719,7 @@ export default function AdminLecturesPage() {
       </div>
 
       {/* Create/Edit Modal */}
-      {(showCreateModal || editingLecture) && (
+      {(showCreateModal ?? editingLecture) && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -795,7 +795,7 @@ export default function AdminLecturesPage() {
                     <input
                       type="number"
                       value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) ?? 0 })}
                       className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                       placeholder="0"
                     />

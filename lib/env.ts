@@ -153,7 +153,7 @@ export const env = {
   // Environment
   get isDevelopment() { return process.env.NODE_ENV === 'development' },
   get isProduction() { return process.env.NODE_ENV === 'production' },
-  get nodeEnv() { return process.env.NODE_ENV || 'development' }
+  get nodeEnv() { return process.env.NODE_ENV ?? 'development' }
 }
 
 /**

@@ -119,17 +119,26 @@ jobs:
           echo "deployment-id=${deployment_id}" >> $GITHUB_OUTPUT
           
       - name: Send Telegram notification (Deployment Started)
-        uses: appleboy/telegram-action@v0.1.1
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            🚀 **dduksangLAB 배포 시작**
-            
-            📝 **커밋**: `${{ github.event.head_commit.message }}`
-            👤 **작성자**: ${{ github.event.head_commit.author.name }}
-            🌐 **URL**: ${{ steps.deploy.outputs.url }}
-            ⏰ **시간**: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S KST')
+        run: |
+          # 현재 시간 저장
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # JSON payload 생성
+          json_payload=$(jq -n \
+            --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --arg text "🚀 **dduksangLAB 배포 시작**
+
+📝 **커밋**: \`${{ github.event.head_commit.message }}\`
+👤 **작성자**: ${{ github.event.head_commit.author.name }}
+🌐 **URL**: ${{ steps.deploy.outputs.url }}
+⏰ **시간**: ${CURRENT_TIME}" \
+            --arg parse_mode "Markdown" \
+            '{chat_id: $chat_id, text: $text, parse_mode: $parse_mode}')
+          
+          # 텔레그램으로 전송
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$json_payload"
 
   # Playwright E2E Testing
   e2e-test:
@@ -293,51 +302,78 @@ jobs:
           
       - name: Send success notification
         if: needs.e2e-test.result == 'success'
-        uses: appleboy/telegram-action@v0.1.1
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ✅ **dduksangLAB 배포 성공**
-            
-            📝 **커밋**: `${{ github.event.head_commit.message }}`
-            👤 **작성자**: ${{ github.event.head_commit.author.name }}
-            🌐 **URL**: ${{ env.DEPLOYMENT_URL }}
-            🧪 **E2E 테스트**: 통과
-            ⏰ **완료 시간**: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S KST')
-            
-            🎉 새로운 버전이 성공적으로 배포되었습니다!
+        run: |
+          # 현재 시간 저장
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # JSON payload 생성
+          json_payload=$(jq -n \
+            --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --arg text "✅ **dduksangLAB 배포 성공**
+
+📝 **커밋**: \`${{ github.event.head_commit.message }}\`
+👤 **작성자**: ${{ github.event.head_commit.author.name }}
+🌐 **URL**: ${{ env.DEPLOYMENT_URL }}
+🧪 **E2E 테스트**: 통과
+⏰ **완료 시간**: ${CURRENT_TIME}
+
+🎉 새로운 버전이 성공적으로 배포되었습니다!" \
+            --arg parse_mode "Markdown" \
+            '{chat_id: $chat_id, text: $text, parse_mode: $parse_mode}')
+          
+          # 텔레그램으로 전송
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$json_payload"
             
       - name: Send failure notification
         if: needs.e2e-test.result == 'failure'
-        uses: appleboy/telegram-action@v0.1.1
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ❌ **dduksangLAB 배포 실패**
-            
-            📝 **커밋**: `${{ github.event.head_commit.message }}`
-            👤 **작성자**: ${{ github.event.head_commit.author.name }}
-            🧪 **E2E 테스트**: 실패
-            🔄 **롤백**: 진행 중
-            ⏰ **시간**: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S KST')
-            
-            ⚠️ 이전 버전으로 롤백이 수행되었습니다.
-            GitHub Actions에서 로그를 확인해주세요.
+        run: |
+          # 현재 시간 저장
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # JSON payload 생성
+          json_payload=$(jq -n \
+            --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --arg text "❌ **dduksangLAB 배포 실패**
+
+📝 **커밋**: \`${{ github.event.head_commit.message }}\`
+👤 **작성자**: ${{ github.event.head_commit.author.name }}
+🧪 **E2E 테스트**: 실패
+🔄 **롤백**: 진행 중
+⏰ **시간**: ${CURRENT_TIME}
+
+⚠️ 이전 버전으로 롤백이 수행되었습니다.
+GitHub Actions에서 로그를 확인해주세요." \
+            --arg parse_mode "Markdown" \
+            '{chat_id: $chat_id, text: $text, parse_mode: $parse_mode}')
+          
+          # 텔레그램으로 전송
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$json_payload"
             
       - name: Send general failure notification
         if: needs.deploy.result == 'failure'
-        uses: appleboy/telegram-action@v0.1.1
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            🚨 **dduksangLAB 배포 오류**
-            
-            📝 **커밋**: `${{ github.event.head_commit.message }}`
-            👤 **작성자**: ${{ github.event.head_commit.author.name }}
-            ❌ **상태**: 배포 실패
-            ⏰ **시간**: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M:%S KST')
-            
-            🔧 GitHub Actions에서 상세한 오류 로그를 확인해주세요.
+        run: |
+          # 현재 시간 저장
+          CURRENT_TIME=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          
+          # JSON payload 생성
+          json_payload=$(jq -n \
+            --arg chat_id "${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --arg text "🚨 **dduksangLAB 배포 오류**
+
+📝 **커밋**: \`${{ github.event.head_commit.message }}\`
+👤 **작성자**: ${{ github.event.head_commit.author.name }}
+❌ **상태**: 배포 실패
+⏰ **시간**: ${CURRENT_TIME}
+
+🔧 GitHub Actions에서 상세한 오류 로그를 확인해주세요." \
+            --arg parse_mode "Markdown" \
+            '{chat_id: $chat_id, text: $text, parse_mode: $parse_mode}')
+          
+          # 텔레그램으로 전송
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$json_payload"
