@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   Play,
   Clock,
@@ -16,99 +16,99 @@ import {
   BarChart,
   ArrowLeft,
   Hash,
-} from 'lucide-react'
-import Header from '@/components/Header'
-import CurriculumAccordion from '@/components/CurriculumAccordion'
-import TagSystem from '@/components/TagSystem'
-import RecommendationSlider from '@/components/RecommendationSlider'
-import CourseStructuredData, { BreadcrumbStructuredData } from '@/components/StructuredData'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
-import { PaymentButton } from '@/hooks/usePayment'
-import { logger } from '@/lib/logger'
+} from 'lucide-react';
+import Header from '@/components/Header';
+import CurriculumAccordion from '@/components/CurriculumAccordion';
+import TagSystem from '@/components/TagSystem';
+import RecommendationSlider from '@/components/RecommendationSlider';
+import CourseStructuredData, { BreadcrumbStructuredData } from '@/components/StructuredData';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { PaymentButton } from '@/hooks/usePayment';
+import { logger } from '@/lib/logger';
 
 interface Chapter {
-  id: string
-  title: string
-  order_index: number
-  duration: number
-  is_preview?: boolean
-  description?: string
-  difficulty?: 'beginner' | 'intermediate' | 'advanced'
-  objectives?: string[]
+  id: string;
+  title: string;
+  order_index: number;
+  duration: number;
+  is_preview?: boolean;
+  description?: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  objectives?: string[];
 }
 
 interface Section {
-  id: string
-  title: string
-  description?: string
-  chapters: Chapter[]
-  total_duration: number
+  id: string;
+  title: string;
+  description?: string;
+  chapters: Chapter[];
+  total_duration: number;
 }
 
 interface Lecture {
-  id: string
-  title: string
-  description: string
-  instructor_name: string
-  category: string
-  level: string
-  duration: number
-  price: number
-  preview_url?: string
-  thumbnail_url?: string
-  tags?: string[]
-  objectives?: string[]
-  requirements?: string[]
-  target_audience?: string[]
-  chapters?: Chapter[]
-  student_count?: number
-  rating?: number
+  id: string;
+  title: string;
+  description: string;
+  instructor_name: string;
+  category: string;
+  level: string;
+  duration: number;
+  price: number;
+  preview_url?: string;
+  thumbnail_url?: string;
+  tags?: string[];
+  objectives?: string[];
+  requirements?: string[];
+  target_audience?: string[];
+  chapters?: Chapter[];
+  student_count?: number;
+  rating?: number;
 }
 
 interface Tag {
-  id: string
-  name: string
-  category: 'language' | 'framework' | 'level' | 'topic' | 'industry'
-  count: number
-  trending?: boolean
+  id: string;
+  name: string;
+  category: 'language' | 'framework' | 'level' | 'topic' | 'industry';
+  count: number;
+  trending?: boolean;
 }
 
 interface RecommendedLecture {
-  id: string
-  title: string
-  instructor_name: string
-  thumbnail_url?: string
-  category: string
-  level: 'beginner' | 'intermediate' | 'advanced'
-  duration: number
-  price: number
-  rating?: number
-  student_count?: number
-  tags?: string[]
-  reason: 'same_category' | 'same_instructor' | 'similar_level' | 'trending' | 'ai_recommended'
+  id: string;
+  title: string;
+  instructor_name: string;
+  thumbnail_url?: string;
+  category: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  duration: number;
+  price: number;
+  rating?: number;
+  student_count?: number;
+  tags?: string[];
+  reason: 'same_category' | 'same_instructor' | 'similar_level' | 'trending' | 'ai_recommended';
   discount?: {
-    original_price: number
-    discount_percentage: number
-  }
+    original_price: number;
+    discount_percentage: number;
+  };
 }
 
 const levelLabels = {
-  'beginner': '초급',
-  'intermediate': '중급',
-  'advanced': '고급'
-}
+  beginner: '초급',
+  intermediate: '중급',
+  advanced: '고급',
+};
 
 export default function LecturePreviewClient({ params }: { params: { id: string } }) {
-  const [lecture, setLecture] = useState<Lecture | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [_isEnrolled, _setIsEnrolled] = useState(false)
-  const [showStickyButton, setShowStickyButton] = useState(false)
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [recommendedLectures, setRecommendedLectures] = useState<RecommendedLecture[]>([])
-  const [availableTags, setAvailableTags] = useState<Tag[]>([])
-  const router = useRouter()
-  const { user } = useAuth()
+  const [lecture, setLecture] = useState<Lecture | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [_isEnrolled, _setIsEnrolled] = useState(false);
+  const [showStickyButton, setShowStickyButton] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [recommendedLectures, setRecommendedLectures] = useState<RecommendedLecture[]>([]);
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const router = useRouter();
+  const { user } = useAuth();
 
   const fetchLectureData = useCallback(async () => {
     try {
@@ -120,19 +120,20 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           .eq('user_id', user.id)
           .eq('lecture_id', params.id)
           .eq('status', 'active')
-          .single()
+          .single();
 
         if (enrollment) {
           // 이미 수강중이면 강의 페이지로 리다이렉트
-          router.push(`/lectures/${params.id}`)
-          return
+          router.push(`/lectures/${params.id}`);
+          return;
         }
       }
 
       // 강의 정보 조회
       const { data: lectureData } = await supabase
         .from('lectures')
-        .select(`
+        .select(
+          `
           *,
           chapters:lecture_chapters(
             id,
@@ -141,16 +142,19 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
             duration,
             is_preview
           )
-        `)
+        `
+        )
         .eq('id', params.id)
-        .single()
+        .single();
 
       if (lectureData) {
         setLecture({
           ...lectureData,
-          chapters: lectureData.chapters?.sort((a: Chapter, b: Chapter) => a.order_index - b.order_index) ?? []
-        } as Lecture)
-        
+          chapters:
+            lectureData.chapters?.sort((a: Chapter, b: Chapter) => a.order_index - b.order_index) ??
+            [],
+        } as Lecture);
+
         // 태그 데이터 생성
         if (lectureData.tags && Array.isArray(lectureData.tags)) {
           const tags: Tag[] = lectureData.tags.map((tag: string, index: number) => ({
@@ -158,45 +162,64 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
             name: tag,
             category: getTagCategory(tag),
             count: Math.floor(Math.random() * 100) + 10,
-            trending: Math.random() > 0.7
-          }))
-          setAvailableTags(tags)
+            trending: Math.random() > 0.7,
+          }));
+          setAvailableTags(tags);
         }
       }
-      
+
       // 추천 강의 로드
-      await fetchRecommendedLectures()
+      await fetchRecommendedLectures();
     } catch (error) {
-      logger.error('Error fetching lecture:', error)
+      logger.error('Error fetching lecture:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [params.id, user, router, fetchRecommendedLectures])
-  
+  }, [params.id, user, router]);
+
   const getTagCategory = (tag: string): Tag['category'] => {
-    const languageKeywords = ['javascript', 'python', 'react', 'vue', 'angular', 'typescript', 'java', 'c++', 'html', 'css']
-    const frameworkKeywords = ['nextjs', 'express', 'django', 'spring', 'flutter', 'react-native']
-    const levelKeywords = ['초급', '중급', '고급', 'beginner', 'intermediate', 'advanced']
-    const industryKeywords = ['ai', 'ml', '머신러닝', '인공지능', '블록체인', 'iot', '클라우드']
-    
-    const lowerTag = tag.toLowerCase()
-    
-    if (languageKeywords.some(keyword => lowerTag.includes(keyword))) {return 'language'}
-    if (frameworkKeywords.some(keyword => lowerTag.includes(keyword))) {return 'framework'}
-    if (levelKeywords.some(keyword => lowerTag.includes(keyword))) {return 'level'}
-    if (industryKeywords.some(keyword => lowerTag.includes(keyword))) {return 'industry'}
-    
-    return 'topic'
-  }
-  
+    const languageKeywords = [
+      'javascript',
+      'python',
+      'react',
+      'vue',
+      'angular',
+      'typescript',
+      'java',
+      'c++',
+      'html',
+      'css',
+    ];
+    const frameworkKeywords = ['nextjs', 'express', 'django', 'spring', 'flutter', 'react-native'];
+    const levelKeywords = ['초급', '중급', '고급', 'beginner', 'intermediate', 'advanced'];
+    const industryKeywords = ['ai', 'ml', '머신러닝', '인공지능', '블록체인', 'iot', '클라우드'];
+
+    const lowerTag = tag.toLowerCase();
+
+    if (languageKeywords.some(keyword => lowerTag.includes(keyword))) {
+      return 'language';
+    }
+    if (frameworkKeywords.some(keyword => lowerTag.includes(keyword))) {
+      return 'framework';
+    }
+    if (levelKeywords.some(keyword => lowerTag.includes(keyword))) {
+      return 'level';
+    }
+    if (industryKeywords.some(keyword => lowerTag.includes(keyword))) {
+      return 'industry';
+    }
+
+    return 'topic';
+  };
+
   const fetchRecommendedLectures = async () => {
     try {
       const { data: lecturesData } = await supabase
         .from('lectures')
         .select('*')
         .neq('id', params.id)
-        .limit(12)
-        
+        .limit(12);
+
       if (lecturesData) {
         const recommended: RecommendedLecture[] = lecturesData.map((lec: any) => ({
           id: lec.id,
@@ -211,105 +234,125 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           student_count: lec.student_count,
           tags: lec.tags,
           reason: getRecommendationReason(lec, lecture),
-          ...(Math.random() > 0.7 ? {
-            discount: {
-              original_price: lec.price,
-              discount_percentage: Math.floor(Math.random() * 30) + 10
-            }
-          } : {})
-        }))
-        setRecommendedLectures(recommended)
+          ...(Math.random() > 0.7
+            ? {
+                discount: {
+                  original_price: lec.price,
+                  discount_percentage: Math.floor(Math.random() * 30) + 10,
+                },
+              }
+            : {}),
+        }));
+        setRecommendedLectures(recommended);
       }
     } catch (error) {
-      logger.error('Error fetching recommended lectures:', error)
+      logger.error('Error fetching recommended lectures:', error);
     }
-  }
-  
-  const getRecommendationReason = (recommended: any, current: Lecture | null): RecommendedLecture['reason'] => {
-    if (!current) {return 'trending'}
-    
-    if (recommended.category === current.category) {return 'same_category'}
-    if (recommended.instructor_name === current.instructor_name) {return 'same_instructor'}
-    if (recommended.level === current.level) {return 'similar_level'}
-    if (Math.random() > 0.5) {return 'ai_recommended'}
-    
-    return 'trending'
-  }
+  };
+
+  const getRecommendationReason = (
+    recommended: any,
+    current: Lecture | null
+  ): RecommendedLecture['reason'] => {
+    if (!current) {
+      return 'trending';
+    }
+
+    if (recommended.category === current.category) {
+      return 'same_category';
+    }
+    if (recommended.instructor_name === current.instructor_name) {
+      return 'same_instructor';
+    }
+    if (recommended.level === current.level) {
+      return 'similar_level';
+    }
+    if (Math.random() > 0.5) {
+      return 'ai_recommended';
+    }
+
+    return 'trending';
+  };
 
   useEffect(() => {
-    void fetchLectureData()
-  }, [fetchLectureData])
+    void fetchLectureData();
+  }, [fetchLectureData]);
 
   // Sticky button scroll handler
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY
-      const shouldShow = scrollY > 800 // Show after scrolling 800px
-      setShowStickyButton(shouldShow)
-    }
+      const scrollY = window.scrollY;
+      const shouldShow = scrollY > 800; // Show after scrolling 800px
+      setShowStickyButton(shouldShow);
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleEnrollClick = () => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
-  }
-  
+  };
+
   const handleTagSelect = (tagId: string) => {
     if (!selectedTags.includes(tagId)) {
-      setSelectedTags([...selectedTags, tagId])
+      setSelectedTags([...selectedTags, tagId]);
     }
-  }
-  
+  };
+
   const handleTagRemove = (tagId: string) => {
-    setSelectedTags(selectedTags.filter(id => id !== tagId))
-  }
-  
+    setSelectedTags(selectedTags.filter(id => id !== tagId));
+  };
+
   const handleTagSearch = (_query: string) => {
     // 태그 검색 로직 추가 가능
-  }
-  
-  const handleRecommendedLectureClick = (lectureId: string) => {
-    router.push(`/lectures/${lectureId}/preview`)
-  }
-  
-  // 섹션 데이터 준비 (커리큘럼 아코디언용)
-  const curriculumSections: Section[] = lecture?.chapters ? [
-    {
-      id: 'main-curriculum',
-      title: '메인 커리큘럼',
-      description: '이 강의의 핵심 내용을 단계별로 학습합니다.',
-      chapters: lecture.chapters.map(ch => ({
-        ...ch,
-        difficulty: ch.difficulty ?? (
-          ch.order_index <= 2 ? 'beginner' : 
-          ch.order_index <= 5 ? 'intermediate' : 'advanced'
-        ),
-        description: ch.description ?? `${ch.title}에 대한 상세한 설명과 실습을 통해 학습합니다.`,
-        objectives: ch.objectives ?? [
-          `${ch.title}의 기본 개념 이해`,
-          '실제 프로젝트에 적용하기',
-          '베스트 프렉티스 습득'
-        ]
-      })),
-      total_duration: lecture.chapters.reduce((sum, ch) => sum + ch.duration, 0)
-    }
-  ] : []
+  };
 
-  const totalDuration = lecture?.chapters?.reduce((sum, ch) => sum + ch.duration, 0) ?? 0
-  const totalChapters = lecture?.chapters?.length ?? 0
+  const handleRecommendedLectureClick = (lectureId: string) => {
+    router.push(`/lectures/${lectureId}/preview`);
+  };
+
+  // 섹션 데이터 준비 (커리큘럼 아코디언용)
+  const curriculumSections: Section[] = lecture?.chapters
+    ? [
+        {
+          id: 'main-curriculum',
+          title: '메인 커리큘럼',
+          description: '이 강의의 핵심 내용을 단계별로 학습합니다.',
+          chapters: lecture.chapters.map(ch => ({
+            ...ch,
+            difficulty:
+              ch.difficulty ??
+              (ch.order_index <= 2
+                ? 'beginner'
+                : ch.order_index <= 5
+                  ? 'intermediate'
+                  : 'advanced'),
+            description:
+              ch.description ?? `${ch.title}에 대한 상세한 설명과 실습을 통해 학습합니다.`,
+            objectives: ch.objectives ?? [
+              `${ch.title}의 기본 개념 이해`,
+              '실제 프로젝트에 적용하기',
+              '베스트 프렉티스 습득',
+            ],
+          })),
+          total_duration: lecture.chapters.reduce((sum, ch) => sum + ch.duration, 0),
+        },
+      ]
+    : [];
+
+  const totalDuration = lecture?.chapters?.reduce((sum, ch) => sum + ch.duration, 0) ?? 0;
+  const totalChapters = lecture?.chapters?.length ?? 0;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   if (!lecture) {
@@ -320,22 +363,25 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           <h1 className="text-2xl font-bold text-offWhite-200">강의를 찾을 수 없습니다</h1>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-deepBlack-900">
       <Header currentPage="lectures" />
-      
+
       {/* Structured Data */}
       {lecture && (
         <>
           <CourseStructuredData course={lecture} />
-          <BreadcrumbStructuredData 
+          <BreadcrumbStructuredData
             items={[
               { name: '홈', url: 'https://dduksanglab.com' },
               { name: '강의', url: 'https://dduksanglab.com/lectures' },
-              { name: lecture.title, url: `https://dduksanglab.com/lectures/${lecture.id}/preview` }
+              {
+                name: lecture.title,
+                url: `https://dduksanglab.com/lectures/${lecture.id}/preview`,
+              },
             ]}
           />
         </>
@@ -345,7 +391,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
       <section className="relative pt-20 pb-0 overflow-hidden">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-deepBlack-900" />
-        
+
         {/* Hero content container */}
         <div className="relative z-10">
           <div className="container mx-auto px-4">
@@ -370,13 +416,15 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                     <span className="px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 text-metallicGold-400 rounded-full text-sm font-medium border border-metallicGold-500/30">
                       {lecture.category}
                     </span>
-                    <span className={`px-4 py-2 rounded-full text-sm font-medium border ${
-                      lecture.level === "beginner" 
-                        ? "bg-green-500/20 text-green-400 border-green-500/30" 
-                        : lecture.level === "intermediate" 
-                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" 
-                        : "bg-red-500/20 text-red-400 border-red-500/30"
-                    }`}>
+                    <span
+                      className={`px-4 py-2 rounded-full text-sm font-medium border ${
+                        lecture.level === 'beginner'
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                          : lecture.level === 'intermediate'
+                            ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                            : 'bg-red-500/20 text-red-400 border-red-500/30'
+                      }`}
+                    >
                       {levelLabels[lecture.level as keyof typeof levelLabels]}
                     </span>
                   </div>
@@ -423,8 +471,8 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                   {lecture.tags && lecture.tags.length > 0 && (
                     <div className="flex flex-wrap gap-3 mb-8">
                       {lecture.tags.map((tag, index) => (
-                        <span 
-                          key={index} 
+                        <span
+                          key={index}
                           className="px-3 py-1 bg-deepBlack-600/50 backdrop-blur-sm text-offWhite-500 rounded-full text-sm border border-deepBlack-300"
                         >
                           #{tag}
@@ -459,7 +507,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                           <div
                             className="w-full h-full object-cover bg-cover bg-center"
                             style={{
-                              backgroundImage: `url(${lecture.thumbnail_url})`
+                              backgroundImage: `url(${lecture.thumbnail_url})`,
                             }}
                           />
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -476,7 +524,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Pricing section */}
                     <div className="text-center mb-6">
                       <p className="text-offWhite-600 text-sm mb-2">수강료</p>
@@ -533,8 +581,8 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                   </div>
                   <ul className="space-y-4">
                     {lecture.objectives.map((objective, index) => (
-                      <motion.li 
-                        key={index} 
+                      <motion.li
+                        key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 + index * 0.1 }}
@@ -564,11 +612,12 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                     <h2 className="text-2xl font-bold text-offWhite-200">상세 커리큘럼</h2>
                   </div>
                   <p className="text-offWhite-500 mb-6">
-                    체계적으로 구성된 커리큘럼으로 단계별 학습이 가능합니다. 미리보기가 가능한 챕터를 먼저 확인해보세요.
+                    체계적으로 구성된 커리큘럼으로 단계별 학습이 가능합니다. 미리보기가 가능한
+                    챕터를 먼저 확인해보세요.
                   </p>
                 </div>
-                
-                <CurriculumAccordion 
+
+                <CurriculumAccordion
                   sections={curriculumSections}
                   showPreviewOnly={false}
                   className="mb-8"
@@ -591,8 +640,8 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                   </div>
                   <ul className="space-y-4">
                     {lecture.requirements.map((req, index) => (
-                      <motion.li 
-                        key={index} 
+                      <motion.li
+                        key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
@@ -605,7 +654,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                   </ul>
                 </motion.div>
               )}
-              
+
               {/* Interactive Tag System */}
               {availableTags.length > 0 && (
                 <motion.div
@@ -623,7 +672,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                   <p className="text-offWhite-500 mb-6">
                     이 강의와 관련된 태그를 클릭하여 비슷한 강의를 찾아보세요.
                   </p>
-                  
+
                   <TagSystem
                     tags={availableTags}
                     selectedTags={selectedTags}
@@ -654,7 +703,9 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                       <Award className="text-deepBlack-900" size={24} />
                     </div>
                     <div>
-                      <h4 className="font-bold text-offWhite-200 text-lg">{lecture.instructor_name}</h4>
+                      <h4 className="font-bold text-offWhite-200 text-lg">
+                        {lecture.instructor_name}
+                      </h4>
                       <p className="text-sm text-metallicGold-400 font-medium">전문 강사</p>
                     </div>
                   </div>
@@ -668,10 +719,12 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all"
                   >
-                    <h3 className="text-xl font-bold text-offWhite-200 mb-6">이런 분들께 추천해요</h3>
+                    <h3 className="text-xl font-bold text-offWhite-200 mb-6">
+                      이런 분들께 추천해요
+                    </h3>
                     <ul className="space-y-4">
                       {lecture.target_audience.map((audience, index) => (
-                        <motion.li 
+                        <motion.li
                           key={index}
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -681,7 +734,9 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                           <div className="w-6 h-6 bg-metallicGold-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                             <Users className="text-metallicGold-500" size={14} />
                           </div>
-                          <span className="text-sm text-offWhite-300 leading-relaxed">{audience}</span>
+                          <span className="text-sm text-offWhite-300 leading-relaxed">
+                            {audience}
+                          </span>
                         </motion.li>
                       ))}
                     </ul>
@@ -692,7 +747,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
           </div>
         </div>
       </section>
-      
+
       {/* Related Courses Recommendation Section */}
       {recommendedLectures.length > 0 && (
         <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-300/20 to-deepBlack-900">
@@ -722,11 +777,11 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
       {/* Sticky CTA Button */}
       <motion.div
         initial={{ y: 100, opacity: 0 }}
-        animate={{ 
-          y: showStickyButton ? 0 : 100, 
-          opacity: showStickyButton ? 1 : 0 
+        animate={{
+          y: showStickyButton ? 0 : 100,
+          opacity: showStickyButton ? 1 : 0,
         }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         className="fixed bottom-0 left-0 right-0 z-50 bg-deepBlack-900/95 backdrop-blur-md border-t border-metallicGold-900/30 p-4 shadow-2xl"
       >
         <div className="container mx-auto">
@@ -747,7 +802,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
                 </div>
               </div>
             </div>
-            
+
             {/* CTA Button */}
             <div className="flex-shrink-0">
               {user ? (
@@ -772,5 +827,5 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

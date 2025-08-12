@@ -1,139 +1,167 @@
 // FastCampus 스타일 UX 기능들을 위한 Supabase 서비스
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ===========================
 // 찜하기/북마크 서비스
 // ===========================
 
 export interface Bookmark {
-  id: string
-  user_id: string
-  lecture_id: string
-  created_at: string
+  id: string;
+  user_id: string;
+  lecture_id: string;
+  created_at: string;
 }
 
 export const bookmarkService = {
   // 북마크 추가
   async addBookmark(lectureId: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
       const { error } = await supabase
         .from('bookmarks')
-        .insert({ user_id: user.id, lecture_id: lectureId })
+        .insert({ user_id: user.id, lecture_id: lectureId });
 
-      if (error) {throw error}
-      return { success: true }
+      if (error) {
+        throw error;
+      }
+      return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
   },
 
   // 북마크 제거
   async removeBookmark(lectureId: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
       const { error } = await supabase
         .from('bookmarks')
         .delete()
         .eq('user_id', user.id)
-        .eq('lecture_id', lectureId)
+        .eq('lecture_id', lectureId);
 
-      if (error) {throw error}
-      return { success: true }
+      if (error) {
+        throw error;
+      }
+      return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
   },
 
   // 북마크 상태 확인
   async isBookmarked(lectureId: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return false}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return false;
+      }
 
       const { data, error } = await supabase
         .from('bookmarks')
         .select('id')
         .eq('user_id', user.id)
         .eq('lecture_id', lectureId)
-        .single()
+        .single();
 
-      return !error && !!data
+      return !error && !!data;
     } catch (error) {
-      return false
+      return false;
     }
   },
 
   // 사용자의 북마크 목록
   async getUserBookmarks(): Promise<Bookmark[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return []}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('bookmarks')
-        .select(`
+        .select(
+          `
           *,
           lectures (
             id, title, instructor_name, price, discount_price,
             duration, rating, level, thumbnail_url
           )
-        `)
+        `
+        )
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('북마크 조회 오류:', error)
-      return []
+      console.error('북마크 조회 오류:', error);
+      return [];
     }
-  }
-}
+  },
+};
 
 // ===========================
 // 리뷰 시스템 서비스
 // ===========================
 
 export interface LectureReview {
-  id: string
-  user_id: string
-  lecture_id: string
-  rating: number
-  title?: string
-  content?: string
-  is_verified: boolean
-  helpful_count: number
-  tags: string[]
-  created_at: string
-  updated_at: string
+  id: string;
+  user_id: string;
+  lecture_id: string;
+  rating: number;
+  title?: string;
+  content?: string;
+  is_verified: boolean;
+  helpful_count: number;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
   profiles?: {
-    name: string
-    avatar_url?: string
-  }
+    name: string;
+    avatar_url?: string;
+  };
 }
 
 export const reviewService = {
   // 리뷰 작성
   async createReview(review: {
-    lectureId: string
-    rating: number
-    title?: string
-    content?: string
-    tags?: string[]
+    lectureId: string;
+    rating: number;
+    title?: string;
+    content?: string;
+    tags?: string[];
   }): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
       // 수강 여부 확인
       const { data: enrollment } = await supabase
@@ -141,24 +169,24 @@ export const reviewService = {
         .select('id')
         .eq('user_id', user.id)
         .eq('lecture_id', review.lectureId)
-        .single()
+        .single();
 
-      const { error } = await supabase
-        .from('lecture_reviews')
-        .insert({
-          user_id: user.id,
-          lecture_id: review.lectureId,
-          rating: review.rating,
-          title: review.title,
-          content: review.content,
-          tags: review.tags ?? [],
-          is_verified: !!enrollment // 수강생인 경우 인증
-        })
+      const { error } = await supabase.from('lecture_reviews').insert({
+        user_id: user.id,
+        lecture_id: review.lectureId,
+        rating: review.rating,
+        title: review.title,
+        content: review.content,
+        tags: review.tags ?? [],
+        is_verified: !!enrollment, // 수강생인 경우 인증
+      });
 
-      if (error) {throw error}
-      return { success: true }
+      if (error) {
+        throw error;
+      }
+      return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
   },
 
@@ -167,28 +195,36 @@ export const reviewService = {
     try {
       const { data, error } = await supabase
         .from('lecture_reviews')
-        .select(`
+        .select(
+          `
           *,
           profiles (name, avatar_url)
-        `)
+        `
+        )
         .eq('lecture_id', lectureId)
         .order('helpful_count', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(limit)
+        .limit(limit);
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('리뷰 조회 오류:', error)
-      return []
+      console.error('리뷰 조회 오류:', error);
+      return [];
     }
   },
 
   // 리뷰 도움됨 평가
   async markHelpful(reviewId: string, isHelpful: boolean): Promise<{ success: boolean }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
       // 기존 평가 확인 및 업데이트/삽입
       const { data: existing } = await supabase
@@ -196,161 +232,183 @@ export const reviewService = {
         .select('id')
         .eq('user_id', user.id)
         .eq('review_id', reviewId)
-        .single()
+        .single();
 
       if (existing) {
         const { error } = await supabase
           .from('review_helpfulness')
           .update({ is_helpful: isHelpful })
-          .eq('id', existing.id)
-        if (error) {throw error}
+          .eq('id', existing.id);
+        if (error) {
+          throw error;
+        }
       } else {
-        const { error } = await supabase
-          .from('review_helpfulness')
-          .insert({
-            user_id: user.id,
-            review_id: reviewId,
-            is_helpful: isHelpful
-          })
-        if (error) {throw error}
+        const { error } = await supabase.from('review_helpfulness').insert({
+          user_id: user.id,
+          review_id: reviewId,
+          is_helpful: isHelpful,
+        });
+        if (error) {
+          throw error;
+        }
       }
 
-      return { success: true }
+      return { success: true };
     } catch (error) {
-      return { success: false }
+      return { success: false };
     }
-  }
-}
+  },
+};
 
 // ===========================
 // 게이미피케이션 서비스
 // ===========================
 
 export interface Badge {
-  id: string
-  name: string
-  display_name: string
-  description: string
-  icon: string
-  color: string
-  rarity: 'common' | 'rare' | 'epic' | 'legendary'
-  points: number
+  id: string;
+  name: string;
+  display_name: string;
+  description: string;
+  icon: string;
+  color: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  points: number;
 }
 
 export interface UserBadge {
-  id: string
-  badge_id: string
-  earned_at: string
-  progress: number
-  max_progress: number
-  badge_definitions: Badge
+  id: string;
+  badge_id: string;
+  earned_at: string;
+  progress: number;
+  max_progress: number;
+  badge_definitions: Badge;
 }
 
 export const gamificationService = {
   // 사용자 배지 조회
   async getUserBadges(): Promise<UserBadge[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return []}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('user_badges')
-        .select(`
+        .select(
+          `
           *,
           badge_definitions (*)
-        `)
+        `
+        )
         .eq('user_id', user.id)
-        .order('earned_at', { ascending: false })
+        .order('earned_at', { ascending: false });
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('배지 조회 오류:', error)
-      return []
+      console.error('배지 조회 오류:', error);
+      return [];
     }
   },
 
   // 학습 목표 조회
   async getLearningGoals(): Promise<any[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return []}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('learning_goals')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('학습 목표 조회 오류:', error)
-      return []
+      console.error('학습 목표 조회 오류:', error);
+      return [];
     }
   },
 
   // 학습 목표 생성
   async createLearningGoal(goal: {
-    title: string
-    target_value: number
-    unit: string
-    period: 'daily' | 'weekly' | 'monthly'
-    deadline?: string
+    title: string;
+    target_value: number;
+    unit: string;
+    period: 'daily' | 'weekly' | 'monthly';
+    deadline?: string;
   }): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
-      const { error } = await supabase
-        .from('learning_goals')
-        .insert({
-          user_id: user.id,
-          ...goal
-        })
+      const { error } = await supabase.from('learning_goals').insert({
+        user_id: user.id,
+        ...goal,
+      });
 
-      if (error) {throw error}
-      return { success: true }
+      if (error) {
+        throw error;
+      }
+      return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
   },
 
   // 학습 활동 기록
   async logActivity(activity: {
-    activity_type: string
-    activity_data?: any
-    points_earned?: number
+    activity_type: string;
+    activity_data?: any;
+    points_earned?: number;
   }): Promise<void> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return;
+      }
 
-      await supabase
-        .from('learning_activities')
-        .insert({
-          user_id: user.id,
-          ...activity
-        })
+      await supabase.from('learning_activities').insert({
+        user_id: user.id,
+        ...activity,
+      });
     } catch (error) {
-      console.error('활동 기록 오류:', error)
+      console.error('활동 기록 오류:', error);
     }
-  }
-}
+  },
+};
 
 // ===========================
 // 소셜 증명 서비스
 // ===========================
 
 export interface ActivityFeedItem {
-  id: string
-  user_name: string
-  activity_type: string
-  lecture_id: string
-  lecture_title: string
-  rating?: number
-  message?: string
-  created_at: string
+  id: string;
+  user_name: string;
+  activity_type: string;
+  lecture_id: string;
+  lecture_title: string;
+  rating?: number;
+  message?: string;
+  created_at: string;
 }
 
 export const socialProofService = {
@@ -362,13 +420,15 @@ export const socialProofService = {
         .select('*')
         .eq('is_public', true)
         .order('created_at', { ascending: false })
-        .limit(limit)
+        .limit(limit);
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('활동 피드 조회 오류:', error)
-      return []
+      console.error('활동 피드 조회 오류:', error);
+      return [];
     }
   },
 
@@ -379,50 +439,53 @@ export const socialProofService = {
         .from('lecture_stats')
         .select('*')
         .eq('lecture_id', lectureId)
-        .single()
+        .single();
 
-      if (error) {throw error}
-      return data
+      if (error) {
+        throw error;
+      }
+      return data;
     } catch (error) {
-      console.error('강의 통계 조회 오류:', error)
-      return null
+      console.error('강의 통계 조회 오류:', error);
+      return null;
     }
   },
 
   // 실시간 통계 업데이트
-  async updateLectureStats(lectureId: string, stats: {
-    active_users_count?: number
-    completion_count_today?: number
-    total_enrollments?: number
-  }): Promise<void> {
-    try {
-      await supabase
-        .from('lecture_stats')
-        .upsert({
-          lecture_id: lectureId,
-          ...stats,
-          last_updated: new Date().toISOString()
-        })
-    } catch (error) {
-      console.error('통계 업데이트 오류:', error)
+  async updateLectureStats(
+    lectureId: string,
+    stats: {
+      active_users_count?: number;
+      completion_count_today?: number;
+      total_enrollments?: number;
     }
-  }
-}
+  ): Promise<void> {
+    try {
+      await supabase.from('lecture_stats').upsert({
+        lecture_id: lectureId,
+        ...stats,
+        last_updated: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('통계 업데이트 오류:', error);
+    }
+  },
+};
 
 // ===========================
 // 할인/긴급성 서비스
 // ===========================
 
 export interface DiscountCampaign {
-  id: string
-  name: string
-  lecture_id: string
-  discount_percentage: number
-  start_date: string
-  end_date: string
-  max_enrollments?: number
-  current_enrollments: number
-  is_active: boolean
+  id: string;
+  name: string;
+  lecture_id: string;
+  discount_percentage: number;
+  start_date: string;
+  end_date: string;
+  max_enrollments?: number;
+  current_enrollments: number;
+  is_active: boolean;
 }
 
 export const urgencyService = {
@@ -434,13 +497,15 @@ export const urgencyService = {
         .select('*')
         .eq('is_active', true)
         .gte('end_date', new Date().toISOString())
-        .order('discount_percentage', { ascending: false })
+        .order('discount_percentage', { ascending: false });
 
-      if (error) {throw error}
-      return data ?? []
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
     } catch (error) {
-      console.error('할인 캠페인 조회 오류:', error)
-      return []
+      console.error('할인 캠페인 조회 오류:', error);
+      return [];
     }
   },
 
@@ -455,15 +520,17 @@ export const urgencyService = {
         .gte('end_date', new Date().toISOString())
         .order('discount_percentage', { ascending: false })
         .limit(1)
-        .single()
+        .single();
 
-      if (error) {return null}
-      return data
+      if (error) {
+        return null;
+      }
+      return data;
     } catch (error) {
-      return null
+      return null;
     }
-  }
-}
+  },
+};
 
 // ===========================
 // 상호작용 서비스
@@ -472,54 +539,58 @@ export const urgencyService = {
 export const interactionService = {
   // 강사에게 질문하기
   async askQuestion(question: {
-    lectureId: string
-    question: string
+    lectureId: string;
+    question: string;
   }): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {throw new Error('로그인이 필요합니다')}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('로그인이 필요합니다');
+      }
 
       // 강의 정보 조회로 강사 ID 가져오기
       const { data: lecture } = await supabase
         .from('lectures')
         .select('instructor_id')
         .eq('id', question.lectureId)
-        .single()
+        .single();
 
-      const { error } = await supabase
-        .from('instructor_qa')
-        .insert({
-          lecture_id: question.lectureId,
-          student_id: user.id,
-          instructor_id: lecture?.instructor_id,
-          question: question.question
-        })
+      const { error } = await supabase.from('instructor_qa').insert({
+        lecture_id: question.lectureId,
+        student_id: user.id,
+        instructor_id: lecture?.instructor_id,
+        question: question.question,
+      });
 
-      if (error) {throw error}
-      return { success: true }
+      if (error) {
+        throw error;
+      }
+      return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
   },
 
   // 무료 체험 접근 기록
   async recordFreeTrialAccess(lectureId: string): Promise<void> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      await supabase
-        .from('free_trial_access')
-        .upsert({
-          user_id: user?.id ?? null,
-          lecture_id: lectureId,
-          ip_address: null, // 클라이언트에서는 IP 주소를 직접 구할 수 없음
-          access_duration: 0
-        })
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      await supabase.from('free_trial_access').upsert({
+        user_id: user?.id ?? null,
+        lecture_id: lectureId,
+        ip_address: null, // 클라이언트에서는 IP 주소를 직접 구할 수 없음
+        access_duration: 0,
+      });
     } catch (error) {
-      console.error('무료 체험 기록 오류:', error)
+      console.error('무료 체험 기록 오류:', error);
     }
-  }
-}
+  },
+};
 
 // ===========================
 // 종합 대시보드 서비스
@@ -529,13 +600,18 @@ export const dashboardService = {
   // 사용자 학습 대시보드 데이터
   async getUserDashboard(): Promise<any> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return null}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return null;
+      }
 
       // 사용자 프로필과 학습 통계
       const { data: profile } = await supabase
         .from('profiles')
-        .select(`
+        .select(
+          `
           *,
           lecture_enrollments (
             id, status, progress_percentage, enrolled_at, completed_at
@@ -544,34 +620,36 @@ export const dashboardService = {
             id,
             badge_definitions (name, display_name, rarity, points)
           )
-        `)
+        `
+        )
         .eq('id', user.id)
-        .single()
+        .single();
 
-      return profile
+      return profile;
     } catch (error) {
-      console.error('대시보드 조회 오류:', error)
-      return null
+      console.error('대시보드 조회 오류:', error);
+      return null;
     }
   },
 
   // 학습 통계 업데이트
   async updateUserStats(stats: {
-    learning_streak?: number
-    total_learning_hours?: number
-    experience_points?: number
-    level?: number
+    learning_streak?: number;
+    total_learning_hours?: number;
+    experience_points?: number;
+    level?: number;
   }): Promise<void> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {return}
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        return;
+      }
 
-      await supabase
-        .from('profiles')
-        .update(stats)
-        .eq('id', user.id)
+      await supabase.from('profiles').update(stats).eq('id', user.id);
     } catch (error) {
-      console.error('통계 업데이트 오류:', error)
+      console.error('통계 업데이트 오류:', error);
     }
-  }
-}
+  },
+};

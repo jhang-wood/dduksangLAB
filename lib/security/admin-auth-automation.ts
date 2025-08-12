@@ -7,7 +7,7 @@ import { logger } from '@/lib/logger';
 import { getCredentialManager } from './credential-manager';
 import { getAccessControlManager, getClientIP } from './access-control';
 import { getOrchestrator } from '@/lib/mcp/orchestrator';
-import { getPlaywrightController } from '@/lib/mcp/playwright-controller';
+// import { getPlaywrightController } from '@/lib/mcp/playwright-controller'; // 사용하지 않음
 
 export interface AutoLoginOptions {
   maxRetries?: number;
@@ -67,7 +67,7 @@ export class AdminAuthAutomation {
       validateSession: true,
       ipWhitelist: [],
       userAgent: 'dduksangLAB-AutoBot/1.0',
-      ...options
+      ...options,
     };
 
     try {
@@ -79,17 +79,17 @@ export class AdminAuthAutomation {
         return {
           success: false,
           error: '보안 검증 실패',
-          securityWarnings: securityCheck.warnings
+          securityWarnings: securityCheck.warnings,
         };
       }
 
       // 2. 기존 세션 확인
-      if (this.activeSession && await this.validateExistingSession()) {
+      if (this.activeSession && (await this.validateExistingSession())) {
         logger.info('기존 세션 재사용', { sessionId: this.activeSession.sessionId });
         return {
           success: true,
           sessionId: this.activeSession.sessionId,
-          sessionExpiry: this.activeSession.expiresAt
+          sessionExpiry: this.activeSession.expiresAt,
         };
       }
 
@@ -99,13 +99,13 @@ export class AdminAuthAutomation {
 
       // 4. 자동 로그인 실행 (재시도 로직 포함)
       let lastError: Error | null = null;
-      
+
       for (let attempt = 1; attempt <= finalOptions.maxRetries; attempt++) {
         try {
           logger.info(`로그인 시도 ${attempt}/${finalOptions.maxRetries}`);
 
           const loginResult = await this.executeLogin(credentials, sourceIP, finalOptions);
-          
+
           if (loginResult.success) {
             // 5. 세션 정보 저장
             this.activeSession = {
@@ -117,7 +117,7 @@ export class AdminAuthAutomation {
               expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24시간
               sourceIP: sourceIP,
               userAgent: finalOptions.userAgent,
-              isActive: true
+              isActive: true,
             };
 
             // 6. 세션 모니터링 시작
@@ -130,14 +130,14 @@ export class AdminAuthAutomation {
               timestamp: new Date(),
               success: true,
               user_agent: finalOptions.userAgent,
-              user_email: credentials.email
+              user_email: credentials.email,
             });
 
             const totalTime = Date.now() - startTime;
             logger.info('관리자 자동 로그인 성공', {
               sessionId: this.activeSession.sessionId,
               totalTime,
-              attempt
+              attempt,
             });
 
             return {
@@ -147,13 +147,12 @@ export class AdminAuthAutomation {
               performanceMetrics: {
                 loginTime: loginResult.performanceMetrics?.loginTime || 0,
                 validationTime: 0,
-                totalTime
-              }
+                totalTime,
+              },
             };
           }
 
           lastError = new Error(loginResult.error || '로그인 실패');
-
         } catch (error) {
           lastError = error as Error;
           logger.warn(`로그인 시도 ${attempt} 실패`, { error: lastError.message });
@@ -172,19 +171,18 @@ export class AdminAuthAutomation {
         success: false,
         user_agent: finalOptions.userAgent,
         user_email: credentials.email,
-        failure_reason: lastError?.message || '알 수 없는 오류'
+        failure_reason: lastError?.message || '알 수 없는 오류',
       });
 
       return {
         success: false,
-        error: `모든 로그인 시도 실패: ${lastError?.message}`
+        error: `모든 로그인 시도 실패: ${lastError?.message}`,
       };
-
     } catch (error) {
       logger.error('관리자 자동 로그인 오류', { error });
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -206,7 +204,7 @@ export class AdminAuthAutomation {
       if (!isIPAllowed) {
         return {
           passed: false,
-          warnings: ['차단된 IP에서의 접근 시도']
+          warnings: ['차단된 IP에서의 접근 시도'],
         };
       }
 
@@ -223,14 +221,13 @@ export class AdminAuthAutomation {
 
       return {
         passed: true,
-        warnings
+        warnings,
       };
-
     } catch (error) {
       logger.error('보안 검증 오류', { error });
       return {
         passed: false,
-        warnings: ['보안 검증 중 오류 발생']
+        warnings: ['보안 검증 중 오류 발생'],
       };
     }
   }
@@ -249,7 +246,7 @@ export class AdminAuthAutomation {
       // PlaywrightMCP를 통한 로그인
       const orchestrator = getOrchestrator({
         captureScreenshots: options.captureScreenshot,
-        performanceMonitoring: true
+        performanceMonitoring: true,
       });
 
       if (!orchestrator.isReady()) {
@@ -258,7 +255,7 @@ export class AdminAuthAutomation {
 
       const loginResult = await orchestrator.executeLoginWorkflow({
         email: credentials.email,
-        password: credentials.password
+        password: credentials.password,
       });
 
       const loginTime = Date.now() - loginStartTime;
@@ -270,21 +267,20 @@ export class AdminAuthAutomation {
           performanceMetrics: {
             loginTime,
             validationTime: 0,
-            totalTime: loginTime
-          }
+            totalTime: loginTime,
+          },
         };
       }
 
       return {
         success: false,
-        error: loginResult.error || '로그인 실패'
+        error: loginResult.error || '로그인 실패',
       };
-
     } catch (error) {
       logger.error('로그인 실행 오류', { error });
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -293,17 +289,19 @@ export class AdminAuthAutomation {
    * 기존 세션 유효성 검증
    */
   private async validateExistingSession(): Promise<boolean> {
-    if (!this.activeSession) {return false;}
+    if (!this.activeSession) {
+      return false;
+    }
 
     try {
       const accessControlManager = getAccessControlManager();
-      
+
       const isValid = await accessControlManager.validateSession({
         sessionId: this.activeSession.sessionId,
         userId: this.activeSession.userId,
         createdAt: this.activeSession.createdAt,
         lastActivity: this.activeSession.lastActivity,
-        ip: this.activeSession.sourceIP
+        ip: this.activeSession.sourceIP,
       });
 
       if (!isValid) {
@@ -315,7 +313,6 @@ export class AdminAuthAutomation {
       // 마지막 활동 시간 업데이트
       this.activeSession.lastActivity = new Date();
       return true;
-
     } catch (error) {
       logger.error('세션 검증 오류', { error });
       return false;
@@ -326,19 +323,24 @@ export class AdminAuthAutomation {
    * 세션 모니터링 시작
    */
   private startSessionMonitoring(): void {
-    if (this.sessionCheckInterval) {return;}
+    if (this.sessionCheckInterval) {
+      return;
+    }
 
-    this.sessionCheckInterval = setInterval(async () => {
-      try {
-        const isValid = await this.validateExistingSession();
-        if (!isValid) {
-          logger.warn('세션이 만료되어 모니터링을 중지합니다');
-          this.stopSessionMonitoring();
+    this.sessionCheckInterval = setInterval(
+      async () => {
+        try {
+          const isValid = await this.validateExistingSession();
+          if (!isValid) {
+            logger.warn('세션이 만료되어 모니터링을 중지합니다');
+            this.stopSessionMonitoring();
+          }
+        } catch (error) {
+          logger.error('세션 모니터링 오류', { error });
         }
-      } catch (error) {
-        logger.error('세션 모니터링 오류', { error });
-      }
-    }, 5 * 60 * 1000); // 5분마다 체크
+      },
+      5 * 60 * 1000
+    ); // 5분마다 체크
 
     logger.info('세션 모니터링 시작');
   }
@@ -368,7 +370,7 @@ export class AdminAuthAutomation {
     try {
       if (this.activeSession) {
         logger.info('관리자 세션 로그아웃', { sessionId: this.activeSession.sessionId });
-        
+
         const accessControlManager = getAccessControlManager();
         await accessControlManager.logSecurityEvent({
           type: 'login_success', // 정상적인 로그아웃
@@ -378,15 +380,14 @@ export class AdminAuthAutomation {
           description: '관리자 세션 로그아웃',
           timestamp: new Date(),
           metadata: {
-            session_duration: Date.now() - this.activeSession.createdAt.getTime()
-          }
+            session_duration: Date.now() - this.activeSession.createdAt.getTime(),
+          },
         });
 
         this.activeSession = null;
       }
 
       this.stopSessionMonitoring();
-
     } catch (error) {
       logger.error('로그아웃 오류', { error });
     }
@@ -427,12 +428,12 @@ export function getAdminAuthAutomation(): AdminAuthAutomation {
 export async function performAutoLogin(req: any): Promise<AutoLoginResult> {
   const sourceIP = getClientIP(req);
   const userAgent = req.headers['user-agent'] || 'dduksangLAB-AutoBot/1.0';
-  
+
   const automation = getAdminAuthAutomation();
-  
+
   return await automation.performSecureAutoLogin(sourceIP, {
     userAgent,
     captureScreenshot: false,
-    validateSession: true
+    validateSession: true,
   });
 }

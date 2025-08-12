@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { X } from 'lucide-react'
+import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
 
 export default function PaymentCancelPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4">
@@ -15,7 +15,8 @@ export default function PaymentCancelPage() {
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">결제가 취소되었습니다</h1>
           <p className="text-gray-400 mb-6">
-            결제를 취소하셨습니다.<br />
+            결제를 취소하셨습니다.
+            <br />
             언제든지 다시 시도하실 수 있습니다.
           </p>
           <div className="space-y-3">
@@ -35,5 +36,5 @@ export default function PaymentCancelPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

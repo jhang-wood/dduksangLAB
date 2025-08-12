@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { logger, userNotification } from '@/lib/logger'
+import { logger, userNotification } from '@/lib/logger';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { 
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import {
   ExternalLink,
   Search,
   Grid,
@@ -16,43 +16,52 @@ import {
   Eye,
   Upload,
   Camera,
-  X
-} from 'lucide-react'
+  X,
+} from 'lucide-react';
 
-import Header from '@/components/Header'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
-import { useRouter } from 'next/navigation'
+import Header from '@/components/Header';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
 
 interface Site {
-  id: string
-  name: string
-  description: string
-  url: string
-  thumbnail_url?: string
-  category: string
-  tags: string[]
-  creator_id: string
-  creator_name: string
-  views: number
-  likes: number
-  is_featured: boolean
-  is_trending: boolean
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  thumbnail_url?: string;
+  category: string;
+  tags: string[];
+  creator_id: string;
+  creator_name: string;
+  views: number;
+  likes: number;
+  is_featured: boolean;
+  is_trending: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-const categories = ["전체", "AI 도구", "포트폴리오", "블로그", "이커머스", "교육", "서비스", "기타"]
+const categories = [
+  '전체',
+  'AI 도구',
+  '포트폴리오',
+  '블로그',
+  '이커머스',
+  '교육',
+  '서비스',
+  '기타',
+];
 
 export default function SitesPage() {
-  const [sites, setSites] = useState<Site[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState("전체")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [viewMode, setViewMode] = useState("grid")
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const router = useRouter()
-  const { user } = useAuth()
+  const [sites, setSites] = useState<Site[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const router = useRouter();
+  const { user } = useAuth();
 
   // Form states for creating new site
   const [formData, setFormData] = useState({
@@ -61,12 +70,12 @@ export default function SitesPage() {
     url: '',
     thumbnail_url: '',
     category: 'AI 도구',
-    tags: ''
-  })
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+    tags: '',
+  });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchSites = useCallback(async () => {
     try {
@@ -74,88 +83,87 @@ export default function SitesPage() {
         .from('showcase_sites')
         .select('*')
         .eq('is_approved', true)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (selectedCategory !== "전체") {
-        query = query.eq('category', selectedCategory)
+      if (selectedCategory !== '전체') {
+        query = query.eq('category', selectedCategory);
       }
 
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`)
+        query = query.or(
+          `name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`
+        );
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
       if (error) {
-        logger.error('Error fetching sites:', error)
+        logger.error('Error fetching sites:', error);
       } else {
-        setSites(data ?? [])
+        setSites(data ?? []);
       }
     } catch (error: unknown) {
-      logger.error('Error:', error)
+      logger.error('Error:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [selectedCategory, searchTerm])
+  }, [selectedCategory, searchTerm]);
 
   useEffect(() => {
-    void fetchSites()
-  }, [fetchSites])
-
+    void fetchSites();
+  }, [fetchSites]);
 
   const uploadThumbnail = async (file: File) => {
     try {
-      setUploading(true)
-      
+      setUploading(true);
+
       // Create a unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-      const filePath = `site-thumbnails/${fileName}`
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `site-thumbnails/${fileName}`;
 
       // Upload file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(filePath, file)
+      const { error: uploadError } = await supabase.storage.from('uploads').upload(filePath, file);
 
       if (uploadError) {
-        throw uploadError
+        throw uploadError;
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('uploads')
-        .getPublicUrl(filePath)
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('uploads').getPublicUrl(filePath);
 
-      return publicUrl
+      return publicUrl;
     } catch (error: unknown) {
-      logger.error('Error uploading thumbnail:', error)
-      throw error
+      logger.error('Error uploading thumbnail:', error);
+      throw error;
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   const handleCreateSite = async () => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
 
     try {
-      setUploading(true)
-      
-      let thumbnailUrl = formData.thumbnail_url
-      
+      setUploading(true);
+
+      let thumbnailUrl = formData.thumbnail_url;
+
       // Upload thumbnail if file is selected
       if (thumbnailFile) {
-        thumbnailUrl = await uploadThumbnail(thumbnailFile)
+        thumbnailUrl = await uploadThumbnail(thumbnailFile);
       }
 
       const { data: profile } = await supabase
         .from('profiles')
         .select('name')
         .eq('id', user.id)
-        .single()
+        .single();
 
       const { data, error } = await supabase
         .from('showcase_sites')
@@ -165,30 +173,35 @@ export default function SitesPage() {
           url: formData.url,
           thumbnail_url: thumbnailUrl ?? null,
           category: formData.category,
-          tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
+          tags: formData.tags
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t),
           creator_id: user.id,
           creator_name: profile?.name ?? user.email?.split('@')[0] ?? '익명',
           views: 0,
           likes: 0,
           is_featured: false,
           is_trending: false,
-          is_approved: true // Auto-approve for now
+          is_approved: true, // Auto-approve for now
         })
         .select()
-        .single()
+        .single();
 
-      if (error) {throw error}
+      if (error) {
+        throw error;
+      }
 
-      setSites([data, ...sites])
-      setShowCreateModal(false)
-      resetForm()
+      setSites([data, ...sites]);
+      setShowCreateModal(false);
+      resetForm();
     } catch (error: unknown) {
-      logger.error('Error creating site:', error)
-      userNotification.alert('사이트 등록 중 오류가 발생했습니다.')
+      logger.error('Error creating site:', error);
+      userNotification.alert('사이트 등록 중 오류가 발생했습니다.');
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -197,88 +210,88 @@ export default function SitesPage() {
       url: '',
       thumbnail_url: '',
       category: 'AI 도구',
-      tags: ''
-    })
-    setThumbnailFile(null)
-    setThumbnailPreview(null)
+      tags: '',
+    });
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = '';
     }
-  }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
       // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        userNotification.alert('파일 크기는 5MB 이하여야 합니다.')
-        return
+        userNotification.alert('파일 크기는 5MB 이하여야 합니다.');
+        return;
       }
-      
+
       // Check file type
       if (!file.type.startsWith('image/')) {
-        userNotification.alert('이미지 파일만 업로드 가능합니다.')
-        return
+        userNotification.alert('이미지 파일만 업로드 가능합니다.');
+        return;
       }
-      
-      setThumbnailFile(file)
-      
+
+      setThumbnailFile(file);
+
       // Create preview
-      const reader = new FileReader()
-      reader.onload = (e) => {
+      const reader = new FileReader();
+      reader.onload = e => {
         if (e.target?.result && typeof e.target.result === 'string') {
-          setThumbnailPreview(e.target.result)
+          setThumbnailPreview(e.target.result);
         }
-      }
-      reader.readAsDataURL(file)
-      
+      };
+      reader.readAsDataURL(file);
+
       // Clear URL input when file is selected
-      setFormData({ ...formData, thumbnail_url: '' })
+      setFormData({ ...formData, thumbnail_url: '' });
     }
-  }
+  };
 
   const removeThumbnail = () => {
-    setThumbnailFile(null)
-    setThumbnailPreview(null)
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = '';
     }
-  }
+  };
 
   const handleLike = async (siteId: string) => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
 
     try {
       const { error } = await supabase.rpc('increment_site_likes', {
-        site_id: siteId
-      })
+        site_id: siteId,
+      });
 
       if (!error) {
-        setSites(sites.map(site => 
-          site.id === siteId ? { ...site, likes: site.likes + 1 } : site
-        ))
+        setSites(
+          sites.map(site => (site.id === siteId ? { ...site, likes: site.likes + 1 } : site))
+        );
       }
     } catch (error: unknown) {
-      logger.error('Error liking site:', error)
+      logger.error('Error liking site:', error);
     }
-  }
+  };
 
   const handleView = async (site: Site) => {
     // Increment view count
     try {
       await supabase.rpc('increment_site_views', {
-        site_id: site.id
-      })
+        site_id: site.id,
+      });
     } catch (error: unknown) {
-      logger.error('Error incrementing views:', error)
+      logger.error('Error incrementing views:', error);
     }
 
     // Open site in new tab
-    window.open(site.url, '_blank')
-  }
+    window.open(site.url, '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900">
@@ -299,10 +312,11 @@ export default function SitesPage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto mb-8 px-4 sm:px-0">
-              수강생들이 만든<br className="sm:hidden" />
+              수강생들이 만든
+              <br className="sm:hidden" />
               놀라운 프로젝트를 만나보세요
             </p>
-            
+
             {/* Centered Add Site Button */}
             {user && (
               <motion.button
@@ -329,13 +343,16 @@ export default function SitesPage() {
               {/* Search */}
               <div className="w-full">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600" size={18} />
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600"
+                    size={18}
+                  />
                   <input
                     type="text"
                     placeholder="사이트명이나 설명으로 검색..."
                     className="w-full pl-10 pr-4 py-3 bg-deepBlack-600/50 border border-metallicGold-900/30 rounded-lg text-offWhite-200 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent transition-all text-sm sm:text-base"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
@@ -344,7 +361,7 @@ export default function SitesPage() {
               <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2 flex-1">
-                  {categories.map((category) => (
+                  {categories.map(category => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -362,9 +379,9 @@ export default function SitesPage() {
                 {/* View Mode */}
                 <div className="flex gap-2 flex-shrink-0">
                   <button
-                    onClick={() => setViewMode("grid")}
+                    onClick={() => setViewMode('grid')}
                     className={`p-2 rounded-lg transition-all ${
-                      viewMode === "grid"
+                      viewMode === 'grid'
                         ? 'bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900'
                         : 'bg-deepBlack-600/50 text-offWhite-500 hover:text-metallicGold-500'
                     }`}
@@ -372,9 +389,9 @@ export default function SitesPage() {
                     <Grid size={18} />
                   </button>
                   <button
-                    onClick={() => setViewMode("list")}
+                    onClick={() => setViewMode('list')}
                     className={`p-2 rounded-lg transition-all ${
-                      viewMode === "list"
+                      viewMode === 'list'
                         ? 'bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900'
                         : 'bg-deepBlack-600/50 text-offWhite-500 hover:text-metallicGold-500'
                     }`}
@@ -397,9 +414,13 @@ export default function SitesPage() {
             </div>
           ) : (
             <>
-              <div className={`grid gap-4 sm:gap-6 ${
-                viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
-              }`}>
+              <div
+                className={`grid gap-4 sm:gap-6 ${
+                  viewMode === 'grid'
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                    : 'grid-cols-1'
+                }`}
+              >
                 {sites.map((site, index) => (
                   <motion.div
                     key={site.id}
@@ -412,9 +433,9 @@ export default function SitesPage() {
                     <div className="relative aspect-video bg-deepBlack-600 overflow-hidden">
                       {site.thumbnail_url ? (
                         <div
-                          className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300" 
+                          className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
                           style={{
-                            backgroundImage: `url(${site.thumbnail_url})`
+                            backgroundImage: `url(${site.thumbnail_url})`,
                           }}
                         />
                       ) : (
@@ -422,10 +443,10 @@ export default function SitesPage() {
                           <Globe className="w-16 h-16 text-metallicGold-500/30" />
                         </div>
                       )}
-                      
+
                       {/* Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      
+
                       {/* Tags */}
                       <div className="absolute top-4 left-4 flex gap-2">
                         {site.is_featured && (
@@ -444,7 +465,7 @@ export default function SitesPage() {
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => {
-                            void handleView(site)
+                            void handleView(site);
                           }}
                           className="px-6 py-3 bg-metallicGold-500 text-deepBlack-900 rounded-lg font-bold hover:bg-metallicGold-400 transition-colors flex items-center gap-2"
                         >
@@ -461,7 +482,10 @@ export default function SitesPage() {
                           {site.category}
                         </span>
                         {site.tags.slice(0, 2).map((tag, i) => (
-                          <span key={i} className="px-2 py-1 bg-deepBlack-600 text-offWhite-600 rounded text-xs">
+                          <span
+                            key={i}
+                            className="px-2 py-1 bg-deepBlack-600 text-offWhite-600 rounded text-xs"
+                          >
                             #{tag}
                           </span>
                         ))}
@@ -470,7 +494,7 @@ export default function SitesPage() {
                       <h3 className="text-lg sm:text-xl font-bold text-offWhite-200 mb-2 line-clamp-2">
                         {site.name}
                       </h3>
-                      
+
                       <p className="text-offWhite-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                         {site.description}
                       </p>
@@ -494,7 +518,7 @@ export default function SitesPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
-                            void handleView(site)
+                            void handleView(site);
                           }}
                           className="flex-1 px-3 sm:px-4 py-2 bg-deepBlack-600 text-offWhite-300 rounded-lg hover:bg-deepBlack-900 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                         >
@@ -503,7 +527,7 @@ export default function SitesPage() {
                         </button>
                         <button
                           onClick={() => {
-                            void handleLike(site.id)
+                            void handleLike(site.id);
                           }}
                           className="px-3 sm:px-4 py-2 bg-deepBlack-600 text-offWhite-300 rounded-lg hover:bg-red-500/20 hover:text-red-400 transition-colors"
                         >
@@ -560,19 +584,17 @@ export default function SitesPage() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                   placeholder="예: AI 콘텐츠 생성기"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-offWhite-500 mb-2">
-                  설명 *
-                </label>
+                <label className="block text-sm font-medium text-offWhite-500 mb-2">설명 *</label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 h-24"
                   placeholder="사이트에 대한 간단한 설명을 작성해주세요"
                 />
@@ -585,7 +607,7 @@ export default function SitesPage() {
                 <input
                   type="url"
                   value={formData.url}
-                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  onChange={e => setFormData({ ...formData, url: e.target.value })}
                   className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                   placeholder="https://your-site.com"
                 />
@@ -595,7 +617,7 @@ export default function SitesPage() {
                 <label className="block text-sm font-medium text-offWhite-500 mb-2">
                   썸네일 이미지 (선택사항)
                 </label>
-                
+
                 {/* File Upload Area */}
                 <div className="space-y-4">
                   {/* Preview Area */}
@@ -605,7 +627,7 @@ export default function SitesPage() {
                         <div
                           className="w-full h-full bg-cover bg-center"
                           style={{
-                            backgroundImage: `url(${thumbnailPreview ?? formData.thumbnail_url})`
+                            backgroundImage: `url(${thumbnailPreview ?? formData.thumbnail_url})`,
                           }}
                         />
                         <button
@@ -618,7 +640,7 @@ export default function SitesPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Upload Options */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* File Upload */}
@@ -639,13 +661,13 @@ export default function SitesPage() {
                         <span>파일 업로드</span>
                       </button>
                     </div>
-                    
+
                     {/* Screen Capture Button */}
                     <button
                       type="button"
                       onClick={() => {
                         // This will be implemented with a screen capture library
-                        userNotification.alert('화면 캡처 기능은 곧 추가됩니다!')
+                        userNotification.alert('화면 캡처 기능은 곧 추가됩니다!');
                       }}
                       className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 hover:bg-deepBlack-900 transition-colors flex items-center justify-center gap-2"
                     >
@@ -653,7 +675,7 @@ export default function SitesPage() {
                       <span>화면 캡처</span>
                     </button>
                   </div>
-                  
+
                   {/* URL Input */}
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -662,14 +684,14 @@ export default function SitesPage() {
                     <input
                       type="url"
                       value={formData.thumbnail_url}
-                      onChange={(e) => {
-                        setFormData({ ...formData, thumbnail_url: e.target.value })
+                      onChange={e => {
+                        setFormData({ ...formData, thumbnail_url: e.target.value });
                         if (e.target.value) {
                           // Clear file selection when URL is entered
-                          setThumbnailFile(null)
-                          setThumbnailPreview(null)
+                          setThumbnailFile(null);
+                          setThumbnailPreview(null);
                           if (fileInputRef.current) {
-                            fileInputRef.current.value = ''
+                            fileInputRef.current.value = '';
                           }
                         }
                       }}
@@ -678,7 +700,7 @@ export default function SitesPage() {
                       disabled={!!thumbnailFile}
                     />
                   </div>
-                  
+
                   <p className="text-xs text-offWhite-600">
                     💡 이미지는 5MB 이하, JPG/PNG 형식만 가능합니다
                   </p>
@@ -691,12 +713,16 @@ export default function SitesPage() {
                 </label>
                 <select
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={e => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                 >
-                  {categories.filter(cat => cat !== "전체").map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
+                  {categories
+                    .filter(cat => cat !== '전체')
+                    .map(category => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -707,7 +733,7 @@ export default function SitesPage() {
                 <input
                   type="text"
                   value={formData.tags}
-                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                  onChange={e => setFormData({ ...formData, tags: e.target.value })}
                   className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                   placeholder="AI, 자동화, 노코드"
                 />
@@ -716,8 +742,8 @@ export default function SitesPage() {
               <div className="flex gap-4 pt-6 border-t border-metallicGold-900/30">
                 <button
                   onClick={() => {
-                    setShowCreateModal(false)
-                    resetForm()
+                    setShowCreateModal(false);
+                    resetForm();
                   }}
                   className="flex-1 px-6 py-3 text-offWhite-600 hover:text-offWhite-200 transition-colors"
                 >
@@ -725,7 +751,7 @@ export default function SitesPage() {
                 </button>
                 <button
                   onClick={() => {
-                    void handleCreateSite()
+                    void handleCreateSite();
                   }}
                   disabled={!formData.name || !formData.description || !formData.url || uploading}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-semibold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -748,5 +774,5 @@ export default function SitesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

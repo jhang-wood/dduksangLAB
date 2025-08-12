@@ -1,41 +1,41 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { supabase } from '@/lib/supabase'
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { supabase } from '@/lib/supabase';
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage('')
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    setError('');
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`
-      })
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      setMessage('비밀번호 재설정 링크를 이메일로 전송했습니다. 이메일을 확인해주세요.')
+      setMessage('비밀번호 재설정 링크를 이메일로 전송했습니다. 이메일을 확인해주세요.');
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : '오류가 발생했습니다.')
+      setError(error instanceof Error ? error.message : '오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -74,17 +74,18 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
 
-              <form onSubmit={(e) => void handleResetPassword(e)} className="space-y-6">
+              <form onSubmit={e => void handleResetPassword(e)} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-offWhite-500 mb-2">
-                    이메일
-                  </label>
+                  <label className="block text-sm font-medium text-offWhite-500 mb-2">이메일</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600" size={20} />
+                    <Mail
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600"
+                      size={20}
+                    />
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={e => setEmail(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent transition-all"
                       placeholder="your@email.com"
                       required
@@ -115,5 +116,5 @@ export default function ForgotPasswordPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

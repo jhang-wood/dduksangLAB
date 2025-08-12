@@ -1,13 +1,12 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Play, 
-  X, 
-  ChevronDown, 
- 
-  MessageSquare, 
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Play,
+  X,
+  ChevronDown,
+  MessageSquare,
   Send,
   Clock,
   Users,
@@ -18,48 +17,50 @@ import {
   Volume2,
   Maximize,
   User,
-  Award
-} from 'lucide-react'
+  Award,
+} from 'lucide-react';
 
 // 강의 미리보기 모달
 interface PreviewModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   course: {
-    id: string
-    title: string
-    instructor: string
-    duration: string
-    description: string
-    thumbnail?: string
-    previewVideo?: string
+    id: string;
+    title: string;
+    instructor: string;
+    duration: string;
+    description: string;
+    thumbnail?: string;
+    previewVideo?: string;
     curriculum: Array<{
-      title: string
-      duration: string
-      isPreview: boolean
-    }>
-  }
+      title: string;
+      duration: string;
+      isPreview: boolean;
+    }>;
+  };
 }
 
 export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
-  const [activeTab, setActiveTab] = useState<'preview' | 'curriculum' | 'instructor'>('preview')
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
+  const [activeTab, setActiveTab] = useState<'preview' | 'curriculum' | 'instructor'>('preview');
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden';
       // 비디오 로딩 시뮬레이션
-      setTimeout(() => setIsVideoLoaded(true), 1000)
+      setTimeout(() => setIsVideoLoaded(true), 1000);
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
-  if (!isOpen) {return null}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
@@ -76,14 +77,12 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="bg-deepBlack-900 border border-metallicGold-900/30 rounded-2xl overflow-hidden max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* 헤더 */}
           <div className="flex items-center justify-between p-6 border-b border-metallicGold-900/20">
             <div>
-              <h2 className="text-xl font-bold text-offWhite-200">
-                {course.title}
-              </h2>
+              <h2 className="text-xl font-bold text-offWhite-200">{course.title}</h2>
               <p className="text-offWhite-500 mt-1">{course.instructor}</p>
             </div>
             <button
@@ -99,25 +98,26 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
             {[
               { id: 'preview' as const, label: '미리보기', icon: Play },
               { id: 'curriculum' as const, label: '커리큘럼', icon: BookOpen },
-              { id: 'instructor' as const, label: '강사소개', icon: User }
-            ].map((tab) => {
-              const IconComponent = tab.icon
+              { id: 'instructor' as const, label: '강사소개', icon: User },
+            ].map(tab => {
+              const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     flex items-center gap-2 px-6 py-4 font-medium transition-colors
-                    ${activeTab === tab.id 
-                      ? 'text-metallicGold-500 border-b-2 border-metallicGold-500' 
-                      : 'text-offWhite-500 hover:text-offWhite-300'
+                    ${
+                      activeTab === tab.id
+                        ? 'text-metallicGold-500 border-b-2 border-metallicGold-500'
+                        : 'text-offWhite-500 hover:text-offWhite-300'
                     }
                   `}
                 >
                   <IconComponent className="w-4 h-4" />
                   {tab.label}
                 </button>
-              )
+              );
             })}
           </div>
 
@@ -140,7 +140,7 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
                       >
                         <Play className="w-8 h-8 text-deepBlack-900 ml-1" />
                       </motion.div>
-                      
+
                       {/* 컨트롤 바 */}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="flex items-center gap-4 text-white">
@@ -174,9 +174,7 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
 
                 <div className="bg-deepBlack-300/50 rounded-xl p-4">
                   <h4 className="font-semibold text-offWhite-200 mb-2">강의 소개</h4>
-                  <p className="text-offWhite-400 leading-relaxed">
-                    {course.description}
-                  </p>
+                  <p className="text-offWhite-400 leading-relaxed">{course.description}</p>
                 </div>
               </div>
             )}
@@ -195,22 +193,16 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
                           {index + 1}
                         </div>
                         <div>
-                          <div className="font-medium text-offWhite-200">
-                            {lesson.title}
-                          </div>
+                          <div className="font-medium text-offWhite-200">{lesson.title}</div>
                           {lesson.isPreview && (
-                            <span className="text-xs text-metallicGold-500">
-                              무료 미리보기
-                            </span>
+                            <span className="text-xs text-metallicGold-500">무료 미리보기</span>
                           )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-offWhite-500">
                         <Clock className="w-4 h-4" />
                         <span className="text-sm">{lesson.duration}</span>
-                        {lesson.isPreview && (
-                          <Play className="w-4 h-4 text-metallicGold-500" />
-                        )}
+                        {lesson.isPreview && <Play className="w-4 h-4 text-metallicGold-500" />}
                       </div>
                     </div>
                   ))}
@@ -228,9 +220,7 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
                     <h4 className="text-xl font-bold text-offWhite-200 mb-2">
                       {course.instructor}
                     </h4>
-                    <p className="text-offWhite-400 mb-4">
-                      AI 자동화 전문가, 떡상연구소 대표
-                    </p>
+                    <p className="text-offWhite-400 mb-4">AI 자동화 전문가, 떡상연구소 대표</p>
                     <div className="flex items-center gap-4 text-sm text-offWhite-500">
                       <div className="flex items-center gap-1">
                         <BookOpen className="w-4 h-4" />
@@ -251,10 +241,9 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
                 <div className="bg-deepBlack-300/50 rounded-xl p-4">
                   <h5 className="font-semibold text-offWhite-200 mb-3">강사 소개</h5>
                   <p className="text-offWhite-400 leading-relaxed">
-                    10년 이상의 AI 개발 경험을 바탕으로 실무에서 바로 활용할 수 있는 
-                    자동화 솔루션을 개발하고 있습니다. 복잡한 기술을 쉽게 전달하는 
-                    것을 목표로 하여 많은 비개발자들이 AI의 힘을 활용할 수 있도록 
-                    돕고 있습니다.
+                    10년 이상의 AI 개발 경험을 바탕으로 실무에서 바로 활용할 수 있는 자동화 솔루션을
+                    개발하고 있습니다. 복잡한 기술을 쉽게 전달하는 것을 목표로 하여 많은
+                    비개발자들이 AI의 힘을 활용할 수 있도록 돕고 있습니다.
                   </p>
                 </div>
               </div>
@@ -265,12 +254,8 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
           <div className="p-6 border-t border-metallicGold-900/20 bg-deepBlack-800/50">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold text-metallicGold-500">
-                  ₩299,000
-                </div>
-                <div className="text-sm text-offWhite-500">
-                  정가 ₩398,000 (25% 할인)
-                </div>
+                <div className="text-2xl font-bold text-metallicGold-500">₩299,000</div>
+                <div className="text-sm text-offWhite-500">정가 ₩398,000 (25% 할인)</div>
               </div>
               <button className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all">
                 지금 수강하기
@@ -280,29 +265,29 @@ export function PreviewModal({ isOpen, onClose, course }: PreviewModalProps) {
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }
 
 // 커리큘럼 상세 펼치기/접기
 interface CurriculumSectionProps {
-  title: string
-  duration: string
+  title: string;
+  duration: string;
   lessons: Array<{
-    title: string
-    duration: string
-    isCompleted?: boolean
-    isPreview?: boolean
-  }>
-  isExpanded?: boolean
-  onToggle?: () => void
+    title: string;
+    duration: string;
+    isCompleted?: boolean;
+    isPreview?: boolean;
+  }>;
+  isExpanded?: boolean;
+  onToggle?: () => void;
 }
 
-export function CurriculumSection({ 
-  title, 
-  duration, 
-  lessons, 
-  isExpanded = false, 
-  onToggle 
+export function CurriculumSection({
+  title,
+  duration,
+  lessons,
+  isExpanded = false,
+  onToggle,
 }: CurriculumSectionProps) {
   return (
     <div className="border border-metallicGold-900/20 rounded-xl overflow-hidden">
@@ -316,13 +301,12 @@ export function CurriculumSection({
           </div>
           <div className="text-left">
             <h4 className="font-semibold text-offWhite-200">{title}</h4>
-            <p className="text-sm text-offWhite-500">{lessons.length}개 강의 • {duration}</p>
+            <p className="text-sm text-offWhite-500">
+              {lessons.length}개 강의 • {duration}
+            </p>
           </div>
         </div>
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="w-5 h-5 text-offWhite-400" />
         </motion.div>
       </button>
@@ -351,9 +335,11 @@ export function CurriculumSection({
                       )}
                     </div>
                     <div>
-                      <div className={`font-medium ${
-                        lesson.isCompleted ? 'text-offWhite-300' : 'text-offWhite-200'
-                      }`}>
+                      <div
+                        className={`font-medium ${
+                          lesson.isCompleted ? 'text-offWhite-300' : 'text-offWhite-200'
+                        }`}
+                      >
                         {lesson.title}
                       </div>
                       {lesson.isPreview && (
@@ -363,9 +349,7 @@ export function CurriculumSection({
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-offWhite-500">{lesson.duration}</span>
-                    {lesson.isPreview && (
-                      <Play className="w-4 h-4 text-metallicGold-500" />
-                    )}
+                    {lesson.isPreview && <Play className="w-4 h-4 text-metallicGold-500" />}
                   </div>
                 </div>
               ))}
@@ -374,30 +358,32 @@ export function CurriculumSection({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // 강사에게 질문하기 버튼/모달
 export function AskInstructorButton({ instructorName }: { instructorName: string }) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [message, setMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!message.trim()) {return}
+    e.preventDefault();
+    if (!message.trim()) {
+      return;
+    }
 
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true);
+
     // 실제로는 서버로 질문을 전송해야 함
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSubmitting(false)
-    setMessage('')
-    setIsModalOpen(false)
-    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
+    setMessage('');
+    setIsModalOpen(false);
+
     // 성공 알림 표시
-  }
+  };
 
   return (
     <>
@@ -423,12 +409,10 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-deepBlack-900 border border-metallicGold-900/30 rounded-2xl p-6 max-w-md w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-offWhite-200">
-                  강사에게 질문하기
-                </h3>
+                <h3 className="text-xl font-bold text-offWhite-200">강사에게 질문하기</h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="w-8 h-8 bg-deepBlack-300 hover:bg-deepBlack-200 rounded-lg flex items-center justify-center transition-colors"
@@ -443,12 +427,8 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
                     <User className="w-5 h-5 text-metallicGold-500" />
                   </div>
                   <div>
-                    <div className="font-semibold text-offWhite-200">
-                      {instructorName}
-                    </div>
-                    <div className="text-sm text-offWhite-500">
-                      보통 24시간 내 답변
-                    </div>
+                    <div className="font-semibold text-offWhite-200">{instructorName}</div>
+                    <div className="text-sm text-offWhite-500">보통 24시간 내 답변</div>
                   </div>
                 </div>
               </div>
@@ -457,7 +437,7 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
                 <div>
                   <textarea
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={e => setMessage(e.target.value)}
                     placeholder="궁금한 점을 자유롭게 질문해주세요. 강의 내용, 실습 관련 질문 등 무엇이든 좋습니다."
                     rows={4}
                     className="w-full p-3 bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-lg text-offWhite-200 placeholder-offWhite-500 focus:border-metallicGold-500/40 focus:outline-none resize-none"
@@ -501,25 +481,25 @@ export function AskInstructorButton({ instructorName }: { instructorName: string
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
 // 무료 체험 콘텐츠 접근
-export function FreeTrialContent({ 
+export function FreeTrialContent({
   course,
-  onStartTrial 
+  onStartTrial,
 }: {
   course: {
-    title: string
+    title: string;
     freeContent: {
-      videoUrl?: string
-      duration: string
-      description: string
-    }
-  }
-  onStartTrial: () => void
+      videoUrl?: string;
+      duration: string;
+      description: string;
+    };
+  };
+  onStartTrial: () => void;
 }) {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   return (
     <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-2xl p-6">
@@ -529,15 +509,13 @@ export function FreeTrialContent({
         </div>
         <div>
           <h3 className="text-lg font-bold text-green-400">무료 체험</h3>
-          <p className="text-sm text-offWhite-500">
-            구매 전 강의를 미리 경험해보세요
-          </p>
+          <p className="text-sm text-offWhite-500">구매 전 강의를 미리 경험해보세요</p>
         </div>
       </div>
 
       <div className="aspect-video bg-deepBlack-600 rounded-xl mb-4 overflow-hidden relative group">
         {!isVideoPlaying ? (
-          <div 
+          <div
             className="w-full h-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center cursor-pointer"
             onClick={() => setIsVideoPlaying(true)}
           >
@@ -548,7 +526,7 @@ export function FreeTrialContent({
             >
               <Play className="w-8 h-8 text-white ml-1" />
             </motion.div>
-            
+
             <div className="absolute bottom-4 left-4 text-white">
               <div className="text-sm font-medium">무료 미리보기</div>
               <div className="text-xs opacity-80">{course.freeContent.duration}</div>
@@ -565,9 +543,7 @@ export function FreeTrialContent({
       </div>
 
       <div className="space-y-4">
-        <p className="text-offWhite-400 leading-relaxed">
-          {course.freeContent.description}
-        </p>
+        <p className="text-offWhite-400 leading-relaxed">{course.freeContent.description}</p>
 
         <button
           onClick={onStartTrial}
@@ -582,5 +558,5 @@ export function FreeTrialContent({
         </div>
       </div>
     </div>
-  )
+  );
 }

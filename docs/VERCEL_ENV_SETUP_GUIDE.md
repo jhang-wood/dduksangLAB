@@ -5,6 +5,7 @@
 Vercel 대시보드 (https://vercel.com) 에서 다음 환경변수들을 설정해야 합니다:
 
 ### 1. Vercel 대시보드 접속
+
 1. https://vercel.com 로그인
 2. `dduksangLAB` 프로젝트 선택
 3. Settings → Environment Variables 이동
@@ -56,11 +57,13 @@ CRON_SECRET=dduksang-cron-secret-2025-secure
 ## 🔧 문제 해결
 
 ### 로그인이 안 될 경우
+
 1. Vercel 대시보드 → Functions 탭에서 에러 로그 확인
 2. 환경변수가 모두 올바르게 설정되었는지 확인
 3. 재배포 후 5분 정도 대기
 
 ### CSP 에러가 발생할 경우
+
 - `NEXT_PUBLIC_SUPABASE_URL`이 올바른지 확인
 - https로 시작하는지 확인 (http 아님)
 

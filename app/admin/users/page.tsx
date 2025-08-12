@@ -1,78 +1,70 @@
-'use client'
+'use client';
 
-import { userNotification, logger } from '@/lib/logger'
+import { userNotification, logger } from '@/lib/logger';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { 
-  Users, 
-  Search, 
-  Filter,
-  Trash2,
-  Shield,
-  ShieldCheck,
-  Eye
-} from 'lucide-react'
-import Header from '@/components/Header'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Users, Search, Filter, Trash2, Shield, ShieldCheck, Eye } from 'lucide-react';
+import Header from '@/components/Header';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
 
 interface User {
-  id: string
-  email: string
-  name: string | null
-  phone: string | null
-  role: string
-  avatar_url: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  role: string;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState('all')
-  const router = useRouter()
-  const { user } = useAuth()
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const router = useRouter();
+  const { user } = useAuth();
 
   const fetchUsers = useCallback(async () => {
     try {
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
+      let query = supabase.from('profiles').select('*').order('created_at', { ascending: false });
 
       if (roleFilter !== 'all') {
-        query = query.eq('role', roleFilter)
+        query = query.eq('role', roleFilter);
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
-      if (error) { throw error }
-      
-      let filteredUsers = data ?? []
-      
+      if (error) {
+        throw error;
+      }
+
+      let filteredUsers = data ?? [];
+
       if (searchTerm) {
-        filteredUsers = filteredUsers.filter((userData: any) => 
-          userData.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          userData.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        filteredUsers = filteredUsers.filter(
+          (userData: any) =>
+            userData.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            userData.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
       }
-      
-      setUsers(filteredUsers)
+
+      setUsers(filteredUsers);
     } catch (error) {
-      logger.error('Error fetching users:', error)
+      logger.error('Error fetching users:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [searchTerm, roleFilter])
+  }, [searchTerm, roleFilter]);
 
   const checkAdminAccess = useCallback(async () => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
 
     // Check if user is admin
@@ -80,76 +72,76 @@ export default function AdminUsersPage() {
       .from('profiles')
       .select('role')
       .eq('id', user.id)
-      .single()
+      .single();
 
     if (profile?.role !== 'admin') {
-      router.push('/')
-      return
+      router.push('/');
+      return;
     }
 
-    void fetchUsers()
-  }, [user, router, fetchUsers])
+    void fetchUsers();
+  }, [user, router, fetchUsers]);
 
   useEffect(() => {
-    void checkAdminAccess()
-  }, [checkAdminAccess])
+    void checkAdminAccess();
+  }, [checkAdminAccess]);
 
   useEffect(() => {
     if (!loading) {
-      void fetchUsers()
+      void fetchUsers();
     }
-  }, [fetchUsers, loading])
+  }, [fetchUsers, loading]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId)
+      const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
 
-      if (error) { throw error }
-      
-      void fetchUsers()
+      if (error) {
+        throw error;
+      }
+
+      void fetchUsers();
     } catch (error) {
-      logger.error('Error updating role:', error)
-      userNotification.alert('역할 변경 중 오류가 발생했습니다.')
+      logger.error('Error updating role:', error);
+      userNotification.alert('역할 변경 중 오류가 발생했습니다.');
     }
-  }
+  };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!userNotification.confirm('정말 이 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      return
+    if (
+      !userNotification.confirm('정말 이 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')
+    ) {
+      return;
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId)
+      const { error } = await supabase.from('profiles').delete().eq('id', userId);
 
-      if (error) { throw error }
-      
-      void fetchUsers()
+      if (error) {
+        throw error;
+      }
+
+      void fetchUsers();
     } catch (error) {
-      logger.error('Error deleting user:', error)
-      userNotification.alert('사용자 삭제 중 오류가 발생했습니다.')
+      logger.error('Error deleting user:', error);
+      userNotification.alert('사용자 삭제 중 오류가 발생했습니다.');
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
-    })
-  }
+      day: 'numeric',
+    });
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -159,9 +151,7 @@ export default function AdminUsersPage() {
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-offWhite-200">회원 관리</h1>
-          <div className="text-sm text-offWhite-600">
-            총 {users.length}명
-          </div>
+          <div className="text-sm text-offWhite-600">총 {users.length}명</div>
         </div>
 
         {/* Search and Filter */}
@@ -173,7 +163,7 @@ export default function AdminUsersPage() {
                 type="text"
                 placeholder="이메일 또는 이름으로 검색..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
               />
             </div>
@@ -181,7 +171,7 @@ export default function AdminUsersPage() {
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600 w-5 h-5" />
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={e => setRoleFilter(e.target.value)}
                 className="pl-10 pr-8 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
               >
                 <option value="all">모든 역할</option>
@@ -198,14 +188,22 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead className="bg-deepBlack-600 border-b border-metallicGold-900/30">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">사용자</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">역할</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">가입일</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">작업</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">
+                    사용자
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">
+                    역할
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">
+                    가입일
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-offWhite-500">
+                    작업
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-metallicGold-900/20">
-                {users.map((userData) => (
+                {users.map(userData => (
                   <motion.tr
                     key={userData.id}
                     initial={{ opacity: 0 }}
@@ -221,16 +219,14 @@ export default function AdminUsersPage() {
                           <div className="font-medium text-offWhite-200">
                             {userData.name ?? '이름 없음'}
                           </div>
-                          <div className="text-sm text-offWhite-600">
-                            {userData.email}
-                          </div>
+                          <div className="text-sm text-offWhite-600">{userData.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <select
                         value={userData.role}
-                        onChange={(e) => void handleRoleChange(userData.id, e.target.value)}
+                        onChange={e => void handleRoleChange(userData.id, e.target.value)}
                         className={`px-3 py-1 rounded-full text-xs font-medium border ${
                           userData.role === 'admin'
                             ? 'bg-red-500/20 text-red-400 border-red-500/30'
@@ -272,12 +268,8 @@ export default function AdminUsersPage() {
           {users.length === 0 && (
             <div className="text-center py-20">
               <Users className="w-16 h-16 text-offWhite-600 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-offWhite-600 mb-2">
-                사용자가 없습니다
-              </h3>
-              <p className="text-offWhite-600">
-                검색 조건을 확인해보세요
-              </p>
+              <h3 className="text-xl font-bold text-offWhite-600 mb-2">사용자가 없습니다</h3>
+              <p className="text-offWhite-600">검색 조건을 확인해보세요</p>
             </div>
           )}
         </div>
@@ -289,9 +281,7 @@ export default function AdminUsersPage() {
               <Users className="w-8 h-8 text-metallicGold-500" />
               <h3 className="text-lg font-semibold text-offWhite-200">전체 사용자</h3>
             </div>
-            <p className="text-3xl font-bold text-metallicGold-500">
-              {users.length}명
-            </p>
+            <p className="text-3xl font-bold text-metallicGold-500">{users.length}명</p>
           </div>
 
           <div className="bg-deepBlack-300 rounded-xl border border-metallicGold-900/30 p-6">
@@ -316,5 +306,5 @@ export default function AdminUsersPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

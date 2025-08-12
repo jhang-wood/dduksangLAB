@@ -10,16 +10,8 @@ const path = require('path');
 
 // 필수 환경변수 목록
 const REQUIRED_ENV_VARS = {
-  client: [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY'
-  ],
-  server: [
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'JWT_SECRET',
-    'ENCRYPTION_KEY',
-    'CRON_SECRET'
-  ]
+  client: ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'],
+  server: ['SUPABASE_SERVICE_ROLE_KEY', 'JWT_SECRET', 'ENCRYPTION_KEY', 'CRON_SECRET'],
 };
 
 // 선택적 환경변수 목록
@@ -38,7 +30,7 @@ const OPTIONAL_ENV_VARS = [
   'TELEGRAM_ALLOWED_USER_ID',
   'N8N_WEBHOOK_URL',
   'DATABASE_URL',
-  'ADMIN_ALLOWED_IPS'
+  'ADMIN_ALLOWED_IPS',
 ];
 
 // 보안 패턴 검사
@@ -46,7 +38,7 @@ const SECURITY_PATTERNS = {
   weak_secrets: /^(test|demo|example|secret|password|key|admin|123)$/i,
   short_secrets: /^.{1,15}$/,
   dummy_urls: /^https?:\/\/(example|test|demo|localhost)/i,
-  dummy_keys: /^(test_|example|demo|your-)/i
+  dummy_keys: /^(test_|example|demo|your-)/i,
 };
 
 class EnvValidator {
@@ -59,7 +51,7 @@ class EnvValidator {
   // 환경변수 로드
   loadEnvVars() {
     const envPath = path.join(process.cwd(), '.env.local');
-    
+
     if (!fs.existsSync(envPath)) {
       this.errors.push('❌ .env.local 파일이 존재하지 않습니다.');
       return {};
@@ -68,13 +60,16 @@ class EnvValidator {
     try {
       const envContent = fs.readFileSync(envPath, 'utf8');
       const envVars = {};
-      
+
       envContent.split('\n').forEach(line => {
         const trimmed = line.trim();
         if (trimmed && !trimmed.startsWith('#')) {
           const [key, ...valueParts] = trimmed.split('=');
           if (key && valueParts.length > 0) {
-            envVars[key.trim()] = valueParts.join('=').trim().replace(/^["']|["']$/g, '');
+            envVars[key.trim()] = valueParts
+              .join('=')
+              .trim()
+              .replace(/^["']|["']$/g, '');
           }
         }
       });
@@ -90,10 +85,10 @@ class EnvValidator {
   // 필수 환경변수 검증
   validateRequiredVars(envVars) {
     console.log('\n🔍 필수 환경변수 검증...');
-    
+
     Object.entries(REQUIRED_ENV_VARS).forEach(([type, vars]) => {
       console.log(`\n📋 ${type.toUpperCase()} 변수:`);
-      
+
       vars.forEach(varName => {
         if (envVars[varName]) {
           console.log(`  ✅ ${varName}`);
@@ -108,10 +103,10 @@ class EnvValidator {
   // 선택적 환경변수 확인
   validateOptionalVars(envVars) {
     console.log('\n📋 선택적 환경변수 확인...');
-    
+
     const setVars = [];
     const unsetVars = [];
-    
+
     OPTIONAL_ENV_VARS.forEach(varName => {
       if (envVars[varName]) {
         setVars.push(varName);
@@ -134,7 +129,7 @@ class EnvValidator {
   // 보안 검사
   validateSecurity(envVars) {
     console.log('\n🔒 보안 검사...');
-    
+
     Object.entries(envVars).forEach(([key, value]) => {
       // NEXT_PUBLIC_ 변수는 클라이언트에 노출됨
       if (key.startsWith('NEXT_PUBLIC_')) {
@@ -153,12 +148,12 @@ class EnvValidator {
         if (SECURITY_PATTERNS.weak_secrets.test(value)) {
           this.errors.push(`❌ ${key}: 약한 시크릿 사용 ('${value}')`);
         }
-        
+
         // 짧은 시크릿 검사
         if (SECURITY_PATTERNS.short_secrets.test(value)) {
           this.warnings.push(`⚠️  ${key}: 시크릿이 너무 짧습니다 (${value.length}자)`);
         }
-        
+
         // 더미 키 검사
         if (SECURITY_PATTERNS.dummy_keys.test(value)) {
           this.warnings.push(`⚠️  ${key}: 더미 키를 사용 중입니다`);
@@ -181,11 +176,11 @@ class EnvValidator {
     console.log('');
     console.log('2. 또는 Vercel CLI 사용:');
     console.log('   npm i -g vercel');
-    
+
     [...REQUIRED_ENV_VARS.client, ...REQUIRED_ENV_VARS.server].forEach(varName => {
       console.log(`   vercel env add ${varName}`);
     });
-    
+
     console.log('');
     console.log('3. 배포 전 체크:');
     console.log('   vercel env ls');
@@ -214,7 +209,7 @@ class EnvValidator {
     }
 
     console.log('\n' + '='.repeat(60));
-    
+
     if (this.errors.length === 0) {
       console.log('🎉 환경변수 검증 성공!');
       if (this.warnings.length > 0) {
@@ -231,9 +226,9 @@ class EnvValidator {
   // 메인 검증 실행
   validate() {
     console.log('🚀 dduksangLAB 환경변수 검증 시작...');
-    
+
     const envVars = this.loadEnvVars();
-    
+
     if (Object.keys(envVars).length === 0) {
       return this.generateReport();
     }
@@ -242,7 +237,7 @@ class EnvValidator {
     this.validateOptionalVars(envVars);
     this.validateSecurity(envVars);
     this.showVercelGuide();
-    
+
     return this.generateReport();
   }
 }

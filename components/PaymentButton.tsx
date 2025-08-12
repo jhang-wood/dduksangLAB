@@ -1,57 +1,60 @@
-'use client'
+'use client';
 
-import { logger, userNotification } from '@/lib/logger'
+import { logger, userNotification } from '@/lib/logger';
 
-import { useState } from 'react'
-import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp'
-import { useAuth } from '@/lib/auth-context'
+import { useState } from 'react';
+import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp';
+import { useAuth } from '@/lib/auth-context';
 
 interface PaymentButtonProps {
-  planId: keyof typeof PRICING_PLANS
-  className?: string
-  children?: React.ReactNode
+  planId: keyof typeof PRICING_PLANS;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export default function PaymentButton({ planId, className, children }: PaymentButtonProps) {
-  const [loading, setLoading] = useState(false)
-  const { user } = useAuth()
-  const plan = PRICING_PLANS[planId]
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const plan = PRICING_PLANS[planId];
 
   const handlePayment = (): void => {
     if (!user) {
-      userNotification.alert('로그인이 필요합니다.')
-      return
+      userNotification.alert('로그인이 필요합니다.');
+      return;
     }
 
-    setLoading(true)
-    
+    setLoading(true);
+
     try {
-      const orderId = generateOrderId()
+      const orderId = generateOrderId();
       const paymentUrl = generatePayAppUrl({
         orderId,
         userName: (user.user_metadata?.name as string) ?? user.email?.split('@')[0] ?? '고객',
         userEmail: user.email ?? '',
         planId,
-        amount: plan.price
-      })
+        amount: plan.price,
+      });
 
       // 새 창에서 결제 페이지 열기
-      window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
+      window.open(paymentUrl, 'payapp_payment', 'width=800,height=600');
     } catch (error) {
-      logger.error('결제 URL 생성 실패:', error)
-      userNotification.alert('결제 처리 중 오류가 발생했습니다.')
+      logger.error('결제 URL 생성 실패:', error);
+      userNotification.alert('결제 처리 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <button
       onClick={handlePayment}
       disabled={loading}
-      className={className ?? "px-6 py-3 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"}
+      className={
+        className ??
+        'px-6 py-3 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50'
+      }
     >
-      {loading ? '처리 중...' : children ?? `${plan.name} 구매하기`}
+      {loading ? '처리 중...' : (children ?? `${plan.name} 구매하기`)}
     </button>
-  )
+  );
 }

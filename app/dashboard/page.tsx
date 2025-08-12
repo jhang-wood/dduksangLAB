@@ -1,33 +1,27 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { motion } from 'framer-motion'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import {
-  BookOpen,
-  Trophy,
-  Clock,
-  Target,
-  ChevronRight
-} from 'lucide-react'
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAuth } from '@/lib/auth-context';
+import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { BookOpen, Trophy, Clock, Target, ChevronRight } from 'lucide-react';
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { user } = useAuth()
+  const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     // 로그인하지 않은 경우 로그인 페이지로 리디렉션
     if (!user) {
-      router.push('/auth/login')
+      router.push('/auth/login');
     }
-  }, [user, router])
+  }, [user, router]);
 
   if (!user) {
-    return null
+    return null;
   }
 
   // 더미 데이터 (실제로는 Supabase에서 가져와야 함)
@@ -37,8 +31,8 @@ export default function DashboardPage() {
     inProgress: 1,
     totalHours: 8,
     completedHours: 0,
-    streak: 0
-  }
+    streak: 0,
+  };
 
   const currentCourses = [
     {
@@ -47,9 +41,9 @@ export default function DashboardPage() {
       progress: 0,
       totalLessons: 5,
       completedLessons: 0,
-      nextLesson: 'AI 시대의 게임체인저가 되는 법'
-    }
-  ]
+      nextLesson: 'AI 시대의 게임체인저가 되는 법',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -68,9 +62,7 @@ export default function DashboardPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-4">
               안녕하세요, {user.email?.split('@')[0]}님! 👋
             </h1>
-            <p className="text-lg text-offWhite-500">
-              오늘도 AI 마스터가 되는 여정을 함께 해요
-            </p>
+            <p className="text-lg text-offWhite-500">오늘도 AI 마스터가 되는 여정을 함께 해요</p>
           </motion.div>
 
           {/* Stats Grid */}
@@ -99,7 +91,10 @@ export default function DashboardPage() {
                 <span className="text-sm text-offWhite-600">완료율</span>
               </div>
               <p className="text-3xl font-bold text-offWhite-200">
-                {stats.totalCourses > 0 ? Math.round((stats.completedCourses / stats.totalCourses) * 100) : 0}%
+                {stats.totalCourses > 0
+                  ? Math.round((stats.completedCourses / stats.totalCourses) * 100)
+                  : 0}
+                %
               </p>
               <p className="text-sm text-offWhite-500 mt-2">완료 {stats.completedCourses}개</p>
             </div>
@@ -124,7 +119,7 @@ export default function DashboardPage() {
             className="mb-12"
           >
             <h2 className="text-2xl font-bold text-offWhite-200 mb-6">진행 중인 강의</h2>
-            
+
             {currentCourses.map((course, index) => (
               <motion.div
                 key={course.id}
@@ -136,9 +131,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-offWhite-200 mb-2">{course.title}</h3>
-                    <p className="text-sm text-offWhite-500">
-                      다음 강의: {course.nextLesson}
-                    </p>
+                    <p className="text-sm text-offWhite-500">다음 강의: {course.nextLesson}</p>
                   </div>
                   <button
                     onClick={() => router.push(`/lectures/${course.id}`)}
@@ -148,11 +141,13 @@ export default function DashboardPage() {
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 {/* Progress Bar */}
                 <div className="mb-4">
                   <div className="flex justify-between text-sm text-offWhite-600 mb-2">
-                    <span>{course.completedLessons} / {course.totalLessons} 강의 완료</span>
+                    <span>
+                      {course.completedLessons} / {course.totalLessons} 강의 완료
+                    </span>
                     <span>{course.progress}%</span>
                   </div>
                   <div className="w-full bg-deepBlack-600/50 rounded-full h-2 overflow-hidden">
@@ -180,7 +175,8 @@ export default function DashboardPage() {
               AI 마스터가 되는 첫 걸음을 내딛으셨네요!
             </h2>
             <p className="text-lg text-offWhite-400 mb-6">
-              매일 조금씩, 꾸준히 학습하면 곧 AI의 지배자가 될 수 있습니다.<br />
+              매일 조금씩, 꾸준히 학습하면 곧 AI의 지배자가 될 수 있습니다.
+              <br />
               오늘도 화이팅! 💪
             </p>
             <button
@@ -193,5 +189,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

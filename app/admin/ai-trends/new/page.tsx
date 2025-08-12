@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { userNotification, logger } from '@/lib/logger'
+import { userNotification, logger } from '@/lib/logger';
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Eye } from 'lucide-react'
-import Link from 'next/link'
-import AdminHeader from '@/components/AdminHeader'
-import { useAuth } from '@/lib/auth-context'
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Eye } from 'lucide-react';
+import Link from 'next/link';
+import AdminHeader from '@/components/AdminHeader';
+import { useAuth } from '@/lib/auth-context';
 
 const categories = [
   { id: 'AI 기술', label: 'AI 기술' },
   { id: 'AI 도구', label: 'AI 도구' },
   { id: 'AI 활용', label: 'AI 활용' },
   { id: 'AI 비즈니스', label: 'AI 비즈니스' },
-  { id: 'AI 교육', label: 'AI 교육' }
-]
+  { id: 'AI 교육', label: 'AI 교육' },
+];
 
 export default function NewAITrendPage() {
-  const router = useRouter()
-  const { isAdmin } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [preview, setPreview] = useState(false)
-  
+  const router = useRouter();
+  const { isAdmin } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState(false);
+
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -37,41 +37,50 @@ export default function NewAITrendPage() {
     seo_description: '',
     seo_keywords: '',
     is_featured: false,
-    is_published: true
-  })
+    is_published: true,
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    const checked = (e.target as HTMLInputElement).checked
-    
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
+      [name]: type === 'checkbox' ? checked : value,
+    }));
 
     // Auto-generate slug from title
     if (name === 'title' && !formData.slug) {
-      const slug = value.toLowerCase()
+      const slug = value
+        .toLowerCase()
         .replace(/[^a-z0-9가-힣]/g, '-')
         .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-      setFormData(prev => ({ ...prev, slug }))
+        .replace(/^-|-$/g, '');
+      setFormData(prev => ({ ...prev, slug }));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!formData.title || !formData.summary || !formData.content || !formData.category) {
-      userNotification.alert('필수 항목을 모두 입력해주세요.')
-      return
+      userNotification.alert('필수 항목을 모두 입력해주세요.');
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const tags = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-      const seoKeywords = formData.seo_keywords.split(',').map(keyword => keyword.trim()).filter(Boolean)
+      const tags = formData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(Boolean);
+      const seoKeywords = formData.seo_keywords
+        .split(',')
+        .map(keyword => keyword.trim())
+        .filter(Boolean);
 
       const response = await fetch('/api/ai-trends', {
         method: 'POST',
@@ -84,70 +93,68 @@ export default function NewAITrendPage() {
           tags,
           seo_keywords: seoKeywords,
           seo_title: formData.seo_title ?? formData.title.substring(0, 70),
-          seo_description: formData.seo_description ?? formData.summary.substring(0, 160)
-        })
-      })
+          seo_description: formData.seo_description ?? formData.summary.substring(0, 160),
+        }),
+      });
 
-      const data = await response.json() as { error?: string }
+      const data = (await response.json()) as { error?: string };
 
       if (response.ok) {
-        userNotification.alert('AI 트렌드가 생성되었습니다.')
-        void router.push('/admin/ai-trends')
+        userNotification.alert('AI 트렌드가 생성되었습니다.');
+        void router.push('/admin/ai-trends');
       } else {
-        userNotification.alert(data.error ?? 'AI 트렌드 생성에 실패했습니다.')
+        userNotification.alert(data.error ?? 'AI 트렌드 생성에 실패했습니다.');
       }
     } catch (error) {
-      logger.error('Error creating trend:', error)
-      userNotification.alert('AI 트렌드 생성 중 오류가 발생했습니다.')
+      logger.error('Error creating trend:', error);
+      userNotification.alert('AI 트렌드 생성 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const renderContent = (content: string) => {
-    return content
-      .split('\n\n')
-      .map((paragraph, index) => {
-        if (paragraph.startsWith('### ')) {
-          return (
-            <h3 key={index} className="text-2xl font-bold text-offWhite-200 mb-4 mt-8">
-              {paragraph.replace('### ', '')}
-            </h3>
-          )
-        }
-        if (paragraph.startsWith('## ')) {
-          return (
-            <h2 key={index} className="text-3xl font-bold text-offWhite-200 mb-6 mt-10">
-              {paragraph.replace('## ', '')}
-            </h2>
-          )
-        }
-        if (paragraph.startsWith('- ')) {
-          const items = paragraph.split('\n').filter(line => line.startsWith('- '))
-          return (
-            <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
-              {items.map((item, i) => (
-                <li key={i}>{item.replace('- ', '')}</li>
-              ))}
-            </ul>
-          )
-        }
+    return content.split('\n\n').map((paragraph, index) => {
+      if (paragraph.startsWith('### ')) {
         return (
-          <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
-            {paragraph}
-          </p>
-        )
-      })
-  }
+          <h3 key={index} className="text-2xl font-bold text-offWhite-200 mb-4 mt-8">
+            {paragraph.replace('### ', '')}
+          </h3>
+        );
+      }
+      if (paragraph.startsWith('## ')) {
+        return (
+          <h2 key={index} className="text-3xl font-bold text-offWhite-200 mb-6 mt-10">
+            {paragraph.replace('## ', '')}
+          </h2>
+        );
+      }
+      if (paragraph.startsWith('- ')) {
+        const items = paragraph.split('\n').filter(line => line.startsWith('- '));
+        return (
+          <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
+            {items.map((item, i) => (
+              <li key={i}>{item.replace('- ', '')}</li>
+            ))}
+          </ul>
+        );
+      }
+      return (
+        <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
+          {paragraph}
+        </p>
+      );
+    });
+  };
 
   if (!isAdmin) {
-    return null
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-deepBlack-900">
       <AdminHeader />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -172,23 +179,23 @@ export default function NewAITrendPage() {
 
         {preview ? (
           <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-offWhite-200 mb-4">{formData.title ?? '제목'}</h2>
+            <h2 className="text-3xl font-bold text-offWhite-200 mb-4">
+              {formData.title ?? '제목'}
+            </h2>
             <p className="text-xl text-offWhite-500 mb-6">{formData.summary ?? '요약'}</p>
             <div className="prose prose-invert max-w-none">
               {renderContent(formData.content ?? '내용이 여기에 표시됩니다.')}
             </div>
           </div>
         ) : (
-          <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
+          <form onSubmit={e => void handleSubmit(e)} className="space-y-6">
             {/* Basic Information */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">기본 정보</h2>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-offWhite-400 mb-2">
-                    제목 *
-                  </label>
+                  <label className="block text-sm font-medium text-offWhite-400 mb-2">제목 *</label>
                   <input
                     type="text"
                     name="title"
@@ -234,9 +241,7 @@ export default function NewAITrendPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-offWhite-400 mb-2">
-                    요약 *
-                  </label>
+                  <label className="block text-sm font-medium text-offWhite-400 mb-2">요약 *</label>
                   <textarea
                     name="summary"
                     value={formData.summary}
@@ -281,7 +286,7 @@ export default function NewAITrendPage() {
             {/* Content */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">내용</h2>
-              
+
               <div>
                 <label className="block text-sm font-medium text-offWhite-400 mb-2">
                   본문 내용 * (마크다운 지원)
@@ -304,7 +309,7 @@ export default function NewAITrendPage() {
             {/* Source & SEO */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">출처 및 SEO</h2>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -382,7 +387,7 @@ export default function NewAITrendPage() {
             {/* Publishing Options */}
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-offWhite-200 mb-4">발행 옵션</h2>
-              
+
               <div className="space-y-3">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
@@ -429,5 +434,5 @@ export default function NewAITrendPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

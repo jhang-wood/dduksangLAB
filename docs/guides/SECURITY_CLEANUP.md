@@ -3,11 +3,14 @@
 ## ✅ 수행한 작업
 
 ### 1. Git에서 민감한 파일 제거
+
 - `.env.local` - 제거됨
 - `.env.production` - 제거됨
 
 ### 2. .gitignore 강화
+
 다음 패턴들이 추가되어 앞으로는 절대 커밋되지 않습니다:
+
 ```
 # Environment variables - NEVER COMMIT THESE
 .env
@@ -29,11 +32,13 @@ credentials/
 ```
 
 ### 3. 문서에서 민감한 정보 제거
+
 - `VERCEL_ENV_SETUP.md` - 모든 실제 키를 플레이스홀더로 교체
 - `VERCEL_BUILD_FIX.md` - 모든 실제 키를 플레이스홀더로 교체
 - `lib/payapp.ts` - 하드코딩된 시크릿 제거
 
 ### 4. 제거된 민감한 정보
+
 - Supabase API 키
 - PayApp 시크릿 키
 - Cloudflare API 토큰
@@ -79,6 +84,7 @@ git push origin --force --tags
 3. 문서화: 실제 값 대신 플레이스홀더 사용
 
 예시:
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://[your-project].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]

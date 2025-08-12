@@ -70,12 +70,9 @@ export class SupabaseController {
   async initialize(): Promise<void> {
     try {
       logger.info('SupabaseController 초기화 시작');
-      
+
       // 연결 테스트
-      const { data, error } = await this.client
-        .from('automation_logs')
-        .select('count')
-        .limit(1);
+      const { data: _data, error } = await this.client.from('automation_logs').select('count').limit(1); // 언더스코어 추가로 미사용 변수 표시
 
       if (error) {
         logger.error('Supabase 연결 테스트 실패', { error });
@@ -89,9 +86,8 @@ export class SupabaseController {
       await this.logAutomation({
         type: 'health_check',
         status: 'success',
-        message: 'SupabaseController 초기화 완료'
+        message: 'SupabaseController 초기화 완료',
       });
-
     } catch (error) {
       logger.error('SupabaseController 초기화 실패', { error });
       throw error;
@@ -106,7 +102,7 @@ export class SupabaseController {
       const logData = {
         ...log,
         created_at: new Date().toISOString(),
-        metadata: log.metadata ?? {}
+        metadata: log.metadata ?? {},
       };
 
       const { data, error } = await this.client
@@ -122,7 +118,6 @@ export class SupabaseController {
 
       logger.info('자동화 로그 기록 완료', { id: data.id, type: log.type });
       return data.id;
-
     } catch (error) {
       logger.error('자동화 로그 기록 중 예외 발생', { error });
       return null;
@@ -170,7 +165,6 @@ export class SupabaseController {
       }
 
       return data ?? [];
-
     } catch (error) {
       logger.error('자동화 로그 조회 중 예외 발생', { error });
       return [];
@@ -185,7 +179,7 @@ export class SupabaseController {
       const contentData = {
         ...content,
         updated_at: new Date().toISOString(),
-        created_at: content.created_at ?? new Date().toISOString()
+        created_at: content.created_at ?? new Date().toISOString(),
       };
 
       const { data, error } = await this.client
@@ -200,17 +194,16 @@ export class SupabaseController {
       }
 
       logger.info('콘텐츠 저장 완료', { id: data.id, title: content.title });
-      
+
       // 콘텐츠 작업 로그 기록
       await this.logAutomation({
         type: 'publish',
         status: 'success',
         message: `콘텐츠 저장: ${content.title}`,
-        metadata: { content_id: data.id, status: content.status }
+        metadata: { content_id: data.id, status: content.status },
       });
 
       return data.id;
-
     } catch (error) {
       logger.error('콘텐츠 저장 중 예외 발생', { error });
       return null;
@@ -220,11 +213,7 @@ export class SupabaseController {
   /**
    * 콘텐츠 항목 조회
    */
-  async getContent(
-    limit: number = 50,
-    status?: string,
-    category?: string
-  ): Promise<ContentItem[]> {
+  async getContent(limit: number = 50, status?: string, category?: string): Promise<ContentItem[]> {
     try {
       let query = this.client
         .from('content_items')
@@ -248,7 +237,6 @@ export class SupabaseController {
       }
 
       return data ?? [];
-
     } catch (error) {
       logger.error('콘텐츠 조회 중 예외 발생', { error });
       return [];
@@ -262,7 +250,7 @@ export class SupabaseController {
     try {
       const metricData = {
         ...metric,
-        timestamp: metric.timestamp ?? new Date().toISOString()
+        timestamp: metric.timestamp ?? new Date().toISOString(),
       };
 
       const { data, error } = await this.client
@@ -276,14 +264,13 @@ export class SupabaseController {
         return null;
       }
 
-      logger.info('성능 메트릭 기록 완료', { 
-        id: data.id, 
-        type: metric.metric_type, 
-        value: metric.value 
+      logger.info('성능 메트릭 기록 완료', {
+        id: data.id,
+        type: metric.metric_type,
+        value: metric.value,
       });
 
       return data.id;
-
     } catch (error) {
       logger.error('성능 메트릭 기록 중 예외 발생', { error });
       return null;
@@ -326,7 +313,6 @@ export class SupabaseController {
       }
 
       return data ?? [];
-
     } catch (error) {
       logger.error('성능 메트릭 조회 중 예외 발생', { error });
       return [];
@@ -340,7 +326,7 @@ export class SupabaseController {
     try {
       const healthData = {
         ...result,
-        checked_at: result.checked_at ?? new Date().toISOString()
+        checked_at: result.checked_at ?? new Date().toISOString(),
       };
 
       const { data, error } = await this.client
@@ -357,18 +343,21 @@ export class SupabaseController {
       // 헬스체크 로그도 함께 기록
       await this.logAutomation({
         type: 'health_check',
-        status: result.status === 'healthy' ? 'success' : 
-                result.status === 'unhealthy' ? 'failure' : 'warning',
+        status:
+          result.status === 'healthy'
+            ? 'success'
+            : result.status === 'unhealthy'
+              ? 'failure'
+              : 'warning',
         message: `헬스체크: ${result.service} - ${result.status}`,
-        metadata: { 
-          service: result.service, 
+        metadata: {
+          service: result.service,
           response_time: result.response_time,
-          error_message: result.error_message 
-        }
+          error_message: result.error_message,
+        },
       });
 
       return data.id;
-
     } catch (error) {
       logger.error('헬스체크 결과 기록 중 예외 발생', { error });
       return null;
@@ -392,7 +381,6 @@ export class SupabaseController {
       }
 
       return data ?? [];
-
     } catch (error) {
       logger.error('헬스체크 결과 조회 중 예외 발생', { error });
       return [];
@@ -433,12 +421,11 @@ export class SupabaseController {
         period_days: days,
         log_summary: this.calculateLogStats(logStats ?? []),
         performance_summary: this.calculatePerfStats(perfStats ?? []),
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       };
 
       logger.info('자동화 통계 조회 완료', { days, totalLogs: logStats?.length });
       return stats;
-
     } catch (error) {
       logger.error('자동화 통계 조회 중 예외 발생', { error });
       return {};
@@ -453,13 +440,13 @@ export class SupabaseController {
       total: logs.length,
       by_type: {} as Record<string, number>,
       by_status: {} as Record<string, number>,
-      success_rate: 0
+      success_rate: 0,
     };
 
     logs.forEach(log => {
       // 타입별 집계
       stats.by_type[log.type] = (stats.by_type[log.type] ?? 0) + 1;
-      
+
       // 상태별 집계
       stats.by_status[log.status] = (stats.by_status[log.status] ?? 0) + 1;
     });
@@ -477,11 +464,11 @@ export class SupabaseController {
   private calculatePerfStats(metrics: PerformanceMetric[]): Record<string, any> {
     const stats = {
       total_metrics: metrics.length,
-      by_type: {} as Record<string, { count: number; avg: number; min: number; max: number }>
+      by_type: {} as Record<string, { count: number; avg: number; min: number; max: number }>,
     };
 
     const typeGroups: Record<string, number[]> = {};
-    
+
     metrics.forEach(metric => {
       if (!typeGroups[metric.metric_type]) {
         typeGroups[metric.metric_type] = [];
@@ -494,7 +481,7 @@ export class SupabaseController {
         count: values.length,
         avg: values.reduce((a, b) => a + b, 0) / values.length,
         min: Math.min(...values),
-        max: Math.max(...values)
+        max: Math.max(...values),
       };
     });
 
@@ -530,7 +517,6 @@ export class SupabaseController {
       }
 
       logger.info('데이터베이스 정리 완료', { cutoff_date: cutoffDate.toISOString() });
-
     } catch (error) {
       logger.error('데이터베이스 정리 중 예외 발생', { error });
     }

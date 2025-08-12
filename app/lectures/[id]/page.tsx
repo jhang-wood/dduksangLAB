@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logger';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   Play,
   Pause,
@@ -18,119 +18,124 @@ import {
   BookOpen,
   MessageSquare,
   ChevronLeft,
-  ChevronRight
-} from 'lucide-react'
-import Header from '@/components/Header'
-import { 
-  getLectureWithChapters, 
-  checkEnrollment, 
+  ChevronRight,
+} from 'lucide-react';
+import Header from '@/components/Header';
+import {
+  getLectureWithChapters,
+  checkEnrollment,
   getLectureProgress,
-  updateLectureProgress 
-} from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
+  updateLectureProgress,
+} from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
 
 interface Chapter {
-  id: string
-  title: string
-  order_index: number
-  video_url: string
-  duration: number
-  description?: string
-  resources?: Array<{ title: string; url: string }>
+  id: string;
+  title: string;
+  order_index: number;
+  video_url: string;
+  duration: number;
+  description?: string;
+  resources?: Array<{ title: string; url: string }>;
 }
 
 interface Lecture {
-  id: string
-  title: string
-  description: string
-  instructor_name: string
-  category: string
-  level: string
-  duration: number
-  preview_url?: string
-  chapters?: Chapter[]
+  id: string;
+  title: string;
+  description: string;
+  instructor_name: string;
+  category: string;
+  level: string;
+  duration: number;
+  preview_url?: string;
+  chapters?: Chapter[];
 }
 
 interface Progress {
-  chapter_id: string
-  completed: boolean
-  watch_time: number
-  last_watched_at: string
+  chapter_id: string;
+  completed: boolean;
+  watch_time: number;
+  last_watched_at: string;
 }
 
 export default function LectureDetailPage({ params }: { params: { id: string } }) {
-  const [lecture, setLecture] = useState<Lecture | null>(null)
-  const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null)
-  const [progress, setProgress] = useState<Progress[]>([])
-  const [_enrollment, setEnrollment] = useState<{ id: string; user_id: string; lecture_id: string } | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [_volume, _setVolume] = useState(1)
-  const [isMuted, setIsMuted] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [showSidebar, setShowSidebar] = useState(true)
-  
-  const router = useRouter()
-  const { user } = useAuth()
+  const [lecture, setLecture] = useState<Lecture | null>(null);
+  const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
+  const [progress, setProgress] = useState<Progress[]>([]);
+  const [_enrollment, setEnrollment] = useState<{
+    id: string;
+    user_id: string;
+    lecture_id: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [_volume, _setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+  const router = useRouter();
+  const { user } = useAuth();
 
   const fetchLectureDataCallback = useCallback(async () => {
     try {
       // 수강 권한 확인
       if (!user) {
-        router.push('/auth/login')
-        return
+        router.push('/auth/login');
+        return;
       }
-      
-      const { data: enrollmentData } = await checkEnrollment(user.id, params.id)
+
+      const { data: enrollmentData } = await checkEnrollment(user.id, params.id);
 
       if (!enrollmentData) {
-        router.push(`/lectures/${params.id}/preview`)
-        return
+        router.push(`/lectures/${params.id}/preview`);
+        return;
       }
 
-      setEnrollment(enrollmentData as { id: string; user_id: string; lecture_id: string })
+      setEnrollment(enrollmentData as { id: string; user_id: string; lecture_id: string });
 
       // 강의 정보 조회 (챕터 포함)
-      const { data: lectureData } = await getLectureWithChapters(params.id)
+      const { data: lectureData } = await getLectureWithChapters(params.id);
 
       if (lectureData) {
-        setLecture(lectureData as Lecture)
-        
+        setLecture(lectureData as Lecture);
+
         // 첫 번째 챕터 자동 선택
-        const typedLectureData = lectureData as Lecture
+        const typedLectureData = lectureData as Lecture;
         if (typedLectureData.chapters && typedLectureData.chapters.length > 0) {
-          setCurrentChapter(typedLectureData.chapters[0] ?? null)
+          setCurrentChapter(typedLectureData.chapters[0] ?? null);
         }
       }
 
       // 진도 정보 조회
-      const { data: progressData } = await getLectureProgress(user.id, params.id)
+      const { data: progressData } = await getLectureProgress(user.id, params.id);
 
       if (progressData) {
-        setProgress(progressData as Progress[])
+        setProgress(progressData as Progress[]);
       }
     } catch (error) {
-      logger.error('Error fetching lecture:', error)
+      logger.error('Error fetching lecture:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [user, params.id, router])
+  }, [user, params.id, router]);
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
-    void fetchLectureDataCallback()
-  }, [user, router, fetchLectureDataCallback])
-
+    void fetchLectureDataCallback();
+  }, [user, router, fetchLectureDataCallback]);
 
   const updateProgress = async () => {
-    if (!currentChapter || !user) {return}
+    if (!currentChapter || !user) {
+      return;
+    }
 
     try {
-      const completed = currentTime >= duration * 0.9 // 90% 이상 시청시 완료
+      const completed = currentTime >= duration * 0.9; // 90% 이상 시청시 완료
 
       await updateLectureProgress(
         user.id,
@@ -138,70 +143,74 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
         currentChapter.id,
         Math.floor(currentTime),
         completed
-      )
+      );
     } catch (error) {
-      logger.error('Error updating progress:', error)
+      logger.error('Error updating progress:', error);
     }
-  }
+  };
 
   const handleChapterSelect = (chapter: Chapter) => {
     // 현재 진도 저장
-    void updateProgress()
-    setCurrentChapter(chapter)
-    setCurrentTime(0)
-    setIsPlaying(false)
-  }
+    void updateProgress();
+    setCurrentChapter(chapter);
+    setCurrentTime(0);
+    setIsPlaying(false);
+  };
 
   const handlePreviousChapter = () => {
     if (!lecture?.chapters || !currentChapter) {
-      return
+      return;
     }
-    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
+    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id);
     if (currentIndex > 0) {
-      const previousChapter = lecture.chapters[currentIndex - 1]
+      const previousChapter = lecture.chapters[currentIndex - 1];
       if (previousChapter) {
-        handleChapterSelect(previousChapter)
+        handleChapterSelect(previousChapter);
       }
     }
-  }
+  };
 
   const handleNextChapter = () => {
     if (!lecture?.chapters || !currentChapter) {
-      return
+      return;
     }
-    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id)
+    const currentIndex = lecture.chapters.findIndex(ch => ch.id === currentChapter.id);
     if (currentIndex < lecture.chapters.length - 1) {
-      const nextChapter = lecture.chapters[currentIndex + 1]
+      const nextChapter = lecture.chapters[currentIndex + 1];
       if (nextChapter) {
-        handleChapterSelect(nextChapter)
+        handleChapterSelect(nextChapter);
       }
     }
-  }
+  };
 
   const isChapterCompleted = (chapterId: string) => {
-    return progress.find(p => p.chapter_id === chapterId)?.completed ?? false
-  }
+    return progress.find(p => p.chapter_id === chapterId)?.completed ?? false;
+  };
 
   const getChapterProgress = (chapterId: string) => {
-    const chapterProgress = progress.find(p => p.chapter_id === chapterId)
-    if (!chapterProgress) {return 0}
-    const chapter = lecture?.chapters?.find(ch => ch.id === chapterId)
-    if (!chapter) {return 0}
-    return (chapterProgress.watch_time / chapter.duration) * 100
-  }
+    const chapterProgress = progress.find(p => p.chapter_id === chapterId);
+    if (!chapterProgress) {
+      return 0;
+    }
+    const chapter = lecture?.chapters?.find(ch => ch.id === chapterId);
+    if (!chapter) {
+      return 0;
+    }
+    return (chapterProgress.watch_time / chapter.duration) * 100;
+  };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   if (!lecture) {
@@ -212,7 +221,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
           <h1 className="text-2xl font-bold text-offWhite-200">강의를 찾을 수 없습니다</h1>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -221,11 +230,11 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
 
       <div className="flex pt-16">
         {/* Sidebar - Chapter List */}
-        <div className={`${showSidebar ? 'w-80' : 'w-0'} transition-all duration-300 bg-deepBlack-300 border-r border-metallicGold-900/30 overflow-hidden`}>
+        <div
+          className={`${showSidebar ? 'w-80' : 'w-0'} transition-all duration-300 bg-deepBlack-300 border-r border-metallicGold-900/30 overflow-hidden`}
+        >
           <div className="p-6">
-            <h2 className="text-xl font-bold text-offWhite-200 mb-6">
-              {lecture.title}
-            </h2>
+            <h2 className="text-xl font-bold text-offWhite-200 mb-6">{lecture.title}</h2>
             <div className="space-y-2">
               {lecture.chapters?.map((chapter, index) => (
                 <motion.div
@@ -259,7 +268,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
                       {getChapterProgress(chapter.id) > 0 && (
                         <div className="mt-2">
                           <div className="h-1 bg-deepBlack-900 rounded-full overflow-hidden">
-                            <div 
+                            <div
                               className="h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900"
                               style={{ width: `${getChapterProgress(chapter.id)}%` }}
                             />
@@ -282,8 +291,8 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
               <video
                 className="w-full h-full"
                 src={currentChapter.video_url}
-                onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-                onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+                onTimeUpdate={e => setCurrentTime(e.currentTarget.currentTime)}
+                onLoadedMetadata={e => setDuration(e.currentTarget.duration)}
                 onEnded={handleNextChapter}
               />
             ) : (
@@ -297,7 +306,7 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="h-1 bg-deepBlack-600 rounded-full cursor-pointer">
-                  <div 
+                  <div
                     className="h-full bg-metallicGold-500 rounded-full"
                     style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                   />
@@ -321,7 +330,11 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
                     onClick={() => setIsPlaying(!isPlaying)}
                     className="w-12 h-12 rounded-full bg-metallicGold-500 hover:bg-metallicGold-400 flex items-center justify-center transition-colors"
                   >
-                    {isPlaying ? <Pause size={24} className="text-deepBlack-900" /> : <Play size={24} className="text-deepBlack-900 ml-1" />}
+                    {isPlaying ? (
+                      <Pause size={24} className="text-deepBlack-900" />
+                    ) : (
+                      <Play size={24} className="text-deepBlack-900 ml-1" />
+                    )}
                   </button>
                   <button
                     onClick={handleNextChapter}
@@ -357,13 +370,9 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
           {/* Chapter Info */}
           {currentChapter && (
             <div className="p-8">
-              <h1 className="text-3xl font-bold text-offWhite-200 mb-4">
-                {currentChapter.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-offWhite-200 mb-4">{currentChapter.title}</h1>
               {currentChapter.description && (
-                <p className="text-offWhite-600 mb-8">
-                  {currentChapter.description}
-                </p>
+                <p className="text-offWhite-600 mb-8">{currentChapter.description}</p>
               )}
 
               {/* Resources */}
@@ -374,18 +383,22 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
                     학습 자료
                   </h3>
                   <div className="grid gap-4">
-                    {currentChapter.resources.map((resource: { title: string; url: string }, index: number) => (
-                      <a
-                        key={index}
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-4 bg-deepBlack-600 rounded-lg border border-metallicGold-900/30 hover:border-metallicGold-500 transition-all flex items-center justify-between group"
-                      >
-                        <span className="text-offWhite-200">{resource.title}</span>
-                        <span className="text-metallicGold-500 group-hover:translate-x-1 transition-transform">→</span>
-                      </a>
-                    ))}
+                    {currentChapter.resources.map(
+                      (resource: { title: string; url: string }, index: number) => (
+                        <a
+                          key={index}
+                          href={resource.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-4 bg-deepBlack-600 rounded-lg border border-metallicGold-900/30 hover:border-metallicGold-500 transition-all flex items-center justify-between group"
+                        >
+                          <span className="text-offWhite-200">{resource.title}</span>
+                          <span className="text-metallicGold-500 group-hover:translate-x-1 transition-transform">
+                            →
+                          </span>
+                        </a>
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -405,5 +418,5 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,21 +1,18 @@
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
-import AITrendDetailClient from './page-client'
-import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
+import AITrendDetailClient from './page-client';
+import { logger } from '@/lib/logger';
+import { env } from '@/lib/env';
 
-const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseServiceKey
-)
+const supabase = createClient(env.supabaseUrl, env.supabaseServiceKey);
 
 interface Props {
-  params: { slug: string }
+  params: { slug: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params
+  const { slug } = params;
 
   try {
     const { data: trend } = await supabase
@@ -23,17 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       .select('title, summary, seo_title, seo_description, seo_keywords, thumbnail_url')
       .eq('slug', slug)
       .eq('is_published', true)
-      .single()
+      .single();
 
     if (!trend) {
       return {
         title: 'AI 트렌드를 찾을 수 없습니다 | 떡상연구소',
         description: '요청하신 AI 트렌드 콘텐츠를 찾을 수 없습니다.',
-      }
+      };
     }
 
-    const title = trend.seo_title ?? trend.title
-    const description = trend.seo_description ?? trend.summary
+    const title = trend.seo_title ?? trend.title;
+    const description = trend.seo_description ?? trend.summary;
 
     return {
       title: `${title} | 떡상연구소`,
@@ -52,8 +49,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               width: 1200,
               height: 630,
               alt: trend.title,
-            }
-          ]
+            },
+          ],
         }),
       },
       twitter: {
@@ -61,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${title} | 떡상연구소`,
         description,
         ...(trend.thumbnail_url && {
-          images: [trend.thumbnail_url]
+          images: [trend.thumbnail_url],
         }),
       },
       alternates: {
@@ -78,18 +75,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           'max-snippet': -1,
         },
       },
-    }
+    };
   } catch (error) {
-    logger.error('Error generating metadata:', error)
+    logger.error('Error generating metadata:', error);
     return {
       title: 'AI 트렌드 | 떡상연구소',
       description: 'AI 트렌드 콘텐츠를 확인하세요.',
-    }
+    };
   }
 }
 
 export default async function AITrendDetailPage({ params }: Props) {
-  const { slug } = params
+  const { slug } = params;
 
   // Fetch trend data
   const { data: trend, error } = await supabase
@@ -97,17 +94,17 @@ export default async function AITrendDetailPage({ params }: Props) {
     .select('*')
     .eq('slug', slug)
     .eq('is_published', true)
-    .single()
+    .single();
 
   if (error !== null || !trend) {
-    notFound()
+    notFound();
   }
 
   // Increment view count
-  void supabase.rpc('increment_ai_trend_views', { trend_id: trend.id })
+  void supabase.rpc('increment_ai_trend_views', { trend_id: trend.id });
 
   // Fetch related trends
-  let relatedTrends = []
+  let relatedTrends = [];
   if (trend.category) {
     const { data } = await supabase
       .from('ai_trends')
@@ -116,10 +113,10 @@ export default async function AITrendDetailPage({ params }: Props) {
       .eq('is_published', true)
       .neq('id', trend.id)
       .limit(3)
-      .order('published_at', { ascending: false })
+      .order('published_at', { ascending: false });
 
-    relatedTrends = data ?? []
+    relatedTrends = data ?? [];
   }
 
-  return <AITrendDetailClient trend={trend} relatedTrends={relatedTrends} />
+  return <AITrendDetailClient trend={trend} relatedTrends={relatedTrends} />;
 }

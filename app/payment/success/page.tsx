@@ -1,73 +1,69 @@
-'use client'
+'use client';
 
-import { useEffect, useState, Suspense, useCallback } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { Check } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/lib/auth-context'
-import { logger } from '@/lib/logger'
+import { useEffect, useState, Suspense, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Check } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { logger } from '@/lib/logger';
 
 function PaymentSuccessContent() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const { user } = useAuth()
-  const [processing, setProcessing] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useAuth();
+  const [processing, setProcessing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePaymentSuccessCallback = useCallback(async () => {
     try {
-      const orderId = searchParams.get('order_no')
-      const payappOrderId = searchParams.get('payapp_order_id')
-      
+      const orderId = searchParams.get('order_no');
+      const payappOrderId = searchParams.get('payapp_order_id');
+
       if (!orderId || !user) {
-        throw new Error('잘못된 접근입니다.')
+        throw new Error('잘못된 접근입니다.');
       }
 
       // 사용자 타입을 student로 업데이트
       const { error: updateError } = await supabase
         .from('users')
-        .update({ 
+        .update({
           user_type: 'student',
           payment_status: 'paid',
-          last_payment_date: new Date().toISOString()
+          last_payment_date: new Date().toISOString(),
         })
-        .eq('id', user.id)
+        .eq('id', user.id);
 
       if (updateError) {
-        throw updateError
+        throw updateError;
       }
 
       // 결제 기록 저장
-      const { error: paymentError } = await supabase
-        .from('payments')
-        .insert({
-          user_id: user.id,
-          order_id: orderId,
-          payapp_order_id: payappOrderId,
-          amount: 29900, // 프로 플랜 기준
-          status: 'completed',
-          created_at: new Date().toISOString()
-        })
+      const { error: paymentError } = await supabase.from('payments').insert({
+        user_id: user.id,
+        order_id: orderId,
+        payapp_order_id: payappOrderId,
+        amount: 29900, // 프로 플랜 기준
+        status: 'completed',
+        created_at: new Date().toISOString(),
+      });
 
       if (paymentError) {
-        logger.error('결제 기록 저장 실패:', paymentError)
+        logger.error('결제 기록 저장 실패:', paymentError);
       }
 
       setTimeout(() => {
-        router.push('/lectures')
-      }, 3000)
-
+        router.push('/lectures');
+      }, 3000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred')
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
-      setProcessing(false)
+      setProcessing(false);
     }
-  }, [searchParams, user, router])
+  }, [searchParams, user, router]);
 
   useEffect(() => {
-    void handlePaymentSuccessCallback()
-  }, [handlePaymentSuccessCallback])
-
+    void handlePaymentSuccessCallback();
+  }, [handlePaymentSuccessCallback]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4">
@@ -102,28 +98,29 @@ function PaymentSuccessContent() {
               </div>
               <h1 className="text-2xl font-bold text-white mb-2">결제 완료!</h1>
               <p className="text-gray-400 mb-6">
-                프로 플랜 가입이 완료되었습니다.<br />
+                프로 플랜 가입이 완료되었습니다.
+                <br />
                 모든 강의를 자유롭게 수강하실 수 있습니다.
               </p>
-              <p className="text-sm text-gray-500">
-                잠시 후 강의 페이지로 이동합니다...
-              </p>
+              <p className="text-sm text-gray-500">잠시 후 강의 페이지로 이동합니다...</p>
             </>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function PaymentSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">결제 처리 중...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-white">결제 처리 중...</div>
+        </div>
+      }
+    >
       <PaymentSuccessContent />
     </Suspense>
-  )
+  );
 }

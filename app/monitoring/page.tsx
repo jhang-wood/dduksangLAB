@@ -5,11 +5,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Activity, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   Clock,
   Server,
   Database,
@@ -18,7 +18,7 @@ import {
   Wifi,
   Globe,
   RefreshCw,
-  Bell
+  Bell,
   // Settings
 } from 'lucide-react';
 
@@ -84,7 +84,7 @@ export default function MonitoringDashboard() {
     try {
       const response = await fetch('/api/monitoring/dashboard');
       const result = await response.json();
-      
+
       if (result.success) {
         setData(result.data);
         setLastUpdate(new Date());
@@ -110,42 +110,63 @@ export default function MonitoringDashboard() {
   // 상태별 색상 및 아이콘
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'text-green-500';
-      case 'degraded': return 'text-yellow-500';
-      case 'unhealthy': return 'text-orange-500';
-      case 'down': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'healthy':
+        return 'text-green-500';
+      case 'degraded':
+        return 'text-yellow-500';
+      case 'unhealthy':
+        return 'text-orange-500';
+      case 'down':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'healthy': return <CheckCircle className="w-5 h-5" />;
-      case 'degraded': return <AlertTriangle className="w-5 h-5" />;
-      case 'unhealthy': return <XCircle className="w-5 h-5" />;
-      case 'down': return <XCircle className="w-5 h-5" />;
-      default: return <Clock className="w-5 h-5" />;
+      case 'healthy':
+        return <CheckCircle className="w-5 h-5" />;
+      case 'degraded':
+        return <AlertTriangle className="w-5 h-5" />;
+      case 'unhealthy':
+        return <XCircle className="w-5 h-5" />;
+      case 'down':
+        return <XCircle className="w-5 h-5" />;
+      default:
+        return <Clock className="w-5 h-5" />;
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'info': return 'text-blue-500 bg-blue-50';
-      case 'warn': return 'text-yellow-500 bg-yellow-50';
-      case 'error': return 'text-orange-500 bg-orange-50';
-      case 'critical': return 'text-red-500 bg-red-50';
-      default: return 'text-gray-500 bg-gray-50';
+      case 'info':
+        return 'text-blue-500 bg-blue-50';
+      case 'warn':
+        return 'text-yellow-500 bg-yellow-50';
+      case 'error':
+        return 'text-orange-500 bg-orange-50';
+      case 'critical':
+        return 'text-red-500 bg-red-50';
+      default:
+        return 'text-gray-500 bg-gray-50';
     }
   };
 
   const getServiceIcon = (service: string) => {
     switch (service.toLowerCase()) {
-      case 'playwright': return <Bot className="w-5 h-5" />;
-      case 'supabase': return <Database className="w-5 h-5" />;
-      case 'system': return <Server className="w-5 h-5" />;
-      case 'network': return <Wifi className="w-5 h-5" />;
-      case 'blog': return <Globe className="w-5 h-5" />;
-      default: return <Monitor className="w-5 h-5" />;
+      case 'playwright':
+        return <Bot className="w-5 h-5" />;
+      case 'supabase':
+        return <Database className="w-5 h-5" />;
+      case 'system':
+        return <Server className="w-5 h-5" />;
+      case 'network':
+        return <Wifi className="w-5 h-5" />;
+      case 'blog':
+        return <Globe className="w-5 h-5" />;
+      default:
+        return <Monitor className="w-5 h-5" />;
     }
   };
 
@@ -166,9 +187,7 @@ export default function MonitoringDashboard() {
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              시스템 모니터링 대시보드
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900">시스템 모니터링 대시보드</h1>
             <p className="text-gray-600 mt-1">
               마지막 업데이트: {lastUpdate.toLocaleString('ko-KR')}
             </p>
@@ -177,9 +196,7 @@ export default function MonitoringDashboard() {
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-                autoRefresh 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-gray-100 text-gray-700'
+                autoRefresh ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
               }`}
             >
               <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} />
@@ -207,7 +224,9 @@ export default function MonitoringDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">시스템 상태</p>
-                    <p className={`text-2xl font-bold ${getStatusColor(data.overview.systemStatus)}`}>
+                    <p
+                      className={`text-2xl font-bold ${getStatusColor(data.overview.systemStatus)}`}
+                    >
                       {data.overview.systemStatus.toUpperCase()}
                     </p>
                   </div>
@@ -226,9 +245,7 @@ export default function MonitoringDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">활성 알림</p>
-                    <p className="text-2xl font-bold text-red-500">
-                      {data.overview.activeAlerts}
-                    </p>
+                    <p className="text-2xl font-bold text-red-500">{data.overview.activeAlerts}</p>
                   </div>
                   <Bell className="w-8 h-8 text-red-500" />
                 </div>
@@ -278,7 +295,7 @@ export default function MonitoringDashboard() {
             >
               <h2 className="text-xl font-bold text-gray-900 mb-4">서비스 상태</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.services.map((service) => (
+                {data.services.map(service => (
                   <div key={service.service} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -287,18 +304,14 @@ export default function MonitoringDashboard() {
                       </div>
                       <div className={`flex items-center gap-1 ${getStatusColor(service.status)}`}>
                         {getStatusIcon(service.status)}
-                        <span className="text-sm font-medium">
-                          {service.status.toUpperCase()}
-                        </span>
+                        <span className="text-sm font-medium">{service.status.toUpperCase()}</span>
                       </div>
                     </div>
                     <div className="text-sm text-gray-600">
                       <p>응답시간: {service.responseTime}ms</p>
                       <p>마지막 체크: {new Date(service.timestamp).toLocaleTimeString('ko-KR')}</p>
                       {service.message && (
-                        <p className="mt-1 text-xs bg-gray-50 p-2 rounded">
-                          {service.message}
-                        </p>
+                        <p className="mt-1 text-xs bg-gray-50 p-2 rounded">{service.message}</p>
                       )}
                     </div>
                   </div>
@@ -317,10 +330,12 @@ export default function MonitoringDashboard() {
               >
                 <h2 className="text-xl font-bold text-gray-900 mb-4">최근 에러</h2>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {data.recentErrors.map((error) => (
+                  {data.recentErrors.map(error => (
                     <div key={error.id} className="border-l-4 border-l-red-500 pl-4 py-2">
                       <div className="flex items-center justify-between mb-1">
-                        <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(error.severity)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs rounded ${getSeverityColor(error.severity)}`}
+                        >
                           {error.severity.toUpperCase()}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -352,10 +367,12 @@ export default function MonitoringDashboard() {
               >
                 <h2 className="text-xl font-bold text-gray-900 mb-4">알림 히스토리</h2>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {data.notifications.map((notification) => (
+                  {data.notifications.map(notification => (
                     <div key={notification.id} className="border rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(notification.severity)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs rounded ${getSeverityColor(notification.severity)}`}
+                        >
                           {notification.severity.toUpperCase()}
                         </span>
                         <div className="flex items-center gap-2">

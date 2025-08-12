@@ -1,11 +1,13 @@
 # 관리자 계정 설정 가이드
 
 ## 🔐 보안 주의사항
+
 **중요**: 민감한 정보(비밀번호, 이메일 등)는 절대 코드나 문서에 하드코딩하지 마세요!
 
 ## 📋 환경변수 설정
 
 ### 1. `.env.local` 파일 생성
+
 프로젝트 루트에 `.env.local` 파일이 있는지 확인하고, 없다면 생성합니다:
 
 ```bash
@@ -14,6 +16,7 @@ cp .env.example .env.local
 ```
 
 ### 2. 관리자 계정 환경변수 설정
+
 `.env.local` 파일에 다음 환경변수를 설정합니다:
 
 ```bash
@@ -25,6 +28,7 @@ ADMIN_NAME=관리자명
 ```
 
 **보안 팁**:
+
 - 강력한 비밀번호 사용 (최소 12자, 대소문자, 숫자, 특수문자 포함)
 - 프로덕션 환경에서는 반드시 다른 비밀번호 사용
 - `.env.local` 파일은 Git에 커밋되지 않음 (`.gitignore`에 포함됨)
@@ -32,6 +36,7 @@ ADMIN_NAME=관리자명
 ## 🗂️ 마이그레이션 파일 구조
 
 마이그레이션 파일들은 플레이스홀더를 사용하여 민감정보를 보호합니다:
+
 - `004_create_admin_account.sql`: `[ADMIN_EMAIL_ADDRESS]`, `[ADMIN_PASSWORD]` 플레이스홀더 사용
 - `create_admin_user.sql`: 동일한 플레이스홀더 패턴 사용
 
@@ -53,11 +58,12 @@ ADMIN_NAME=관리자명
 3. **관리자 권한 부여**
    - SQL Editor로 이동
    - 다음 쿼리 실행:
+
    ```sql
    -- 생성한 사용자의 ID 확인
-   SELECT id, email FROM auth.users 
+   SELECT id, email FROM auth.users
    WHERE email = '환경변수의_ADMIN_EMAIL';
-   
+
    -- 프로필에 관리자 권한 추가
    INSERT INTO public.profiles (id, email, name, phone, role, created_at)
    VALUES (
@@ -82,7 +88,7 @@ ADMIN_NAME=관리자명
 
 ```sql
 -- Supabase SQL Editor에서 실행
-SELECT 
+SELECT
   p.id,
   p.email,
   p.name,

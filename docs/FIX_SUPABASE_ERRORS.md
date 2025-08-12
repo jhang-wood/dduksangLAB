@@ -21,11 +21,13 @@
 3. 다음 순서대로 SQL 실행:
 
 #### A. profiles 테이블 수정 (005_fix_profiles_policies.sql)
+
 ```sql
 -- 전체 내용을 복사하여 실행
 ```
 
 #### B. lecture 관련 테이블 수정 (006_fix_lecture_tables.sql)
+
 ```sql
 -- 전체 내용을 복사하여 실행
 ```
@@ -38,12 +40,12 @@ SELECT * FROM auth.users WHERE email = '[ADMIN_EMAIL]';
 
 -- 프로필이 없다면 생성
 INSERT INTO public.profiles (id, email, name, role)
-SELECT 
+SELECT
   id,
   email,
   '떡상연구소 관리자',
   'admin'
-FROM auth.users 
+FROM auth.users
 WHERE email = '[ADMIN_EMAIL]'
 ON CONFLICT (id) DO UPDATE
 SET role = 'admin';
@@ -90,6 +92,7 @@ WHERE tablename IN ('profiles', 'lecture_enrollments', 'payments');
 ## 🔍 디버깅 팁
 
 콘솔에서 다음 로그 확인:
+
 - `[Auth] Fetching profile for user:`
 - `[Auth] Error fetching profile:` → 404면 프로필 없음
 - `[Auth] Profile not found, creating new profile...` → 자동 생성 시도

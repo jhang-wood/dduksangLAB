@@ -1,72 +1,72 @@
-'use client'
+'use client';
 
-import React, { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Shield, Users, BookOpen, TrendingUp, Settings, Brain } from 'lucide-react'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Shield, Users, BookOpen, TrendingUp, Settings, Brain } from 'lucide-react';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { useAuth } from '@/lib/auth-context';
 
 export default function AdminPage() {
-  const { user, userProfile, isAdmin, loading } = useAuth()
-  const router = useRouter()
+  const { user, userProfile, isAdmin, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
-      router.push('/')
+      router.push('/');
     }
-  }, [user, isAdmin, loading, router])
+  }, [user, isAdmin, loading, router]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   if (!isAdmin) {
-    return null
+    return null;
   }
 
   const adminMenus = [
     {
       icon: Users,
-      title: "회원 관리",
-      description: "회원 목록 조회 및 관리",
-      href: "/admin/users",
-      stats: "총 1,247명"
+      title: '회원 관리',
+      description: '회원 목록 조회 및 관리',
+      href: '/admin/users',
+      stats: '총 1,247명',
     },
     {
       icon: BookOpen,
-      title: "강의 관리",
-      description: "강의 콘텐츠 및 수강생 관리",
-      href: "/admin/lectures",
-      stats: "활성 강의 1개"
+      title: '강의 관리',
+      description: '강의 콘텐츠 및 수강생 관리',
+      href: '/admin/lectures',
+      stats: '활성 강의 1개',
     },
     {
       icon: Brain,
-      title: "AI 트렌드 관리",
-      description: "AI 트렌드 콘텐츠 관리",
-      href: "/admin/ai-trends",
-      stats: "매일 3개 자동 수집"
+      title: 'AI 트렌드 관리',
+      description: 'AI 트렌드 콘텐츠 관리',
+      href: '/admin/ai-trends',
+      stats: '매일 3개 자동 수집',
     },
     {
       icon: TrendingUp,
-      title: "사이트 통계",
-      description: "방문자 및 매출 통계",
-      href: "/admin/stats",
-      stats: "일일 방문 523명"
+      title: '사이트 통계',
+      description: '방문자 및 매출 통계',
+      href: '/admin/stats',
+      stats: '일일 방문 523명',
     },
     {
       icon: Settings,
-      title: "시스템 설정",
-      description: "사이트 설정 및 환경 관리",
-      href: "/admin/settings",
-      stats: "최근 업데이트 2일 전"
-    }
-  ]
+      title: '시스템 설정',
+      description: '사이트 설정 및 환경 관리',
+      href: '/admin/settings',
+      stats: '최근 업데이트 2일 전',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -93,7 +93,7 @@ export default function AdminPage() {
                   떡상연구소 관리 시스템
                 </span>
               </h1>
-              
+
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto mb-4">
                 환영합니다, {userProfile?.name ?? '관리자'}님
               </p>
@@ -123,13 +123,11 @@ export default function AdminPage() {
                     </div>
                     <span className="text-xs text-offWhite-600">{menu.stats}</span>
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-offWhite-200 mb-2 group-hover:text-metallicGold-500 transition-colors">
                     {menu.title}
                   </h3>
-                  <p className="text-sm text-offWhite-500">
-                    {menu.description}
-                  </p>
+                  <p className="text-sm text-offWhite-500">{menu.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -146,7 +144,7 @@ export default function AdminPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-2xl font-bold text-offWhite-200 mb-8 text-center">빠른 통계</h2>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="bg-deepBlack-600/50 rounded-2xl p-6 text-center">
                   <p className="text-3xl font-bold text-metallicGold-500 mb-2">1,247</p>
@@ -170,5 +168,5 @@ export default function AdminPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

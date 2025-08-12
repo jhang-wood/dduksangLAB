@@ -90,14 +90,14 @@ export class ContentManager {
       generated: 0,
       published: 0,
       scheduled: 0,
-      errors: [] as Array<{ step: string; error: string }>
+      errors: [] as Array<{ step: string; error: string }>,
     };
 
     try {
       logger.info('AI 콘텐츠 생성 및 관리 시작', {
         strategy: request.strategy,
         count: request.count || 1,
-        publishMode: request.publishMode
+        publishMode: request.publishMode,
       });
 
       const supabaseController = getSupabaseController();
@@ -132,10 +132,10 @@ export class ContentManager {
           // 품질 검사
           const qualityScore = await this.assessContentQuality(content);
           if (qualityScore < strategy.settings.qualityThreshold) {
-            logger.warn('품질 기준 미달', { 
-              title: content.title, 
-              score: qualityScore, 
-              threshold: strategy.settings.qualityThreshold 
+            logger.warn('품질 기준 미달', {
+              title: content.title,
+              score: qualityScore,
+              threshold: strategy.settings.qualityThreshold,
             });
             continue;
           }
@@ -144,7 +144,7 @@ export class ContentManager {
         } catch (error) {
           result.errors.push({
             step: 'quality_check',
-            error: `품질 검사 실패: ${content.title} - ${(error as Error).message}`
+            error: `품질 검사 실패: ${content.title} - ${(error as Error).message}`,
           });
         }
       }
@@ -164,9 +164,13 @@ export class ContentManager {
             seoDescription: content.seoDescription,
             seoKeywords: content.seoKeywords,
             featured: false,
-            status: request.publishMode === 'immediate' ? 'published' : 
-                   request.publishMode === 'scheduled' ? 'scheduled' : 'draft',
-            publishDate: request.scheduleTime
+            status:
+              request.publishMode === 'immediate'
+                ? 'published'
+                : request.publishMode === 'scheduled'
+                  ? 'scheduled'
+                  : 'draft',
+            publishDate: request.scheduleTime,
           };
 
           if (request.publishMode === 'immediate' && strategy.settings.autoPublish) {
@@ -174,23 +178,22 @@ export class ContentManager {
             const publishOptions: PublishOptions = {
               loginCredentials: {
                 email: process.env.ADMIN_EMAIL || '',
-                password: process.env.ADMIN_PASSWORD || ''
+                password: process.env.ADMIN_PASSWORD || '',
               },
               validateContent: true,
-              notifyOnComplete: true
+              notifyOnComplete: true,
             };
 
             const publishResult = await blogPublisher.publishPost(blogPost, publishOptions);
-            
+
             if (publishResult.success) {
               result.published++;
             } else {
               result.errors.push({
                 step: 'publish',
-                error: `게시 실패: ${content.title} - ${publishResult.error}`
+                error: `게시 실패: ${content.title} - ${publishResult.error}`,
               });
             }
-
           } else if (request.publishMode === 'scheduled') {
             // 예약 게시
             await supabaseController.upsertContent({
@@ -206,11 +209,10 @@ export class ContentManager {
                 seoKeywords: blogPost.seoKeywords,
                 automated: true,
                 strategy: request.strategy,
-                quality_score: await this.assessContentQuality(content)
-              }
+                quality_score: await this.assessContentQuality(content),
+              },
             });
             result.scheduled++;
-
           } else {
             // 임시저장
             await supabaseController.upsertContent({
@@ -225,15 +227,14 @@ export class ContentManager {
                 seoKeywords: blogPost.seoKeywords,
                 automated: true,
                 strategy: request.strategy,
-                quality_score: await this.assessContentQuality(content)
-              }
+                quality_score: await this.assessContentQuality(content),
+              },
             });
           }
-
         } catch (error) {
           result.errors.push({
             step: 'content_processing',
-            error: `콘텐츠 처리 실패: ${content.title} - ${(error as Error).message}`
+            error: `콘텐츠 처리 실패: ${content.title} - ${(error as Error).message}`,
           });
         }
       }
@@ -241,7 +242,12 @@ export class ContentManager {
       // 5. 작업 결과 로깅
       await supabaseController.logAutomation({
         type: 'publish',
-        status: result.errors.length === 0 ? 'success' : result.errors.length < result.generated ? 'warning' : 'failure',
+        status:
+          result.errors.length === 0
+            ? 'success'
+            : result.errors.length < result.generated
+              ? 'warning'
+              : 'failure',
         message: `AI 콘텐츠 생성 완료: ${result.generated}개 생성, ${result.published}개 게시, ${result.scheduled}개 예약`,
         metadata: {
           strategy: request.strategy,
@@ -249,8 +255,8 @@ export class ContentManager {
           published: result.published,
           scheduled: result.scheduled,
           errors_count: result.errors.length,
-          qualified_content_rate: qualifiedContents.length / aiContents.length
-        }
+          qualified_content_rate: qualifiedContents.length / aiContents.length,
+        },
       });
 
       if (result.errors.length > 0) {
@@ -258,20 +264,19 @@ export class ContentManager {
       }
 
       logger.info('AI 콘텐츠 생성 및 관리 완료', result);
-
     } catch (error) {
       logger.error('AI 콘텐츠 생성 및 관리 실패', { error });
-      
+
       await handleAutomationError(error as Error, {
         operation: 'content_generation',
         component: 'automation',
-        metadata: { strategy: request.strategy }
+        metadata: { strategy: request.strategy },
       });
 
       result.success = false;
       result.errors.push({
         step: 'generation_process',
-        error: (error as Error).message
+        error: (error as Error).message,
       });
     }
 
@@ -284,15 +289,15 @@ export class ContentManager {
   async checkDuplicate(title: string, content: string): Promise<DuplicateCheckResult> {
     try {
       const supabaseController = getSupabaseController();
-      
+
       // 제목 기반 중복 검사
       const existingContent = await supabaseController.getContent(100);
-      
+
       const similarContent = existingContent
         .map(item => ({
           id: item.id || '',
           title: item.title,
-          similarity: this.calculateSimilarity(title, item.title)
+          similarity: this.calculateSimilarity(title, item.title),
         }))
         .filter(item => item.similarity > 0.8) // 80% 이상 유사도
         .sort((a, b) => b.similarity - a.similarity)
@@ -303,7 +308,7 @@ export class ContentManager {
       const result: DuplicateCheckResult = {
         isDuplicate,
         similarContent: isDuplicate ? similarContent : undefined,
-        recommendations: []
+        recommendations: [],
       };
 
       if (isDuplicate) {
@@ -313,12 +318,11 @@ export class ContentManager {
       }
 
       return result;
-
     } catch (error) {
       logger.error('중복 검사 실패', { error });
       return {
         isDuplicate: false,
-        recommendations: ['중복 검사를 수행할 수 없었습니다']
+        recommendations: ['중복 검사를 수행할 수 없었습니다'],
       };
     }
   }
@@ -330,14 +334,24 @@ export class ContentManager {
     // 간단한 레벤슈타인 거리 기반 유사도 계산
     const len1 = str1.length;
     const len2 = str2.length;
-    
-    if (len1 === 0) {return len2 === 0 ? 1 : 0;}
-    if (len2 === 0) {return 0;}
 
-    const matrix = Array(len1 + 1).fill(null).map(() => Array(len2 + 1).fill(0));
+    if (len1 === 0) {
+      return len2 === 0 ? 1 : 0;
+    }
+    if (len2 === 0) {
+      return 0;
+    }
 
-    for (let i = 0; i <= len1; i++) {matrix[i][0] = i;}
-    for (let j = 0; j <= len2; j++) {matrix[0][j] = j;}
+    const matrix = Array(len1 + 1)
+      .fill(null)
+      .map(() => Array(len2 + 1).fill(0));
+
+    for (let i = 0; i <= len1; i++) {
+      matrix[i][0] = i;
+    }
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
 
     for (let i = 1; i <= len1; i++) {
       for (let j = 1; j <= len2; j++) {
@@ -377,10 +391,18 @@ export class ContentManager {
     }
 
     // SEO 평가 (20점)
-    if (!content.seoTitle) {score -= 5;}
-    if (!content.seoDescription) {score -= 5;}
-    if (!content.seoKeywords || content.seoKeywords.length === 0) {score -= 5;}
-    if (!content.tags || content.tags.length === 0) {score -= 5;}
+    if (!content.seoTitle) {
+      score -= 5;
+    }
+    if (!content.seoDescription) {
+      score -= 5;
+    }
+    if (!content.seoKeywords || content.seoKeywords.length === 0) {
+      score -= 5;
+    }
+    if (!content.tags || content.tags.length === 0) {
+      score -= 5;
+    }
 
     // 구조 평가 (10점)
     if (content.content && !content.content.includes('<h')) {
@@ -391,7 +413,9 @@ export class ContentManager {
     }
 
     // 카테고리 평가 (10점)
-    if (!content.category) {score -= 10;}
+    if (!content.category) {
+      score -= 10;
+    }
 
     return Math.max(0, score);
   }
@@ -412,13 +436,12 @@ export class ContentManager {
           categories: ['AI/ML', 'Technology', 'Trends'],
           tags: ['AI', '자동화', '트렌드'],
           seoOptimization: true,
-          qualityThreshold: 70
+          qualityThreshold: 70,
         },
-        active: true
+        active: true,
       };
 
       return defaultStrategy;
-
     } catch (error) {
       logger.error('콘텐츠 전략 조회 실패', { error, name });
       return null;
@@ -431,7 +454,7 @@ export class ContentManager {
   async getContentAnalytics(days: number = 30): Promise<ContentAnalytics> {
     try {
       const supabaseController = getSupabaseController();
-      
+
       // 기간 내 콘텐츠 조회
       const allContent = await supabaseController.getContent(1000);
       const cutoffDate = new Date();
@@ -464,8 +487,8 @@ export class ContentManager {
 
       // 성능 메트릭
       const automationLogs = await supabaseController.getAutomationLogs(100, 'publish');
-      const publishLogs = automationLogs.filter(log => 
-        new Date(log.created_at || '') >= cutoffDate
+      const publishLogs = automationLogs.filter(
+        log => new Date(log.created_at || '') >= cutoffDate
       );
 
       const successfulPublishes = publishLogs.filter(log => log.status === 'success').length;
@@ -475,7 +498,7 @@ export class ContentManager {
       const performanceMetrics = {
         avgPublishTime: 0, // TODO: 실제 게시 시간 계산
         successRate: totalPublishes > 0 ? (successfulPublishes / totalPublishes) * 100 : 0,
-        errorRate: totalPublishes > 0 ? (failedPublishes / totalPublishes) * 100 : 0
+        errorRate: totalPublishes > 0 ? (failedPublishes / totalPublishes) * 100 : 0,
       };
 
       // 콘텐츠 건강도
@@ -486,7 +509,7 @@ export class ContentManager {
       const contentHealth = {
         duplicateRate: totalContent > 0 ? (duplicateCount / totalContent) * 100 : 0,
         qualityScore: avgQualityScore,
-        seoScore: avgSeoScore
+        seoScore: avgSeoScore,
       };
 
       const analytics: ContentAnalytics = {
@@ -497,20 +520,19 @@ export class ContentManager {
         byCategory,
         byAuthor,
         performanceMetrics,
-        contentHealth
+        contentHealth,
       };
 
-      logger.info('콘텐츠 분석 완료', { 
-        days, 
-        totalContent, 
-        successRate: performanceMetrics.successRate 
+      logger.info('콘텐츠 분석 완료', {
+        days,
+        totalContent,
+        successRate: performanceMetrics.successRate,
       });
 
       return analytics;
-
     } catch (error) {
       logger.error('콘텐츠 분석 실패', { error });
-      
+
       return {
         totalContent: 0,
         publishedContent: 0,
@@ -521,13 +543,13 @@ export class ContentManager {
         performanceMetrics: {
           avgPublishTime: 0,
           successRate: 0,
-          errorRate: 100
+          errorRate: 100,
         },
         contentHealth: {
           duplicateRate: 0,
           qualityScore: 0,
-          seoScore: 0
-        }
+          seoScore: 0,
+        },
       };
     }
   }
@@ -537,21 +559,18 @@ export class ContentManager {
    */
   private async estimateDuplicates(content: ContentItem[]): Promise<number> {
     let duplicateCount = 0;
-    
+
     for (let i = 0; i < content.length; i++) {
       for (let j = i + 1; j < content.length; j++) {
-        const similarity = this.calculateSimilarity(
-          content[i].title,
-          content[j].title
-        );
-        
+        const similarity = this.calculateSimilarity(content[i].title, content[j].title);
+
         if (similarity > 0.8) {
           duplicateCount++;
           break; // 중복으로 간주되면 다음 콘텐츠로
         }
       }
     }
-    
+
     return duplicateCount;
   }
 
@@ -559,19 +578,33 @@ export class ContentManager {
    * 평균 품질 점수 계산
    */
   private calculateAverageQualityScore(content: ContentItem[]): number {
-    if (content.length === 0) {return 0;}
+    if (content.length === 0) {
+      return 0;
+    }
 
     const scores = content.map(item => {
       let score = 100;
-      
+
       // 기본 품질 지표들
-      if (!item.title || item.title.length < 10) {score -= 20;}
-      if (!item.content || item.content.length < 300) {score -= 30;}
-      if (!item.category) {score -= 20;}
-      if (!item.tags || item.tags.length === 0) {score -= 15;}
-      if (!item.metadata?.seoTitle) {score -= 10;}
-      if (!item.metadata?.seoDescription) {score -= 5;}
-      
+      if (!item.title || item.title.length < 10) {
+        score -= 20;
+      }
+      if (!item.content || item.content.length < 300) {
+        score -= 30;
+      }
+      if (!item.category) {
+        score -= 20;
+      }
+      if (!item.tags || item.tags.length === 0) {
+        score -= 15;
+      }
+      if (!item.metadata?.seoTitle) {
+        score -= 10;
+      }
+      if (!item.metadata?.seoDescription) {
+        score -= 5;
+      }
+
       return Math.max(0, score);
     });
 
@@ -582,16 +615,26 @@ export class ContentManager {
    * 평균 SEO 점수 계산
    */
   private calculateAverageSeoScore(content: ContentItem[]): number {
-    if (content.length === 0) {return 0;}
+    if (content.length === 0) {
+      return 0;
+    }
 
     const seoScores = content.map(item => {
       let score = 100;
-      
-      if (!item.metadata?.seoTitle) {score -= 25;}
-      if (!item.metadata?.seoDescription) {score -= 25;}
-      if (!item.metadata?.seoKeywords || item.metadata.seoKeywords.length === 0) {score -= 25;}
-      if (!item.tags || item.tags.length === 0) {score -= 25;}
-      
+
+      if (!item.metadata?.seoTitle) {
+        score -= 25;
+      }
+      if (!item.metadata?.seoDescription) {
+        score -= 25;
+      }
+      if (!item.metadata?.seoKeywords || item.metadata.seoKeywords.length === 0) {
+        score -= 25;
+      }
+      if (!item.tags || item.tags.length === 0) {
+        score -= 25;
+      }
+
       return Math.max(0, score);
     });
 
@@ -604,18 +647,17 @@ export class ContentManager {
   async processScheduledContent(): Promise<void> {
     try {
       logger.info('예약된 콘텐츠 자동 게시 프로세스 시작');
-      
+
       const blogPublisher = getBlogPublisher();
       await blogPublisher.executeScheduledPosts();
-      
-      logger.info('예약된 콘텐츠 자동 게시 프로세스 완료');
 
+      logger.info('예약된 콘텐츠 자동 게시 프로세스 완료');
     } catch (error) {
       logger.error('예약된 콘텐츠 처리 실패', { error });
-      
+
       await handleAutomationError(error as Error, {
         operation: 'scheduled_content_processing',
-        component: 'automation'
+        component: 'automation',
       });
     }
   }
@@ -628,7 +670,7 @@ export class ContentManager {
       logger.info('콘텐츠 정리 시작', { days });
 
       const supabaseController = getSupabaseController();
-      
+
       // 오래된 임시저장 콘텐츠 정리
       const allContent = await supabaseController.getContent(1000);
       const cutoffDate = new Date();
@@ -649,10 +691,9 @@ export class ContentManager {
         message: `콘텐츠 정리 완료: ${oldDrafts.length}개 임시저장 콘텐츠 확인됨`,
         metadata: {
           cleanup_days: days,
-          old_drafts_count: oldDrafts.length
-        }
+          old_drafts_count: oldDrafts.length,
+        },
       });
-
     } catch (error) {
       logger.error('콘텐츠 정리 실패', { error });
     }

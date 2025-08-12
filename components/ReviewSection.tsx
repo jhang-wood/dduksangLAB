@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Star, User, ThumbsUp, Quote } from 'lucide-react'
+import { motion } from 'framer-motion';
+import { Star, User, ThumbsUp, Quote } from 'lucide-react';
 
 interface Review {
-  id: number
-  userName: string
-  rating: number
-  date: string
-  comment: string
-  helpful: number
-  verified: boolean
-  badges?: string[]
+  id: number;
+  userName: string;
+  rating: number;
+  date: string;
+  comment: string;
+  helpful: number;
+  verified: boolean;
+  badges?: string[];
 }
 
 export const ReviewSection = ({
   reviews,
   averageRating,
   totalReviews,
-  className = ""
+  className = '',
 }: {
-  reviews: Review[]
-  averageRating: number
-  totalReviews: number
-  className?: string
+  reviews: Review[];
+  averageRating: number;
+  totalReviews: number;
+  className?: string;
 }) => {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -33,20 +33,20 @@ export const ReviewSection = ({
           i < Math.floor(rating)
             ? 'text-yellow-400 fill-current'
             : i < rating
-            ? 'text-yellow-400 fill-current opacity-50'
-            : 'text-offWhite-700'
+              ? 'text-yellow-400 fill-current opacity-50'
+              : 'text-offWhite-700'
         }`}
       />
-    ))
-  }
+    ));
+  };
 
   const ratingDistribution = [
     { stars: 5, count: Math.floor(totalReviews * 0.7) },
     { stars: 4, count: Math.floor(totalReviews * 0.2) },
     { stars: 3, count: Math.floor(totalReviews * 0.07) },
     { stars: 2, count: Math.floor(totalReviews * 0.02) },
-    { stars: 1, count: Math.floor(totalReviews * 0.01) }
-  ]
+    { stars: 1, count: Math.floor(totalReviews * 0.01) },
+  ];
 
   return (
     <section className={`py-16 ${className}`}>
@@ -63,19 +63,15 @@ export const ReviewSection = ({
             {/* 평점 요약 */}
             <div className="text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
-                <div className="text-5xl font-bold text-metallicGold-500">
-                  {averageRating}
-                </div>
+                <div className="text-5xl font-bold text-metallicGold-500">{averageRating}</div>
                 <div>
-                  <div className="flex items-center gap-1 mb-2">
-                    {renderStars(averageRating)}
-                  </div>
+                  <div className="flex items-center gap-1 mb-2">{renderStars(averageRating)}</div>
                   <p className="text-offWhite-500 text-sm">
                     {totalReviews.toLocaleString()}개의 리뷰
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                 <span className="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">
                   수강생 만족도 98%
@@ -103,9 +99,7 @@ export const ReviewSection = ({
                       viewport={{ once: true }}
                     />
                   </div>
-                  <span className="text-sm text-offWhite-500 w-12 text-right">
-                    {item.count}
-                  </span>
+                  <span className="text-sm text-offWhite-500 w-12 text-right">{item.count}</span>
                 </div>
               ))}
             </div>
@@ -140,7 +134,7 @@ export const ReviewSection = ({
                           </span>
                         )}
                         {review.badges?.map((badge, i) => (
-                          <span 
+                          <span
                             key={i}
                             className="bg-metallicGold-500/20 text-metallicGold-500 px-2 py-1 rounded-full text-xs font-bold"
                           >
@@ -149,9 +143,7 @@ export const ReviewSection = ({
                         ))}
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {renderStars(review.rating)}
-                        </div>
+                        <div className="flex items-center gap-1">{renderStars(review.rating)}</div>
                         <span className="text-offWhite-500 text-sm">{review.date}</span>
                       </div>
                     </div>
@@ -161,9 +153,7 @@ export const ReviewSection = ({
                 {/* 리뷰 내용 */}
                 <div className="relative">
                   <Quote className="absolute -top-2 -left-2 w-6 h-6 text-metallicGold-500/30" />
-                  <p className="text-offWhite-300 leading-relaxed pl-6 mb-4">
-                    {review.comment}
-                  </p>
+                  <p className="text-offWhite-300 leading-relaxed pl-6 mb-4">{review.comment}</p>
                 </div>
 
                 {/* 리뷰 하단 */}
@@ -179,7 +169,7 @@ export const ReviewSection = ({
         </div>
 
         {/* 더보기 버튼 */}
-        <motion.div 
+        <motion.div
           className="text-center mt-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -191,39 +181,42 @@ export const ReviewSection = ({
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
 // 샘플 리뷰 데이터
 export const sampleReviews: Review[] = [
   {
     id: 1,
-    userName: "김**",
+    userName: '김**',
     rating: 5,
-    date: "2024년 8월",
-    comment: "정말 놀랍습니다! 비개발자인 제가 3일 만에 자동화 프로그램을 만들어냈어요. 특히 텔레그램으로 코딩하는 부분은 혁신적이었습니다. 이제 출퇴근길에도 프로그래밍을 할 수 있게 되었네요.",
+    date: '2024년 8월',
+    comment:
+      '정말 놀랍습니다! 비개발자인 제가 3일 만에 자동화 프로그램을 만들어냈어요. 특히 텔레그램으로 코딩하는 부분은 혁신적이었습니다. 이제 출퇴근길에도 프로그래밍을 할 수 있게 되었네요.',
     helpful: 24,
     verified: true,
-    badges: ["완주생", "추천왕"]
+    badges: ['완주생', '추천왕'],
   },
   {
     id: 2,
-    userName: "이**",
+    userName: '이**',
     rating: 5,
-    date: "2024년 7월",
-    comment: "300만원짜리 강의를 들을 뻔했는데 이 강의로 더 실용적인 내용을 배웠습니다. Claude Code 세팅부터 실전 활용까지, 정말 체계적으로 설명해주시네요. 투자 대비 효과 최고!",
+    date: '2024년 7월',
+    comment:
+      '300만원짜리 강의를 들을 뻔했는데 이 강의로 더 실용적인 내용을 배웠습니다. Claude Code 세팅부터 실전 활용까지, 정말 체계적으로 설명해주시네요. 투자 대비 효과 최고!',
     helpful: 18,
     verified: true,
-    badges: ["얼리버드"]
+    badges: ['얼리버드'],
   },
   {
     id: 3,
-    userName: "박**",
+    userName: '박**',
     rating: 5,
-    date: "2024년 7월",
-    comment: "AI 도구를 이렇게 효율적으로 쓸 수 있다는 걸 몰랐네요. 메타 자동화 개념은 정말 충격적이었습니다. 이제 자동화를 위한 자동화를 만들고 있어요. 사고의 전환이 일어났습니다.",
+    date: '2024년 7월',
+    comment:
+      'AI 도구를 이렇게 효율적으로 쓸 수 있다는 걸 몰랐네요. 메타 자동화 개념은 정말 충격적이었습니다. 이제 자동화를 위한 자동화를 만들고 있어요. 사고의 전환이 일어났습니다.',
     helpful: 31,
     verified: true,
-    badges: ["완주생", "실전왕"]
-  }
-]
+    badges: ['완주생', '실전왕'],
+  },
+];

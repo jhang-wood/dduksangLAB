@@ -1,9 +1,7 @@
 {
   "name": "dduksangLAB",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "runArgs": [
-    "-p", "3000:3000"
-  ],
+  "runArgs": ["-p", "3000:3000"],
   "containerEnv": {
     "NEXT_PUBLIC_SUPABASE_URL": "${localEnv:NEXT_PUBLIC_SUPABASE_URL}",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "${localEnv:NEXT_PUBLIC_SUPABASE_ANON_KEY}",
@@ -21,10 +19,7 @@
   "postStartCommand": "echo 'Container ready for dduksangLAB development'",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
-      ]
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
     }
   },
   "features": {

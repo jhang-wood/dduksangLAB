@@ -21,13 +21,15 @@ export class SelfHealingSystem {
   private monitoringInterval?: NodeJS.Timer;
 
   async start(): Promise<void> {
-    if (this.isRunning) {return;}
-    
+    if (this.isRunning) {
+      return;
+    }
+
     this.isRunning = true;
     logger.info('자가 복구 시스템 시작');
 
     await this.performHealthCheck();
-    
+
     this.monitoringInterval = setInterval(async () => {
       await this.performHealthCheck();
     }, 30000); // 30초마다
@@ -40,7 +42,7 @@ export class SelfHealingSystem {
 
   private async performHealthCheck(): Promise<void> {
     const services = ['queue-system', 'memory', 'database'];
-    
+
     for (const service of services) {
       await this.checkService(service);
     }
@@ -77,7 +79,7 @@ export class SelfHealingSystem {
       status,
       lastCheck: new Date(),
       errors,
-      recoveryAttempts: this.healthStatuses.get(service)?.recoveryAttempts || 0
+      recoveryAttempts: this.healthStatuses.get(service)?.recoveryAttempts || 0,
     });
 
     if (status !== 'healthy') {
@@ -87,10 +89,12 @@ export class SelfHealingSystem {
 
   private async attemptRecovery(service: string): Promise<void> {
     const currentStatus = this.healthStatuses.get(service);
-    if (!currentStatus || currentStatus.recoveryAttempts >= 3) {return;}
+    if (!currentStatus || currentStatus.recoveryAttempts >= 3) {
+      return;
+    }
 
     logger.info(`복구 시도: ${service}`);
-    
+
     try {
       switch (service) {
         case 'memory':
@@ -106,7 +110,6 @@ export class SelfHealingSystem {
 
       currentStatus.recoveryAttempts++;
       this.healthStatuses.set(service, currentStatus);
-      
     } catch (error) {
       logger.error(`복구 실패: ${service}`, error);
     }
@@ -133,4 +136,4 @@ export class SelfHealingSystem {
 }
 
 export const selfHealingSystem = new SelfHealingSystem();
-EOF < /dev/null
+EOF < /dev/llnu;

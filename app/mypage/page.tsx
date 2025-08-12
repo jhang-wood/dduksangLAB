@@ -1,22 +1,20 @@
-'use client'
+'use client';
 
-import { logger, userNotification } from '@/lib/logger'
+import { logger, userNotification } from '@/lib/logger';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { 
-  User, LogOut, CreditCard, BookOpen, 
-  Shield, Bell, Camera } from 'lucide-react'
-import { useAuth } from '@/lib/auth-context'
-import Header from '@/components/Header'
-import { supabase } from '@/lib/supabase'
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { User, LogOut, CreditCard, BookOpen, Shield, Bell, Camera } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+import Header from '@/components/Header';
+import { supabase } from '@/lib/supabase';
 
 interface TabContent {
-  id: string
-  label: string
-  icon: React.ElementType
+  id: string;
+  label: string;
+  icon: React.ElementType;
 }
 
 const tabs: TabContent[] = [
@@ -25,39 +23,50 @@ const tabs: TabContent[] = [
   { id: 'payments', label: '결제 내역', icon: CreditCard },
   { id: 'security', label: '보안', icon: Shield },
   { id: 'notifications', label: '알림', icon: Bell },
-]
+];
 
 export default function MyPage() {
-  const { user, userProfile, signOut, loading: authLoading } = useAuth()
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState('profile')
-  const [editMode, setEditMode] = useState(false)
+  const { user, userProfile, signOut, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [editMode, setEditMode] = useState(false);
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
     phone: '',
-    bio: ''
-  })
-  const [enrollments, setEnrollments] = useState<Array<{
-    id: string;
-    lectures: { id: string; title: string; thumbnail_url?: string; instructor_id: string; duration: number; level: string } | null;
-    progress_percentage: number;
-    status: string;
-  }>>([])
-  const [payments, setPayments] = useState<Array<{
-    id: string;
-    lectures: { title: string } | null;
-    amount: number;
-    status: string;
-    created_at: string;
-  }>>([])
-  const [loading, setLoading] = useState(false)
+    bio: '',
+  });
+  const [enrollments, setEnrollments] = useState<
+    Array<{
+      id: string;
+      lectures: {
+        id: string;
+        title: string;
+        thumbnail_url?: string;
+        instructor_id: string;
+        duration: number;
+        level: string;
+      } | null;
+      progress_percentage: number;
+      status: string;
+    }>
+  >([]);
+  const [payments, setPayments] = useState<
+    Array<{
+      id: string;
+      lectures: { title: string } | null;
+      amount: number;
+      status: string;
+      created_at: string;
+    }>
+  >([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/auth/login')
+      router.push('/auth/login');
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (userProfile) {
@@ -65,19 +74,22 @@ export default function MyPage() {
         name: userProfile.name ?? '',
         email: userProfile.email ?? '',
         phone: userProfile.phone ?? '',
-        bio: userProfile.bio ?? ''
-      })
+        bio: userProfile.bio ?? '',
+      });
     }
-  }, [userProfile])
+  }, [userProfile]);
 
   const fetchUserData = useCallback(async () => {
-    if (!user) {return}
-    
+    if (!user) {
+      return;
+    }
+
     try {
       if (activeTab === 'lectures') {
         const { data } = await supabase
           .from('lecture_enrollments')
-          .select(`
+          .select(
+            `
             *,
             lectures (
               id,
@@ -87,56 +99,71 @@ export default function MyPage() {
               duration,
               level
             )
-          `)
+          `
+          )
           .eq('user_id', user.id)
-          .order('enrolled_at', { ascending: false })
-        
+          .order('enrolled_at', { ascending: false });
+
         if (data) {
-          setEnrollments(data as Array<{
-            id: string;
-            lectures: { id: string; title: string; thumbnail_url?: string; instructor_id: string; duration: number; level: string } | null;
-            progress_percentage: number;
-            status: string;
-          }>)
+          setEnrollments(
+            data as Array<{
+              id: string;
+              lectures: {
+                id: string;
+                title: string;
+                thumbnail_url?: string;
+                instructor_id: string;
+                duration: number;
+                level: string;
+              } | null;
+              progress_percentage: number;
+              status: string;
+            }>
+          );
         }
       } else if (activeTab === 'payments') {
         const { data } = await supabase
           .from('payments')
-          .select(`
+          .select(
+            `
             *,
             lectures (
               title
             )
-          `)
+          `
+          )
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-        
+          .order('created_at', { ascending: false });
+
         if (data) {
-          setPayments(data as Array<{
-            id: string;
-            lectures: { title: string } | null;
-            amount: number;
-            status: string;
-            created_at: string;
-          }>)
+          setPayments(
+            data as Array<{
+              id: string;
+              lectures: { title: string } | null;
+              amount: number;
+              status: string;
+              created_at: string;
+            }>
+          );
         }
       }
     } catch (error) {
-      logger.error('Failed to fetch user data:', error)
+      logger.error('Failed to fetch user data:', error);
     }
-  }, [user, activeTab])
+  }, [user, activeTab]);
 
   useEffect(() => {
     if (user) {
-      void fetchUserData()
+      void fetchUserData();
     }
-  }, [fetchUserData, user])
-
+  }, [fetchUserData, user]);
 
   const handleProfileUpdate = async () => {
-    if (!user) {return}
-    
-    setLoading(true)
+    if (!user) {
+      return;
+    }
+
+    setLoading(true);
     try {
       const { error } = await supabase
         .from('profiles')
@@ -144,25 +171,27 @@ export default function MyPage() {
           name: profileData.name,
           phone: profileData.phone,
           bio: profileData.bio,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id)
-      
+        .eq('id', user.id);
+
       if (!error) {
-        setEditMode(false)
+        setEditMode(false);
       }
     } catch (error) {
-      logger.error('Failed to update profile:', error)
+      logger.error('Failed to update profile:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const makeAdmin = async () => {
-    if (!user) {return}
-    
-    logger.log('[MyPage] Making user admin:', user.id)
-    
+    if (!user) {
+      return;
+    }
+
+    logger.log('[MyPage] Making user admin:', user.id);
+
     try {
       // 프로필 업데이트
       const { data, error } = await supabase
@@ -170,43 +199,43 @@ export default function MyPage() {
         .update({ role: 'admin' })
         .eq('id', user.id)
         .select()
-        .single()
-        
+        .single();
+
       if (error) {
-        logger.error('[MyPage] Error updating role:', error)
-        userNotification.alert(`오류가 발생했습니다: ${  error.message}`)
-        return
+        logger.error('[MyPage] Error updating role:', error);
+        userNotification.alert(`오류가 발생했습니다: ${error.message}`);
+        return;
       }
-      
-      logger.log('[MyPage] Profile updated:', data)
-      
+
+      logger.log('[MyPage] Profile updated:', data);
+
       // 프로필 다시 가져오기
-      void fetchUserData()
-      
-      userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
-      
+      void fetchUserData();
+
+      userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.');
+
       // 약간의 지연 후 새로고침
       setTimeout(() => {
-        window.location.reload()
-      }, 500)
+        window.location.reload();
+      }, 500);
     } catch (err) {
-      logger.error('[MyPage] Unexpected error:', err)
-      userNotification.alert('예상치 못한 오류가 발생했습니다.')
+      logger.error('[MyPage] Unexpected error:', err);
+      userNotification.alert('예상치 못한 오류가 발생했습니다.');
     }
-  }
+  };
 
   if (authLoading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-deepBlack-900">
       <Header currentPage="mypage" />
-      
+
       <main className="container mx-auto px-4 pt-24 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -215,13 +244,13 @@ export default function MyPage() {
           className="max-w-6xl mx-auto"
         >
           <h1 className="text-3xl font-bold text-metallicGold-500 mb-8">마이페이지</h1>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="bg-deepBlack-300 rounded-xl p-6 border border-metallicGold-900/30">
                 <div className="space-y-2">
-                  {tabs.map((tab) => (
+                  {tabs.map(tab => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
@@ -236,11 +265,11 @@ export default function MyPage() {
                     </button>
                   ))}
                 </div>
-                
+
                 <div className="mt-8 pt-8 border-t border-metallicGold-900/30">
                   <button
                     onClick={() => {
-                      void signOut()
+                      void signOut();
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
                   >
@@ -250,7 +279,7 @@ export default function MyPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Content */}
             <div className="lg:col-span-3">
               <div className="bg-deepBlack-300 rounded-xl p-8 border border-metallicGold-900/30">
@@ -261,7 +290,7 @@ export default function MyPage() {
                       {!editMode ? (
                         <button
                           onClick={() => {
-                            setEditMode(true)
+                            setEditMode(true);
                           }}
                           className="px-4 py-2 text-sm bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-all"
                         >
@@ -271,7 +300,7 @@ export default function MyPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              void handleProfileUpdate()
+                              void handleProfileUpdate();
                             }}
                             disabled={loading}
                             className="px-4 py-2 text-sm bg-metallicGold-500 text-deepBlack-900 rounded-lg hover:bg-metallicGold-400 transition-all disabled:opacity-50"
@@ -280,13 +309,13 @@ export default function MyPage() {
                           </button>
                           <button
                             onClick={() => {
-                              setEditMode(false)
+                              setEditMode(false);
                               setProfileData({
                                 name: userProfile?.name ?? '',
                                 email: userProfile?.email ?? '',
                                 phone: userProfile?.phone ?? '',
-                                bio: userProfile?.bio ?? ''
-                              })
+                                bio: userProfile?.bio ?? '',
+                              });
                             }}
                             className="px-4 py-2 text-sm bg-deepBlack-600 text-offWhite-500 rounded-lg hover:bg-deepBlack-900 transition-all"
                           >
@@ -295,7 +324,7 @@ export default function MyPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="space-y-6">
                       <div className="flex items-center gap-6">
                         <div className="relative">
@@ -318,7 +347,7 @@ export default function MyPage() {
                             </button>
                           )}
                         </div>
-                        
+
                         <div className="flex-1">
                           <div className="mb-2">
                             <label className="text-sm text-offWhite-600">이름</label>
@@ -326,7 +355,9 @@ export default function MyPage() {
                               <input
                                 type="text"
                                 value={profileData.name}
-                                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                                onChange={e =>
+                                  setProfileData({ ...profileData, name: e.target.value })
+                                }
                                 className="w-full mt-1 px-4 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                               />
                             ) : (
@@ -335,61 +366,73 @@ export default function MyPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div>
                         <label className="text-sm text-offWhite-600">이메일</label>
                         <p className="text-offWhite-200 font-medium">{profileData.email}</p>
                       </div>
-                      
+
                       {/* 임시 관리자 권한 버튼 */}
                       <div className="pt-4 border-t border-metallicGold-900/30">
-                        <p className="text-sm text-offWhite-600 mb-2">현재 역할: {userProfile?.role ?? 'user'}</p>
+                        <p className="text-sm text-offWhite-600 mb-2">
+                          현재 역할: {userProfile?.role ?? 'user'}
+                        </p>
                         {userProfile?.role !== 'admin' ? (
                           <>
                             <button
                               onClick={() => {
-                                void makeAdmin()
+                                void makeAdmin();
                               }}
                               className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg font-semibold hover:from-red-400 hover:to-red-600 transition-all shadow-lg"
                             >
                               🔧 관리자 권한 부여 (임시)
                             </button>
-                            <p className="text-xs text-offWhite-600 mt-2">개발용 임시 버튼입니다.</p>
+                            <p className="text-xs text-offWhite-600 mt-2">
+                              개발용 임시 버튼입니다.
+                            </p>
                           </>
                         ) : (
-                          <p className="text-sm text-green-500">✅ 관리자 권한이 활성화되었습니다.</p>
+                          <p className="text-sm text-green-500">
+                            ✅ 관리자 권한이 활성화되었습니다.
+                          </p>
                         )}
                       </div>
-                      
+
                       <div>
                         <label className="text-sm text-offWhite-600">전화번호</label>
                         {editMode ? (
                           <input
                             type="tel"
                             value={profileData.phone}
-                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                            onChange={e =>
+                              setProfileData({ ...profileData, phone: e.target.value })
+                            }
                             className="w-full mt-1 px-4 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                           />
                         ) : (
-                          <p className="text-offWhite-200 font-medium">{profileData.phone ?? '등록된 번호가 없습니다'}</p>
+                          <p className="text-offWhite-200 font-medium">
+                            {profileData.phone ?? '등록된 번호가 없습니다'}
+                          </p>
                         )}
                       </div>
-                      
+
                       <div>
                         <label className="text-sm text-offWhite-600">소개</label>
                         {editMode ? (
                           <textarea
                             value={profileData.bio}
-                            onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                            onChange={e => setProfileData({ ...profileData, bio: e.target.value })}
                             rows={4}
                             className="w-full mt-1 px-4 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
                             placeholder="자기소개를 입력하세요"
                           />
                         ) : (
-                          <p className="text-offWhite-200 font-medium">{profileData.bio ?? '소개가 없습니다'}</p>
+                          <p className="text-offWhite-200 font-medium">
+                            {profileData.bio ?? '소개가 없습니다'}
+                          </p>
                         )}
                       </div>
-                      
+
                       <div>
                         <label className="text-sm text-offWhite-600">회원 등급</label>
                         <p className="text-offWhite-200 font-medium">
@@ -403,13 +446,13 @@ export default function MyPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {activeTab === 'lectures' && (
                   <div>
                     <h2 className="text-2xl font-semibold text-offWhite-200 mb-6">내 강의</h2>
                     {enrollments.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {enrollments.map((enrollment) => (
+                        {enrollments.map(enrollment => (
                           <div
                             key={enrollment.id}
                             className="bg-deepBlack-600 rounded-lg p-4 border border-metallicGold-900/30"
@@ -419,11 +462,13 @@ export default function MyPage() {
                             </h3>
                             <div className="flex items-center justify-between text-sm text-offWhite-600">
                               <span>진행률: {enrollment.progress_percentage}%</span>
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                enrollment.status === 'completed' 
-                                  ? 'bg-green-500/20 text-green-400'
-                                  : 'bg-metallicGold-500/20 text-metallicGold-500'
-                              }`}>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs ${
+                                  enrollment.status === 'completed'
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-metallicGold-500/20 text-metallicGold-500'
+                                }`}
+                              >
                                 {enrollment.status === 'completed' ? '완료' : '수강중'}
                               </span>
                             </div>
@@ -439,17 +484,19 @@ export default function MyPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-offWhite-600 text-center py-8">수강 중인 강의가 없습니다</p>
+                      <p className="text-offWhite-600 text-center py-8">
+                        수강 중인 강의가 없습니다
+                      </p>
                     )}
                   </div>
                 )}
-                
+
                 {activeTab === 'payments' && (
                   <div>
                     <h2 className="text-2xl font-semibold text-offWhite-200 mb-6">결제 내역</h2>
                     {payments.length > 0 ? (
                       <div className="space-y-4">
-                        {payments.map((payment) => (
+                        {payments.map(payment => (
                           <div
                             key={payment.id}
                             className="flex items-center justify-between bg-deepBlack-600 rounded-lg p-4 border border-metallicGold-900/30"
@@ -466,16 +513,20 @@ export default function MyPage() {
                               <p className="text-lg font-medium text-metallicGold-500">
                                 ₩{payment.amount.toLocaleString()}
                               </p>
-                              <p className={`text-sm ${
-                                payment.status === 'completed' 
-                                  ? 'text-green-400' 
+                              <p
+                                className={`text-sm ${
+                                  payment.status === 'completed'
+                                    ? 'text-green-400'
+                                    : payment.status === 'failed'
+                                      ? 'text-red-400'
+                                      : 'text-yellow-400'
+                                }`}
+                              >
+                                {payment.status === 'completed'
+                                  ? '완료'
                                   : payment.status === 'failed'
-                                  ? 'text-red-400'
-                                  : 'text-yellow-400'
-                              }`}>
-                                {payment.status === 'completed' ? '완료' 
-                                  : payment.status === 'failed' ? '실패' 
-                                  : '대기중'}
+                                    ? '실패'
+                                    : '대기중'}
                               </p>
                             </div>
                           </div>
@@ -486,21 +537,25 @@ export default function MyPage() {
                     )}
                   </div>
                 )}
-                
+
                 {activeTab === 'security' && (
                   <div>
                     <h2 className="text-2xl font-semibold text-offWhite-200 mb-6">보안 설정</h2>
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-medium text-offWhite-200 mb-3">비밀번호 변경</h3>
+                        <h3 className="text-lg font-medium text-offWhite-200 mb-3">
+                          비밀번호 변경
+                        </h3>
                         <button className="px-6 py-3 bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-all">
                           비밀번호 변경하기
                         </button>
                       </div>
-                      
+
                       <div className="pt-6 border-t border-metallicGold-900/30">
                         <h3 className="text-lg font-medium text-offWhite-200 mb-3">이중 인증</h3>
-                        <p className="text-offWhite-600 mb-3">계정 보안을 강화하기 위해 이중 인증을 설정하세요</p>
+                        <p className="text-offWhite-600 mb-3">
+                          계정 보안을 강화하기 위해 이중 인증을 설정하세요
+                        </p>
                         <button className="px-6 py-3 bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-all">
                           이중 인증 설정
                         </button>
@@ -508,18 +563,37 @@ export default function MyPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {activeTab === 'notifications' && (
                   <div>
                     <h2 className="text-2xl font-semibold text-offWhite-200 mb-6">알림 설정</h2>
                     <div className="space-y-4">
                       {[
-                        { id: 'email', label: '이메일 알림', description: '중요한 업데이트를 이메일로 받습니다' },
-                        { id: 'lecture', label: '강의 알림', description: '새로운 강의 및 업데이트 알림' },
-                        { id: 'community', label: '커뮤니티 알림', description: '댓글 및 좋아요 알림' },
-                        { id: 'marketing', label: '마케팅 알림', description: '프로모션 및 이벤트 정보' },
-                      ].map((notification) => (
-                        <div key={notification.id} className="flex items-center justify-between p-4 bg-deepBlack-600 rounded-lg border border-metallicGold-900/30">
+                        {
+                          id: 'email',
+                          label: '이메일 알림',
+                          description: '중요한 업데이트를 이메일로 받습니다',
+                        },
+                        {
+                          id: 'lecture',
+                          label: '강의 알림',
+                          description: '새로운 강의 및 업데이트 알림',
+                        },
+                        {
+                          id: 'community',
+                          label: '커뮤니티 알림',
+                          description: '댓글 및 좋아요 알림',
+                        },
+                        {
+                          id: 'marketing',
+                          label: '마케팅 알림',
+                          description: '프로모션 및 이벤트 정보',
+                        },
+                      ].map(notification => (
+                        <div
+                          key={notification.id}
+                          className="flex items-center justify-between p-4 bg-deepBlack-600 rounded-lg border border-metallicGold-900/30"
+                        >
                           <div>
                             <h3 className="font-medium text-offWhite-200">{notification.label}</h3>
                             <p className="text-sm text-offWhite-600">{notification.description}</p>
@@ -539,5 +613,5 @@ export default function MyPage() {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }

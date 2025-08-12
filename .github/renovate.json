@@ -10,9 +10,7 @@
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
-  "schedule": [
-    "before 4am on Monday"
-  ],
+  "schedule": ["before 4am on Monday"],
   "labels": ["dependencies"],
   "assignees": [],
   "reviewers": [],
@@ -95,11 +93,6 @@
   "semanticCommitScope": "deps",
   "separateMajorMinor": true,
   "separateMinorPatch": false,
-  "ignorePaths": [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.next/**"
-  ],
+  "ignorePaths": ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**"],
   "ignoreDeps": []
 }

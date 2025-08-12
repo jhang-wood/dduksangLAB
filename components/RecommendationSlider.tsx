@@ -1,75 +1,79 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Star, 
-  Clock, 
-  Users, 
+import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Clock,
+  Users,
   BookOpen,
   Award,
   Play,
   TrendingUp,
   Zap,
-  Heart
-} from 'lucide-react'
-import Image from 'next/image'
+  Heart,
+} from 'lucide-react';
+import Image from 'next/image';
 
 interface RecommendedLecture {
-  id: string
-  title: string
-  instructor_name: string
-  thumbnail_url?: string
-  preview_url?: string
-  category: string
-  level: 'beginner' | 'intermediate' | 'advanced'
-  duration: number
-  price: number
-  rating?: number
-  student_count?: number
-  tags?: string[]
-  reason: 'same_category' | 'same_instructor' | 'similar_level' | 'trending' | 'ai_recommended'
+  id: string;
+  title: string;
+  instructor_name: string;
+  thumbnail_url?: string;
+  preview_url?: string;
+  category: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  duration: number;
+  price: number;
+  rating?: number;
+  student_count?: number;
+  tags?: string[];
+  reason: 'same_category' | 'same_instructor' | 'similar_level' | 'trending' | 'ai_recommended';
   discount?: {
-    original_price: number
-    discount_percentage: number
-    expires_at?: string
-  }
+    original_price: number;
+    discount_percentage: number;
+    expires_at?: string;
+  };
 }
 
 interface RecommendationSliderProps {
-  lectures: RecommendedLecture[]
-  title?: string
-  subtitle?: string
-  className?: string
-  slidesPerView?: number
-  spaceBetween?: number
-  showPagination?: boolean
-  autoplay?: boolean
-  autoplayDelay?: number
-  onLectureClick?: (lectureId: string) => void
-  showReasonBadge?: boolean
+  lectures: RecommendedLecture[];
+  title?: string;
+  subtitle?: string;
+  className?: string;
+  slidesPerView?: number;
+  spaceBetween?: number;
+  showPagination?: boolean;
+  autoplay?: boolean;
+  autoplayDelay?: number;
+  onLectureClick?: (lectureId: string) => void;
+  showReasonBadge?: boolean;
 }
 
 const levelLabels = {
-  'beginner': { label: '초급', color: 'text-green-400 bg-green-500/20' },
-  'intermediate': { label: '중급', color: 'text-yellow-400 bg-yellow-500/20' },
-  'advanced': { label: '고급', color: 'text-red-400 bg-red-500/20' }
-}
+  beginner: { label: '초급', color: 'text-green-400 bg-green-500/20' },
+  intermediate: { label: '중급', color: 'text-yellow-400 bg-yellow-500/20' },
+  advanced: { label: '고급', color: 'text-red-400 bg-red-500/20' },
+};
 
 const reasonLabels = {
-  'same_category': { label: '같은 카테고리', icon: BookOpen, color: 'from-blue-500 to-blue-600' },
-  'same_instructor': { label: '같은 강사', icon: Award, color: 'from-purple-500 to-purple-600' },
-  'similar_level': { label: '비슷한 레벨', icon: TrendingUp, color: 'from-green-500 to-green-600' },
-  'trending': { label: '인기 강의', icon: Zap, color: 'from-red-500 to-red-600' },
-  'ai_recommended': { label: 'AI 추천', icon: Heart, color: 'from-metallicGold-500 to-metallicGold-600' }
-}
+  same_category: { label: '같은 카테고리', icon: BookOpen, color: 'from-blue-500 to-blue-600' },
+  same_instructor: { label: '같은 강사', icon: Award, color: 'from-purple-500 to-purple-600' },
+  similar_level: { label: '비슷한 레벨', icon: TrendingUp, color: 'from-green-500 to-green-600' },
+  trending: { label: '인기 강의', icon: Zap, color: 'from-red-500 to-red-600' },
+  ai_recommended: {
+    label: 'AI 추천',
+    icon: Heart,
+    color: 'from-metallicGold-500 to-metallicGold-600',
+  },
+};
 
 export default function RecommendationSlider({
   lectures,
-  title = "추천 강의",
-  subtitle = "당신이 좋아할 만한 강의를 찾아보세요",
+  title = '추천 강의',
+  subtitle = '당신이 좋아할 만한 강의를 찾아보세요',
   className = '',
   slidesPerView = 3,
   spaceBetween = 24,
@@ -77,111 +81,114 @@ export default function RecommendationSlider({
   autoplay = false,
   autoplayDelay = 5000,
   onLectureClick,
-  showReasonBadge = true
+  showReasonBadge = true,
 }: RecommendationSliderProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const sliderRef = useRef<HTMLDivElement>(null)
-  const autoplayRef = useRef<NodeJS.Timeout>()
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const autoplayRef = useRef<NodeJS.Timeout>();
 
   // 반응형 slidesPerView 계산
-  const [responsiveSlidesPerView, setResponsiveSlidesPerView] = useState(slidesPerView)
+  const [responsiveSlidesPerView, setResponsiveSlidesPerView] = useState(slidesPerView);
 
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth
+      const width = window.innerWidth;
       if (width < 640) {
-        setResponsiveSlidesPerView(1)
+        setResponsiveSlidesPerView(1);
       } else if (width < 1024) {
-        setResponsiveSlidesPerView(2)
+        setResponsiveSlidesPerView(2);
       } else {
-        setResponsiveSlidesPerView(slidesPerView)
+        setResponsiveSlidesPerView(slidesPerView);
       }
-    }
+    };
 
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [slidesPerView])
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [slidesPerView]);
 
-  const totalSlides = lectures.length
-  const maxIndex = Math.max(0, totalSlides - responsiveSlidesPerView)
+  const totalSlides = lectures.length;
+  const maxIndex = Math.max(0, totalSlides - responsiveSlidesPerView);
 
   // 자동 재생
   useEffect(() => {
     if (autoplay && !isHovered && !isDragging) {
       autoplayRef.current = setInterval(() => {
-        setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1))
-      }, autoplayDelay)
+        setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
+      }, autoplayDelay);
     }
 
     return () => {
       if (autoplayRef.current) {
-        clearInterval(autoplayRef.current)
+        clearInterval(autoplayRef.current);
       }
-    }
-  }, [autoplay, autoplayDelay, isHovered, isDragging, maxIndex])
+    };
+  }, [autoplay, autoplayDelay, isHovered, isDragging, maxIndex]);
 
   // 슬라이드 이동
   const goToSlide = (index: number) => {
-    const clampedIndex = Math.max(0, Math.min(index, maxIndex))
-    setCurrentIndex(clampedIndex)
-  }
+    const clampedIndex = Math.max(0, Math.min(index, maxIndex));
+    setCurrentIndex(clampedIndex);
+  };
 
   const goToPrevious = () => {
-    goToSlide(currentIndex - 1)
-  }
+    goToSlide(currentIndex - 1);
+  };
 
   const goToNext = () => {
-    goToSlide(currentIndex + 1)
-  }
+    goToSlide(currentIndex + 1);
+  };
 
   // 터치/드래그 핸들러
   const handleDragStart = () => {
-    setIsDragging(true)
-  }
+    setIsDragging(true);
+  };
 
   const handleDragEnd = () => {
-    setIsDragging(false)
-  }
+    setIsDragging(false);
+  };
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
     if (hours > 0) {
-      return `${hours}시간 ${minutes}분`
+      return `${hours}시간 ${minutes}분`;
     }
-    return `${minutes}분`
-  }
+    return `${minutes}분`;
+  };
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString()
-  }
+    return price.toLocaleString();
+  };
 
   const handleLectureClick = (lectureId: string) => {
     if (onLectureClick) {
-      onLectureClick(lectureId)
+      onLectureClick(lectureId);
     }
-  }
+  };
 
   const isDiscounted = (lecture: RecommendedLecture) => {
-    return lecture.discount && lecture.discount.discount_percentage > 0
-  }
+    return lecture.discount && lecture.discount.discount_percentage > 0;
+  };
 
   const getDiscountedPrice = (lecture: RecommendedLecture) => {
-    if (!lecture.discount) {return lecture.price}
-    const discountAmount = (lecture.discount.original_price * lecture.discount.discount_percentage) / 100
-    return lecture.discount.original_price - discountAmount
-  }
+    if (!lecture.discount) {
+      return lecture.price;
+    }
+    const discountAmount =
+      (lecture.discount.original_price * lecture.discount.discount_percentage) / 100;
+    return lecture.discount.original_price - discountAmount;
+  };
 
   if (lectures.length === 0) {
-    return null
+    return null;
   }
 
   return (
-    <div 
+    <div
       className={`relative ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -189,14 +196,10 @@ export default function RecommendationSlider({
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-offWhite-200 mb-2">
-            {title}
-          </h2>
-          <p className="text-offWhite-500 text-lg">
-            {subtitle}
-          </p>
+          <h2 className="text-3xl font-bold text-offWhite-200 mb-2">{title}</h2>
+          <p className="text-offWhite-500 text-lg">{subtitle}</p>
         </div>
-        
+
         {/* Navigation */}
         <div className="flex items-center gap-2">
           <button
@@ -222,9 +225,9 @@ export default function RecommendationSlider({
           ref={sliderRef}
           className="flex"
           animate={{
-            x: `-${(currentIndex * (100 / responsiveSlidesPerView)) + (currentIndex * spaceBetween / responsiveSlidesPerView)}px`
+            x: `-${currentIndex * (100 / responsiveSlidesPerView) + (currentIndex * spaceBetween) / responsiveSlidesPerView}px`,
           }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           drag="x"
           dragConstraints={{ left: -maxIndex * 400, right: 0 }}
           onDragStart={handleDragStart}
@@ -232,22 +235,25 @@ export default function RecommendationSlider({
           style={{ gap: spaceBetween }}
         >
           {lectures.map((lecture, index) => {
-            const reason = reasonLabels[lecture.reason]
-            const ReasonIcon = reason.icon
+            const reason = reasonLabels[lecture.reason];
+            const ReasonIcon = reason.icon;
 
             return (
               <motion.div
                 key={lecture.id}
                 className="flex-shrink-0"
-                style={{ width: `calc(${100 / responsiveSlidesPerView}% - ${spaceBetween * (responsiveSlidesPerView - 1) / responsiveSlidesPerView}px)` }}
+                style={{
+                  width: `calc(${100 / responsiveSlidesPerView}% - ${(spaceBetween * (responsiveSlidesPerView - 1)) / responsiveSlidesPerView}px)`,
+                }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -8 }}
               >
-                <div className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all group cursor-pointer"
-                     onClick={() => handleLectureClick(lecture.id)}>
-                  
+                <div
+                  className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all group cursor-pointer"
+                  onClick={() => handleLectureClick(lecture.id)}
+                >
                   {/* Thumbnail */}
                   <div className="relative aspect-video bg-deepBlack-600 overflow-hidden">
                     {lecture.thumbnail_url ? (
@@ -262,7 +268,7 @@ export default function RecommendationSlider({
                         <BookOpen className="text-metallicGold-500" size={48} />
                       </div>
                     )}
-                    
+
                     {/* Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <motion.div
@@ -278,12 +284,14 @@ export default function RecommendationSlider({
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                       {/* Reason Badge */}
                       {showReasonBadge && (
-                        <div className={`inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r ${reason.color} text-white rounded-full text-xs font-medium shadow-lg`}>
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r ${reason.color} text-white rounded-full text-xs font-medium shadow-lg`}
+                        >
                           <ReasonIcon size={12} />
                           <span>{reason.label}</span>
                         </div>
                       )}
-                      
+
                       {/* Discount Badge */}
                       {isDiscounted(lecture) && (
                         <div className="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded-full text-xs font-bold shadow-lg">
@@ -294,7 +302,9 @@ export default function RecommendationSlider({
 
                     {/* Level Badge */}
                     <div className="absolute top-3 right-3">
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${levelLabels[lecture.level].color}`}>
+                      <div
+                        className={`px-3 py-1 rounded-full text-xs font-medium border ${levelLabels[lecture.level].color}`}
+                      >
                         {levelLabels[lecture.level].label}
                       </div>
                     </div>
@@ -374,7 +384,7 @@ export default function RecommendationSlider({
                           </span>
                         )}
                       </div>
-                      
+
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -386,7 +396,7 @@ export default function RecommendationSlider({
                   </div>
                 </div>
               </motion.div>
-            )
+            );
           })}
         </motion.div>
       </div>
@@ -413,11 +423,11 @@ export default function RecommendationSlider({
         <motion.div
           className="h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-600"
           animate={{
-            width: `${((currentIndex + responsiveSlidesPerView) / totalSlides) * 100}%`
+            width: `${((currentIndex + responsiveSlidesPerView) / totalSlides) * 100}%`,
           }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       </div>
     </div>
-  )
+  );
 }

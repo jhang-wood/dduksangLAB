@@ -3,6 +3,7 @@
 ## ShareX 설정 변경 (Windows에서)
 
 ### 1. ShareX 스크린샷 경로 단순화
+
 1. ShareX 실행
 2. Application settings → Paths
 3. Screenshots folder를 다음으로 변경:
@@ -11,6 +12,7 @@
    ```
 
 ### 2. ShareX 후처리 설정
+
 1. Task settings → Advanced
 2. After capture tasks → Add
 3. Custom command 추가:
@@ -22,6 +24,7 @@
 ## WSL에서 ShareX 스크린샷 사용
 
 ### 방법 1: 별칭 설정
+
 ```bash
 # .bashrc에 추가
 echo 'alias sx="ls -t /mnt/v/Computer_tool/ShareX-17.1.0-portable/ShareX/Screenshots/2025-*/*.png | head -1"' >> ~/.bashrc
@@ -32,6 +35,7 @@ sx  # 최신 스크린샷 경로 출력
 ```
 
 ### 방법 2: 함수로 만들기
+
 ```bash
 # .bashrc에 추가
 cat >> ~/.bashrc << 'EOF'
@@ -49,6 +53,7 @@ source ~/.bashrc
 ```
 
 ### 방법 3: Windows 경로 자동 변환
+
 ```bash
 # .bashrc에 추가
 cat >> ~/.bashrc << 'EOF'
@@ -64,6 +69,7 @@ winpath "V:\Computer_tool\ShareX-17.1.0-portable\ShareX\Screenshots\2025-07\fire
 ```
 
 ### 방법 4: 클립보드에서 ShareX 경로 자동 변환
+
 ```bash
 # .bashrc에 추가
 cat >> ~/.bashrc << 'EOF'
@@ -105,5 +111,6 @@ source ~/.bashrc
 ```
 
 이제 `pic` 명령만 입력하면:
+
 1. ShareX 최신 스크린샷 경로 출력
 2. ShareX가 없으면 클립보드 이미지 저장 후 경로 출력

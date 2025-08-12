@@ -5,6 +5,7 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
 ## 📋 구현된 컴포넌트
 
 ### 🎯 MCP 서버 연결 관리자
+
 - **PlaywrightController** (`lib/mcp/playwright-controller.ts`)
   - 브라우저 자동화 및 웹 상호작용
   - 관리자 로그인 자동화
@@ -18,6 +19,7 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
   - 헬스체크 결과 관리
 
 ### 🎭 자동화 오케스트레이터
+
 - **AutomationOrchestrator** (`lib/mcp/orchestrator.ts`)
   - PlaywrightMCP와 SupabaseMCP 조율
   - 복합 워크플로우 실행
@@ -29,6 +31,7 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
   - 자동 복구 액션
 
 ### 🤖 자동화 서비스
+
 - **BlogPublisher** (`lib/automation/blog-publisher.ts`)
   - 블로그 콘텐츠 자동 게시
   - 콘텐츠 검증
@@ -45,6 +48,7 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
   - 작업 상태 모니터링
 
 ### 📊 모니터링 시스템
+
 - **HealthChecker** (`lib/monitoring/health-checker.ts`)
   - 시스템 헬스체크
   - 서비스 상태 모니터링
@@ -56,6 +60,7 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
   - 템플릿 기반 알림
 
 ### 🌐 Next.js API 라우트
+
 - `/api/automation/health` - 헬스체크
 - `/api/automation/scheduler` - 스케줄러 제어
 - `/api/automation/content` - 콘텐츠 관리
@@ -66,12 +71,14 @@ dduksangLAB에 PlaywrightMCP와 SupabaseMCP가 성공적으로 통합되었습�
 ## 🚀 설정 및 사용법
 
 ### 1. 환경변수 설정
+
 ```bash
 # .env.local 파일 생성
 cp .env.example .env.local
 ```
 
 다음 환경변수를 설정하세요:
+
 ```env
 # 기본 설정
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
@@ -140,11 +147,13 @@ CREATE TABLE health_checks (
 ```
 
 ### 3. 개발 서버 시작
+
 ```bash
 npm run dev
 ```
 
 ### 4. 시스템 테스트
+
 ```bash
 # MCP 통합 테스트 실행
 node scripts/test-mcp-integration.js
@@ -159,6 +168,7 @@ curl http://localhost:3000/api/automation/scheduler
 ## 🎮 사용 예시
 
 ### 자동 로그인 및 콘텐츠 게시
+
 ```typescript
 import { getOrchestrator } from '@/lib/mcp/orchestrator';
 
@@ -167,7 +177,7 @@ const orchestrator = getOrchestrator();
 // 로그인 워크플로우
 const loginResult = await orchestrator.executeLoginWorkflow({
   email: 'admin@example.com',
-  password: 'password'
+  password: 'password',
 });
 
 // 콘텐츠 게시 워크플로우
@@ -175,11 +185,12 @@ const publishResult = await orchestrator.executePublishWorkflow({
   title: '새로운 블로그 포스트',
   content: '<p>콘텐츠 내용...</p>',
   category: 'AI/ML',
-  tags: ['AI', '자동화']
+  tags: ['AI', '자동화'],
 });
 ```
 
 ### AI 콘텐츠 자동 생성
+
 ```typescript
 import { getContentManager } from '@/lib/automation/content-manager';
 
@@ -189,11 +200,12 @@ const result = await contentManager.generateAndManageContent({
   strategy: 'daily-trends',
   count: 5,
   publishMode: 'scheduled',
-  scheduleTime: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24시간 후
+  scheduleTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24시간 후
 });
 ```
 
 ### 시스템 헬스체크
+
 ```typescript
 import { getHealthChecker } from '@/lib/monitoring/health-checker';
 
@@ -204,14 +216,11 @@ console.log(`시스템 상태: ${healthResult.overall}`);
 ```
 
 ### 알림 발송
+
 ```typescript
 import { sendQuickNotification } from '@/lib/monitoring/notification-service';
 
-await sendQuickNotification(
-  '시스템 알림',
-  '자동화 작업이 완료되었습니다.',
-  'success'
-);
+await sendQuickNotification('시스템 알림', '자동화 작업이 완료되었습니다.', 'success');
 ```
 
 ## 🕐 스케줄 작업 설정
@@ -227,6 +236,7 @@ await sendQuickNotification(
 ## 🎯 Vercel Cron Jobs 설정
 
 `vercel.json`에 다음 설정을 추가하세요:
+
 ```json
 {
   "crons": [
@@ -255,6 +265,7 @@ await sendQuickNotification(
    - 슬랙 웹훅 URL 유효성 확인
 
 ### 로그 확인
+
 ```bash
 # 개발 서버 로그에서 MCP 관련 로그 확인
 grep -i "mcp\|automation\|playwright\|supabase" logs/development.log

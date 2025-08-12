@@ -1,7 +1,7 @@
-import crypto from 'crypto'
-import { supabase } from '../supabase'
-import { logger } from '@/lib/logger'
-import { env, getOptionalEnvVar } from '@/lib/env'
+import crypto from 'crypto';
+import { supabase } from '../supabase';
+import { logger } from '@/lib/logger';
+import { env, getOptionalEnvVar } from '@/lib/env';
 
 // PayApp 설정 (컴포넌트와 API 공통 사용)
 const PAYAPP_CONFIG = {
@@ -10,10 +10,10 @@ const PAYAPP_CONFIG = {
   userCode: getOptionalEnvVar('PAYAPP_USER_CODE', 'BA0209'),
   storeId: getOptionalEnvVar('PAYAPP_STORE_ID', 'dduksanglab'),
   testMode: !env.isProduction,
-}
+};
 
 if (!PAYAPP_CONFIG.secretKey || !PAYAPP_CONFIG.value) {
-  logger.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.')
+  logger.warn('⚠️ PayApp 환경 변수가 설정되지 않았습니다. 결제 기능이 작동하지 않을 수 있습니다.');
 }
 
 // 가격 플랜 정의 (컴포넌트용 export)
@@ -23,14 +23,10 @@ export const PRICING_PLANS = {
     name: '베이직 플랜',
     price: 9900,
     description: '기본 강의 접근',
-    features: [
-      '기본 강의 무제한 시청',
-      '커뮤니티 접근',
-      '기본 지원'
-    ]
+    features: ['기본 강의 무제한 시청', '커뮤니티 접근', '기본 지원'],
   },
   pro: {
-    id: 'pro', 
+    id: 'pro',
     name: '프로 플랜',
     price: 29900,
     description: '전체 강의 + 프리미엄 기능',
@@ -39,8 +35,8 @@ export const PRICING_PLANS = {
       '커뮤니티 프리미엄 접근',
       '1:1 멘토링 월 1회',
       'SaaS 홍보 기회',
-      '우선 지원'
-    ]
+      '우선 지원',
+    ],
   },
   enterprise: {
     id: 'enterprise',
@@ -52,43 +48,43 @@ export const PRICING_PLANS = {
       '팀 계정 관리',
       '전용 멘토링',
       '맞춤형 교육 과정',
-      '전용 지원'
-    ]
-  }
-}
+      '전용 지원',
+    ],
+  },
+};
 
 interface PayAppConfig {
-  secretKey: string
-  value: string
-  baseUrl: string
+  secretKey: string;
+  value: string;
+  baseUrl: string;
 }
 
 interface PaymentRequest {
-  orderId: string
-  amount: number
-  itemName: string
-  customerName: string
-  customerEmail: string
-  returnUrl: string
-  cancelUrl: string
+  orderId: string;
+  amount: number;
+  itemName: string;
+  customerName: string;
+  customerEmail: string;
+  returnUrl: string;
+  cancelUrl: string;
 }
 
 interface PaymentResult {
-  success: boolean
-  paymentId?: string
-  approvalUrl?: string
-  error?: string
+  success: boolean;
+  paymentId?: string;
+  approvalUrl?: string;
+  error?: string;
 }
 
 class PayAppService {
-  private config: PayAppConfig
+  private config: PayAppConfig;
 
   constructor() {
     this.config = {
       secretKey: process.env.PAYAPP_SECRET_KEY ?? '',
       value: process.env.PAYAPP_VALUE ?? '',
-      baseUrl: 'https://api.payapp.kr/v2'
-    }
+      baseUrl: 'https://api.payapp.kr/v2',
+    };
   }
 
   // 결제 요청 생성
@@ -105,14 +101,14 @@ class PayAppService {
           metadata: {
             itemName: request.itemName,
             customerName: request.customerName,
-            customerEmail: request.customerEmail
-          }
+            customerEmail: request.customerEmail,
+          },
         })
         .select()
-        .single()
+        .single();
 
       if (dbError) {
-        throw new Error('결제 정보 저장 실패')
+        throw new Error('결제 정보 저장 실패');
       }
 
       // 2. PayApp 결제 요청 데이터 생성
@@ -127,26 +123,26 @@ class PayAppService {
         feedbackurl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/payment/callback`,
         returnurl: request.returnUrl,
         cancelurl: request.cancelUrl,
-        orderid: request.orderId
-      }
+        orderid: request.orderId,
+      };
 
       // 3. 해시 생성
-      const hashData = this.generateHash(paymentData)
-      
+      const hashData = this.generateHash(paymentData);
+
       // 4. PayApp API 호출
       const response = await fetch(`${this.config.baseUrl}/payrequest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.secretKey}`
+          Authorization: `Bearer ${this.config.secretKey}`,
         },
         body: JSON.stringify({
           ...paymentData,
-          hashdata: hashData
-        })
-      })
+          hashdata: hashData,
+        }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.state === 1) {
         // 결제 URL 업데이트
@@ -156,25 +152,25 @@ class PayAppService {
             payapp_order_id: result.mul_no,
             metadata: {
               ...payment.metadata,
-              payapp_response: result
-            }
+              payapp_response: result,
+            },
           })
-          .eq('id', request.orderId)
+          .eq('id', request.orderId);
 
         return {
           success: true,
           paymentId: result.mul_no,
-          approvalUrl: result.online_url
-        }
+          approvalUrl: result.online_url,
+        };
       } else {
-        throw new Error((result.errorMessage as string) ?? '결제 요청 실패')
+        throw new Error((result.errorMessage as string) ?? '결제 요청 실패');
       }
     } catch (error) {
-      logger.error('PayApp payment creation error:', error)
+      logger.error('PayApp payment creation error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '결제 요청 중 오류가 발생했습니다'
-      }
+        error: error instanceof Error ? error.message : '결제 요청 중 오류가 발생했습니다',
+      };
     }
   }
 
@@ -186,10 +182,10 @@ class PayAppService {
         .from('payments')
         .select('*')
         .eq('id', orderId)
-        .single()
+        .single();
 
       if (error ?? !payment) {
-        throw new Error('결제 정보를 찾을 수 없습니다')
+        throw new Error('결제 정보를 찾을 수 없습니다');
       }
 
       // 2. PayApp 결제 상태 확인
@@ -197,24 +193,24 @@ class PayAppService {
         cmd: 'paycheck',
         userid: this.config.value,
         orderid: orderId,
-        mul_no: payment.payapp_order_id
-      }
+        mul_no: payment.payapp_order_id,
+      };
 
-      const hashData = this.generateHash(verifyData)
-      
+      const hashData = this.generateHash(verifyData);
+
       const response = await fetch(`${this.config.baseUrl}/paycheck`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.secretKey}`
+          Authorization: `Bearer ${this.config.secretKey}`,
         },
         body: JSON.stringify({
           ...verifyData,
-          hashdata: hashData
-        })
-      })
+          hashdata: hashData,
+        }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.state === 1 && result.pay_state === 4) {
         // 결제 성공 - DB 업데이트
@@ -224,38 +220,38 @@ class PayAppService {
             status: 'completed',
             transaction_id: result.mul_no,
             payapp_receipt_url: result.receipt_url,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', orderId)
+          .eq('id', orderId);
 
         return {
           success: true,
-          paymentId: result.mul_no
-        }
+          paymentId: result.mul_no,
+        };
       } else {
         // 결제 실패 또는 대기중
-        const status = result.pay_state === 5 ? 'failed' : 'pending'
-        
+        const status = result.pay_state === 5 ? 'failed' : 'pending';
+
         await supabase
           .from('payments')
           .update({
             status,
             error_message: result.errorMessage as string,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', orderId)
+          .eq('id', orderId);
 
         return {
           success: false,
-          error: (result.errorMessage as string) ?? '결제가 완료되지 않았습니다'
-        }
+          error: (result.errorMessage as string) ?? '결제가 완료되지 않았습니다',
+        };
       }
     } catch (error) {
-      logger.error('PayApp payment verification error:', error)
+      logger.error('PayApp payment verification error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '결제 확인 중 오류가 발생했습니다'
-      }
+        error: error instanceof Error ? error.message : '결제 확인 중 오류가 발생했습니다',
+      };
     }
   }
 
@@ -267,14 +263,14 @@ class PayAppService {
         .from('payments')
         .select('*')
         .eq('id', orderId)
-        .single()
+        .single();
 
       if (error ?? !payment) {
-        throw new Error('결제 정보를 찾을 수 없습니다')
+        throw new Error('결제 정보를 찾을 수 없습니다');
       }
 
       if (payment.status !== 'completed') {
-        throw new Error('완료된 결제만 취소할 수 있습니다')
+        throw new Error('완료된 결제만 취소할 수 있습니다');
       }
 
       // 2. PayApp 결제 취소 요청
@@ -283,24 +279,24 @@ class PayAppService {
         userid: this.config.value,
         orderid: orderId,
         mul_no: payment.payapp_order_id,
-        cancelmemo: reason
-      }
+        cancelmemo: reason,
+      };
 
-      const hashData = this.generateHash(cancelData)
-      
+      const hashData = this.generateHash(cancelData);
+
       const response = await fetch(`${this.config.baseUrl}/paycancel`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.secretKey}`
+          Authorization: `Bearer ${this.config.secretKey}`,
         },
         body: JSON.stringify({
           ...cancelData,
-          hashdata: hashData
-        })
-      })
+          hashdata: hashData,
+        }),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.state === 1) {
         // 취소 성공 - DB 업데이트
@@ -309,39 +305,39 @@ class PayAppService {
           .update({
             status: 'refunded',
             error_message: reason,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', orderId)
+          .eq('id', orderId);
 
         return {
-          success: true
-        }
+          success: true,
+        };
       } else {
-        throw new Error((result.errorMessage as string) ?? '결제 취소 실패')
+        throw new Error((result.errorMessage as string) ?? '결제 취소 실패');
       }
     } catch (error) {
-      logger.error('PayApp payment cancellation error:', error)
+      logger.error('PayApp payment cancellation error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '결제 취소 중 오류가 발생했습니다'
-      }
+        error: error instanceof Error ? error.message : '결제 취소 중 오류가 발생했습니다',
+      };
     }
   }
 
   // 해시 생성
   private generateHash(data: Record<string, unknown>): string {
-    const hashString = Object.values(data).join('') + this.config.secretKey
-    return crypto.createHash('sha256').update(hashString).digest('hex')
+    const hashString = Object.values(data).join('') + this.config.secretKey;
+    return crypto.createHash('sha256').update(hashString).digest('hex');
   }
 
   // 웹훅 검증
   verifyWebhook(data: Record<string, unknown>, signature: string): boolean {
-    const expectedSignature = this.generateHash(data)
-    return expectedSignature === signature
+    const expectedSignature = this.generateHash(data);
+    return expectedSignature === signature;
   }
 }
 
-export const payapp = new PayAppService()
+export const payapp = new PayAppService();
 
 // 결제 페이지에서 사용할 헬퍼 함수들
 export async function initiateLecturePayment(
@@ -355,10 +351,10 @@ export async function initiateLecturePayment(
     .from('lectures')
     .select('*')
     .eq('id', lectureId)
-    .single()
+    .single();
 
   if (lectureError ?? !lecture) {
-    throw new Error('강의 정보를 찾을 수 없습니다')
+    throw new Error('강의 정보를 찾을 수 없습니다');
   }
 
   // 2. 이미 수강중인지 확인
@@ -367,14 +363,14 @@ export async function initiateLecturePayment(
     .select('id')
     .eq('user_id', userId)
     .eq('lecture_id', lectureId)
-    .single()
+    .single();
 
   if (existingEnrollment) {
-    throw new Error('이미 수강중인 강의입니다')
+    throw new Error('이미 수강중인 강의입니다');
   }
 
   // 3. 주문 ID 생성
-  const orderId = `LEC_${Date.now()}_${userId.substring(0, 8)}`
+  const orderId = `LEC_${Date.now()}_${userId.substring(0, 8)}`;
 
   // 4. 결제 요청
   const paymentResult = await payapp.createPayment({
@@ -384,8 +380,8 @@ export async function initiateLecturePayment(
     customerName: userName,
     customerEmail: userEmail,
     returnUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success?orderId=${orderId}`,
-    cancelUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${orderId}`
-  })
+    cancelUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/cancel?orderId=${orderId}`,
+  });
 
   if (paymentResult.success) {
     // 5. DB에 결제 정보 연결
@@ -393,39 +389,37 @@ export async function initiateLecturePayment(
       .from('payments')
       .update({
         user_id: userId,
-        lecture_id: lectureId
+        lecture_id: lectureId,
       })
-      .eq('id', orderId)
+      .eq('id', orderId);
   }
 
-  return paymentResult
+  return paymentResult;
 }
 
 // ===== 컴포넌트용 함수들 (기존 lib/payapp.ts에서 이동) =====
 
 // PayApp 서명 생성 (컴포넌트용)
 export function generatePayAppSignature(params: Record<string, unknown>): string {
-  const sortedKeys = Object.keys(params).sort()
-  const queryString = sortedKeys
-    .map(key => `${key}=${String(params[key])}`)
-    .join('&')
-  
-  const message = queryString + PAYAPP_CONFIG.value
+  const sortedKeys = Object.keys(params).sort();
+  const queryString = sortedKeys.map(key => `${key}=${String(params[key])}`).join('&');
+
+  const message = queryString + PAYAPP_CONFIG.value;
   const signature = crypto
     .createHmac('sha256', PAYAPP_CONFIG.secretKey ?? '')
     .update(message)
-    .digest('base64')
-  
-  return signature
+    .digest('base64');
+
+  return signature;
 }
 
 // PayApp 결제 URL 생성 (컴포넌트용)
 export function generatePayAppUrl(orderData: {
-  orderId: string
-  userName: string
-  userEmail: string
-  planId: string
-  amount: number
+  orderId: string;
+  userName: string;
+  userEmail: string;
+  planId: string;
+  amount: number;
 }): string {
   const params = {
     cmd: 'pay',
@@ -440,41 +434,44 @@ export function generatePayAppUrl(orderData: {
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/payment/cancel`,
     noti_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/api/payment/webhook`,
     test_mode: PAYAPP_CONFIG.testMode ? 'Y' : 'N',
-    timestamp: Math.floor(Date.now() / 1000)
-  }
+    timestamp: Math.floor(Date.now() / 1000),
+  };
 
-  const signature = generatePayAppSignature(params)
+  const signature = generatePayAppSignature(params);
   const queryString = new URLSearchParams({
-    ...Object.entries(params).reduce((acc, [key, value]) => ({
-      ...acc,
-      [key]: String(value)
-    }), {}),
-    signature
-  }).toString()
+    ...Object.entries(params).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: String(value),
+      }),
+      {}
+    ),
+    signature,
+  }).toString();
 
-  return `https://api.payapp.kr/v1/payment?${queryString}`
+  return `https://api.payapp.kr/v1/payment?${queryString}`;
 }
 
 // 결제 검증 (webhook용)
 export function verifyPayAppWebhook(data: Record<string, unknown>, signature: string): boolean {
-  const calculatedSignature = generatePayAppSignature(data)
-  return calculatedSignature === signature
+  const calculatedSignature = generatePayAppSignature(data);
+  return calculatedSignature === signature;
 }
 
 // 주문 ID 생성 (컴포넌트용)
 export function generateOrderId(): string {
-  const timestamp = Date.now()
-  const random = Math.random().toString(36).substring(2, 9)
-  return `DDK-${timestamp}-${random}`.toUpperCase()
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 9);
+  return `DDK-${timestamp}-${random}`.toUpperCase();
 }
 
 // 결제 완료 후 수강 등록
 export async function completeLectureEnrollment(orderId: string) {
   // 1. 결제 확인
-  const verifyResult = await payapp.verifyPayment(orderId)
-  
+  const verifyResult = await payapp.verifyPayment(orderId);
+
   if (!verifyResult.success) {
-    throw new Error('결제 확인에 실패했습니다')
+    throw new Error('결제 확인에 실패했습니다');
   }
 
   // 2. 결제 정보 조회
@@ -482,10 +479,10 @@ export async function completeLectureEnrollment(orderId: string) {
     .from('payments')
     .select('*')
     .eq('id', orderId)
-    .single()
+    .single();
 
   if (error ?? !payment) {
-    throw new Error('결제 정보를 찾을 수 없습니다')
+    throw new Error('결제 정보를 찾을 수 없습니다');
   }
 
   // 3. 수강 등록
@@ -496,16 +493,16 @@ export async function completeLectureEnrollment(orderId: string) {
       lecture_id: payment.lecture_id,
       payment_id: payment.id,
       status: 'active',
-      enrolled_at: new Date().toISOString()
+      enrolled_at: new Date().toISOString(),
     })
     .select()
-    .single()
+    .single();
 
   if (enrollError) {
     // 수강 등록 실패시 결제 취소
-    await payapp.cancelPayment(orderId, '수강 등록 실패')
-    throw new Error('수강 등록에 실패했습니다. 결제가 자동으로 취소됩니다.')
+    await payapp.cancelPayment(orderId, '수강 등록 실패');
+    throw new Error('수강 등록에 실패했습니다. 결제가 자동으로 취소됩니다.');
   }
 
-  return enrollment
+  return enrollment;
 }

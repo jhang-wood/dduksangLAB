@@ -43,7 +43,7 @@ export class PlaywrightController {
       viewport: { width: 1920, height: 1080 },
       locale: 'ko-KR',
       timeout: 30000,
-      ...config
+      ...config,
     };
   }
 
@@ -53,24 +53,24 @@ export class PlaywrightController {
   async initialize(browserType: 'chromium' | 'firefox' | 'webkit' = 'chromium'): Promise<void> {
     try {
       logger.info('브라우저 초기화 시작', { browserType });
-      
-      const browserEngine = browserType === 'chromium' ? chromium : 
-                           browserType === 'firefox' ? firefox : webkit;
+
+      const browserEngine =
+        browserType === 'chromium' ? chromium : browserType === 'firefox' ? firefox : webkit;
 
       this.browser = await browserEngine.launch({
         headless: this.config.headless,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
 
       this.page = await this.browser.newPage({
         viewport: this.config.viewport,
         locale: this.config.locale,
-        userAgent: this.config.userAgent
+        userAgent: this.config.userAgent,
       });
 
       // 기본 타임아웃 설정
       this.page.setDefaultTimeout(this.config.timeout!);
-      
+
       logger.info('브라우저 초기화 완료');
     } catch (error) {
       logger.error('브라우저 초기화 실패', { error });
@@ -95,20 +95,26 @@ export class PlaywrightController {
       // 로그인 폼 요소 대기 및 입력
       await this.page.waitForSelector('input[type="email"], input[name="email"]');
       await this.page.fill('input[type="email"], input[name="email"]', credentials.email);
-      
+
       await this.page.waitForSelector('input[type="password"], input[name="password"]');
       await this.page.fill('input[type="password"], input[name="password"]', credentials.password);
 
       // 로그인 버튼 클릭
       await Promise.all([
         this.page.waitForNavigation({ waitUntil: 'networkidle' }),
-        this.page.click('button[type="submit"], button:has-text("로그인"), button:has-text("Login")')
+        this.page.click(
+          'button[type="submit"], button:has-text("로그인"), button:has-text("Login")'
+        ),
       ]);
 
       // 로그인 성공 확인
-      const isLoggedIn = this.page.url().includes('/dashboard') || 
-                        this.page.url().includes('/admin') ||
-                        await this.page.locator('[data-testid="user-menu"]').isVisible({ timeout: 5000 }).catch(() => false);
+      const isLoggedIn =
+        this.page.url().includes('/dashboard') ||
+        this.page.url().includes('/admin') ||
+        (await this.page
+          .locator('[data-testid="user-menu"]')
+          .isVisible({ timeout: 5000 })
+          .catch(() => false));
 
       if (isLoggedIn) {
         logger.info('관리자 로그인 성공');
@@ -136,7 +142,7 @@ export class PlaywrightController {
 
       // 콘텐츠 작성 페이지로 이동
       await this.page.goto(`${process.env.NEXT_PUBLIC_APP_URL}/community/write`);
-      
+
       // 제목 입력
       await this.page.waitForSelector('input[name="title"], input[placeholder*="제목"]');
       await this.page.fill('input[name="title"], input[placeholder*="제목"]', options.title);
@@ -147,7 +153,7 @@ export class PlaywrightController {
         '.ql-editor', // Quill 에디터
         '.CodeMirror textarea', // CodeMirror
         '[contenteditable="true"]', // 일반 contenteditable
-        'textarea[placeholder*="내용"]'
+        'textarea[placeholder*="내용"]',
       ];
 
       let contentFilled = false;
@@ -192,8 +198,10 @@ export class PlaywrightController {
       // 게시일 설정
       if (options.publishDate) {
         try {
-          await this.page.fill('input[type="datetime-local"], input[name="publishDate"]', 
-            options.publishDate.toISOString().slice(0, 16));
+          await this.page.fill(
+            'input[type="datetime-local"], input[name="publishDate"]',
+            options.publishDate.toISOString().slice(0, 16)
+          );
         } catch {
           logger.warn('게시일 설정 실패');
         }
@@ -202,7 +210,7 @@ export class PlaywrightController {
       // 게시 버튼 클릭
       await Promise.all([
         this.page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-        this.page.click('button[type="submit"], button:has-text("게시"), button:has-text("발행")')
+        this.page.click('button[type="submit"], button:has-text("게시"), button:has-text("발행")'),
       ]);
 
       // 게시 성공 확인
@@ -231,10 +239,10 @@ export class PlaywrightController {
     }
 
     try {
-      await this.page.screenshot({ 
-        path, 
+      await this.page.screenshot({
+        path,
         fullPage,
-        type: 'png'
+        type: 'png',
       });
       logger.info('스크린샷 캡처 완료', { path });
     } catch (error) {
@@ -253,13 +261,17 @@ export class PlaywrightController {
 
     try {
       const metrics = await this.page.evaluate(() => {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
         return {
           loadTime: navigation.loadEventEnd - navigation.loadEventStart,
-          domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+          domContentLoaded:
+            navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
           firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime ?? 0,
-          firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0,
-          timestamp: new Date().toISOString()
+          firstContentfulPaint:
+            performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0,
+          timestamp: new Date().toISOString(),
         };
       });
 

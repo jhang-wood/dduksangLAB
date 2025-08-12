@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lucide-react'
-import Link from 'next/link'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
-import { logger, userNotification } from '@/lib/logger'
-import { supabase } from '@/lib/supabase'
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lucide-react';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { useAuth } from '@/lib/auth-context';
+import { logger, userNotification } from '@/lib/logger';
+import { supabase } from '@/lib/supabase';
 
 interface Post {
-  id: string
-  title: string
-  content: string
-  category: string
-  author_id: string
-  author_name: string
-  tags: string[]
-  views: number
-  likes: number
-  comments_count: number
-  is_pinned: boolean
-  is_featured: boolean
-  created_at: string
-  updated_at: string
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  author_id: string;
+  author_name: string;
+  tags: string[];
+  views: number;
+  likes: number;
+  comments_count: number;
+  is_pinned: boolean;
+  is_featured: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 const categories = [
@@ -33,74 +33,74 @@ const categories = [
   { id: 'general', label: '자유게시판', icon: MessageSquare },
   { id: 'review', label: '수강후기', icon: Users },
   { id: 'qna', label: '질문/답변', icon: HelpCircle },
-  { id: 'career', label: '진로/취업', icon: Briefcase }
-]
+  { id: 'career', label: '진로/취업', icon: Briefcase },
+];
 
 // Client component - no revalidate needed
 
 export default function CommunityPage() {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
-  const router = useRouter()
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const router = useRouter();
 
   const fetchPosts = useCallback(async () => {
     try {
       let query = supabase
         .from('community_posts')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory)
+        query = query.eq('category', selectedCategory);
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
       if (error) {
-        throw error
+        throw error;
       }
-      setPosts(data ?? [])
+      setPosts(data ?? []);
     } catch (error) {
-      logger.error('Error fetching posts:', error)
+      logger.error('Error fetching posts:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [selectedCategory])
+  }, [selectedCategory]);
 
   useEffect(() => {
-    void fetchPosts()
-  }, [fetchPosts])
+    void fetchPosts();
+  }, [fetchPosts]);
 
   const handleWriteClick = () => {
     if (!user) {
-      userNotification.alert('로그인이 필요한 서비스입니다.')
-      router.push('/auth/login')
-      return
+      userNotification.alert('로그인이 필요한 서비스입니다.');
+      router.push('/auth/login');
+      return;
     }
-    router.push('/community/write')
-  }
+    router.push('/community/write');
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 60) {
-      return `${diffMins}분 전`
+      return `${diffMins}분 전`;
     }
     if (diffHours < 24) {
-      return `${diffHours}시간 전`
+      return `${diffHours}시간 전`;
     }
     if (diffDays < 7) {
-      return `${diffDays}일 전`
+      return `${diffDays}일 전`;
     }
-    return date.toLocaleDateString()
-  }
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -123,7 +123,8 @@ export default function CommunityPage() {
                 </span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto px-4 sm:px-0">
-                떡상연구소 수강생들과<br className="sm:hidden" />
+                떡상연구소 수강생들과
+                <br className="sm:hidden" />
                 함께 성장하고 소통하세요
               </p>
             </motion.div>
@@ -135,7 +136,7 @@ export default function CommunityPage() {
           <div className="container mx-auto max-w-7xl">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
               <div className="flex gap-2 overflow-x-auto pb-2 w-full sm:w-auto">
-                {categories.map((category) => (
+                {categories.map(category => (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
@@ -166,16 +167,12 @@ export default function CommunityPage() {
           <div className="container mx-auto max-w-7xl">
             <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl overflow-hidden">
               {loading ? (
-                <div className="p-20 text-center text-offWhite-600">
-                  로딩 중...
-                </div>
+                <div className="p-20 text-center text-offWhite-600">로딩 중...</div>
               ) : posts.length === 0 ? (
-                <div className="p-20 text-center text-offWhite-600">
-                  아직 작성된 글이 없습니다.
-                </div>
+                <div className="p-20 text-center text-offWhite-600">아직 작성된 글이 없습니다.</div>
               ) : (
                 <div className="divide-y divide-metallicGold-900/20">
-                  {posts.map((post) => (
+                  {posts.map(post => (
                     <Link
                       key={post.id}
                       href={`/community/${post.category}/${post.id}`}
@@ -204,5 +201,5 @@ export default function CommunityPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

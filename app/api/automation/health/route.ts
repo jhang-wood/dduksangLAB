@@ -10,27 +10,36 @@ import { logger } from '@/lib/logger';
 export async function GET(_request: NextRequest) {
   try {
     const healthChecker = getHealthChecker();
-    
+
     // 헬스체크 실행
     const healthResult = await healthChecker.performHealthCheck();
-    
-    return NextResponse.json({
-      success: true,
-      data: healthResult,
-      timestamp: new Date().toISOString()
-    }, {
-      status: healthResult.overall === 'healthy' ? 200 : 
-             healthResult.overall === 'degraded' ? 206 : 503
-    });
 
+    return NextResponse.json(
+      {
+        success: true,
+        data: healthResult,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        status:
+          healthResult.overall === 'healthy'
+            ? 200
+            : healthResult.overall === 'degraded'
+              ? 206
+              : 503,
+      }
+    );
   } catch (error) {
     logger.error('헬스체크 API 오류', { error });
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-      message: (error as Error).message
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+        message: (error as Error).message,
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -46,7 +55,7 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({
           success: true,
-          message: '헬스체커가 시작되었습니다'
+          message: '헬스체커가 시작되었습니다',
         });
 
       case 'stop':
@@ -55,24 +64,29 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({
           success: true,
-          message: '헬스체커가 중지되었습니다'
+          message: '헬스체커가 중지되었습니다',
         });
 
       default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid action',
-          message: '지원되지 않는 액션입니다'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid action',
+            message: '지원되지 않는 액션입니다',
+          },
+          { status: 400 }
+        );
     }
-
   } catch (error) {
     logger.error('헬스체크 제어 API 오류', { error });
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-      message: (error as Error).message
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+        message: (error as Error).message,
+      },
+      { status: 500 }
+    );
   }
 }

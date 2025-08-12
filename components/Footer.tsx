@@ -1,17 +1,11 @@
-'use client'
+'use client';
 
-import React from 'react'
-import Image from 'next/image'
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Instagram, 
-  Youtube, 
-  Github} from 'lucide-react'
+import React from 'react';
+import Image from 'next/image';
+import { Mail, Phone, MapPin, Instagram, Youtube, Github } from 'lucide-react';
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     service: [
@@ -38,28 +32,28 @@ export default function Footer() {
       { name: '환불정책', href: '/refund' },
       { name: '저작권 정책', href: '/copyright' },
     ],
-  }
+  };
 
   const socialLinks = [
-    { 
-      name: 'Instagram', 
-      href: 'https://instagram.com/dduksang-lab', 
+    {
+      name: 'Instagram',
+      href: 'https://instagram.com/dduksang-lab',
       icon: Instagram,
-      color: 'hover:text-pink-400' 
+      color: 'hover:text-pink-400',
     },
-    { 
-      name: 'YouTube', 
-      href: 'https://youtube.com/dduksang-lab', 
+    {
+      name: 'YouTube',
+      href: 'https://youtube.com/dduksang-lab',
       icon: Youtube,
-      color: 'hover:text-red-400' 
+      color: 'hover:text-red-400',
     },
-    { 
-      name: 'GitHub', 
-      href: 'https://github.com/dduksang-lab', 
+    {
+      name: 'GitHub',
+      href: 'https://github.com/dduksang-lab',
       icon: Github,
-      color: 'hover:text-gray-400' 
+      color: 'hover:text-gray-400',
     },
-  ]
+  ];
 
   return (
     <footer className="bg-black border-t border-yellow-500/20">
@@ -79,12 +73,10 @@ export default function Footer() {
               <h3 className="text-xl font-bold text-yellow-400">떡상연구소</h3>
             </div>
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              AI 시대를 앞서가는 교육 플랫폼으로, 
-              전문적인 강의와 활발한 커뮤니티, 
-              그리고 혁신적인 SaaS 홍보를 통해 
-              여러분의 성장을 지원합니다.
+              AI 시대를 앞서가는 교육 플랫폼으로, 전문적인 강의와 활발한 커뮤니티, 그리고 혁신적인
+              SaaS 홍보를 통해 여러분의 성장을 지원합니다.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-400">
@@ -106,7 +98,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">서비스</h4>
             <ul className="space-y-2">
-              {footerLinks.service.map((link) => (
+              {footerLinks.service.map(link => (
                 <li key={link.name}>
                   <a
                     href={link.href}
@@ -122,7 +114,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">지원</h4>
             <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
+              {footerLinks.support.map(link => (
                 <li key={link.name}>
                   <a
                     href={link.href}
@@ -138,7 +130,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">회사</h4>
             <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
+              {footerLinks.company.map(link => (
                 <li key={link.name}>
                   <a
                     href={link.href}
@@ -154,7 +146,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">법적 정보</h4>
             <ul className="space-y-2">
-              {footerLinks.legal.map((link) => (
+              {footerLinks.legal.map(link => (
                 <li key={link.name}>
                   <a
                     href={link.href}
@@ -175,7 +167,7 @@ export default function Footer() {
             <div className="flex items-center space-x-6">
               <span className="text-gray-400 text-sm">팔로우하기</span>
               <div className="flex space-x-4">
-                {socialLinks.map((social) => (
+                {socialLinks.map(social => (
                   <a
                     key={social.name}
                     href={social.href}
@@ -212,7 +204,7 @@ export default function Footer() {
           <div className="text-gray-400 text-sm">
             &copy; {currentYear} 떡상연구소. All rights reserved.
           </div>
-          
+
           <div className="flex items-center space-x-6 text-gray-400 text-sm">
             <span>사업자등록번호: 123-45-67890</span>
             <span>통신판매신고번호: 제2024-서울강남-1234호</span>
@@ -220,5 +212,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

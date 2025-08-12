@@ -1,124 +1,122 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Calendar, Eye, ArrowLeft, Tag, Share2, Copy } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
-import { logger } from '@/lib/logger'
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Calendar, Eye, ArrowLeft, Tag, Share2, Copy } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { useAuth } from '@/lib/auth-context';
+import { logger } from '@/lib/logger';
 
 interface AITrend {
-  id: string
-  title: string
-  slug: string
-  summary: string
-  content: string
-  thumbnail_url: string
-  category: string
-  tags: string[]
-  source_url: string
-  source_name: string
-  published_at: string
-  view_count: number
-  seo_title: string
-  seo_description: string
-  seo_keywords: string[]
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  thumbnail_url: string;
+  category: string;
+  tags: string[];
+  source_url: string;
+  source_name: string;
+  published_at: string;
+  view_count: number;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string[];
 }
 
 interface AITrendDetailClientProps {
-  trend: AITrend
-  relatedTrends: AITrend[]
+  trend: AITrend;
+  relatedTrends: AITrend[];
 }
 
 export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDetailClientProps) {
-  const { isAdmin } = useAuth()
-  const [copied, setCopied] = useState(false)
+  const { isAdmin } = useAuth();
+  const [copied, setCopied] = useState(false);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
-    })
-  }
+      day: 'numeric',
+    });
+  };
 
   const formatViewCount = (count: number) => {
     if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`
+      return `${(count / 1000).toFixed(1)}K`;
     }
-    return count.toString()
-  }
+    return count.toString();
+  };
 
   const handleShare = async () => {
-    const url = window.location.href
-    
+    const url = window.location.href;
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: trend?.title ?? '',
           text: trend?.summary ?? '',
-          url: url
-        })
+          url: url,
+        });
       } catch (error) {
-        logger.error('Error sharing:', error)
+        logger.error('Error sharing:', error);
       }
     } else {
       // Copy to clipboard as fallback
       try {
-        await navigator.clipboard.writeText(url)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       } catch (error) {
-        logger.error('Error copying to clipboard:', error)
+        logger.error('Error copying to clipboard:', error);
       }
     }
-  }
+  };
 
   const renderContent = (content: string) => {
     // Simple markdown-like rendering
-    return content
-      .split('\n\n')
-      .map((paragraph, index) => {
-        // Headers
-        if (paragraph.startsWith('### ')) {
-          return (
-            <h3 key={index} className="text-2xl font-bold text-offWhite-200 mb-4 mt-8">
-              {paragraph.replace('### ', '')}
-            </h3>
-          )
-        }
-        if (paragraph.startsWith('## ')) {
-          return (
-            <h2 key={index} className="text-3xl font-bold text-offWhite-200 mb-6 mt-10">
-              {paragraph.replace('## ', '')}
-            </h2>
-          )
-        }
-        
-        // Lists
-        if (paragraph.startsWith('- ')) {
-          const items = paragraph.split('\n').filter(line => line.startsWith('- '))
-          return (
-            <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
-              {items.map((item, i) => (
-                <li key={i}>{item.replace('- ', '')}</li>
-              ))}
-            </ul>
-          )
-        }
-        
-        // Regular paragraphs
+    return content.split('\n\n').map((paragraph, index) => {
+      // Headers
+      if (paragraph.startsWith('### ')) {
         return (
-          <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
-            {paragraph}
-          </p>
-        )
-      })
-  }
+          <h3 key={index} className="text-2xl font-bold text-offWhite-200 mb-4 mt-8">
+            {paragraph.replace('### ', '')}
+          </h3>
+        );
+      }
+      if (paragraph.startsWith('## ')) {
+        return (
+          <h2 key={index} className="text-3xl font-bold text-offWhite-200 mb-6 mt-10">
+            {paragraph.replace('## ', '')}
+          </h2>
+        );
+      }
+
+      // Lists
+      if (paragraph.startsWith('- ')) {
+        const items = paragraph.split('\n').filter(line => line.startsWith('- '));
+        return (
+          <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
+            {items.map((item, i) => (
+              <li key={i}>{item.replace('- ', '')}</li>
+            ))}
+          </ul>
+        );
+      }
+
+      // Regular paragraphs
+      return (
+        <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
+          {paragraph}
+        </p>
+      );
+    });
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -161,9 +159,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
               {trend.title}
             </h1>
 
-            <p className="text-xl text-offWhite-500 mb-6">
-              {trend.summary}
-            </p>
+            <p className="text-xl text-offWhite-500 mb-6">{trend.summary}</p>
 
             {/* Share and Admin Actions */}
             <div className="flex items-center justify-between mb-8">
@@ -178,18 +174,18 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
                   </span>
                 ))}
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
-                    void handleShare()
+                    void handleShare();
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-deepBlack-300/50 text-offWhite-500 rounded-lg hover:bg-deepBlack-300/70 transition-colors"
                 >
                   {copied ? <Copy className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
                   <span>{copied ? '복사됨!' : '공유'}</span>
                 </button>
-                
+
                 {isAdmin && (
                   <Link
                     href={`/admin/ai-trends/${trend.id}/edit`}
@@ -210,12 +206,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
               transition={{ delay: 0.2 }}
               className="relative h-96 rounded-2xl overflow-hidden mb-12"
             >
-              <Image
-                src={trend.thumbnail_url}
-                alt={trend.title}
-                fill
-                className="object-cover"
-              />
+              <Image src={trend.thumbnail_url} alt={trend.title} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/60 to-transparent" />
             </motion.div>
           )}
@@ -259,7 +250,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
             <div className="container mx-auto max-w-7xl">
               <h2 className="text-2xl font-bold text-offWhite-200 mb-8">관련 트렌드</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedTrends.map((relatedTrend) => (
+                {relatedTrends.map(relatedTrend => (
                   <Link
                     key={relatedTrend.id}
                     href={`/ai-trends/${relatedTrend.slug}`}
@@ -297,5 +288,5 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
         )}
       </div>
     </div>
-  )
+  );
 }

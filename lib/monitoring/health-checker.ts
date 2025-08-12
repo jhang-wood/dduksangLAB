@@ -73,16 +73,16 @@ export class HealthChecker {
       alertThresholds: {
         responseTime: 5000, // 5초
         errorRate: 10, // 10%
-        failureCount: 3
+        failureCount: 3,
       },
       services: {
         supabase: { enabled: true },
         playwright: { enabled: true, customTimeout: 15000 },
         database: { enabled: true },
         automation: { enabled: true },
-        orchestrator: { enabled: true }
+        orchestrator: { enabled: true },
       },
-      ...config
+      ...config,
     };
   }
 
@@ -121,12 +121,11 @@ export class HealthChecker {
           interval: this.config.interval,
           enabled_services: Object.keys(this.config.services).filter(
             key => this.config.services[key].enabled
-          )
-        }
+          ),
+        },
       });
 
       logger.info('시스템 헬스체커 시작 완료');
-
     } catch (error) {
       logger.error('헬스체커 시작 실패', { error });
       throw error;
@@ -156,11 +155,10 @@ export class HealthChecker {
       await supabaseController.logAutomation({
         type: 'health_check',
         status: 'success',
-        message: '시스템 헬스체커 정지됨'
+        message: '시스템 헬스체커 정지됨',
       });
 
       logger.info('시스템 헬스체커 정지 완료');
-
     } catch (error) {
       logger.error('헬스체커 정지 실패', { error });
     }
@@ -171,7 +169,7 @@ export class HealthChecker {
    */
   async performHealthCheck(): Promise<SystemHealth> {
     const startTime = Date.now();
-    
+
     try {
       logger.debug('시스템 헬스체크 시작');
 
@@ -191,16 +189,15 @@ export class HealthChecker {
           // 알림 체크
           const alerts = this.checkServiceAlerts(serviceHealth);
           newAlerts.push(...alerts);
-
         } catch (error) {
           logger.error(`서비스 헬스체크 실패: ${serviceName}`, { error });
-          
+
           services.push({
             name: serviceName,
             status: 'unhealthy',
             responseTime: 0,
             lastCheck: new Date(),
-            errorMessage: (error as Error).message
+            errorMessage: (error as Error).message,
           });
 
           // 실패 카운트 증가
@@ -220,7 +217,7 @@ export class HealthChecker {
         timestamp: new Date(),
         services,
         alerts: newAlerts,
-        recommendations
+        recommendations,
       };
 
       // 알림 처리
@@ -236,17 +233,16 @@ export class HealthChecker {
         overall: systemHealth.overall,
         services: services.length,
         alerts: newAlerts.length,
-        duration
+        duration,
       });
 
       return systemHealth;
-
     } catch (error) {
       logger.error('시스템 헬스체크 실패', { error });
-      
+
       await handleAutomationError(error as Error, {
         operation: 'health_check',
-        component: 'automation'
+        component: 'automation',
       });
 
       // 기본 실패 상태 반환
@@ -255,7 +251,7 @@ export class HealthChecker {
         timestamp: new Date(),
         services: [],
         alerts: [],
-        recommendations: ['시스템 헬스체크를 수행할 수 없습니다']
+        recommendations: ['시스템 헬스체크를 수행할 수 없습니다'],
       };
     }
   }
@@ -264,7 +260,7 @@ export class HealthChecker {
    * 개별 서비스 헬스체크
    */
   private async checkServiceHealth(
-    serviceName: string, 
+    serviceName: string,
     serviceConfig: any
   ): Promise<ServiceHealth> {
     const startTime = Date.now();
@@ -294,7 +290,7 @@ export class HealthChecker {
       }
 
       const responseTime = Date.now() - startTime;
-      
+
       // 성공 시 실패 카운트 리셋
       this.serviceFailureCounts.delete(serviceName);
 
@@ -303,18 +299,17 @@ export class HealthChecker {
         status: responseTime > this.config.alertThresholds.responseTime ? 'degraded' : 'healthy',
         responseTime,
         lastCheck: new Date(),
-        metadata: result
+        metadata: result,
       };
-
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      
+
       return {
         name: serviceName,
         status: 'unhealthy',
         responseTime,
         lastCheck: new Date(),
-        errorMessage: (error as Error).message
+        errorMessage: (error as Error).message,
       };
     }
   }
@@ -328,16 +323,15 @@ export class HealthChecker {
 
       try {
         const supabaseController = getSupabaseController();
-        
+
         // 간단한 쿼리 실행으로 연결 테스트
         const logs = await supabaseController.getAutomationLogs(1);
-        
+
         clearTimeout(timer);
         resolve({
           connection: 'active',
-          last_log_count: logs.length
+          last_log_count: logs.length,
         });
-
       } catch (error) {
         clearTimeout(timer);
         reject(error);
@@ -358,15 +352,15 @@ export class HealthChecker {
         // 브라우저 초기화 및 간단한 페이지 로드 테스트
         await playwrightController.initialize();
         await playwrightController.navigateTo('data:text/html,<h1>Health Check</h1>');
-        const title = await playwrightController.getPageTitle();
+        const _title = await playwrightController.getPageTitle(); // 언더스코어 추가로 미사용 변수 표시
+        void _title; // Suppress unused variable warning
         await playwrightController.cleanup();
 
         clearTimeout(timer);
         resolve({
           browser_status: 'functional',
-          test_page_loaded: true
+          test_page_loaded: true,
         });
-
       } catch (error) {
         clearTimeout(timer);
         reject(error);
@@ -383,7 +377,7 @@ export class HealthChecker {
 
       try {
         const supabaseController = getSupabaseController();
-        
+
         // 데이터베이스 상태 및 성능 확인
         const startTime = Date.now();
         const stats = await supabaseController.getAutomationStats(1);
@@ -393,9 +387,8 @@ export class HealthChecker {
         resolve({
           query_time: queryTime,
           recent_logs: stats.log_summary?.total || 0,
-          connection: 'active'
+          connection: 'active',
         });
-
       } catch (error) {
         clearTimeout(timer);
         reject(error);
@@ -414,7 +407,7 @@ export class HealthChecker {
         // 스케줄러 상태 확인
         const { getScheduler } = await import('../automation/scheduler');
         const scheduler = getScheduler();
-        
+
         const isRunning = scheduler.isSchedulerRunning();
         const runningTasks = scheduler.getRunningTaskCount();
         const taskStatus = scheduler.getTaskStatus();
@@ -424,9 +417,8 @@ export class HealthChecker {
           scheduler_running: isRunning,
           running_tasks: runningTasks,
           total_tasks: taskStatus.length,
-          enabled_tasks: taskStatus.filter(t => t.enabled).length
+          enabled_tasks: taskStatus.filter(t => t.enabled).length,
         });
-
       } catch (error) {
         clearTimeout(timer);
         reject(error);
@@ -439,19 +431,21 @@ export class HealthChecker {
    */
   private async checkOrchestratorHealth(timeout: number): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('Orchestrator health check timeout')), timeout);
+      const timer = setTimeout(
+        () => reject(new Error('Orchestrator health check timeout')),
+        timeout
+      );
 
       try {
         const orchestrator = getOrchestrator();
-        
+
         const isReady = orchestrator.isReady();
-        
+
         clearTimeout(timer);
         resolve({
           orchestrator_ready: isReady,
-          status: 'active'
+          status: 'active',
         });
-
       } catch (error) {
         clearTimeout(timer);
         reject(error);
@@ -497,14 +491,14 @@ export class HealthChecker {
         message: `서비스 응답 시간이 느립니다: ${serviceHealth.responseTime}ms`,
         timestamp: new Date(),
         resolved: false,
-        metadata: { responseTime: serviceHealth.responseTime }
+        metadata: { responseTime: serviceHealth.responseTime },
       });
     }
 
     // 서비스 다운 알림
     if (serviceHealth.status === 'unhealthy') {
       const failureCount = this.serviceFailureCounts.get(serviceHealth.name) || 1;
-      
+
       alerts.push({
         id: `${serviceHealth.name}-unhealthy-${Date.now()}`,
         severity: failureCount >= this.config.alertThresholds.failureCount ? 'critical' : 'warning',
@@ -512,10 +506,10 @@ export class HealthChecker {
         message: `서비스가 비정상 상태입니다: ${serviceHealth.errorMessage}`,
         timestamp: new Date(),
         resolved: false,
-        metadata: { 
+        metadata: {
           failureCount,
-          errorMessage: serviceHealth.errorMessage
-        }
+          errorMessage: serviceHealth.errorMessage,
+        },
       });
     }
 
@@ -529,15 +523,21 @@ export class HealthChecker {
     const recommendations: string[] = [];
 
     // 응답 시간이 느린 서비스
-    const slowServices = services.filter(s => s.responseTime > this.config.alertThresholds.responseTime);
+    const slowServices = services.filter(
+      s => s.responseTime > this.config.alertThresholds.responseTime
+    );
     if (slowServices.length > 0) {
-      recommendations.push(`응답 시간이 느린 서비스들을 확인하세요: ${slowServices.map(s => s.name).join(', ')}`);
+      recommendations.push(
+        `응답 시간이 느린 서비스들을 확인하세요: ${slowServices.map(s => s.name).join(', ')}`
+      );
     }
 
     // 다운된 서비스
     const downServices = services.filter(s => s.status === 'unhealthy');
     if (downServices.length > 0) {
-      recommendations.push(`다운된 서비스들을 재시작하세요: ${downServices.map(s => s.name).join(', ')}`);
+      recommendations.push(
+        `다운된 서비스들을 재시작하세요: ${downServices.map(s => s.name).join(', ')}`
+      );
     }
 
     // 전체 시스템 상태에 따른 추천
@@ -565,7 +565,7 @@ export class HealthChecker {
       // 중복 알림 방지
       if (!this.activeAlerts.has(alert.id)) {
         this.activeAlerts.set(alert.id, alert);
-        
+
         // 알림 발송 (실제 구현에서는 노티피케이션 서비스 연동)
         await this.sendAlert(alert);
       }
@@ -583,11 +583,10 @@ export class HealthChecker {
       logger.warn(`헬스체크 알림: ${alert.message}`, {
         severity: alert.severity,
         service: alert.service,
-        metadata: alert.metadata
+        metadata: alert.metadata,
       });
 
       // TODO: 실제 알림 발송 (이메일, 슬랙, 텔레그램 등)
-      
     } catch (error) {
       logger.error('알림 발송 실패', { error, alert });
     }
@@ -623,24 +622,27 @@ export class HealthChecker {
           response_time: service.responseTime,
           error_message: service.errorMessage,
           checked_at: service.lastCheck.toISOString(),
-          metadata: service.metadata
+          metadata: service.metadata,
         });
       }
 
       // 전체 시스템 상태 로그
       await supabaseController.logAutomation({
         type: 'health_check',
-        status: systemHealth.overall === 'healthy' ? 'success' : 
-                systemHealth.overall === 'degraded' ? 'warning' : 'failure',
+        status:
+          systemHealth.overall === 'healthy'
+            ? 'success'
+            : systemHealth.overall === 'degraded'
+              ? 'warning'
+              : 'failure',
         message: `시스템 헬스체크 완료 - ${systemHealth.overall}`,
         metadata: {
           overall_status: systemHealth.overall,
           services_count: systemHealth.services.length,
           alerts_count: systemHealth.alerts.length,
-          healthy_services: systemHealth.services.filter(s => s.status === 'healthy').length
-        }
+          healthy_services: systemHealth.services.filter(s => s.status === 'healthy').length,
+        },
       });
-
     } catch (error) {
       logger.error('헬스체크 결과 저장 실패', { error });
     }
@@ -692,13 +694,15 @@ export function getHealthChecker(config?: Partial<HealthCheckConfig>): HealthChe
 /**
  * 헬스체커 시작
  */
-export async function startHealthChecker(config?: Partial<HealthCheckConfig>): Promise<HealthChecker> {
+export async function startHealthChecker(
+  config?: Partial<HealthCheckConfig>
+): Promise<HealthChecker> {
   const checker = getHealthChecker(config);
-  
+
   if (!checker.isHealthCheckerRunning()) {
     await checker.start();
   }
-  
+
   return checker;
 }
 

@@ -6,9 +6,9 @@
 import { logger } from '@/lib/logger';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
 import { getContentManager } from './content-manager';
-import { getBlogPublisher } from './blog-publisher';
+// import { getBlogPublisher } from './blog-publisher'; // 사용하지 않음
 import { getOrchestrator } from '@/lib/mcp/orchestrator';
-import { handleAutomationError } from '@/lib/mcp/error-handler';
+// import { handleAutomationError } from '@/lib/mcp/error-handler'; // 사용하지 않음
 
 export interface ScheduledTask {
   id: string;
@@ -60,7 +60,7 @@ export class AutomationScheduler {
       defaultTimeout: 300000, // 5분
       defaultMaxRetries: 3,
       healthCheckInterval: 60000, // 1분
-      ...config
+      ...config,
     };
 
     this.initializeDefaultTasks();
@@ -80,7 +80,7 @@ export class AutomationScheduler {
       enabled: true,
       failureCount: 0,
       maxRetries: this.config.defaultMaxRetries,
-      timeout: this.config.defaultTimeout
+      timeout: this.config.defaultTimeout,
     });
 
     // 2. AI 콘텐츠 자동 생성 (매일 오전 9시)
@@ -96,8 +96,8 @@ export class AutomationScheduler {
       timeout: 600000, // 10분
       metadata: {
         contentCount: 3,
-        strategy: 'daily-trends'
-      }
+        strategy: 'daily-trends',
+      },
     });
 
     // 3. 시스템 헬스체크 (매 30분)
@@ -125,8 +125,8 @@ export class AutomationScheduler {
       maxRetries: 1,
       timeout: 300000, // 5분
       metadata: {
-        retentionDays: 30
-      }
+        retentionDays: 30,
+      },
     });
 
     // 5. 콘텐츠 분석 및 리포트 (매주 월요일 오전 8시)
@@ -141,8 +141,8 @@ export class AutomationScheduler {
       maxRetries: 2,
       timeout: 180000, // 3분
       metadata: {
-        reportDays: 7
-      }
+        reportDays: 7,
+      },
     });
   }
 
@@ -177,15 +177,14 @@ export class AutomationScheduler {
         message: '자동화 스케줄러 시작됨',
         metadata: {
           enabled_tasks: Array.from(this.tasks.values()).filter(t => t.enabled).length,
-          total_tasks: this.tasks.size
-        }
+          total_tasks: this.tasks.size,
+        },
       });
 
       logger.info('자동화 스케줄러 시작 완료', {
         totalTasks: this.tasks.size,
-        enabledTasks: Array.from(this.tasks.values()).filter(t => t.enabled).length
+        enabledTasks: Array.from(this.tasks.values()).filter(t => t.enabled).length,
       });
-
     } catch (error) {
       logger.error('스케줄러 시작 실패', { error });
       throw error;
@@ -222,11 +221,10 @@ export class AutomationScheduler {
       await supabaseController.logAutomation({
         type: 'health_check',
         status: 'success',
-        message: '자동화 스케줄러 정지됨'
+        message: '자동화 스케줄러 정지됨',
       });
 
       logger.info('자동화 스케줄러 정지 완료');
-
     } catch (error) {
       logger.error('스케줄러 정지 실패', { error });
     }
@@ -237,15 +235,15 @@ export class AutomationScheduler {
    */
   addTask(task: ScheduledTask): void {
     this.tasks.set(task.id, task);
-    
+
     if (this.isRunning && task.enabled) {
       this.scheduleTask(task);
     }
 
-    logger.info('스케줄 작업 추가됨', { 
-      id: task.id, 
-      name: task.name, 
-      schedule: task.schedule 
+    logger.info('스케줄 작업 추가됨', {
+      id: task.id,
+      name: task.name,
+      schedule: task.schedule,
     });
   }
 
@@ -254,7 +252,7 @@ export class AutomationScheduler {
    */
   removeTask(taskId: string): boolean {
     const removed = this.tasks.delete(taskId);
-    
+
     if (this.intervalIds.has(taskId)) {
       clearTimeout(this.intervalIds.get(taskId));
       this.intervalIds.delete(taskId);
@@ -316,14 +314,14 @@ export class AutomationScheduler {
     }, delay);
 
     this.intervalIds.set(task.id, timeoutId);
-    
+
     // 다음 실행 시간 업데이트
     task.nextRun = nextRunTime;
 
-    logger.debug('작업 스케줄링 완료', { 
-      taskId: task.id, 
+    logger.debug('작업 스케줄링 완료', {
+      taskId: task.id,
       nextRun: nextRunTime.toISOString(),
-      delay 
+      delay,
     });
   }
 
@@ -334,17 +332,17 @@ export class AutomationScheduler {
     // 간단한 cron 파서 (실제로는 node-cron 등의 라이브러리 사용 권장)
     const now = new Date();
     const parts = cronExpression.split(' ');
-    
+
     // [분, 시, 일, 월, 요일] 형태
     if (parts.length !== 5) {
       throw new Error(`Invalid cron expression: ${cronExpression}`);
     }
 
-    const [minute, hour, day, month, dayOfWeek] = parts;
-    
+    const [minute, hour, _day, _month, _dayOfWeek] = parts; // 언더스코어 추가로 미사용 변수 표시
+
     // 다음 실행 시간 계산 (기본적인 구현)
     const next = new Date(now);
-    
+
     // 매 시간 정각 (0 * * * *)
     if (minute === '0' && hour === '*') {
       next.setMinutes(0, 0, 0);
@@ -363,7 +361,7 @@ export class AutomationScheduler {
       const interval = parseInt(minute.substring(2));
       const currentMinute = now.getMinutes();
       const nextMinute = Math.ceil(currentMinute / interval) * interval;
-      
+
       if (nextMinute >= 60) {
         next.setHours(next.getHours() + 1, 0, 0, 0);
       } else {
@@ -383,29 +381,29 @@ export class AutomationScheduler {
    */
   private async executeTask(task: ScheduledTask): Promise<TaskExecutionResult> {
     const startTime = new Date();
-    
-    logger.info('스케줄 작업 실행 시작', { 
-      taskId: task.id, 
-      name: task.name 
+
+    logger.info('스케줄 작업 실행 시작', {
+      taskId: task.id,
+      name: task.name,
     });
 
     // 동시 실행 제한 체크
     if (this.runningTasks.size >= this.config.maxConcurrentTasks) {
-      logger.warn('동시 실행 작업 수 제한으로 작업 지연', { 
+      logger.warn('동시 실행 작업 수 제한으로 작업 지연', {
         taskId: task.id,
-        runningTasks: this.runningTasks.size 
+        runningTasks: this.runningTasks.size,
       });
-      
+
       // 잠시 대기 후 재시도
       setTimeout(() => this.executeTask(task), 10000);
-      
+
       return {
         taskId: task.id,
         success: false,
         startTime,
         endTime: new Date(),
         duration: 0,
-        error: '동시 실행 제한'
+        error: '동시 실행 제한',
       };
     }
 
@@ -415,10 +413,10 @@ export class AutomationScheduler {
     try {
       const result = await executionPromise;
       this.runningTasks.delete(task.id);
-      
+
       // 실행 결과 로깅
       await this.logTaskExecution(result);
-      
+
       // 성공 시 실패 횟수 리셋
       if (result.success) {
         task.failureCount = 0;
@@ -427,23 +425,22 @@ export class AutomationScheduler {
       }
 
       task.lastRun = startTime;
-      
-      return result;
 
+      return result;
     } catch (error) {
       this.runningTasks.delete(task.id);
-      
+
       const result: TaskExecutionResult = {
         taskId: task.id,
         success: false,
         startTime,
         endTime: new Date(),
         duration: Date.now() - startTime.getTime(),
-        error: (error as Error).message
+        error: (error as Error).message,
       };
 
       await this.logTaskExecution(result);
-      
+
       task.failureCount++;
       task.lastRun = startTime;
 
@@ -454,14 +451,17 @@ export class AutomationScheduler {
   /**
    * 실제 작업 실행
    */
-  private async performTaskExecution(task: ScheduledTask, startTime: Date): Promise<TaskExecutionResult> {
+  private async performTaskExecution(
+    task: ScheduledTask,
+    startTime: Date
+  ): Promise<TaskExecutionResult> {
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Task timeout')), task.timeout);
     });
 
     try {
       let output: any;
-      
+
       const executionPromise = this.callTaskHandler(task);
       output = await Promise.race([executionPromise, timeoutPromise]);
 
@@ -471,9 +471,8 @@ export class AutomationScheduler {
         startTime,
         endTime: new Date(),
         duration: Date.now() - startTime.getTime(),
-        output
+        output,
       };
-
     } catch (error) {
       return {
         taskId: task.id,
@@ -481,7 +480,7 @@ export class AutomationScheduler {
         startTime,
         endTime: new Date(),
         duration: Date.now() - startTime.getTime(),
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -493,19 +492,19 @@ export class AutomationScheduler {
     switch (task.handler) {
       case 'processScheduledContent':
         return await this.processScheduledContent();
-        
+
       case 'generateDailyContent':
         return await this.generateDailyContent(task.metadata);
-        
+
       case 'performHealthCheck':
         return await this.performHealthCheck();
-        
+
       case 'cleanupDatabase':
         return await this.cleanupDatabase(task.metadata);
-        
+
       case 'generateWeeklyReport':
         return await this.generateWeeklyReport(task.metadata);
-        
+
       default:
         throw new Error(`Unknown task handler: ${task.handler}`);
     }
@@ -525,17 +524,17 @@ export class AutomationScheduler {
    */
   private async generateDailyContent(metadata?: Record<string, any>): Promise<any> {
     const contentManager = getContentManager();
-    
+
     const result = await contentManager.generateAndManageContent({
       strategy: metadata?.strategy || 'daily-trends',
       count: metadata?.contentCount || 3,
-      publishMode: 'draft'
+      publishMode: 'draft',
     });
 
     return {
       message: '일일 AI 콘텐츠 생성 완료',
       generated: result.generated,
-      success: result.success
+      success: result.success,
     };
   }
 
@@ -545,11 +544,11 @@ export class AutomationScheduler {
   private async performHealthCheck(): Promise<any> {
     const orchestrator = getOrchestrator();
     const healthResult = await orchestrator.executeHealthCheck();
-    
+
     return {
       message: '시스템 헬스체크 완료',
       overall: healthResult.overall,
-      services: healthResult.services
+      services: healthResult.services,
     };
   }
 
@@ -559,12 +558,12 @@ export class AutomationScheduler {
   private async cleanupDatabase(metadata?: Record<string, any>): Promise<any> {
     const supabaseController = getSupabaseController();
     const retentionDays = metadata?.retentionDays || 30;
-    
+
     await supabaseController.cleanupOldData(retentionDays);
-    
+
     return {
       message: '데이터베이스 정리 완료',
-      retention_days: retentionDays
+      retention_days: retentionDays,
     };
   }
 
@@ -574,15 +573,15 @@ export class AutomationScheduler {
   private async generateWeeklyReport(metadata?: Record<string, any>): Promise<any> {
     const contentManager = getContentManager();
     const days = metadata?.reportDays || 7;
-    
+
     const analytics = await contentManager.getContentAnalytics(days);
-    
+
     // TODO: 실제 리포트 생성 및 발송 로직 구현
-    
+
     return {
       message: '주간 리포트 생성 완료',
       analytics,
-      period_days: days
+      period_days: days,
     };
   }
 
@@ -592,7 +591,7 @@ export class AutomationScheduler {
   private async logTaskExecution(result: TaskExecutionResult): Promise<void> {
     try {
       const supabaseController = getSupabaseController();
-      
+
       await supabaseController.logAutomation({
         type: 'health_check',
         status: result.success ? 'success' : 'failure',
@@ -601,10 +600,9 @@ export class AutomationScheduler {
           task_id: result.taskId,
           duration: result.duration,
           error: result.error,
-          output: result.output
-        }
+          output: result.output,
+        },
       });
-
     } catch (error) {
       logger.error('작업 실행 결과 로깅 실패', { error });
     }
@@ -618,22 +616,26 @@ export class AutomationScheduler {
       try {
         // 실행 중인 작업 수 모니터링
         if (this.runningTasks.size > this.config.maxConcurrentTasks * 0.8) {
-          logger.warn('높은 작업 부하 감지됨', { 
+          logger.warn('높은 작업 부하 감지됨', {
             runningTasks: this.runningTasks.size,
-            maxConcurrent: this.config.maxConcurrentTasks 
+            maxConcurrent: this.config.maxConcurrentTasks,
           });
         }
 
         // 실패한 작업 모니터링
-        const failedTasks = Array.from(this.tasks.values())
-          .filter(task => task.failureCount >= task.maxRetries);
-          
+        const failedTasks = Array.from(this.tasks.values()).filter(
+          task => task.failureCount >= task.maxRetries
+        );
+
         if (failedTasks.length > 0) {
           logger.error('최대 재시도 횟수를 초과한 작업들', {
-            failedTasks: failedTasks.map(t => ({ id: t.id, name: t.name, failureCount: t.failureCount }))
+            failedTasks: failedTasks.map(t => ({
+              id: t.id,
+              name: t.name,
+              failureCount: t.failureCount,
+            })),
           });
         }
-
       } catch (error) {
         logger.error('헬스체크 타이머 오류', { error });
       }
@@ -661,7 +663,7 @@ export class AutomationScheduler {
       lastRun: task.lastRun,
       nextRun: task.nextRun,
       failureCount: task.failureCount,
-      isRunning: this.runningTasks.has(task.id)
+      isRunning: this.runningTasks.has(task.id),
     }));
   }
 
@@ -696,13 +698,15 @@ export function getScheduler(config?: Partial<ScheduleConfig>): AutomationSchedu
 /**
  * 스케줄러 시작
  */
-export async function startScheduler(config?: Partial<ScheduleConfig>): Promise<AutomationScheduler> {
+export async function startScheduler(
+  config?: Partial<ScheduleConfig>
+): Promise<AutomationScheduler> {
   const schedulerInstance = getScheduler(config);
-  
+
   if (!schedulerInstance.isSchedulerRunning()) {
     await schedulerInstance.start();
   }
-  
+
   return schedulerInstance;
 }
 

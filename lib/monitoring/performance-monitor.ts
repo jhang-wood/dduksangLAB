@@ -3,9 +3,11 @@ export class PerformanceMonitor {
   private isMonitoring = false;
 
   start(): void {
-    if (this.isMonitoring) {return;}
+    if (this.isMonitoring) {
+      return;
+    }
     this.isMonitoring = true;
-    
+
     setInterval(() => {
       this.collectMetrics();
     }, 15000);
@@ -16,9 +18,9 @@ export class PerformanceMonitor {
       timestamp: new Date(),
       cpu: { usage: 0 },
       memory: { usage: 0 },
-      performance: { responseTime: 0, errorRate: 0 }
+      performance: { responseTime: 0, errorRate: 0 },
     };
-    
+
     this.metrics.push(metrics);
     if (this.metrics.length > 100) {
       this.metrics = this.metrics.slice(-100);

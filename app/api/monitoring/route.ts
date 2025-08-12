@@ -12,22 +12,22 @@ export async function GET() {
       services: {
         database: 'healthy',
         api: 'healthy',
-        frontend: 'healthy'
+        frontend: 'healthy',
       },
       uptime: process.uptime(),
       memory: {
         used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
-      }
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+      },
     };
 
     return NextResponse.json(status);
   } catch (error) {
     return NextResponse.json(
-      { 
-        status: 'error', 
+      {
+        status: 'error',
         error: 'Monitoring system unavailable',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );
@@ -35,8 +35,5 @@ export async function GET() {
 }
 
 export async function POST() {
-  return NextResponse.json(
-    { error: 'POST method not implemented' },
-    { status: 501 }
-  );
+  return NextResponse.json({ error: 'POST method not implemented' }, { status: 501 });
 }

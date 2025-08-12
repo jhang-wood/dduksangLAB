@@ -1,23 +1,39 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import CourseCard from '@/components/CourseCard'
-import SocialProofFeed, { LiveStats, PopularBadge } from '@/components/SocialProofFeed'
-import { DiscountTimer, EarlyBirdCountdown, LimitedTimeOffer, RealTimePurchaseIndicator } from '@/components/UrgencyElements'
-import { PreviewModal, CurriculumSection, AskInstructorButton, FreeTrialContent } from '@/components/InteractiveElements'
-import { BadgeSystem, StreakTracker, LearningGoals, AchievementChart } from '@/components/GamificationSystem'
-import ReviewSystem from '@/components/ReviewSystem'
-import { Search, Filter, BookOpen, Users, Star } from 'lucide-react'
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import CourseCard from '@/components/CourseCard';
+import SocialProofFeed, { LiveStats, PopularBadge } from '@/components/SocialProofFeed';
+import {
+  DiscountTimer,
+  EarlyBirdCountdown,
+  LimitedTimeOffer,
+  RealTimePurchaseIndicator,
+} from '@/components/UrgencyElements';
+import {
+  PreviewModal,
+  CurriculumSection,
+  AskInstructorButton,
+  FreeTrialContent,
+} from '@/components/InteractiveElements';
+import {
+  BadgeSystem,
+  StreakTracker,
+  LearningGoals,
+  AchievementChart,
+} from '@/components/GamificationSystem';
+import ReviewSystem from '@/components/ReviewSystem';
+import { Search, Filter, BookOpen, Users, Star } from 'lucide-react';
 
 // 더미 강의 데이터
 const mockCourses = [
   {
     id: 'ai-agent-master',
     title: 'AI Agent 마스터과정 - 실무 완성편',
-    description: '실제 업무에서 활용할 수 있는 AI 에이전트를 구축하고 운영하는 실전 기술을 배웁니다. Claude Code부터 자동화 시스템까지 완벽 마스터.',
+    description:
+      '실제 업무에서 활용할 수 있는 AI 에이전트를 구축하고 운영하는 실전 기술을 배웁니다. Claude Code부터 자동화 시스템까지 완벽 마스터.',
     instructor: '떡상연구소',
     duration: '8시간 30분',
     students: 1247,
@@ -32,8 +48,8 @@ const mockCourses = [
       { title: 'Claude Code 마스터하기', duration: '45분', isPreview: false },
       { title: '실무 자동화 프로젝트', duration: '60분', isPreview: false },
       { title: '배포 및 운영', duration: '40분', isPreview: false },
-      { title: '트러블슈팅과 최적화', duration: '30분', isPreview: false }
-    ]
+      { title: '트러블슈팅과 최적화', duration: '30분', isPreview: false },
+    ],
   },
   {
     id: 'telegram-coding',
@@ -51,8 +67,8 @@ const mockCourses = [
     curriculum: [
       { title: '텔레그램 봇 기초', duration: '30분', isPreview: true },
       { title: '코딩 워크플로우 설계', duration: '50분', isPreview: false },
-      { title: '실시간 협업 시스템', duration: '40분', isPreview: false }
-    ]
+      { title: '실시간 협업 시스템', duration: '40분', isPreview: false },
+    ],
   },
   {
     id: 'no-code-automation',
@@ -70,10 +86,10 @@ const mockCourses = [
     curriculum: [
       { title: '노코드 도구 소개', duration: '20분', isPreview: true },
       { title: 'Make.com 마스터하기', duration: '45분', isPreview: false },
-      { title: 'n8n으로 고급 자동화', duration: '60분', isPreview: false }
-    ]
-  }
-]
+      { title: 'n8n으로 고급 자동화', duration: '60분', isPreview: false },
+    ],
+  },
+];
 
 // 얼리버드 단계 데이터
 const earlyBirdStages = [
@@ -82,64 +98,65 @@ const earlyBirdStages = [
     discount: 40,
     endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
     slots: 50,
-    remaining: 12
+    remaining: 12,
   },
   {
     name: '2차 얼리버드',
     discount: 30,
     endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
     slots: 100,
-    remaining: 78
-  }
-]
+    remaining: 78,
+  },
+];
 
 export default function CoursesPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedLevel, setSelectedLevel] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<string>('popular')
-  const [previewCourse, setPreviewCourse] = useState<any>(null)
-  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({})
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('popular');
+  const [previewCourse, setPreviewCourse] = useState<any>(null);
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
   // 강의 필터링 및 정렬
   const filteredCourses = mockCourses
     .filter(course => {
-      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      
-      const matchesLevel = selectedLevel === 'all' || course.level === selectedLevel
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesSearch && matchesLevel
+      const matchesLevel = selectedLevel === 'all' || course.level === selectedLevel;
+
+      return matchesSearch && matchesLevel;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'popular':
-          return b.students - a.students
+          return b.students - a.students;
         case 'rating':
-          return b.rating - a.rating
+          return b.rating - a.rating;
         case 'price-low':
-          return (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price)
+          return (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price);
         case 'price-high':
-          return (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price)
+          return (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price);
         default:
-          return 0
+          return 0;
       }
-    })
+    });
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
       ...prev,
-      [sectionId]: !prev[sectionId]
-    }))
-  }
+      [sectionId]: !prev[sectionId],
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
       <NeuralNetworkBackground />
-      
+
       {/* 소셜 증명 피드 */}
       <SocialProofFeed />
-      
+
       {/* 실시간 구매 표시 */}
       <RealTimePurchaseIndicator />
 
@@ -147,7 +164,7 @@ export default function CoursesPage() {
         <Header currentPage="courses" />
 
         {/* 할인 배너 */}
-        <DiscountTimer 
+        <DiscountTimer
           endDate={new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)}
           discountPercent={25}
           variant="banner"
@@ -162,7 +179,10 @@ export default function CoursesPage() {
             className="mb-12"
           >
             <h1 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-6 text-center">
-              AI 마스터가 되는 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">완벽한 강의</span>
+              AI 마스터가 되는{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                완벽한 강의
+              </span>
             </h1>
             <p className="text-lg text-offWhite-500 text-center max-w-3xl mx-auto">
               실무에서 바로 활용할 수 있는 AI 기술을 배우고, 자동화로 업무 효율성을 극대화하세요
@@ -186,10 +206,7 @@ export default function CoursesPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-12"
           >
-            <EarlyBirdCountdown 
-              stages={earlyBirdStages}
-              currentStage={0}
-            />
+            <EarlyBirdCountdown stages={earlyBirdStages} currentStage={0} />
           </motion.div>
 
           {/* 검색 및 필터 */}
@@ -207,7 +224,7 @@ export default function CoursesPage() {
                   type="text"
                   placeholder="강의, 태그, 강사명으로 검색..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-xl text-offWhite-200 placeholder-offWhite-500 focus:border-metallicGold-500/40 focus:outline-none transition-colors"
                 />
               </div>
@@ -218,7 +235,7 @@ export default function CoursesPage() {
                   <Filter className="w-5 h-5 text-offWhite-500" />
                   <select
                     value={selectedLevel}
-                    onChange={(e) => setSelectedLevel(e.target.value)}
+                    onChange={e => setSelectedLevel(e.target.value)}
                     className="bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-xl px-4 py-3 text-offWhite-200 focus:border-metallicGold-500/40 focus:outline-none"
                   >
                     <option value="all">모든 레벨</option>
@@ -230,7 +247,7 @@ export default function CoursesPage() {
 
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={e => setSortBy(e.target.value)}
                   className="bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-xl px-4 py-3 text-offWhite-200 focus:border-metallicGold-500/40 focus:outline-none"
                 >
                   <option value="popular">인기순</option>
@@ -252,19 +269,15 @@ export default function CoursesPage() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 className="relative"
               >
-                <PopularBadge 
+                <PopularBadge
                   isHot={course.students > 1000}
                   isBestseller={course.rating >= 4.8}
                   isNew={index === 2}
                 />
-                
+
                 <div className="group">
-                  <CourseCard
-                    course={course}
-                    index={index}
-                    variant="default"
-                  />
-                  
+                  <CourseCard course={course} index={index} variant="default" />
+
                   {/* 미리보기 버튼 */}
                   <div className="absolute top-4 left-4">
                     <button
@@ -291,7 +304,7 @@ export default function CoursesPage() {
                 <BookOpen className="w-6 h-6 text-metallicGold-500" />
                 상세 커리큘럼
               </h2>
-              
+
               <div className="space-y-4">
                 {mockCourses[0]?.curriculum?.map((section, index) => (
                   <CurriculumSection
@@ -303,8 +316,8 @@ export default function CoursesPage() {
                         title: section.title,
                         duration: section.duration,
                         isPreview: section.isPreview,
-                        isCompleted: index < 2
-                      }
+                        isCompleted: index < 2,
+                      },
                     ]}
                     isExpanded={expandedSections[`section-${index}`] ?? false}
                     onToggle={() => toggleSection(`section-${index}`)}
@@ -324,8 +337,9 @@ export default function CoursesPage() {
                   title: mockCourses[0]?.title ?? '',
                   freeContent: {
                     duration: '15분',
-                    description: 'AI Agent의 기본 개념과 환경 설정 방법을 무료로 체험해보세요. 실제 강의의 퀀리티를 직접 확인할 수 있습니다.'
-                  }
+                    description:
+                      'AI Agent의 기본 개념과 환경 설정 방법을 무료로 체험해보세요. 실제 강의의 퀀리티를 직접 확인할 수 있습니다.',
+                  },
                 }}
                 onStartTrial={() => {}}
               />
@@ -347,11 +361,11 @@ export default function CoursesPage() {
               <Star className="w-6 h-6 text-metallicGold-500" />
               수강생 후기
             </h2>
-            
+
             <div className="mb-8">
               <ReviewSystem variant="featured" maxReviews={4} />
             </div>
-            
+
             <ReviewSystem variant="compact" maxReviews={6} />
           </motion.div>
 
@@ -366,13 +380,13 @@ export default function CoursesPage() {
               <Users className="w-6 h-6 text-metallicGold-500" />
               학습 현황 대시보드
             </h2>
-            
+
             <div className="grid lg:grid-cols-2 gap-8">
               <div className="space-y-8">
                 <StreakTracker currentStreak={5} bestStreak={12} />
                 <LearningGoals />
               </div>
-              
+
               <div className="space-y-8">
                 <AchievementChart />
                 <BadgeSystem userId="current-user" />
@@ -403,15 +417,17 @@ export default function CoursesPage() {
       <PreviewModal
         isOpen={!!previewCourse}
         onClose={() => setPreviewCourse(null)}
-        course={previewCourse ?? {
-          id: '',
-          title: '',
-          instructor: '',
-          duration: '',
-          description: '',
-          curriculum: []
-        }}
+        course={
+          previewCourse ?? {
+            id: '',
+            title: '',
+            instructor: '',
+            duration: '',
+            description: '',
+            curriculum: [],
+          }
+        }
       />
     </div>
-  )
+  );
 }

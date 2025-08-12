@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react'
-import Link from 'next/link'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import CountdownTimer from '@/components/CountdownTimer'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import CountdownTimer from '@/components/CountdownTimer';
 
 export default function RegisterPage() {
   return (
@@ -32,23 +32,31 @@ export default function RegisterPage() {
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold mb-6 leading-tight">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                  사전 등록하고<br className="sm:hidden" />
+                  사전 등록하고
+                  <br className="sm:hidden" />
                   오픈런 혜택 받기
                 </span>
               </h1>
-              
+
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto mb-12 px-4 sm:px-0 leading-relaxed">
-                떡상연구소의 첫 번째<br className="sm:hidden" />
-                공식 클래스 오픈을 기념하여<br />
-                사전 등록하신 분들께<br className="sm:hidden" />
+                떡상연구소의 첫 번째
+                <br className="sm:hidden" />
+                공식 클래스 오픈을 기념하여
+                <br />
+                사전 등록하신 분들께
+                <br className="sm:hidden" />
                 특별한 혜택을 드립니다.
               </p>
 
               {/* Countdown */}
               <div className="mb-16">
-                <p className="text-base sm:text-lg text-offWhite-500 mb-8 tracking-[0.2em] sm:tracking-[0.3em] uppercase">Grand Open D-Day</p>
+                <p className="text-base sm:text-lg text-offWhite-500 mb-8 tracking-[0.2em] sm:tracking-[0.3em] uppercase">
+                  Grand Open D-Day
+                </p>
                 <CountdownTimer />
-                <p className="text-lg sm:text-xl md:text-2xl text-metallicGold-500 mt-8 font-semibold px-4 sm:px-0">2025년 8월 5일 (화) 오후 7시</p>
+                <p className="text-lg sm:text-xl md:text-2xl text-metallicGold-500 mt-8 font-semibold px-4 sm:px-0">
+                  2025년 8월 5일 (화) 오후 7시
+                </p>
               </div>
             </motion.div>
           </div>
@@ -70,10 +78,10 @@ export default function RegisterPage() {
 
               <div className="space-y-6">
                 {[
-                  "그랜드 오픈 특별가 45% 할인",
-                  "선착순 100명 한정 추가 보너스",
-                  "1:1 맞춤형 멘토링 우선권",
-                  "평생 무료 업데이트 보장"
+                  '그랜드 오픈 특별가 45% 할인',
+                  '선착순 100명 한정 추가 보너스',
+                  '1:1 맞춤형 멘토링 우선권',
+                  '평생 무료 업데이트 보장',
                 ].map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -84,7 +92,9 @@ export default function RegisterPage() {
                     className="flex items-center gap-4"
                   >
                     <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-base sm:text-lg md:text-xl text-offWhite-300">{benefit}</span>
+                    <span className="text-base sm:text-lg md:text-xl text-offWhite-300">
+                      {benefit}
+                    </span>
                   </motion.div>
                 ))}
               </div>
@@ -96,7 +106,7 @@ export default function RegisterPage() {
                 viewport={{ once: true }}
                 className="mt-12 text-center"
               >
-                <Link 
+                <Link
                   href="/auth/signup"
                   className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
                 >
@@ -109,5 +119,5 @@ export default function RegisterPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

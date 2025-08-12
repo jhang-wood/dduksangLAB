@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { logger } from '@/lib/logger'
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { logger } from '@/lib/logger';
 
 interface AITrend {
-  id: string
-  title: string
-  slug: string
-  summary: string
-  thumbnail_url: string
-  category: string
-  tags: string[]
-  published_at: string
-  view_count: number
-  is_featured: boolean
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  thumbnail_url: string;
+  category: string;
+  tags: string[];
+  published_at: string;
+  view_count: number;
+  is_featured: boolean;
 }
 
 const categories = [
@@ -28,27 +28,27 @@ const categories = [
   { id: 'AI 도구', label: 'AI 도구' },
   { id: 'AI 활용', label: 'AI 활용' },
   { id: 'AI 비즈니스', label: 'AI 비즈니스' },
-  { id: 'AI 교육', label: 'AI 교육' }
-]
+  { id: 'AI 교육', label: 'AI 교육' },
+];
 
 export default function AITrendsPage() {
-  const [trends, setTrends] = useState<AITrend[]>([])
-  const [featuredTrends, setFeaturedTrends] = useState<AITrend[]>([])
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [trends, setTrends] = useState<AITrend[]>([]);
+  const [featuredTrends, setFeaturedTrends] = useState<AITrend[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchTrends = useCallback(async () => {
     try {
-      setLoading(true)
-      
+      setLoading(true);
+
       // Fetch featured trends
       if (page === 1 && selectedCategory === 'all') {
-        const featuredRes = await fetch('/api/ai-trends?featured=true&limit=3')
+        const featuredRes = await fetch('/api/ai-trends?featured=true&limit=3');
         if (featuredRes.ok) {
-          const featuredData = await featuredRes.json() as { data?: AITrend[] }
-          setFeaturedTrends(featuredData.data ?? [])
+          const featuredData = (await featuredRes.json()) as { data?: AITrend[] };
+          setFeaturedTrends(featuredData.data ?? []);
         }
       }
 
@@ -56,45 +56,48 @@ export default function AITrendsPage() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '12',
-        ...(selectedCategory !== 'all' && { category: selectedCategory })
-      })
-      
-      const response = await fetch(`/api/ai-trends?${params.toString()}`)
+        ...(selectedCategory !== 'all' && { category: selectedCategory }),
+      });
+
+      const response = await fetch(`/api/ai-trends?${params.toString()}`);
       if (response.ok) {
-        const data = await response.json() as { data?: AITrend[]; pagination?: { totalPages: number } }
-        
-        setTrends(data.data ?? [])
-        setTotalPages(data.pagination?.totalPages ?? 1)
+        const data = (await response.json()) as {
+          data?: AITrend[];
+          pagination?: { totalPages: number };
+        };
+
+        setTrends(data.data ?? []);
+        setTotalPages(data.pagination?.totalPages ?? 1);
       } else {
-        setTrends([])
-        setTotalPages(1)
+        setTrends([]);
+        setTotalPages(1);
       }
     } catch (error) {
-      logger.error('Error fetching trends:', error)
+      logger.error('Error fetching trends:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [selectedCategory, page])
+  }, [selectedCategory, page]);
 
   useEffect(() => {
-    void fetchTrends()
-  }, [fetchTrends])
+    void fetchTrends();
+  }, [fetchTrends]);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
-    })
-  }
+      day: 'numeric',
+    });
+  };
 
   const formatViewCount = (count: number) => {
     if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`
+      return `${(count / 1000).toFixed(1)}K`;
     }
-    return count.toString()
-  }
+    return count.toString();
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -117,7 +120,8 @@ export default function AITrendsPage() {
                 </span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto px-4 sm:px-0">
-                매일 업데이트되는 최신 AI 기술과 도구,<br className="sm:hidden" />
+                매일 업데이트되는 최신 AI 기술과 도구,
+                <br className="sm:hidden" />
                 활용 사례를 쉽게 알아보세요
               </p>
             </motion.div>
@@ -128,12 +132,12 @@ export default function AITrendsPage() {
         <section className="px-4 mb-8">
           <div className="container mx-auto max-w-7xl">
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {categories.map((category) => (
+              {categories.map(category => (
                 <button
                   key={category.id}
                   onClick={() => {
-                    setSelectedCategory(category.id)
-                    setPage(1)
+                    setSelectedCategory(category.id);
+                    setPage(1);
                   }}
                   className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
                     selectedCategory === category.id
@@ -154,12 +158,8 @@ export default function AITrendsPage() {
             <div className="container mx-auto max-w-7xl">
               <h2 className="text-2xl font-bold text-offWhite-200 mb-6">주목할 만한 트렌드</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {featuredTrends.map((trend) => (
-                  <Link
-                    key={trend.id}
-                    href={`/ai-trends/${trend.slug}`}
-                    className="group"
-                  >
+                {featuredTrends.map(trend => (
+                  <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
                     <motion.article
                       whileHover={{ y: -5 }}
                       className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/50 transition-all"
@@ -188,9 +188,7 @@ export default function AITrendsPage() {
                         <h3 className="text-xl font-semibold text-offWhite-200 mb-3 line-clamp-2 group-hover:text-metallicGold-500 transition-colors">
                           {trend.title}
                         </h3>
-                        <p className="text-offWhite-600 line-clamp-2 mb-4">
-                          {trend.summary}
-                        </p>
+                        <p className="text-offWhite-600 line-clamp-2 mb-4">{trend.summary}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm text-offWhite-600">
                             <Eye className="w-4 h-4" />
@@ -233,12 +231,8 @@ export default function AITrendsPage() {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {trends.map((trend) => (
-                    <Link
-                      key={trend.id}
-                      href={`/ai-trends/${trend.slug}`}
-                      className="group"
-                    >
+                  {trends.map(trend => (
+                    <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
                       <motion.article
                         whileHover={{ y: -5 }}
                         className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/50 transition-all h-full"
@@ -295,7 +289,7 @@ export default function AITrendsPage() {
                     </button>
                     <div className="flex items-center gap-2">
                       {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                        const pageNum = i + 1
+                        const pageNum = i + 1;
                         return (
                           <button
                             key={pageNum}
@@ -308,7 +302,7 @@ export default function AITrendsPage() {
                           >
                             {pageNum}
                           </button>
-                        )
+                        );
                       })}
                     </div>
                     <button
@@ -326,5 +320,5 @@ export default function AITrendsPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

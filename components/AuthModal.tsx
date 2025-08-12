@@ -1,93 +1,92 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { X, Check } from 'lucide-react'
-import { useAuth } from '@/lib/auth-context'
-import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payment/payapp'
+import { useState } from 'react';
+import { X, Check } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payment/payapp';
 // UI components are not used in this modal
 // import Input from '@/components/ui/Input'
 // import Button from '@/components/ui/Button'
 // import { modalStyles, cardStyles } from '@/components/ui'
 
 interface AuthModalProps {
-  isOpen: boolean
-  onClose: () => void
-  initialMode?: 'signin' | 'signup'
+  isOpen: boolean;
+  onClose: () => void;
+  initialMode?: 'signin' | 'signup';
 }
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModalProps) {
-  const [mode, setMode] = useState<'signin' | 'signup'>(initialMode)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [selectedPlan, setSelectedPlan] = useState('basic')
-  const [showPlans, setShowPlans] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const { signIn, signUp } = useAuth()
+  const [mode, setMode] = useState<'signin' | 'signup'>(initialMode);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState('basic');
+  const [showPlans, setShowPlans] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     try {
       if (mode === 'signin') {
-        const { error } = await signIn(email, password)
+        const { error } = await signIn(email, password);
         if (error) {
-          throw error
+          throw error;
         }
-        onClose()
+        onClose();
       } else {
         // 회원가입 시 플랜 선택 화면으로
         if (!showPlans) {
-          setShowPlans(true)
-          setLoading(false)
-          return
+          setShowPlans(true);
+          setLoading(false);
+          return;
         }
 
         // 회원가입 및 결제 처리
-        const { error } = await signUp(email, password, { 
+        const { error } = await signUp(email, password, {
           name,
-          selected_plan: selectedPlan 
-        })
-        
+          selected_plan: selectedPlan,
+        });
+
         if (!error) {
           // 결제 페이지로 리디렉트
-          const orderId = generateOrderId()
-          const plan = PRICING_PLANS[selectedPlan as keyof typeof PRICING_PLANS]
+          const orderId = generateOrderId();
+          const plan = PRICING_PLANS[selectedPlan as keyof typeof PRICING_PLANS];
           const paymentUrl = generatePayAppUrl({
             orderId,
             userName: name,
             userEmail: email,
             planId: selectedPlan,
-            amount: plan.price
-          })
-          
+            amount: plan.price,
+          });
+
           // 새 창에서 결제 페이지 열기
-          window.open(paymentUrl, 'payapp_payment', 'width=800,height=600')
-          
+          window.open(paymentUrl, 'payapp_payment', 'width=800,height=600');
+
           // 모달 닫기
-          onClose()
+          onClose();
         } else if (error) {
-          throw error
+          throw error;
         }
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : '오류가 발생했습니다.')
-      setLoading(false)
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다.');
+      setLoading(false);
     }
-  }
+  };
 
-  if (!isOpen) {return null}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
           <X className="w-6 h-6" />
         </button>
 
@@ -95,10 +94,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
           {mode === 'signin' ? '로그인' : showPlans ? '플랜 선택' : '회원가입'}
         </h2>
 
-        <form onSubmit={(e) => {
-          e.preventDefault()
-          void handleSubmit(e)
-        }} className="space-y-4">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            void handleSubmit(e);
+          }}
+          className="space-y-4"
+        >
           {mode === 'signup' && !showPlans ? (
             <>
               <div>
@@ -109,7 +111,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                   id="name"
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
                   placeholder="홍길동"
                   required
@@ -124,7 +126,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
                   placeholder="example@email.com"
                   required
@@ -139,7 +141,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
                   placeholder="••••••••"
                   required
@@ -192,7 +194,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
                   placeholder="example@email.com"
                   required
@@ -207,7 +209,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
                   placeholder="••••••••"
                   required
@@ -228,9 +230,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
             disabled={loading}
             className="w-full bg-yellow-400 text-black font-semibold py-3 rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? '처리 중...' : 
-             mode === 'signin' ? '로그인' : 
-             showPlans ? '결제하기' : '다음'}
+            {loading
+              ? '처리 중...'
+              : mode === 'signin'
+                ? '로그인'
+                : showPlans
+                  ? '결제하기'
+                  : '다음'}
           </button>
         </form>
 
@@ -240,9 +246,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
               계정이 없으신가요?{' '}
               <button
                 onClick={() => {
-                  setMode('signup')
-                  setError(null)
-                  setShowPlans(false)
+                  setMode('signup');
+                  setError(null);
+                  setShowPlans(false);
                 }}
                 className="text-yellow-400 hover:underline"
               >
@@ -254,9 +260,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
               이미 계정이 있으신가요?{' '}
               <button
                 onClick={() => {
-                  setMode('signin')
-                  setError(null)
-                  setShowPlans(false)
+                  setMode('signin');
+                  setError(null);
+                  setShowPlans(false);
                 }}
                 className="text-yellow-400 hover:underline"
               >
@@ -267,5 +273,5 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
         </div>
       </div>
     </div>
-  )
+  );
 }

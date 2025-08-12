@@ -1,54 +1,54 @@
-'use client'
+'use client';
 
-import { userNotification, logger } from '@/lib/logger'
+import { userNotification, logger } from '@/lib/logger';
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ArrowLeft, MessageSquare, Users, HelpCircle, Briefcase } from 'lucide-react'
-import Link from 'next/link'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
-import { supabase } from '@/lib/supabase'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { ArrowLeft, MessageSquare, Users, HelpCircle, Briefcase } from 'lucide-react';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import { useAuth } from '@/lib/auth-context';
+import { supabase } from '@/lib/supabase';
 
 const categories = [
   { id: 'free', label: '자유게시판', icon: MessageSquare },
   { id: 'study', label: '스터디', icon: Users },
   { id: 'qna', label: '질문/답변', icon: HelpCircle },
-  { id: 'career', label: '진로/취업', icon: Briefcase }
-]
+  { id: 'career', label: '진로/취업', icon: Briefcase },
+];
 
 export default function CommunityWritePage() {
   const [formData, setFormData] = useState({
     category: 'free',
     title: '',
-    content: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const { user } = useAuth()
-  const router = useRouter()
+    content: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
 
   // 로그인 체크를 useEffect로 이동
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login')
+      router.push('/auth/login');
     }
-  }, [user, router])
+  }, [user, router]);
 
   if (!user) {
-    return null
+    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!formData.title.trim() || !formData.content.trim()) {
-      userNotification.alert('제목과 내용을 모두 입력해주세요.')
-      return
+      userNotification.alert('제목과 내용을 모두 입력해주세요.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const { data, error } = await supabase
@@ -57,23 +57,23 @@ export default function CommunityWritePage() {
           user_id: user.id,
           category: formData.category,
           title: formData.title,
-          content: formData.content
+          content: formData.content,
         })
         .select()
-        .single()
+        .single();
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      router.push(`/community/${data.category}/${data.id}`)
+      router.push(`/community/${data.category}/${data.id}`);
     } catch (error) {
-      logger.error('Error creating post:', error)
-      userNotification.alert('글 작성 중 오류가 발생했습니다.')
+      logger.error('Error creating post:', error);
+      userNotification.alert('글 작성 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -88,7 +88,7 @@ export default function CommunityWritePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Link 
+              <Link
                 href="/community"
                 className="inline-flex items-center gap-2 text-metallicGold-500 hover:text-metallicGold-400 mb-8"
               >
@@ -100,13 +100,13 @@ export default function CommunityWritePage() {
                 새 글 작성
               </h1>
 
-              <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
+              <form onSubmit={e => void handleSubmit(e)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-offWhite-500 mb-3">
                     카테고리
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {categories.map((category) => (
+                    {categories.map(category => (
                       <button
                         key={category.id}
                         type="button"
@@ -117,12 +117,20 @@ export default function CommunityWritePage() {
                             : 'border-metallicGold-900/30 hover:border-metallicGold-500/50'
                         }`}
                       >
-                        <category.icon className={`w-6 h-6 ${
-                          formData.category === category.id ? 'text-metallicGold-500' : 'text-offWhite-600'
-                        }`} />
-                        <span className={`text-sm font-medium ${
-                          formData.category === category.id ? 'text-metallicGold-500' : 'text-offWhite-500'
-                        }`}>
+                        <category.icon
+                          className={`w-6 h-6 ${
+                            formData.category === category.id
+                              ? 'text-metallicGold-500'
+                              : 'text-offWhite-600'
+                          }`}
+                        />
+                        <span
+                          className={`text-sm font-medium ${
+                            formData.category === category.id
+                              ? 'text-metallicGold-500'
+                              : 'text-offWhite-500'
+                          }`}
+                        >
                           {category.label}
                         </span>
                       </button>
@@ -131,14 +139,17 @@ export default function CommunityWritePage() {
                 </div>
 
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-offWhite-500 mb-2">
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-offWhite-500 mb-2"
+                  >
                     제목
                   </label>
                   <input
                     id="title"
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
                     className="w-full px-4 py-3 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent"
                     placeholder="제목을 입력하세요"
                     required
@@ -146,13 +157,16 @@ export default function CommunityWritePage() {
                 </div>
 
                 <div>
-                  <label htmlFor="content" className="block text-sm font-medium text-offWhite-500 mb-2">
+                  <label
+                    htmlFor="content"
+                    className="block text-sm font-medium text-offWhite-500 mb-2"
+                  >
                     내용
                   </label>
                   <textarea
                     id="content"
                     value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    onChange={e => setFormData({ ...formData, content: e.target.value })}
                     rows={12}
                     className="w-full px-4 py-3 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:ring-metallicGold-500 focus:border-transparent resize-none"
                     placeholder="내용을 입력하세요"
@@ -181,5 +195,5 @@ export default function CommunityWritePage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
+import React from 'react';
+import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 
 export default function PrivacyPage() {
   return (
@@ -27,11 +27,13 @@ export default function PrivacyPage() {
 
               <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 space-y-6 sm:space-y-8">
                 <section>
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-metallicGold-500 mb-3 sm:mb-4">1. 개인정보의 수집 및 이용목적</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-metallicGold-500 mb-3 sm:mb-4">
+                    1. 개인정보의 수집 및 이용목적
+                  </h2>
                   <p className="text-sm sm:text-base text-offWhite-400 leading-relaxed">
-                    떡상연구소(이하 "회사")는 다음의 목적을 위하여 개인정보를 처리합니다. 
-                    처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 
-                    이용 목적이 변경되는 경우에는 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
+                    떡상연구소(이하 "회사")는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고
+                    있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 이용 목적이
+                    변경되는 경우에는 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
                   </p>
                   <ul className="mt-4 ml-4 space-y-2 text-sm sm:text-base text-offWhite-400">
                     <li>• 회원 가입 및 관리</li>
@@ -42,7 +44,9 @@ export default function PrivacyPage() {
                 </section>
 
                 <section>
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-metallicGold-500 mb-3 sm:mb-4">2. 수집하는 개인정보 항목</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-metallicGold-500 mb-3 sm:mb-4">
+                    2. 수집하는 개인정보 항목
+                  </h2>
                   <p className="text-sm sm:text-base text-offWhite-400 leading-relaxed mb-4">
                     회사는 다음의 개인정보 항목을 수집하고 있습니다:
                   </p>
@@ -56,16 +60,23 @@ export default function PrivacyPage() {
                       <p className="text-offWhite-500">전화번호, 생년월일</p>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-metallicGold-400 mb-2">자동 수집 항목</h3>
-                      <p className="text-offWhite-500">IP 주소, 쿠키, 방문 일시, 서비스 이용 기록</p>
+                      <h3 className="text-lg font-semibold text-metallicGold-400 mb-2">
+                        자동 수집 항목
+                      </h3>
+                      <p className="text-offWhite-500">
+                        IP 주소, 쿠키, 방문 일시, 서비스 이용 기록
+                      </p>
                     </div>
                   </div>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">3. 개인정보의 보유 및 이용기간</h2>
+                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">
+                    3. 개인정보의 보유 및 이용기간
+                  </h2>
                   <p className="text-offWhite-400 leading-relaxed">
-                    회사는 법령에 따른 개인정보 보유·이용기간 또는 정보주체로부터 개인정보를 수집 시에 동의받은 개인정보 보유·이용기간 내에서 개인정보를 처리·보유합니다.
+                    회사는 법령에 따른 개인정보 보유·이용기간 또는 정보주체로부터 개인정보를 수집
+                    시에 동의받은 개인정보 보유·이용기간 내에서 개인정보를 처리·보유합니다.
                   </p>
                   <ul className="mt-4 ml-4 space-y-2 text-offWhite-400">
                     <li>• 회원 정보: 회원 탈퇴 시까지</li>
@@ -76,18 +87,23 @@ export default function PrivacyPage() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">4. 개인정보의 제3자 제공</h2>
+                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">
+                    4. 개인정보의 제3자 제공
+                  </h2>
                   <p className="text-offWhite-400 leading-relaxed">
-                    회사는 정보주체의 개인정보를 제1조(개인정보의 처리 목적)에서 명시한 범위 내에서만 처리하며, 
-                    정보주체의 동의, 법률의 특별한 규정 등 개인정보 보호법 제17조 및 제18조에 해당하는 경우에만 
-                    개인정보를 제3자에게 제공합니다.
+                    회사는 정보주체의 개인정보를 제1조(개인정보의 처리 목적)에서 명시한 범위
+                    내에서만 처리하며, 정보주체의 동의, 법률의 특별한 규정 등 개인정보 보호법 제17조
+                    및 제18조에 해당하는 경우에만 개인정보를 제3자에게 제공합니다.
                   </p>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">5. 정보주체의 권리·의무 및 행사방법</h2>
+                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">
+                    5. 정보주체의 권리·의무 및 행사방법
+                  </h2>
                   <p className="text-offWhite-400 leading-relaxed">
-                    정보주체는 회사에 대해 언제든지 다음 각 호의 개인정보 보호 관련 권리를 행사할 수 있습니다:
+                    정보주체는 회사에 대해 언제든지 다음 각 호의 개인정보 보호 관련 권리를 행사할 수
+                    있습니다:
                   </p>
                   <ul className="mt-4 ml-4 space-y-2 text-offWhite-400">
                     <li>• 개인정보 열람요구</li>
@@ -98,7 +114,9 @@ export default function PrivacyPage() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">6. 개인정보의 안전성 확보조치</h2>
+                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">
+                    6. 개인정보의 안전성 확보조치
+                  </h2>
                   <p className="text-offWhite-400 leading-relaxed">
                     회사는 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다:
                   </p>
@@ -111,7 +129,9 @@ export default function PrivacyPage() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">7. 개인정보 보호책임자</h2>
+                  <h2 className="text-2xl font-bold text-metallicGold-500 mb-4">
+                    7. 개인정보 보호책임자
+                  </h2>
                   <div className="bg-deepBlack-600/50 rounded-xl p-6">
                     <p className="text-offWhite-400 mb-2">개인정보 보호책임자: 떡상연구소 대표</p>
                     <p className="text-offWhite-400 mb-2">이메일: privacy@dduksang.com</p>
@@ -128,5 +148,5 @@ export default function PrivacyPage() {
         </section>
       </div>
     </div>
-  )
+  );
 }

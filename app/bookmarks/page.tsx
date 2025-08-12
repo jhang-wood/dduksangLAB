@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Search, Filter, BookOpen, Clock } from 'lucide-react'
-import Header from '@/components/Header'
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import CourseCard from '@/components/CourseCard'
-import { useAuth } from '@/lib/auth-context'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Search, Filter, BookOpen, Clock } from 'lucide-react';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import CourseCard from '@/components/CourseCard';
+import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
 
 interface BookmarkedCourse {
-  courseId: string
-  courseName: string
-  bookmarkedAt: string
-  userId: string
+  courseId: string;
+  courseName: string;
+  bookmarkedAt: string;
+  userId: string;
 }
 
 // 더미 강의 데이터
@@ -21,7 +21,8 @@ const allCourses = [
   {
     id: 'ai-agent-master',
     title: 'AI Agent 마스터과정 - 실무 완성편',
-    description: '실제 업무에서 활용할 수 있는 AI 에이전트를 구축하고 운영하는 실전 기술을 배웁니다. Claude Code부터 자동화 시스템까지 완벽 마스터.',
+    description:
+      '실제 업무에서 활용할 수 있는 AI 에이전트를 구축하고 운영하는 실전 기술을 배웁니다. Claude Code부터 자동화 시스템까지 완벽 마스터.',
     instructor: '떡상연구소',
     duration: '8시간 30분',
     students: 1247,
@@ -30,7 +31,7 @@ const allCourses = [
     discountPrice: 299000,
     level: 'advanced' as const,
     tags: ['AI', 'Claude Code', '자동화', '실무'],
-    preview: 'https://example.com/preview1'
+    preview: 'https://example.com/preview1',
   },
   {
     id: 'telegram-coding',
@@ -44,7 +45,7 @@ const allCourses = [
     discountPrice: 199000,
     level: 'intermediate' as const,
     tags: ['텔레그램', '모바일개발', '생산성'],
-    preview: 'https://example.com/preview2'
+    preview: 'https://example.com/preview2',
   },
   {
     id: 'no-code-automation',
@@ -58,86 +59,91 @@ const allCourses = [
     discountPrice: 149000,
     level: 'beginner' as const,
     tags: ['노코드', '자동화', 'Make', 'n8n'],
-    preview: 'https://example.com/preview3'
-  }
-]
+    preview: 'https://example.com/preview3',
+  },
+];
 
 export default function BookmarksPage() {
-  const [bookmarks, setBookmarks] = useState<BookmarkedCourse[]>([])
-  const [bookmarkedCourses, setBookmarkedCourses] = useState<any[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState<'recent' | 'name' | 'instructor'>('recent')
-  const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
-  const router = useRouter()
+  const [bookmarks, setBookmarks] = useState<BookmarkedCourse[]>([]);
+  const [bookmarkedCourses, setBookmarkedCourses] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'recent' | 'name' | 'instructor'>('recent');
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push('/auth/login');
+      return;
     }
 
     // 로컬스토리지에서 북마크 데이터 가져오기
     const loadBookmarks = () => {
       try {
-        const bookmarkData = JSON.parse(localStorage.getItem('bookmarks') ?? '[]')
-        const userBookmarks = bookmarkData.filter((bookmark: BookmarkedCourse) => 
-          bookmark.userId === user.id
-        )
-        
-        setBookmarks(userBookmarks)
-        
-        // 북마크된 강의 정보 매칭
-        const matchedCourses = userBookmarks.map((bookmark: BookmarkedCourse) => {
-          const course = allCourses.find(c => c.id === bookmark.courseId)
-          return course ? { 
-            ...course, 
-            bookmarkedAt: bookmark.bookmarkedAt 
-          } : null
-        }).filter(Boolean)
-        
-        setBookmarkedCourses(matchedCourses)
-      } catch (error) {
-        console.error('북마크 데이터 로드 중 오류:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+        const bookmarkData = JSON.parse(localStorage.getItem('bookmarks') ?? '[]');
+        const userBookmarks = bookmarkData.filter(
+          (bookmark: BookmarkedCourse) => bookmark.userId === user.id
+        );
 
-    loadBookmarks()
+        setBookmarks(userBookmarks);
+
+        // 북마크된 강의 정보 매칭
+        const matchedCourses = userBookmarks
+          .map((bookmark: BookmarkedCourse) => {
+            const course = allCourses.find(c => c.id === bookmark.courseId);
+            return course
+              ? {
+                  ...course,
+                  bookmarkedAt: bookmark.bookmarkedAt,
+                }
+              : null;
+          })
+          .filter(Boolean);
+
+        setBookmarkedCourses(matchedCourses);
+      } catch (error) {
+        console.error('북마크 데이터 로드 중 오류:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBookmarks();
 
     // 북마크 변경 감지를 위한 이벤트 리스너 (다른 탭에서 변경 시)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'bookmarks') {
-        loadBookmarks()
+        loadBookmarks();
       }
-    }
+    };
 
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [user, router])
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [user, router]);
 
   // 검색 및 정렬 필터링
   const filteredCourses = bookmarkedCourses
-    .filter(course => 
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+    .filter(
+      course =>
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
       switch (sortBy) {
         case 'recent':
-          return new Date(b.bookmarkedAt).getTime() - new Date(a.bookmarkedAt).getTime()
+          return new Date(b.bookmarkedAt).getTime() - new Date(a.bookmarkedAt).getTime();
         case 'name':
-          return a.title.localeCompare(b.title)
+          return a.title.localeCompare(b.title);
         case 'instructor':
-          return a.instructor.localeCompare(b.instructor)
+          return a.instructor.localeCompare(b.instructor);
         default:
-          return 0
+          return 0;
       }
-    })
+    });
 
   if (!user) {
-    return null
+    return null;
   }
 
   return (
@@ -159,12 +165,8 @@ export default function BookmarksPage() {
                 <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-2">
-                  찜한 강의
-                </h1>
-                <p className="text-lg text-offWhite-500">
-                  관심있는 강의들을 모아서 확인해보세요
-                </p>
+                <h1 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-2">찜한 강의</h1>
+                <p className="text-lg text-offWhite-500">관심있는 강의들을 모아서 확인해보세요</p>
               </div>
             </div>
 
@@ -179,7 +181,7 @@ export default function BookmarksPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-4">
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-blue-500" />
@@ -187,9 +189,10 @@ export default function BookmarksPage() {
                     <p className="text-sm text-offWhite-600">총 학습 시간</p>
                     <p className="text-xl font-bold text-offWhite-200">
                       {bookmarkedCourses.reduce((total, course) => {
-                        const hours = parseInt(course.duration?.split('시간')[0] ?? '0')
-                        return total + hours
-                      }, 0)}시간
+                        const hours = parseInt(course.duration?.split('시간')[0] ?? '0');
+                        return total + hours;
+                      }, 0)}
+                      시간
                     </p>
                   </div>
                 </div>
@@ -201,10 +204,13 @@ export default function BookmarksPage() {
                   <div>
                     <p className="text-sm text-offWhite-600">평균 평점</p>
                     <p className="text-xl font-bold text-offWhite-200">
-                      {bookmarkedCourses.length > 0 
-                        ? (bookmarkedCourses.reduce((sum, course) => sum + course.rating, 0) / bookmarkedCourses.length).toFixed(1)
-                        : '0.0'
-                      }점
+                      {bookmarkedCourses.length > 0
+                        ? (
+                            bookmarkedCourses.reduce((sum, course) => sum + course.rating, 0) /
+                            bookmarkedCourses.length
+                          ).toFixed(1)
+                        : '0.0'}
+                      점
                     </p>
                   </div>
                 </div>
@@ -227,7 +233,7 @@ export default function BookmarksPage() {
                   type="text"
                   placeholder="찜한 강의를 검색해보세요..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-xl text-offWhite-200 placeholder-offWhite-500 focus:border-metallicGold-500/40 focus:outline-none transition-colors"
                 />
               </div>
@@ -237,7 +243,7 @@ export default function BookmarksPage() {
                 <Filter className="w-5 h-5 text-offWhite-500" />
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={e => setSortBy(e.target.value as any)}
                   className="bg-deepBlack-300/50 border border-metallicGold-900/20 rounded-xl px-4 py-3 text-offWhite-200 focus:border-metallicGold-500/40 focus:outline-none transition-colors"
                 >
                   <option value="recent">최근 찜한 순</option>
@@ -266,9 +272,7 @@ export default function BookmarksPage() {
                     <h3 className="text-xl font-semibold text-offWhite-400 mb-2">
                       검색 결과가 없습니다
                     </h3>
-                    <p className="text-offWhite-600">
-                      다른 키워드로 검색해보세요
-                    </p>
+                    <p className="text-offWhite-600">다른 키워드로 검색해보세요</p>
                   </>
                 ) : (
                   <>
@@ -276,9 +280,7 @@ export default function BookmarksPage() {
                     <h3 className="text-xl font-semibold text-offWhite-400 mb-2">
                       아직 찜한 강의가 없습니다
                     </h3>
-                    <p className="text-offWhite-600 mb-6">
-                      관심있는 강의를 찜해보세요
-                    </p>
+                    <p className="text-offWhite-600 mb-6">관심있는 강의를 찜해보세요</p>
                     <button
                       onClick={() => router.push('/courses')}
                       className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
@@ -291,12 +293,7 @@ export default function BookmarksPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCourses.map((course, index) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    index={index}
-                    variant="default"
-                  />
+                  <CourseCard key={course.id} course={course} index={index} variant="default" />
                 ))}
               </div>
             )}
@@ -310,20 +307,13 @@ export default function BookmarksPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-16"
             >
-              <h2 className="text-2xl font-bold text-offWhite-200 mb-8">
-                이런 강의는 어떠세요?
-              </h2>
+              <h2 className="text-2xl font-bold text-offWhite-200 mb-8">이런 강의는 어떠세요?</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {allCourses
                   .filter(course => !bookmarkedCourses.some(bc => bc.id === course.id))
                   .slice(0, 3)
                   .map((course, index) => (
-                    <CourseCard
-                      key={course.id}
-                      course={course}
-                      index={index}
-                      variant="default"
-                    />
+                    <CourseCard key={course.id} course={course} index={index} variant="default" />
                   ))}
               </div>
             </motion.div>
@@ -331,5 +321,5 @@ export default function BookmarksPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

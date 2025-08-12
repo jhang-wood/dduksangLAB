@@ -3,43 +3,37 @@
  * OpenAI, Claude, Gemini API를 활용한 고품질 블로그 콘텐츠 자동 생성
  */
 
-import { logger } from './logger'
-import { env } from './env'
+import { logger } from './logger';
+import { env } from './env';
 
 // AI 서비스 타입 정의
-type AIService = 'openai' | 'claude' | 'gemini'
+type AIService = 'openai' | 'claude' | 'gemini';
 
 // 콘텐츠 타입 정의
 interface AITrendContent {
-  title: string
-  summary: string
-  content: string
-  tags: string[]
-  category: string
-  seoTitle: string
-  seoDescription: string
-  seoKeywords: string[]
-  thumbnail?: string
+  title: string;
+  summary: string;
+  content: string;
+  tags: string[];
+  category: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string[];
+  thumbnail?: string;
 }
 
 // AI 서비스별 구성
 interface AIServiceConfig {
-  name: string
-  apiKey: string
-  endpoint: string
-  model: string
-  maxTokens: number
-  temperature: number
+  name: string;
+  apiKey: string;
+  endpoint: string;
+  model: string;
+  maxTokens: number;
+  temperature: number;
 }
 
 // 트렌드 카테고리 정의
-const TREND_CATEGORIES = [
-  'AI 기술',
-  'AI 도구', 
-  'AI 활용',
-  'AI 비즈니스',
-  'AI 교육'
-] as const
+const TREND_CATEGORIES = ['AI 기술', 'AI 도구', 'AI 활용', 'AI 비즈니스', 'AI 교육'] as const;
 
 // 최신 AI 트렌드 키워드 (2025년 기준)
 const TRENDING_KEYWORDS = [
@@ -56,38 +50,38 @@ const TRENDING_KEYWORDS = [
   'AI 기반 콘텐츠 생성',
   'AI 개발자 도구',
   'AI 교육 플랫폼',
-  'AI 스타트업 생태계'
-]
+  'AI 스타트업 생태계',
+];
 
 // 콘텐츠 템플릿
 const CONTENT_TEMPLATES = {
   기술분석: {
     sections: ['기술 개요', '핵심 기능', '기술적 장점', '활용 사례', '향후 전망'],
     tone: '전문적이고 기술적인',
-    length: '상세한'
+    length: '상세한',
   },
   도구리뷰: {
     sections: ['도구 소개', '주요 기능', '사용법 가이드', '가격 정보', '경쟁사 비교'],
     tone: '실용적이고 객관적인',
-    length: '중간 길이'
+    length: '중간 길이',
   },
   시장분석: {
     sections: ['시장 현황', '주요 동향', '투자 현황', '기업 분석', '시장 전망'],
     tone: '분석적이고 통찰력 있는',
-    length: '종합적인'
+    length: '종합적인',
   },
   교육가이드: {
     sections: ['학습 목표', '기본 개념', '실습 가이드', '추천 리소스', '다음 단계'],
     tone: '친근하고 교육적인',
-    length: '단계별 상세한'
-  }
-}
+    length: '단계별 상세한',
+  },
+};
 
 export class AIContentGenerator {
-  private services: Map<AIService, AIServiceConfig> = new Map()
+  private services: Map<AIService, AIServiceConfig> = new Map();
 
   constructor() {
-    this.initializeServices()
+    this.initializeServices();
   }
 
   private initializeServices() {
@@ -99,8 +93,8 @@ export class AIContentGenerator {
         endpoint: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-4-turbo-preview',
         maxTokens: 4000,
-        temperature: 0.7
-      })
+        temperature: 0.7,
+      });
     }
 
     // Claude 설정 (Anthropic)
@@ -111,8 +105,8 @@ export class AIContentGenerator {
         endpoint: 'https://api.anthropic.com/v1/messages',
         model: 'claude-3-sonnet-20240229',
         maxTokens: 4000,
-        temperature: 0.7
-      })
+        temperature: 0.7,
+      });
     }
 
     // Gemini 설정
@@ -120,88 +114,94 @@ export class AIContentGenerator {
       this.services.set('gemini', {
         name: 'Google Gemini',
         apiKey: env.geminiApiKey,
-        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+        endpoint:
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
         model: 'gemini-pro',
         maxTokens: 4000,
-        temperature: 0.7
-      })
+        temperature: 0.7,
+      });
     }
 
-    logger.info(`AI 서비스 초기화 완료: ${Array.from(this.services.keys()).join(', ')}`)
+    logger.info(`AI 서비스 초기화 완료: ${Array.from(this.services.keys()).join(', ')}`);
   }
 
   /**
    * AI 트렌드 콘텐츠 생성 메인 함수
    */
   async generateTrendContent(count: number = 3): Promise<AITrendContent[]> {
-    const contents: AITrendContent[] = []
-    
+    const contents: AITrendContent[] = [];
+
     // 사용 가능한 서비스 확인
-    const availableServices = Array.from(this.services.keys())
+    const availableServices = Array.from(this.services.keys());
     if (availableServices.length === 0) {
-      throw new Error('사용 가능한 AI 서비스가 없습니다. API 키를 확인해주세요.')
+      throw new Error('사용 가능한 AI 서비스가 없습니다. API 키를 확인해주세요.');
     }
 
     // 최신 트렌드 키워드 선택
-    const selectedKeywords = this.selectTrendingKeywords(count)
-    
+    const selectedKeywords = this.selectTrendingKeywords(count);
+
     for (let i = 0; i < count; i++) {
       try {
         // 서비스 로테이션으로 부하 분산
-        const service = availableServices[i % availableServices.length]
-        const keyword = selectedKeywords[i]
-        
-        if (!service || !keyword) {continue}
-        const content = await this.generateSingleContent(service, keyword)
-        if (content) {
-          contents.push(content)
-          logger.info(`AI 콘텐츠 생성 성공: ${content.title}`)
+        const service = availableServices[i % availableServices.length];
+        const keyword = selectedKeywords[i];
+
+        if (!service || !keyword) {
+          continue;
         }
-        
+        const content = await this.generateSingleContent(service, keyword);
+        if (content) {
+          contents.push(content);
+          logger.info(`AI 콘텐츠 생성 성공: ${content.title}`);
+        }
+
         // API 레이트 리밋 방지
-        await this.delay(2000)
-        
+        await this.delay(2000);
       } catch (error) {
-        logger.error(`콘텐츠 생성 실패 (${i + 1}/${count}):`, error)
+        logger.error(`콘텐츠 생성 실패 (${i + 1}/${count}):`, error);
       }
     }
 
-    return contents
+    return contents;
   }
 
   /**
    * 단일 콘텐츠 생성
    */
-  private async generateSingleContent(service: AIService, keyword: string): Promise<AITrendContent | null> {
-    const serviceConfig = this.services.get(service)
-    if (!serviceConfig) {return null}
+  private async generateSingleContent(
+    service: AIService,
+    keyword: string
+  ): Promise<AITrendContent | null> {
+    const serviceConfig = this.services.get(service);
+    if (!serviceConfig) {
+      return null;
+    }
 
-    const category = this.selectCategory(keyword)
-    const template = this.selectTemplate(category)
-    const prompt = this.buildPrompt(keyword, category, template)
+    const category = this.selectCategory(keyword);
+    const template = this.selectTemplate(category);
+    const prompt = this.buildPrompt(keyword, category, template);
 
     try {
-      let generatedContent: string
+      let generatedContent: string;
 
       switch (service) {
         case 'openai':
-          generatedContent = await this.callOpenAI(serviceConfig, prompt)
-          break
+          generatedContent = await this.callOpenAI(serviceConfig, prompt);
+          break;
         case 'claude':
-          generatedContent = await this.callClaude(serviceConfig, prompt)
-          break
+          generatedContent = await this.callClaude(serviceConfig, prompt);
+          break;
         case 'gemini':
-          generatedContent = await this.callGemini(serviceConfig, prompt)
-          break
+          generatedContent = await this.callGemini(serviceConfig, prompt);
+          break;
         default:
-          throw new Error(`지원하지 않는 AI 서비스: ${service}`)
+          throw new Error(`지원하지 않는 AI 서비스: ${service}`);
       }
 
-      return this.parseAIResponse(generatedContent, category)
-
+      return this.parseAIResponse(generatedContent, category);
     } catch (error) {
-      logger.error(`${service} API 호출 실패:`, error)
-      return null
+      logger.error(`${service} API 호출 실패:`, error);
+      return null;
     }
   }
 
@@ -212,32 +212,33 @@ export class AIContentGenerator {
     const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: config.model,
         messages: [
           {
             role: 'system',
-            content: '당신은 AI 트렌드 전문가입니다. 최신 기술 동향을 분석하고 고품질의 블로그 콘텐츠를 작성합니다.'
+            content:
+              '당신은 AI 트렌드 전문가입니다. 최신 기술 동향을 분석하고 고품질의 블로그 콘텐츠를 작성합니다.',
           },
           {
             role: 'user',
-            content: prompt
-          }
+            content: prompt,
+          },
         ],
         max_tokens: config.maxTokens,
-        temperature: config.temperature
-      })
-    })
+        temperature: config.temperature,
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API 오류: ${response.status} ${response.statusText}`)
+      throw new Error(`OpenAI API 오류: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json()
-    return data.choices[0].message.content
+    const data = await response.json();
+    return data.choices[0].message.content;
   }
 
   /**
@@ -249,7 +250,7 @@ export class AIContentGenerator {
       headers: {
         'x-api-key': config.apiKey,
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: config.model,
@@ -258,18 +259,18 @@ export class AIContentGenerator {
         messages: [
           {
             role: 'user',
-            content: prompt
-          }
-        ]
-      })
-    })
+            content: prompt,
+          },
+        ],
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(`Claude API 오류: ${response.status} ${response.statusText}`)
+      throw new Error(`Claude API 오류: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json()
-    return data.content[0].text
+    const data = await response.json();
+    return data.content[0].text;
   }
 
   /**
@@ -279,35 +280,39 @@ export class AIContentGenerator {
     const response = await fetch(`${config.endpoint}?key=${config.apiKey}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
         generationConfig: {
           temperature: config.temperature,
-          maxOutputTokens: config.maxTokens
-        }
-      })
-    })
+          maxOutputTokens: config.maxTokens,
+        },
+      }),
+    });
 
     if (!response.ok) {
-      throw new Error(`Gemini API 오류: ${response.status} ${response.statusText}`)
+      throw new Error(`Gemini API 오류: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json()
-    return data.candidates[0].content.parts[0].text
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
   }
 
   /**
    * 트렌딩 키워드 선택
    */
   private selectTrendingKeywords(count: number): string[] {
-    const shuffled = [...TRENDING_KEYWORDS].sort(() => Math.random() - 0.5)
-    return shuffled.slice(0, count)
+    const shuffled = [...TRENDING_KEYWORDS].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
   }
 
   /**
@@ -316,30 +321,30 @@ export class AIContentGenerator {
   private selectCategory(keyword: string): string {
     // 키워드 기반 카테고리 매핑
     const categoryMap: Record<string, string> = {
-      'AGI': 'AI 기술',
-      '멀티모달': 'AI 기술',
-      '에이전트': 'AI 기술',
-      '로컬': 'AI 도구',
-      '코딩': 'AI 도구',
-      '비즈니스': 'AI 비즈니스',
-      '윤리': 'AI 기술',
-      '개인화': 'AI 활용',
-      '엣지': 'AI 기술',
-      '자동화': 'AI 활용',
-      '콘텐츠': 'AI 도구',
-      '개발자': 'AI 도구',
-      '교육': 'AI 교육',
-      '스타트업': 'AI 비즈니스'
-    }
+      AGI: 'AI 기술',
+      멀티모달: 'AI 기술',
+      에이전트: 'AI 기술',
+      로컬: 'AI 도구',
+      코딩: 'AI 도구',
+      비즈니스: 'AI 비즈니스',
+      윤리: 'AI 기술',
+      개인화: 'AI 활용',
+      엣지: 'AI 기술',
+      자동화: 'AI 활용',
+      콘텐츠: 'AI 도구',
+      개발자: 'AI 도구',
+      교육: 'AI 교육',
+      스타트업: 'AI 비즈니스',
+    };
 
     for (const [key, category] of Object.entries(categoryMap)) {
       if (keyword.includes(key)) {
-        return category
+        return category;
       }
     }
 
     // 기본 카테고리 랜덤 선택
-    return TREND_CATEGORIES[Math.floor(Math.random() * TREND_CATEGORIES.length)] ?? 'AI/ML'
+    return TREND_CATEGORIES[Math.floor(Math.random() * TREND_CATEGORIES.length)] ?? 'AI/ML';
   }
 
   /**
@@ -351,18 +356,18 @@ export class AIContentGenerator {
       'AI 도구': '도구리뷰',
       'AI 비즈니스': '시장분석',
       'AI 활용': '도구리뷰',
-      'AI 교육': '교육가이드'
-    }
+      'AI 교육': '교육가이드',
+    };
 
-    return CONTENT_TEMPLATES[templateMap[category] ?? '기술분석']
+    return CONTENT_TEMPLATES[templateMap[category] ?? '기술분석'];
   }
 
   /**
    * 프롬프트 구성
    */
   private buildPrompt(keyword: string, category: string, template: any): string {
-    const currentDate = new Date().toLocaleDateString('ko-KR')
-    
+    const currentDate = new Date().toLocaleDateString('ko-KR');
+
     return `
 # AI 트렌드 블로그 콘텐츠 생성
 
@@ -395,7 +400,7 @@ export class AIContentGenerator {
 6. 객관적이고 균형잡힌 관점
 
 지금 ${keyword}에 대한 고품질 블로그 콘텐츠를 JSON 형식으로 생성해주세요.
-`.trim()
+`.trim();
   }
 
   /**
@@ -404,13 +409,13 @@ export class AIContentGenerator {
   private parseAIResponse(response: string, category: string): AITrendContent {
     try {
       // JSON 추출
-      const jsonMatch = response.match(/\{[\s\S]*\}/)
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error('JSON 형식을 찾을 수 없습니다.')
+        throw new Error('JSON 형식을 찾을 수 없습니다.');
       }
 
-      const parsed = JSON.parse(jsonMatch[0])
-      
+      const parsed = JSON.parse(jsonMatch[0]);
+
       return {
         title: parsed.title ?? '제목 없음',
         summary: parsed.summary ?? '요약 없음',
@@ -419,13 +424,13 @@ export class AIContentGenerator {
         category,
         seoTitle: parsed.seoTitle ?? parsed.title ?? '제목 없음',
         seoDescription: parsed.seoDescription ?? parsed.summary ?? '설명 없음',
-        seoKeywords: Array.isArray(parsed.seoKeywords) ? parsed.seoKeywords : []
-      }
+        seoKeywords: Array.isArray(parsed.seoKeywords) ? parsed.seoKeywords : [],
+      };
     } catch (error) {
-      logger.error('AI 응답 파싱 실패:', error)
-      
+      logger.error('AI 응답 파싱 실패:', error);
+
       // 백업 파서 - 간단한 텍스트 분석
-      return this.fallbackParsing(response, category)
+      return this.fallbackParsing(response, category);
     }
   }
 
@@ -433,10 +438,10 @@ export class AIContentGenerator {
    * 백업 파싱 (JSON 파싱 실패 시)
    */
   private fallbackParsing(response: string, category: string): AITrendContent {
-    const lines = response.split('\n').filter(line => line.trim())
-    const title = lines[0]?.replace(/^[#\-\*]\s*/, '') ?? '제목 없음'
-    const summary = lines[1] ?? '요약 없음'
-    
+    const lines = response.split('\n').filter(line => line.trim());
+    const title = lines[0]?.replace(/^[#\-\*]\s*/, '') ?? '제목 없음';
+    const summary = lines[1] ?? '요약 없음';
+
     return {
       title: title.substring(0, 100),
       summary: summary.substring(0, 200),
@@ -445,45 +450,45 @@ export class AIContentGenerator {
       category,
       seoTitle: title.substring(0, 60),
       seoDescription: summary.substring(0, 160),
-      seoKeywords: ['AI', '트렌드', '기술']
-    }
+      seoKeywords: ['AI', '트렌드', '기술'],
+    };
   }
 
   /**
    * 지연 함수
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
    * 사용 가능한 AI 서비스 목록
    */
   getAvailableServices(): string[] {
-    return Array.from(this.services.keys())
+    return Array.from(this.services.keys());
   }
 
   /**
    * 서비스 상태 확인
    */
   async checkServiceHealth(): Promise<Record<string, boolean>> {
-    const status: Record<string, boolean> = {}
-    
+    const status: Record<string, boolean> = {};
+
     for (const [service, _config] of this.services.entries()) {
       try {
         // 간단한 테스트 요청
-        const testPrompt = '안녕하세요'
-        await this.generateSingleContent(service, testPrompt)
-        status[service] = true
+        const testPrompt = '안녕하세요';
+        await this.generateSingleContent(service, testPrompt);
+        status[service] = true;
       } catch (error) {
-        status[service] = false
-        logger.warn(`${service} 서비스 상태 확인 실패:`, error)
+        status[service] = false;
+        logger.warn(`${service} 서비스 상태 확인 실패:`, error);
       }
     }
-    
-    return status
+
+    return status;
   }
 }
 
 // 싱글톤 인스턴스
-export const aiContentGenerator = new AIContentGenerator()
+export const aiContentGenerator = new AIContentGenerator();

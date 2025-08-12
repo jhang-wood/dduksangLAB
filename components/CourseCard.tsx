@@ -1,48 +1,48 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Clock, Users, Star, Play, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import BookmarkButton from './BookmarkButton'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Clock, Users, Star, Play, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import BookmarkButton from './BookmarkButton';
 
 interface CourseCardProps {
   course: {
-    id: string
-    title: string
-    description: string
-    instructor: string
-    duration: string
-    students: number
-    rating: number
-    price: number
-    discountPrice?: number
-    thumbnail?: string
-    level: 'beginner' | 'intermediate' | 'advanced'
-    tags: string[]
-    preview?: string
-  }
-  index?: number
-  variant?: 'default' | 'compact' | 'featured'
+    id: string;
+    title: string;
+    description: string;
+    instructor: string;
+    duration: string;
+    students: number;
+    rating: number;
+    price: number;
+    discountPrice?: number;
+    thumbnail?: string;
+    level: 'beginner' | 'intermediate' | 'advanced';
+    tags: string[];
+    preview?: string;
+  };
+  index?: number;
+  variant?: 'default' | 'compact' | 'featured';
 }
 
 export default function CourseCard({ course, index = 0, variant = 'default' }: CourseCardProps) {
-  const isDiscounted = course.discountPrice && course.discountPrice < course.price
-  const discountPercent = isDiscounted 
+  const isDiscounted = course.discountPrice && course.discountPrice < course.price;
+  const discountPercent = isDiscounted
     ? Math.round(((course.price - course.discountPrice!) / course.price) * 100)
-    : 0
+    : 0;
 
   const levelColors = {
     beginner: 'bg-green-500/20 text-green-400 border-green-500/30',
     intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    advanced: 'bg-red-500/20 text-red-400 border-red-500/30'
-  }
+    advanced: 'bg-red-500/20 text-red-400 border-red-500/30',
+  };
 
   const levelLabels = {
     beginner: '초급',
     intermediate: '중급',
-    advanced: '고급'
-  }
+    advanced: '고급',
+  };
 
   if (variant === 'compact') {
     return (
@@ -59,14 +59,12 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
               <div className="w-20 h-16 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Play className="w-6 h-6 text-metallicGold-500" />
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-offWhite-200 text-sm mb-1 truncate">
                   {course.title}
                 </h3>
-                <p className="text-xs text-offWhite-500 mb-2">
-                  {course.instructor}
-                </p>
+                <p className="text-xs text-offWhite-500 mb-2">{course.instructor}</p>
                 <div className="flex items-center gap-2 text-xs text-offWhite-600">
                   <span>{course.duration}</span>
                   <span>•</span>
@@ -77,16 +75,12 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
                 </div>
               </div>
 
-              <BookmarkButton 
-                courseId={course.id} 
-                courseName={course.title}
-                size="sm"
-              />
+              <BookmarkButton courseId={course.id} courseName={course.title} size="sm" />
             </div>
           </div>
         </Link>
       </motion.div>
-    )
+    );
   }
 
   if (variant === 'featured') {
@@ -98,7 +92,7 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
         className="group relative"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         <Link href={`/courses/${course.id}`} className="block">
           <div className="relative bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 hover:border-metallicGold-500/40 transition-all duration-300 overflow-hidden">
             {/* Featured Badge */}
@@ -106,8 +100,8 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
               추천
             </div>
 
-            <BookmarkButton 
-              courseId={course.id} 
+            <BookmarkButton
+              courseId={course.id}
               courseName={course.title}
               className="absolute top-4 right-4"
               size="md"
@@ -122,7 +116,9 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2 py-1 rounded-lg text-xs border ${levelColors[course.level]}`}>
+                  <span
+                    className={`px-2 py-1 rounded-lg text-xs border ${levelColors[course.level]}`}
+                  >
                     {levelLabels[course.level]}
                   </span>
                   {isDiscounted && (
@@ -131,13 +127,9 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
                     </span>
                   )}
                 </div>
-                
-                <h3 className="text-xl font-bold text-offWhite-200 mb-2">
-                  {course.title}
-                </h3>
-                <p className="text-offWhite-400 line-clamp-2 mb-4">
-                  {course.description}
-                </p>
+
+                <h3 className="text-xl font-bold text-offWhite-200 mb-2">{course.title}</h3>
+                <p className="text-offWhite-400 line-clamp-2 mb-4">{course.description}</p>
               </div>
 
               <div className="flex items-center justify-between text-sm text-offWhite-500">
@@ -184,7 +176,7 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
           </div>
         </Link>
       </motion.div>
-    )
+    );
   }
 
   // Default variant
@@ -196,12 +188,12 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
       className="group relative"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       <Link href={`/courses/${course.id}`} className="block">
         <div className="relative bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl p-6 hover:border-metallicGold-500/40 transition-all duration-300">
           {/* 북마크 버튼 */}
-          <BookmarkButton 
-            courseId={course.id} 
+          <BookmarkButton
+            courseId={course.id}
             courseName={course.title}
             className="absolute top-4 right-4"
             size="md"
@@ -225,12 +217,8 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
           </div>
 
           {/* 제목 및 설명 */}
-          <h3 className="text-lg font-bold text-offWhite-200 mb-2 line-clamp-2">
-            {course.title}
-          </h3>
-          <p className="text-offWhite-400 text-sm line-clamp-2 mb-4">
-            {course.description}
-          </p>
+          <h3 className="text-lg font-bold text-offWhite-200 mb-2 line-clamp-2">{course.title}</h3>
+          <p className="text-offWhite-400 text-sm line-clamp-2 mb-4">{course.description}</p>
 
           {/* 강사 정보 */}
           <p className="text-offWhite-500 text-sm mb-4">{course.instructor}</p>
@@ -253,9 +241,9 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
 
           {/* 태그 */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {course.tags.slice(0, 3).map((tag) => (
-              <span 
-                key={tag} 
+            {course.tags.slice(0, 3).map(tag => (
+              <span
+                key={tag}
                 className="px-2 py-1 bg-metallicGold-500/10 text-metallicGold-500 rounded-lg text-xs"
               >
                 #{tag}
@@ -290,5 +278,5 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
         </div>
       </Link>
     </motion.div>
-  )
+  );
 }

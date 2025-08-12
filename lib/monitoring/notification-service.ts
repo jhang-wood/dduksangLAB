@@ -77,7 +77,7 @@ export class NotificationService {
       rateLimitPerHour: 100,
       defaultChannels: [],
       templates: [],
-      ...config
+      ...config,
     };
 
     this.initializeDefaultTemplates();
@@ -103,9 +103,9 @@ export class NotificationService {
 
 즉시 확인이 필요합니다.
           `.trim(),
-          format: 'markdown'
+          format: 'markdown',
         },
-        defaultChannels: []
+        defaultChannels: [],
       },
       {
         id: 'health-check',
@@ -119,9 +119,9 @@ export class NotificationService {
 {{#if metadata.unhealthy_services}}**문제 서비스:** {{metadata.unhealthy_services}}{{/if}}
 {{#if metadata.recommendations}}**권장사항:** {{metadata.recommendations}}{{/if}}
           `.trim(),
-          format: 'markdown'
+          format: 'markdown',
         },
-        defaultChannels: []
+        defaultChannels: [],
       },
       {
         id: 'automation-success',
@@ -135,9 +135,9 @@ export class NotificationService {
 {{#if metadata.duration}}**소요 시간:** {{metadata.duration}}ms{{/if}}
 {{#if metadata.result}}**결과:** {{metadata.result}}{{/if}}
           `.trim(),
-          format: 'markdown'
+          format: 'markdown',
         },
-        defaultChannels: []
+        defaultChannels: [],
       },
       {
         id: 'automation-failure',
@@ -153,9 +153,9 @@ export class NotificationService {
 
 수동 확인이 필요합니다.
           `.trim(),
-          format: 'markdown'
+          format: 'markdown',
         },
-        defaultChannels: []
+        defaultChannels: [],
       },
       {
         id: 'content-published',
@@ -169,10 +169,10 @@ export class NotificationService {
 {{#if metadata.url}}**URL:** {{metadata.url}}{{/if}}
 {{#if metadata.category}}**카테고리:** {{metadata.category}}{{/if}}
           `.trim(),
-          format: 'markdown'
+          format: 'markdown',
         },
-        defaultChannels: []
-      }
+        defaultChannels: [],
+      },
     ];
 
     this.config.templates.push(...defaultTemplates);
@@ -200,7 +200,7 @@ export class NotificationService {
       logger.info('알림 발송 시작', {
         messageId,
         title: notification.title,
-        channels: notification.channels.length
+        channels: notification.channels.length,
       });
 
       // 각 채널별로 알림 발송
@@ -212,16 +212,15 @@ export class NotificationService {
         try {
           const result = await this.sendToChannel(messageId, notification, channel);
           results.push(result);
-
         } catch (error) {
           logger.error(`채널 발송 실패: ${channel.type}`, { error, messageId });
-          
+
           results.push({
             messageId,
             success: false,
             channel: channel.type,
             error: (error as Error).message,
-            sentAt: new Date()
+            sentAt: new Date(),
           });
         }
       }
@@ -234,18 +233,17 @@ export class NotificationService {
         messageId,
         totalChannels: results.length,
         successCount,
-        failureCount: results.length - successCount
+        failureCount: results.length - successCount,
       });
 
       return results;
-
     } catch (error) {
       logger.error('알림 발송 실패', { error, notification });
-      
+
       await handleAutomationError(error as Error, {
         operation: 'notification_send',
         component: 'automation',
-        metadata: { title: notification.title }
+        metadata: { title: notification.title },
       });
 
       return [];
@@ -275,11 +273,10 @@ export class NotificationService {
         message: renderedMessage,
         severity: data.severity || 'info',
         channels: channels || template.defaultChannels,
-        metadata: data.metadata
+        metadata: data.metadata,
       };
 
       return await this.sendNotification(notification);
-
     } catch (error) {
       logger.error('템플릿 알림 발송 실패', { error, templateId });
       return [];
@@ -326,10 +323,9 @@ export class NotificationService {
         sentAt: new Date(),
         metadata: {
           duration: Date.now() - startTime,
-          result
-        }
+          result,
+        },
       };
-
     } catch (error) {
       return {
         messageId,
@@ -338,8 +334,8 @@ export class NotificationService {
         error: (error as Error).message,
         sentAt: new Date(),
         metadata: {
-          duration: Date.now() - startTime
-        }
+          duration: Date.now() - startTime,
+        },
       };
     }
   }
@@ -361,7 +357,7 @@ export class NotificationService {
       success: '✅',
       warning: '⚠️',
       error: '❌',
-      critical: '🚨'
+      critical: '🚨',
     };
 
     const emoji = severityEmojis[notification.severity] || 'ℹ️';
@@ -376,7 +372,7 @@ export class NotificationService {
         chat_id: chatId,
         text: message,
         parse_mode: 'Markdown',
-        disable_web_page_preview: true
+        disable_web_page_preview: true,
       }),
     });
 
@@ -404,7 +400,7 @@ export class NotificationService {
       success: '#36a64f',
       warning: '#ffeb3b',
       error: '#f44336',
-      critical: '#d32f2f'
+      critical: '#d32f2f',
     };
 
     const color = severityColors[notification.severity] || '#36a64f';
@@ -416,9 +412,9 @@ export class NotificationService {
           color,
           title: notification.title,
           text: notification.message,
-          ts: Math.floor(Date.now() / 1000)
-        }
-      ]
+          ts: Math.floor(Date.now() / 1000),
+        },
+      ],
     };
 
     const response = await fetch(webhookUrl, {
@@ -445,7 +441,7 @@ export class NotificationService {
     logger.info('이메일 발송 (모의)', {
       to: config.recipient,
       subject: notification.title,
-      message: notification.message
+      message: notification.message,
     });
 
     return { status: 'sent', provider: 'mock' };
@@ -466,7 +462,7 @@ export class NotificationService {
       message: notification.message,
       severity: notification.severity,
       timestamp: new Date().toISOString(),
-      metadata: notification.metadata
+      metadata: notification.metadata,
     };
 
     const response = await fetch(webhookUrl, {
@@ -492,7 +488,7 @@ export class NotificationService {
     // 실제 구현에서는 Twilio, AWS SNS 등의 서비스 사용
     logger.info('SMS 발송 (모의)', {
       to: config.phone_number,
-      message: `${notification.title}\n${notification.message}`
+      message: `${notification.title}\n${notification.message}`,
     });
 
     return { status: 'sent', provider: 'mock' };
@@ -512,10 +508,13 @@ export class NotificationService {
     });
 
     // {{#if condition}} 조건부 블록
-    rendered = rendered.replace(/\{\{#if\s+(\w+(?:\.\w+)*)\}\}(.*?)\{\{\/if\}\}/gs, (match, path, content) => {
-      const value = this.getNestedValue(data, path);
-      return value ? content : '';
-    });
+    rendered = rendered.replace(
+      /\{\{#if\s+(\w+(?:\.\w+)*)\}\}(.*?)\{\{\/if\}\}/gs,
+      (match, path, content) => {
+        const value = this.getNestedValue(data, path);
+        return value ? content : '';
+      }
+    );
 
     // 타임스탬프 추가
     if (rendered.includes('{{timestamp}}')) {
@@ -546,7 +545,7 @@ export class NotificationService {
     }
 
     const currentCount = this.sendCounts.get('total') || 0;
-    
+
     if (currentCount >= this.config.rateLimitPerHour) {
       return false;
     }
@@ -565,13 +564,14 @@ export class NotificationService {
   ): Promise<void> {
     try {
       const supabaseController = getSupabaseController();
-      
+
       const successCount = results.filter(r => r.success).length;
       const failureCount = results.length - successCount;
 
       await supabaseController.logAutomation({
         type: 'health_check',
-        status: failureCount === 0 ? 'success' : failureCount === results.length ? 'failure' : 'warning',
+        status:
+          failureCount === 0 ? 'success' : failureCount === results.length ? 'failure' : 'warning',
         message: `알림 발송: ${notification.title}`,
         metadata: {
           message_id: messageId,
@@ -583,11 +583,10 @@ export class NotificationService {
           results: results.map(r => ({
             channel: r.channel,
             success: r.success,
-            error: r.error
-          }))
-        }
+            error: r.error,
+          })),
+        },
       });
-
     } catch (error) {
       logger.error('알림 결과 로깅 실패', { error });
     }
@@ -606,12 +605,12 @@ export class NotificationService {
   async queueNotification(notification: NotificationMessage): Promise<void> {
     this.messageQueue.push({
       ...notification,
-      id: notification.id || this.generateMessageId()
+      id: notification.id || this.generateMessageId(),
     });
 
     logger.info('알림 큐에 추가됨', {
       messageId: notification.id,
-      queueSize: this.messageQueue.length
+      queueSize: this.messageQueue.length,
     });
   }
 
@@ -632,10 +631,9 @@ export class NotificationService {
       try {
         await this.sendNotification(message);
         await this.delay(100); // 100ms 간격
-
       } catch (error) {
         logger.error('큐 알림 발송 실패', { error, messageId: message.id });
-        
+
         // 재시도 로직
         if ((message.retryCount || 0) < this.config.maxRetries) {
           message.retryCount = (message.retryCount || 0) + 1;
@@ -651,20 +649,23 @@ export class NotificationService {
   validateChannelConfig(channel: NotificationChannel): boolean {
     switch (channel.type) {
       case 'telegram':
-        return !!(process.env.TELEGRAM_BOT_TOKEN && (channel.config.chat_id || process.env.TELEGRAM_CHAT_ID));
-      
+        return !!(
+          process.env.TELEGRAM_BOT_TOKEN &&
+          (channel.config.chat_id || process.env.TELEGRAM_CHAT_ID)
+        );
+
       case 'slack':
         return !!(channel.config.webhook_url || process.env.SLACK_WEBHOOK_URL);
-      
+
       case 'email':
         return !!channel.config.recipient;
-      
+
       case 'webhook':
         return !!channel.config.webhook_url;
-      
+
       case 'sms':
         return !!channel.config.phone_number;
-      
+
       default:
         return false;
     }
@@ -695,12 +696,12 @@ export class NotificationService {
     lastResetTime: Date;
   } {
     const currentCount = this.sendCounts.get('total') || 0;
-    
+
     return {
       enabled: this.config.enabled,
       queueSize: this.messageQueue.length,
       rateLimitRemaining: this.config.rateLimitPerHour - currentCount,
-      lastResetTime: this.lastResetTime
+      lastResetTime: this.lastResetTime,
     };
   }
 }
@@ -728,12 +729,12 @@ export async function sendQuickNotification(
   channels?: NotificationChannel[]
 ): Promise<NotificationResult[]> {
   const service = getNotificationService();
-  
+
   return await service.sendNotification({
     title,
     message,
     severity,
-    channels: channels || service['config'].defaultChannels
+    channels: channels || service['config'].defaultChannels,
   });
 }
 
@@ -746,6 +747,6 @@ export async function sendTemplatedAlert(
   channels?: NotificationChannel[]
 ): Promise<NotificationResult[]> {
   const service = getNotificationService();
-  
+
   return await service.sendTemplatedNotification(templateId, data, channels);
 }

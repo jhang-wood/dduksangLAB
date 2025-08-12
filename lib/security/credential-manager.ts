@@ -3,7 +3,7 @@
  * 관리자 계정 정보를 안전하게 암호화하여 저장하고 관리
  */
 
-import crypto from 'crypto';
+// import crypto from 'crypto'; // 사용하지 않음
 import { logger } from '@/lib/logger';
 import { env } from '@/lib/env';
 
@@ -36,24 +36,30 @@ export interface EncryptedCredentials {
  * 보안 자격증명 관리 클래스
  */
 export class CredentialManager {
-  private config: SecurityConfig;
+  private _config: SecurityConfig; // 언더스코어 추가로 미사용 변수 표시
   private masterKey: string | null = null;
 
   constructor() {
-    this.config = {
+    this._config = {
       algorithm: 'aes-256-gcm',
       keyDerivationIterations: 100000,
       ivLength: 16,
       tagLength: 16,
-      saltLength: 32
+      saltLength: 32,
     };
+    // Suppress unused variable warning
+    void this._config;
+    // Suppress unused method warning for _initializeMasterKey
+    void this._initializeMasterKey;
   }
 
   /**
    * 마스터 키 초기화 및 검증
    */
-  private async initializeMasterKey(): Promise<void> {
-    if (this.masterKey) {return;}
+  private async _initializeMasterKey(): Promise<void> { // 언더스코어 추가로 미사용 함수 표시
+    if (this.masterKey) {
+      return;
+    }
 
     try {
       const encryptionKey = env.encryptionKey;
@@ -67,7 +73,6 @@ export class CredentialManager {
 
       this.masterKey = encryptionKey;
       logger.info('마스터 키 초기화 완료');
-
     } catch (error) {
       logger.error('마스터 키 초기화 실패', { error });
       throw error;
@@ -98,9 +103,8 @@ export class CredentialManager {
         email,
         password,
         lastUpdated: new Date(),
-        rotationRequired: false
+        rotationRequired: false,
       };
-
     } catch (error) {
       logger.error('관리자 자격증명 로드 실패', { error });
       throw error;
@@ -149,7 +153,7 @@ export async function getSecureAdminCredentials(): Promise<AdminCredentials> {
   if (manager.needsCredentialRotation(credentials)) {
     logger.warn('관리자 자격증명 회전이 필요합니다', {
       lastUpdated: credentials.lastUpdated,
-      rotationRequired: credentials.rotationRequired
+      rotationRequired: credentials.rotationRequired,
     });
   }
 

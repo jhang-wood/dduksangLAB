@@ -3,14 +3,20 @@
  * IP 화이트리스트, 접근 로그, 보안 이벤트 모니터링
  */
 
-import crypto from 'crypto';
+// import crypto from 'crypto'; // 사용하지 않음
 import { logger } from '@/lib/logger';
 import { env } from '@/lib/env';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
 
 export interface SecurityEvent {
   id?: string;
-  type: 'login_attempt' | 'login_success' | 'login_failure' | 'access_denied' | 'suspicious_activity' | 'credential_rotation';
+  type:
+    | 'login_attempt'
+    | 'login_success'
+    | 'login_failure'
+    | 'access_denied'
+    | 'suspicious_activity'
+    | 'credential_rotation';
   severity: 'low' | 'medium' | 'high' | 'critical';
   source_ip: string;
   user_agent?: string;
@@ -55,7 +61,7 @@ export class AccessControlManager {
       lockoutDuration: 15 * 60 * 1000, // 15분
       trustedIPs: ['127.0.0.1', '::1'],
       sessionTimeout: 24 * 60 * 60 * 1000, // 24시간
-      ...config
+      ...config,
     };
   }
 
@@ -76,13 +82,12 @@ export class AccessControlManager {
           severity: 'medium',
           source_ip: ip,
           description: `차단된 IP에서 접근 시도: ${ip}`,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
         return false;
       }
 
       return true;
-
     } catch (error) {
       logger.error('IP 허용 여부 확인 실패', { error, ip });
       return false;
@@ -94,7 +99,9 @@ export class AccessControlManager {
    */
   private isIPBlocked(ip: string): boolean {
     const blockTime = this.blockedIPs.get(ip);
-    if (!blockTime) {return false;}
+    if (!blockTime) {
+      return false;
+    }
 
     // 차단 시간이 지났으면 해제
     if (Date.now() - blockTime.getTime() > this.config.lockoutDuration) {
@@ -116,7 +123,7 @@ export class AccessControlManager {
       if (success) {
         // 실패 기록 초기화
         this.failedAttempts.delete(ip);
-        
+
         await this.logSecurityEvent({
           type: 'login_success',
           severity: 'low',
@@ -126,8 +133,8 @@ export class AccessControlManager {
           description: `관리자 로그인 성공: ${user_email}`,
           timestamp: new Date(),
           metadata: {
-            user_agent: attempt.user_agent
-          }
+            user_agent: attempt.user_agent,
+          },
         });
 
         return true;
@@ -141,7 +148,7 @@ export class AccessControlManager {
       // 최대 시도 횟수 초과 확인
       if (attempts.length >= this.config.maxFailedAttempts) {
         this.blockedIPs.set(ip, new Date());
-        
+
         await this.logSecurityEvent({
           type: 'suspicious_activity',
           severity: 'high',
@@ -152,8 +159,8 @@ export class AccessControlManager {
           metadata: {
             failed_attempts: attempts.length,
             failure_reason: failure_reason,
-            user_agent: attempt.user_agent
-          }
+            user_agent: attempt.user_agent,
+          },
         });
 
         return false;
@@ -170,12 +177,11 @@ export class AccessControlManager {
         metadata: {
           failure_reason: failure_reason,
           attempt_count: attempts.length,
-          user_agent: attempt.user_agent
-        }
+          user_agent: attempt.user_agent,
+        },
       });
 
       return false;
-
     } catch (error) {
       logger.error('로그인 시도 기록 실패', { error });
       return false;
@@ -188,18 +194,19 @@ export class AccessControlManager {
   async logSecurityEvent(event: SecurityEvent): Promise<void> {
     try {
       // 로거에 기록
-      const logLevel = event.severity === 'critical' || event.severity === 'high' ? 'error' : 'info';
+      const logLevel =
+        event.severity === 'critical' || event.severity === 'high' ? 'error' : 'info';
       logger[logLevel](`[SECURITY] ${event.description}`, {
         type: event.type,
         severity: event.severity,
         source_ip: event.source_ip,
         user_email: event.user_email,
-        metadata: event.metadata
+        metadata: event.metadata,
       });
 
       // Supabase에 보안 이벤트 저장
       const supabaseController = getSupabaseController();
-      
+
       await supabaseController.logAutomation({
         type: 'error',
         status: event.severity === 'critical' || event.severity === 'high' ? 'failure' : 'info',
@@ -210,15 +217,14 @@ export class AccessControlManager {
           source_ip: event.source_ip,
           user_agent: event.user_agent,
           user_email: event.user_email,
-          ...event.metadata
-        }
+          ...event.metadata,
+        },
       });
 
       // 심각한 보안 이벤트인 경우 알림 발송
       if (event.severity === 'critical' || event.severity === 'high') {
         await this.sendSecurityAlert(event);
       }
-
     } catch (error) {
       logger.error('보안 이벤트 로깅 실패', { error });
     }
@@ -234,14 +240,13 @@ export class AccessControlManager {
         type: event.type,
         severity: event.severity,
         description: event.description,
-        source_ip: event.source_ip
+        source_ip: event.source_ip,
       });
 
       // 심각한 경우 텔레그램 알림 (환경변수가 있는 경우)
       if (env.telegramBotToken && env.telegramChatId && event.severity === 'critical') {
         // TODO: 텔레그램 알림 구현
       }
-
     } catch (error) {
       logger.error('보안 알림 발송 실패', { error });
     }
@@ -259,7 +264,7 @@ export class AccessControlManager {
   }): Promise<boolean> {
     try {
       const now = new Date();
-      
+
       // 세션 만료 확인
       const sessionAge = now.getTime() - sessionData.createdAt.getTime();
       if (sessionAge > this.config.sessionTimeout) {
@@ -269,7 +274,7 @@ export class AccessControlManager {
           source_ip: sessionData.ip,
           user_id: sessionData.userId,
           description: `만료된 세션 사용 시도: ${sessionData.sessionId}`,
-          timestamp: now
+          timestamp: now,
         });
         return false;
       }
@@ -283,13 +288,12 @@ export class AccessControlManager {
           source_ip: sessionData.ip,
           user_id: sessionData.userId,
           description: `비활성 세션 사용 시도: ${sessionData.sessionId}`,
-          timestamp: now
+          timestamp: now,
         });
         return false;
       }
 
       return true;
-
     } catch (error) {
       logger.error('세션 검증 실패', { error });
       return false;
@@ -303,7 +307,7 @@ export class AccessControlManager {
     try {
       const blockDuration = duration || this.config.lockoutDuration;
       const unblockTime = new Date(Date.now() + blockDuration);
-      
+
       this.blockedIPs.set(ip, unblockTime);
 
       await this.logSecurityEvent({
@@ -315,12 +319,11 @@ export class AccessControlManager {
         metadata: {
           block_reason: reason,
           block_duration: blockDuration,
-          unblock_time: unblockTime.toISOString()
-        }
+          unblock_time: unblockTime.toISOString(),
+        },
       });
 
       logger.warn('IP 수동 차단', { ip, reason, unblockTime });
-
     } catch (error) {
       logger.error('IP 차단 실패', { error, ip });
     }
@@ -341,12 +344,11 @@ export class AccessControlManager {
         description: `IP 차단 해제: ${ip} (사유: ${reason})`,
         timestamp: new Date(),
         metadata: {
-          unblock_reason: reason
-        }
+          unblock_reason: reason,
+        },
       });
 
       logger.info('IP 차단 해제', { ip, reason });
-
     } catch (error) {
       logger.error('IP 차단 해제 실패', { error, ip });
     }
@@ -362,11 +364,11 @@ export class AccessControlManager {
     recentFailures: AccessAttempt[];
   } {
     const recentFailures: AccessAttempt[] = [];
-    
+
     // 최근 1시간 내 실패한 시도들
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    
-    for (const [ip, attempts] of this.failedAttempts.entries()) {
+
+    for (const [_ip, attempts] of this.failedAttempts.entries()) { // 언더스코어 추가로 미사용 변수 표시
       const recentAttempts = attempts.filter(attempt => attempt.timestamp > oneHourAgo);
       recentFailures.push(...recentAttempts);
     }
@@ -375,7 +377,7 @@ export class AccessControlManager {
       failedAttemptsCount: Array.from(this.failedAttempts.values()).flat().length,
       blockedIPsCount: this.blockedIPs.size,
       activeBlocks: Array.from(this.blockedIPs.keys()),
-      recentFailures: recentFailures.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      recentFailures: recentFailures.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
     };
   }
 }
@@ -400,14 +402,14 @@ export function getClientIP(req: any): string {
   const forwarded = req.headers['x-forwarded-for'];
   const realIP = req.headers['x-real-ip'];
   const clientIP = req.connection?.remoteAddress || req.socket?.remoteAddress;
-  
+
   if (forwarded) {
     return forwarded.split(',')[0].trim();
   }
-  
+
   if (realIP) {
     return realIP;
   }
-  
+
   return clientIP || 'unknown';
 }

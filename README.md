@@ -3,15 +3,30 @@
 AI 시대를 선도하는 개발자 커뮤니티 플랫폼
 
 ## 🔧 빠른 시작
-- **개발 서버 실행**: `scripts\dev.ps1`
-- **빌드**: `scripts\build.ps1`
-- **프로덕션 서버**: `scripts\start.ps1`
+
+```bash
+# 의존성 설치
+npm install
+
+# 환경변수 검증
+npm run env:check
+
+# 개발 서버 실행
+npm run dev
+
+# 빌드
+npm run build
+
+# 타입 체크
+npm run type-check
+```
 
 ## 📌 프로젝트 소개
 
 떡상연구소는 AI와 노코드 도구를 활용하여 누구나 쉽게 웹서비스를 만들 수 있도록 돕는 교육 플랫폼입니다.
 
 ### 주요 특징
+
 - 🤖 AI 개발 도구 교육
 - 🔧 노코드/로우코드 플랫폼 활용법
 - 👥 개발자 커뮤니티
@@ -20,17 +35,22 @@ AI 시대를 선도하는 개발자 커뮤니티 플랫폼
 ## 🛠 기술 스택
 
 ### Frontend
+
 - **Framework**: Next.js 14
 - **Styling**: Tailwind CSS
 - **Animation**: Framer Motion
 - **Icons**: Lucide React
 
 ### Backend
-- **Database**: Supabase
+
+- **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
 - **Payment**: PayApp Integration
+- **Queue System**: BullMQ + Redis
+- **AI Services**: Google Gemini, OpenAI
 
 ### Deployment
+
 - **Platform**: Vercel
 - **Domain**: dduksang.com
 
@@ -52,18 +72,37 @@ dduksangLAB/
 ## 🚀 시작하기
 
 ### 환경 설정
-1. `.env.local` 파일 생성
-2. 필요한 환경 변수 설정 (docs/guides/SUPABASE_ENV_GUIDE.md 참조)
+
+1. 환경변수 파일 준비:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. `.env.local` 파일에 실제 값 입력:
+   - Supabase URL과 API 키
+   - JWT 시크릿 (32자 이상)
+   - 암호화 키 (64자)
+   - 크론 시크릿
+
+3. 환경변수 검증:
+   ```bash
+   npm run env:check
+   ```
 
 ### 개발 서버 실행
+
 ```bash
 npm install
+npm run env:check
 npm run dev
 ```
 
 ### 빌드 및 배포
+
 ```bash
-npm run build
+npm run type-check    # TypeScript 검사
+npm run build         # 프로덕션 빌드
+npm run start         # 프로덕션 서버 실행
 ```
 
 ## 🤖 자동화 시스템
@@ -95,7 +134,7 @@ npm run test:all                   # 모든 테스트 실행
 ### GitHub Actions 워크플로우
 
 - **CI Pipeline**: PR 및 push 시 자동 QA 검증
-- **Security Scan**: 주기적 보안 취약점 검사  
+- **Security Scan**: 주기적 보안 취약점 검사
 - **Deployment Pipeline**: 배포 시 성능 검증 및 모니터링
 - **Full Automation**: 수동/야간 전체 자동화 실행
 
