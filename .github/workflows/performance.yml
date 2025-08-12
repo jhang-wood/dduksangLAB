@@ -74,6 +74,9 @@ jobs:
           EOF
 
       - name: 🏗️ 프로덕션 빌드 (Bundle 분석 포함)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: |
           echo "🔨 Bundle 분석과 함께 프로덕션 빌드 시작..."
           cp next.config.analyzer.js next.config.js

@@ -47,6 +47,9 @@ jobs:
           npm install --no-save @playwright/test
 
       - name: 🏗️ 보안 테스트용 빌드
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: |
           echo "🔨 보안 테스트용 프로덕션 빌드..."
           NODE_ENV=production npm run build
@@ -396,7 +399,7 @@ jobs:
           path: ./
           base: HEAD~1
           head: HEAD
-          extra_args: --only-verified=false --allow-verification-overlap --json --no-verification
+          extra_args: --no-verification --allow-verification-overlap --json
 
       - name: 🕵️ GitLeaks 설정 및 스캔
         run: |

@@ -55,6 +55,9 @@ jobs:
           npx playwright install chromium
 
       - name: 🏗️ 빌드
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: npm run build
 
       - name: 🚀 서버 시작
@@ -191,6 +194,9 @@ jobs:
           npx playwright install chromium
 
       - name: 🏗️ 빌드
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: npm run build
 
       - name: 🚀 서버 시작
@@ -366,6 +372,9 @@ jobs:
           npx playwright install chromium
 
       - name: 🏗️ 빌드
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: npm run build
 
       - name: 🚀 서버 시작
@@ -519,6 +528,9 @@ jobs:
           npm install --no-save lighthouse puppeteer
 
       - name: 🏗️ 빌드
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
         run: npm run build
 
       - name: 🚀 서버 시작
