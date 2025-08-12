@@ -1,14 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Eye, ArrowLeft, Tag, Share2, Copy } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import { useAuth } from '@/lib/auth-context';
-import { logger } from '@/lib/logger';
 
 interface AITrend {
   id: string;
@@ -19,23 +16,48 @@ interface AITrend {
   thumbnail_url: string;
   category: string;
   tags: string[];
-  source_url: string;
-  source_name: string;
+  source_url?: string;
+  source_name?: string;
   published_at: string;
   view_count: number;
-  seo_title: string;
-  seo_description: string;
-  seo_keywords: string[];
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string[];
 }
 
 interface AITrendDetailClientProps {
-  trend: AITrend;
-  relatedTrends: AITrend[];
+  slug: string;
 }
 
-export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDetailClientProps) {
-  const { isAdmin } = useAuth();
+export default function AITrendDetailClient({ slug }: AITrendDetailClientProps) {
+  const [trend, setTrend] = useState<AITrend | null>(null);
+  const [relatedTrends, setRelatedTrends] = useState<AITrend[]>([]);
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchTrend = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/ai-trends/slug/${slug}`);
+        if (response.ok) {
+          const data = await response.json();
+          setTrend(data);
+          setRelatedTrends(data.relatedTrends || []);
+        } else {
+          console.error('Failed to fetch trend');
+        }
+      } catch (error) {
+        console.error('Error fetching trend:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      void fetchTrend();
+    }
+  }, [slug]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -64,7 +86,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
           url: url,
         });
       } catch (error) {
-        logger.error('Error sharing:', error);
+        console.error('Error sharing:', error);
       }
     } else {
       // Copy to clipboard as fallback
@@ -73,7 +95,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (error) {
-        logger.error('Error copying to clipboard:', error);
+        console.error('Error copying to clipboard:', error);
       }
     }
   };
@@ -81,6 +103,8 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
   const renderContent = (content: string) => {
     // Simple markdown-like rendering
     return content.split('\n\n').map((paragraph, index) => {
+      if (!paragraph.trim()) return null;
+
       // Headers
       if (paragraph.startsWith('### ')) {
         return (
@@ -96,9 +120,16 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
           </h2>
         );
       }
+      if (paragraph.startsWith('# ')) {
+        return (
+          <h1 key={index} className="text-4xl font-bold text-offWhite-200 mb-8 mt-12">
+            {paragraph.replace('# ', '')}
+          </h1>
+        );
+      }
 
       // Lists
-      if (paragraph.startsWith('- ')) {
+      if (paragraph.includes('\n- ')) {
         const items = paragraph.split('\n').filter(line => line.startsWith('- '));
         return (
           <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
@@ -115,8 +146,58 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
           {paragraph}
         </p>
       );
-    });
+    }).filter(Boolean);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+        <NeuralNetworkBackground />
+        <div className="relative z-10">
+          <Header />
+          <div className="container mx-auto max-w-4xl px-4 pt-32 pb-20">
+            <div className="animate-pulse">
+              <div className="h-8 bg-deepBlack-600/50 rounded mb-8 w-32" />
+              <div className="h-12 bg-deepBlack-600/50 rounded mb-6" />
+              <div className="h-6 bg-deepBlack-600/50 rounded mb-6 w-3/4" />
+              <div className="h-96 bg-deepBlack-600/50 rounded-2xl mb-12" />
+              <div className="space-y-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-4 bg-deepBlack-600/50 rounded" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trend) {
+    return (
+      <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+        <NeuralNetworkBackground />
+        <div className="relative z-10">
+          <Header />
+          <div className="container mx-auto max-w-4xl px-4 pt-32 pb-20 text-center">
+            <h1 className="text-3xl font-bold text-offWhite-200 mb-4">
+              게시글을 찾을 수 없습니다
+            </h1>
+            <p className="text-offWhite-500 mb-8">
+              요청하신 AI 트렌드 게시글을 찾을 수 없습니다.
+            </p>
+            <Link
+              href="/ai-trends"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-metallicGold-500 text-deepBlack-900 rounded-lg hover:bg-metallicGold-600 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              AI 트렌드 목록으로
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -136,11 +217,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
           </Link>
 
           {/* Article Header */}
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
+          <header className="mb-8">
             <div className="flex items-center gap-3 mb-4 text-sm text-offWhite-600">
               <span className="px-3 py-1 bg-metallicGold-900/20 rounded-full text-metallicGold-500">
                 {trend.category}
@@ -161,9 +238,9 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
 
             <p className="text-xl text-offWhite-500 mb-6">{trend.summary}</p>
 
-            {/* Share and Admin Actions */}
+            {/* Share and Tags */}
             <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {trend.tags.map((tag, index) => (
                   <span
                     key={index}
@@ -175,51 +252,30 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
                 ))}
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    void handleShare();
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-deepBlack-300/50 text-offWhite-500 rounded-lg hover:bg-deepBlack-300/70 transition-colors"
-                >
-                  {copied ? <Copy className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
-                  <span>{copied ? '복사됨!' : '공유'}</span>
-                </button>
-
-                {isAdmin && (
-                  <Link
-                    href={`/admin/ai-trends/${trend.id}/edit`}
-                    className="px-4 py-2 bg-metallicGold-900/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-900/30 transition-colors"
-                  >
-                    수정
-                  </Link>
-                )}
-              </div>
+              <button
+                onClick={() => {
+                  void handleShare();
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-deepBlack-300/50 text-offWhite-500 rounded-lg hover:bg-deepBlack-300/70 transition-colors"
+              >
+                {copied ? <Copy className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
+                <span>{copied ? '복사됨!' : '공유'}</span>
+              </button>
             </div>
-          </motion.header>
+          </header>
 
           {/* Thumbnail Image */}
           {trend.thumbnail_url && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="relative h-96 rounded-2xl overflow-hidden mb-12"
-            >
+            <div className="relative h-96 rounded-2xl overflow-hidden mb-12">
               <Image src={trend.thumbnail_url} alt={trend.title} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/60 to-transparent" />
-            </motion.div>
+            </div>
           )}
 
           {/* Article Content */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="prose prose-invert max-w-none"
-          >
+          <div className="prose prose-invert max-w-none">
             {renderContent(trend.content)}
-          </motion.div>
+          </div>
 
           {/* Source Information */}
           {trend.source_name && (
@@ -256,10 +312,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
                     href={`/ai-trends/${relatedTrend.slug}`}
                     className="group"
                   >
-                    <motion.article
-                      whileHover={{ y: -5 }}
-                      className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/50 transition-all h-full"
-                    >
+                    <article className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/50 transition-all h-full">
                       {relatedTrend.thumbnail_url && (
                         <div className="relative h-48 overflow-hidden">
                           <Image
@@ -279,7 +332,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
                           {relatedTrend.summary}
                         </p>
                       </div>
-                    </motion.article>
+                    </article>
                   </Link>
                 ))}
               </div>

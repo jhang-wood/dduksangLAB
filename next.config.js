@@ -59,7 +59,14 @@ const nextConfig = {
         '@supabase/realtime-js',
         '@supabase/gotrue-js',
         'websocket',
-        'ws'
+        'ws',
+        function(context, request, callback) {
+          // Supabase 관련 모든 모듈을 서버에서 외부화
+          if (/^@supabase\//.test(request) || request.includes('supabase')) {
+            return callback(null, 'commonjs ' + request);
+          }
+          callback();
+        }
       ];
     }
     
@@ -84,9 +91,9 @@ const nextConfig = {
     // 글로벌 객체 정의 (self is not defined 오류 해결)
     config.plugins.push(
       new (require('webpack')).DefinePlugin({
-        'typeof self': JSON.stringify('undefined'),
-        self: 'undefined',
-        'process.browser': JSON.stringify(false),
+        'typeof self': JSON.stringify(typeof globalThis !== 'undefined' ? 'object' : 'undefined'),
+        self: 'typeof globalThis !== "undefined" ? globalThis : undefined',
+        'process.browser': JSON.stringify(!isServer),
       })
     );
     
@@ -98,6 +105,7 @@ const nextConfig = {
       'ws': false,
       'websocket': false,
     };
+
     
     return config;
   },
