@@ -11,7 +11,7 @@ const mockTrends = [
   {
     id: '1',
     title: '2025년 AI 자동화 혁명: 테스트 게시글',
-    slug: '2025년-AI-자동화-혁명-테스트-게시글',
+    slug: '2025년-ai-자동화-혁명-테스트-게시글',
     summary: 'AI 자동화가 2025년에 어떻게 모든 산업을 변화시킬지 살펴보겠습니다.',
     content: `# 2025년 AI 자동화 혁명: 테스트 게시글
 
@@ -263,7 +263,7 @@ AI 도구를 활용한 효율적인 워크플로우 구축 방법을 알아보�
 // Generate static params for all known slugs
 export async function generateStaticParams() {
   return [
-    { slug: '2025년-AI-자동화-혁명-테스트-게시글' },
+    { slug: '2025년-ai-자동화-혁명-테스트-게시글' },
     { slug: 'chatgpt-4-multimodal-features' }, 
     { slug: 'github-copilot-chat-update' },
     { slug: 'claude-35-sonnet-coding-abilities' },

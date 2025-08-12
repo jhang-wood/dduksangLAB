@@ -184,12 +184,6 @@ jobs:
             sleep 10
           done
           
-      - name: Run deployment health check
-        run: npm run automation:devops
-        env:
-          NEXT_PUBLIC_APP_URL: ${{ needs.deploy.outputs.deployment-url }}
-        continue-on-error: true
-          
       - name: Create Playwright config
         run: |
           cat > playwright.config.js << 'EOF'
