@@ -146,87 +146,26 @@ export const validateRequiredEnvVars = (): void => {
 
 /**
  * Type-safe environment variable access
+ * Combines client and server environment variables with helper utilities
  */
 export const env = {
   // Client variables (safe to use in browser)
-  get supabaseUrl() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_SUPABASE_URL();
-  },
-  get supabaseAnonKey() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_SUPABASE_ANON_KEY();
-  },
-  get tossClientKey() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_TOSS_CLIENT_KEY();
-  },
-  get appUrl() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_APP_URL();
-  },
+  ...Object.fromEntries(
+    Object.entries(CLIENT_ENV_VARS).map(([key, fn]) => [
+      key.replace('NEXT_PUBLIC_', '').toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
+      fn
+    ])
+  ),
 
-  // Server variables (never exposed to client)
-  get supabaseServiceKey() {
-    return SERVER_ENV_VARS.SUPABASE_SERVICE_ROLE_KEY();
-  },
-  get tossSecretKey() {
-    return SERVER_ENV_VARS.TOSS_SECRET_KEY();
-  },
-  get payappSecretKey() {
-    return SERVER_ENV_VARS.PAYAPP_SECRET_KEY();
-  },
-  get payappValue() {
-    return SERVER_ENV_VARS.PAYAPP_VALUE();
-  },
-  get payappUserCode() {
-    return SERVER_ENV_VARS.PAYAPP_USER_CODE();
-  },
-  get payappStoreId() {
-    return SERVER_ENV_VARS.PAYAPP_STORE_ID();
-  },
-  get openaiApiKey() {
-    return SERVER_ENV_VARS.OPENAI_API_KEY();
-  },
-  get geminiApiKey() {
-    return SERVER_ENV_VARS.GEMINI_API_KEY();
-  },
-  get jwtSecret() {
-    return SERVER_ENV_VARS.JWT_SECRET();
-  },
-  get encryptionKey() {
-    return SERVER_ENV_VARS.ENCRYPTION_KEY();
-  },
-  get cronSecret() {
-    return SERVER_ENV_VARS.CRON_SECRET();
-  },
-  get telegramWebhookSecret() {
-    return SERVER_ENV_VARS.TELEGRAM_WEBHOOK_SECRET();
-  },
-  get telegramAllowedUserId() {
-    return SERVER_ENV_VARS.TELEGRAM_ALLOWED_USER_ID();
-  },
-  get n8nWebhookUrl() {
-    return SERVER_ENV_VARS.N8N_WEBHOOK_URL();
-  },
-  get databaseUrl() {
-    return SERVER_ENV_VARS.DATABASE_URL();
-  },
+  // Server variables (never exposed to client) 
+  ...Object.fromEntries(
+    Object.entries(SERVER_ENV_VARS).map(([key, fn]) => [
+      key.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
+      fn
+    ])
+  ),
 
-  // MCP Automation
-  get adminEmail() {
-    return SERVER_ENV_VARS.ADMIN_EMAIL();
-  },
-  get adminPassword() {
-    return SERVER_ENV_VARS.ADMIN_PASSWORD();
-  },
-  get telegramBotToken() {
-    return SERVER_ENV_VARS.TELEGRAM_BOT_TOKEN();
-  },
-  get telegramChatId() {
-    return SERVER_ENV_VARS.TELEGRAM_CHAT_ID();
-  },
-  get slackWebhookUrl() {
-    return SERVER_ENV_VARS.SLACK_WEBHOOK_URL();
-  },
-
-  // Environment
+  // Environment helpers
   get isDevelopment() {
     return process.env.NODE_ENV === 'development';
   },
@@ -236,90 +175,24 @@ export const env = {
   get nodeEnv() {
     return process.env.NODE_ENV ?? 'development';
   },
-};
+} as const;
 
 /**
  * Client-only environment variables (safe for browser)
  */
-export const clientEnv = {
-  get supabaseUrl() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_SUPABASE_URL();
-  },
-  get supabaseAnonKey() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_SUPABASE_ANON_KEY();
-  },
-  get tossClientKey() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_TOSS_CLIENT_KEY();
-  },
-  get appUrl() {
-    return CLIENT_ENV_VARS.NEXT_PUBLIC_APP_URL();
-  },
-};
+export const clientEnv = Object.fromEntries(
+  Object.entries(CLIENT_ENV_VARS).map(([key, fn]) => [
+    key.replace('NEXT_PUBLIC_', '').toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
+    fn
+  ])
+);
 
 /**
  * Server-only environment variables (never exposed to browser)
  */
-export const serverEnv = {
-  get supabaseServiceKey() {
-    return SERVER_ENV_VARS.SUPABASE_SERVICE_ROLE_KEY();
-  },
-  get tossSecretKey() {
-    return SERVER_ENV_VARS.TOSS_SECRET_KEY();
-  },
-  get payappSecretKey() {
-    return SERVER_ENV_VARS.PAYAPP_SECRET_KEY();
-  },
-  get payappValue() {
-    return SERVER_ENV_VARS.PAYAPP_VALUE();
-  },
-  get payappUserCode() {
-    return SERVER_ENV_VARS.PAYAPP_USER_CODE();
-  },
-  get payappStoreId() {
-    return SERVER_ENV_VARS.PAYAPP_STORE_ID();
-  },
-  get openaiApiKey() {
-    return SERVER_ENV_VARS.OPENAI_API_KEY();
-  },
-  get geminiApiKey() {
-    return SERVER_ENV_VARS.GEMINI_API_KEY();
-  },
-  get jwtSecret() {
-    return SERVER_ENV_VARS.JWT_SECRET();
-  },
-  get encryptionKey() {
-    return SERVER_ENV_VARS.ENCRYPTION_KEY();
-  },
-  get cronSecret() {
-    return SERVER_ENV_VARS.CRON_SECRET();
-  },
-  get telegramWebhookSecret() {
-    return SERVER_ENV_VARS.TELEGRAM_WEBHOOK_SECRET();
-  },
-  get telegramAllowedUserId() {
-    return SERVER_ENV_VARS.TELEGRAM_ALLOWED_USER_ID();
-  },
-  get n8nWebhookUrl() {
-    return SERVER_ENV_VARS.N8N_WEBHOOK_URL();
-  },
-  get databaseUrl() {
-    return SERVER_ENV_VARS.DATABASE_URL();
-  },
-
-  // MCP Automation
-  get adminEmail() {
-    return SERVER_ENV_VARS.ADMIN_EMAIL();
-  },
-  get adminPassword() {
-    return SERVER_ENV_VARS.ADMIN_PASSWORD();
-  },
-  get telegramBotToken() {
-    return SERVER_ENV_VARS.TELEGRAM_BOT_TOKEN();
-  },
-  get telegramChatId() {
-    return SERVER_ENV_VARS.TELEGRAM_CHAT_ID();
-  },
-  get slackWebhookUrl() {
-    return SERVER_ENV_VARS.SLACK_WEBHOOK_URL();
-  },
-};
+export const serverEnv = Object.fromEntries(
+  Object.entries(SERVER_ENV_VARS).map(([key, fn]) => [
+    key.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()),
+    fn
+  ])
+);

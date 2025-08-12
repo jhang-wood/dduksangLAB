@@ -1,8 +1,14 @@
 # 관리자 계정 설정 가이드
 
-## Supabase 대시보드에서 관리자 계정 생성하기
+> 중복된 가이드 통합: ADMIN_ACCOUNT_SETUP.md, guides/ADMIN_SETUP_GUIDE.md 참조
+>
+> 자세한 내용은 [Supabase 환경변수 가이드](guides/SUPABASE_ENV_GUIDE.md)를 참조하세요.
 
-### 1단계: Supabase 대시보드 접속
+## Quick Start
+
+1. Supabase 대시보드에서 사용자 생성
+2. profiles 테이블에서 is_admin = true 설정
+3. 로그인 테스트
 
 1. [Supabase 대시보드](https://app.supabase.com)에 접속
 2. dduksangLAB 프로젝트 선택

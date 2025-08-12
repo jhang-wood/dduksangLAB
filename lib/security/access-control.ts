@@ -5,7 +5,7 @@
 
 // import crypto from 'crypto'; // 사용하지 않음
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
 
 export interface SecurityEvent {
@@ -244,7 +244,7 @@ export class AccessControlManager {
       });
 
       // 심각한 경우 텔레그램 알림 (환경변수가 있는 경우)
-      if (env.telegramBotToken && env.telegramChatId && event.severity === 'critical') {
+      if (serverEnv.telegramBotToken() && serverEnv.telegramChatId() && event.severity === 'critical') {
         // TODO: 텔레그램 알림 구현
       }
     } catch (error) {

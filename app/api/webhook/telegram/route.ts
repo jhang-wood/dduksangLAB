@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     // Telegram 웹훅 시크릿 검증
     const webhookSecret = request.headers.get('X-Telegram-Bot-Api-Secret-Token');
-    const expectedSecret = serverEnv.telegramWebhookSecret;
+    const expectedSecret = serverEnv.telegramWebhookSecret();
 
     if (webhookSecret !== expectedSecret) {
       logger.warn('Invalid webhook secret received');
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // 메시지가 있는 경우에만 처리
     if (update.message?.text) {
       const message = update.message;
-      const allowedUserId = parseInt(serverEnv.telegramAllowedUserId, 10);
+      const allowedUserId = parseInt(serverEnv.telegramAllowedUserId(), 10);
 
       // 허용된 사용자인지 확인
       if (message.from.id !== allowedUserId) {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       }
 
       // n8n으로 메시지 전달
-      const n8nWebhookUrl = serverEnv.n8nWebhookUrl;
+      const n8nWebhookUrl = serverEnv.n8nWebhookUrl();
 
       try {
         const n8nResponse = await fetch(n8nWebhookUrl, {

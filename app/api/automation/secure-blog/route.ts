@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { executeSecureBlogAutomation } from '@/lib/security/secure-blog-automation';
 import { getAccessControlManager, getClientIP } from '@/lib/security/access-control';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Cron Job 또는 인증된 요청인지 확인
     const isAuthorized =
-      (cronSecret && cronSecret === env.cronSecret) ||
+      (cronSecret && cronSecret === serverEnv.cronSecret()) ||
       (authHeader && authHeader.startsWith('Bearer '));
 
     if (!isAuthorized) {

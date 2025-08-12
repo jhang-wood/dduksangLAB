@@ -5,7 +5,7 @@
 
 // import crypto from 'crypto'; // 사용하지 않음
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 
 export interface AdminCredentials {
   email: string;
@@ -62,7 +62,7 @@ export class CredentialManager {
     }
 
     try {
-      const encryptionKey = env.encryptionKey;
+      const encryptionKey = serverEnv.encryptionKey();
       if (!encryptionKey) {
         throw new Error('암호화 키가 설정되지 않았습니다. ENCRYPTION_KEY 환경변수를 설정해주세요.');
       }
@@ -84,8 +84,8 @@ export class CredentialManager {
    */
   async getAdminCredentials(): Promise<AdminCredentials> {
     try {
-      const email = env.adminEmail;
-      const password = env.adminPassword;
+      const email = serverEnv.adminEmail();
+      const password = serverEnv.adminPassword();
 
       if (!email || !password) {
         throw new Error('관리자 자격증명이 환경변수에 설정되지 않았습니다.');

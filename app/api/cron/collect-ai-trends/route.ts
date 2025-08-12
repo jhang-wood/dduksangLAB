@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     // Verify this is a Vercel Cron job
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${env.cronSecret}`) {
+    if (authHeader !== `Bearer ${serverEnv.cronSecret()}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

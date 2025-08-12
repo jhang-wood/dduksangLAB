@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-server';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
   try {
     // Verify authorization
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${env.cronSecret}`) {
+    if (authHeader !== `Bearer ${serverEnv.cronSecret()}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

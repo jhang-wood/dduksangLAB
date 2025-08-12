@@ -4,7 +4,7 @@
  */
 
 import { logger } from './logger';
-import { env } from './env';
+import { serverEnv } from './env';
 
 // AI 서비스 타입 정의
 type AIService = 'openai' | 'claude' | 'gemini';
@@ -86,10 +86,10 @@ export class AIContentGenerator {
 
   private initializeServices() {
     // OpenAI 설정
-    if (env.openaiApiKey) {
+    if (serverEnv.openaiApiKey()) {
       this.services.set('openai', {
         name: 'OpenAI GPT-4',
-        apiKey: env.openaiApiKey,
+        apiKey: serverEnv.openaiApiKey(),
         endpoint: 'https://api.openai.com/v1/chat/completions',
         model: 'gpt-4-turbo-preview',
         maxTokens: 4000,
@@ -110,10 +110,10 @@ export class AIContentGenerator {
     }
 
     // Gemini 설정
-    if (env.geminiApiKey) {
+    if (serverEnv.geminiApiKey()) {
       this.services.set('gemini', {
         name: 'Google Gemini',
-        apiKey: env.geminiApiKey,
+        apiKey: serverEnv.geminiApiKey(),
         endpoint:
           'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
         model: 'gemini-pro',

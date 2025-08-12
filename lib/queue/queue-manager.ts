@@ -39,7 +39,6 @@ export class QueueManager {
   private queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
-  private isInitialized = false;
   private healthCheckInterval?: NodeJS.Timer;
 
   constructor() {
@@ -65,7 +64,7 @@ export class QueueManager {
       await this.createQueue('system-maintenance');
 
       this.startHealthCheck();
-      this.isInitialized = true;
+      // Queue system initialized successfully
       logger.info('큐 시스템 초기화 완료');
     } catch (error) {
       logger.error('큐 시스템 초기화 실패:', error);
@@ -128,14 +127,14 @@ export class QueueManager {
 
   async shutdown(): Promise<void> {
     if (this.healthCheckInterval) {
-      clearInterval(this.healthCheckInterval);
+      clearInterval(this.healthCheckInterval as NodeJS.Timeout);
     }
 
-    for (const [name, worker] of this.workers) {
+    for (const [, worker] of this.workers) {
       await worker.close();
     }
 
-    for (const [name, queue] of this.queues) {
+    for (const [, queue] of this.queues) {
       await queue.close();
     }
 

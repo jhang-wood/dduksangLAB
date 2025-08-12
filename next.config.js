@@ -32,11 +32,11 @@ const nextConfig = {
   
   // 컴파일 최적화
   eslint: {
-    ignoreDuringBuilds: true, // 임시로 ESLint 오류도 무시
+    ignoreDuringBuilds: false, // ESLint 오류 검사 활성화
     dirs: ['app', 'lib', 'components'],
   },
   typescript: {
-    ignoreBuildErrors: true, // 임시로 TypeScript 에러를 무시하여 빌드 성공 우선
+    ignoreBuildErrors: false, // TypeScript 오류 검사 활성화
   },
   
   // 번들 최적화
@@ -52,22 +52,6 @@ const nextConfig = {
         'ws': false,
         'websocket': false,
       };
-      
-      // 서버 빌드에서 브라우저 전용 모듈들 완전 차단
-      config.externals = [
-        ...(config.externals || []),
-        '@supabase/realtime-js',
-        '@supabase/gotrue-js',
-        'websocket',
-        'ws',
-        function(context, request, callback) {
-          // Supabase 관련 모든 모듈을 서버에서 외부화
-          if (/^@supabase\//.test(request) || request.includes('supabase')) {
-            return callback(null, 'commonjs ' + request);
-          }
-          callback();
-        }
-      ];
     }
     
     // 프로덕션 빌드 최적화
@@ -89,10 +73,11 @@ const nextConfig = {
     config.optimization.sideEffects = false;
     
     // 글로벌 객체 정의 (self is not defined 오류 해결)
+    const webpack = require('webpack');
     config.plugins.push(
-      new (require('webpack')).DefinePlugin({
+      new webpack.DefinePlugin({
         'typeof self': JSON.stringify(typeof globalThis !== 'undefined' ? 'object' : 'undefined'),
-        self: 'typeof globalThis !== "undefined" ? globalThis : undefined',
+        self: 'typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : {}',
         'process.browser': JSON.stringify(!isServer),
       })
     );
@@ -101,10 +86,18 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@supabase/realtime-js': require.resolve('./lib/mock-realtime.ts'),
-      '@supabase/gotrue-js': false,
-      'ws': false,
-      'websocket': false,
     };
+
+    // 클라이언트 사이드에서만 적용되는 fallback
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    }
 
     
     return config;

@@ -1,13 +1,14 @@
-# Vercel 환경변수 설정 가이드
+# # Vercel 환경변수 설정 가이드
 
-## 📋 필수 환경변수 설정
+> 중복된 가이드 통합: docs/vercel/VERCEL_ENV_SETUP.md 참조
+>
+> 자세한 내용은 [Supabase 환경변수 가이드](guides/SUPABASE_ENV_GUIDE.md)를 참조하세요.
 
-Vercel 대시보드 (https://vercel.com) 에서 다음 환경변수들을 설정해야 합니다:
+## Quick Start
 
-### 1. Vercel 대시보드 접속
-
-1. https://vercel.com 로그인
-2. `dduksangLAB` 프로젝트 선택
+1. Vercel 대시보드에서 환경변수 설정
+2. .env.local 파일로 로컬 개발 환경 설정
+3. 빌드 테스트 및 배포 확인
 3. Settings → Environment Variables 이동
 
 ### 2. 필수 환경변수 추가

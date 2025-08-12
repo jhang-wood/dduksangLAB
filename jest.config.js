@@ -84,8 +84,7 @@ const customJestConfig = {
   maxWorkers: process.env.CI ? 1 : '50%',
   
   // Verbose 출력 - CI에서만 활성화
-  verbose: \!\!process.env.CI
+  verbose: !!process.env.CI
 };
 
 module.exports = createJestConfig(customJestConfig);
-EOF < /dev/null
