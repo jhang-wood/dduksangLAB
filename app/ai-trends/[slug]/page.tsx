@@ -6,7 +6,7 @@ interface Props {
   params: { slug: string };
 }
 
-// Mock trends data for static generation
+// Mock trends data for static generation - synchronized with page.tsx
 const mockTrends = [
   {
     id: '1',
@@ -117,6 +117,146 @@ GitHub Copilot Chat이 개발자들의 코딩 경험을 더욱 향상시키는 �
     seo_title: 'GitHub Copilot Chat 업데이트 완전 분석',
     seo_description: 'GitHub Copilot Chat의 새로운 기능들과 개발 생산성 향상 방법을 알아보세요.',
     seo_keywords: ['GitHub Copilot', 'Chat', '개발도구', 'AI']
+  },
+  {
+    id: '4',
+    title: 'Claude 3.5 Sonnet의 혁신적인 코딩 능력',
+    slug: 'claude-35-sonnet-coding-abilities',
+    summary: 'Anthropic의 Claude 3.5 Sonnet이 보여주는 놀라운 코딩 및 추론 능력을 살펴보세요.',
+    content: `# Claude 3.5 Sonnet의 혁신적인 코딩 능력
+
+Anthropic의 Claude 3.5 Sonnet은 코딩과 논리적 추론에서 탁월한 성능을 보여주고 있습니다.
+
+## 주요 특징들
+
+### 코딩 전문성
+- 복잡한 알고리즘 구현
+- 코드 리팩토링 및 최적화
+- 다양한 프로그래밍 언어 지원
+
+### 추론 능력
+- 논리적 문제 해결
+- 단계별 사고 과정 설명
+- 창의적 솔루션 제안
+
+## 실제 활용 사례
+
+개발자들이 어떻게 Claude 3.5를 활용하여 생산성을 높이고 있는지 살펴보겠습니다.`,
+    thumbnail_url: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=600&fit=crop',
+    category: 'AI 기술',
+    tags: ['Claude', 'Anthropic', '코딩AI'],
+    source_url: 'https://anthropic.com',
+    source_name: 'Anthropic',
+    published_at: new Date('2025-08-10').toISOString(),
+    view_count: 2341,
+    seo_title: 'Claude 3.5 Sonnet 코딩 능력 완전 분석',
+    seo_description: 'Anthropic Claude 3.5 Sonnet의 혁신적인 코딩과 추론 능력을 상세히 알아보세요.',
+    seo_keywords: ['Claude 3.5', 'Sonnet', 'Anthropic', '코딩AI', '추론']
+  },
+  {
+    id: '5',
+    title: 'AI 기반 디자인 도구의 진화',
+    slug: 'ai-design-tools-evolution',
+    summary: 'Figma, Canva 등 디자인 도구에 AI가 통합되면서 창작 과정이 어떻게 변화하고 있는지 알아보세요.',
+    content: `# AI 기반 디자인 도구의 진화
+
+디자인 분야에서 AI 기술이 창작 과정을 혁신하고 있습니다.
+
+## 주요 도구들
+
+### Figma AI
+- 자동 레이아웃 생성
+- 컴포넌트 자동 생성
+- 디자인 시스템 최적화
+
+### Adobe Firefly
+- 생성형 이미지 제작
+- 텍스트 효과 자동화
+- 브랜드 일관성 유지
+
+## 디자이너의 새로운 역할
+
+AI 도구가 발전하면서 디자이너의 역할도 변화하고 있습니다.`,
+    thumbnail_url: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
+    category: 'AI 도구',
+    tags: ['디자인', 'Figma', 'AI도구'],
+    source_url: 'https://figma.com',
+    source_name: 'Figma',
+    published_at: new Date('2025-08-09').toISOString(),
+    view_count: 1567,
+    seo_title: 'AI 디자인 도구 완전 가이드',
+    seo_description: 'Figma, Canva 등 AI 기반 디자인 도구의 진화와 활용법을 알아보세요.',
+    seo_keywords: ['AI 디자인', 'Figma', 'Canva', '디자인 도구']
+  },
+  {
+    id: '6',
+    title: 'AI와 함께하는 스마트 워크플로우',
+    slug: 'smart-workflow-with-ai',
+    summary: '업무 효율성을 극대화하는 AI 도구들과 워크플로우 구축 방법을 소개합니다.',
+    content: `# AI와 함께하는 스마트 워크플로우
+
+AI 도구를 활용한 효율적인 워크플로우 구축 방법을 알아보겠습니다.
+
+## 핵심 도구들
+
+### 자동화 도구
+- Zapier를 통한 앱 연결
+- 반복 작업 자동화
+- 워크플로우 최적화
+
+### 생산성 AI
+- 문서 작성 지원
+- 일정 관리 최적화
+- 이메일 자동 분류
+
+## 구현 전략
+
+단계별로 AI 워크플로우를 구축하는 방법을 살펴보겠습니다.`,
+    thumbnail_url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop',
+    category: 'AI 활용',
+    tags: ['워크플로우', '생산성', '자동화'],
+    source_url: 'https://zapier.com',
+    source_name: 'Zapier',
+    published_at: new Date('2025-08-08').toISOString(),
+    view_count: 1890,
+    seo_title: 'AI 스마트 워크플로우 구축 가이드',
+    seo_description: 'AI 도구를 활용한 효율적인 워크플로우 구축과 생산성 향상 방법을 알아보세요.',
+    seo_keywords: ['AI 워크플로우', '자동화', '생산성', 'Zapier']
+  },
+  {
+    id: '7',
+    title: '금융업계의 AI 혁신 사례',
+    slug: 'fintech-ai-innovations',
+    summary: '은행, 핀테크 기업들이 AI를 활용해 금융 서비스를 혁신하는 사례들을 살펴보세요.',
+    content: `# 금융업계의 AI 혁신 사례
+
+금융 분야에서 AI 기술이 어떻게 혁신을 이끌고 있는지 살펴보겠습니다.
+
+## 주요 혁신 영역
+
+### 리스크 관리
+- 신용 평가 자동화
+- 사기 탐지 시스템
+- 실시간 위험 분석
+
+### 고객 서비스
+- AI 챗봇 상담
+- 개인화된 금융 상품 추천
+- 투자 포트폴리오 최적화
+
+## 실제 사례
+
+글로벌 금융기관들의 AI 도입 사례를 분석해보겠습니다.`,
+    thumbnail_url: 'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&h=600&fit=crop',
+    category: 'AI 비즈니스',
+    tags: ['핀테크', '금융AI', '혁신'],
+    source_url: 'https://fintech.com',
+    source_name: 'FinTech News',
+    published_at: new Date('2025-08-07').toISOString(),
+    view_count: 1123,
+    seo_title: '금융업계 AI 혁신 사례 분석',
+    seo_description: '은행과 핀테크 기업들의 AI 활용 혁신 사례와 미래 전망을 알아보세요.',
+    seo_keywords: ['핀테크', '금융AI', 'AI 혁신', '디지털 금융']
   }
 ];
 
@@ -125,7 +265,11 @@ export async function generateStaticParams() {
   return [
     { slug: '2025년-AI-자동화-혁명-테스트-게시글' },
     { slug: 'chatgpt-4-multimodal-features' }, 
-    { slug: 'github-copilot-chat-update' }
+    { slug: 'github-copilot-chat-update' },
+    { slug: 'claude-35-sonnet-coding-abilities' },
+    { slug: 'ai-design-tools-evolution' },
+    { slug: 'smart-workflow-with-ai' },
+    { slug: 'fintech-ai-innovations' }
   ];
 }
 

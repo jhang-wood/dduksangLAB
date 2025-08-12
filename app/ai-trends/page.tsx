@@ -27,32 +27,43 @@ export const metadata: Metadata = {
 export const dynamic = 'force-static';
 export const revalidate = 3600;
 
-// Static mock data
+// Static mock data - synchronized with [slug]/page.tsx
 const staticTrends = [
   {
     id: '1',
-    title: 'ChatGPT-4o의 새로운 멀티모달 기능',
-    slug: 'chatgpt-4o-multimodal-features',
-    summary: 'OpenAI가 발표한 ChatGPT-4o의 새로운 멀티모달 기능에 대해 알아보세요.',
+    title: '2025년 AI 자동화 혁명: 테스트 게시글',
+    slug: '2025년-AI-자동화-혁명-테스트-게시글',
+    summary: 'AI 자동화가 2025년에 어떻게 모든 산업을 변화시킬지 살펴보겠습니다.',
     category: 'AI 기술',
-    tags: ['ChatGPT', 'OpenAI', '멀티모달'],
-    published_at: '2025-08-12',
-    view_count: 1234,
+    tags: ['AI', '자동화', '2025년', '혁신'],
+    published_at: '2024-12-01',
+    view_count: 1500,
     is_featured: true,
   },
   {
     id: '2',
+    title: 'ChatGPT-4의 새로운 멀티모달 기능',
+    slug: 'chatgpt-4-multimodal-features',
+    summary: 'OpenAI가 발표한 ChatGPT-4의 새로운 멀티모달 기능에 대해 알아보세요.',
+    category: 'AI 기술',
+    tags: ['ChatGPT', 'OpenAI', '멀티모달'],
+    published_at: '2024-11-15',
+    view_count: 1234,
+    is_featured: true,
+  },
+  {
+    id: '3',
     title: 'GitHub Copilot Chat의 새로운 업데이트',
     slug: 'github-copilot-chat-update',
     summary: 'GitHub Copilot Chat의 최신 업데이트 기능을 살펴보고 개발 생산성을 높여보세요.',
     category: 'AI 도구',
     tags: ['GitHub', 'Copilot', '개발도구'],
-    published_at: '2025-08-11',
+    published_at: '2024-11-10',
     view_count: 856,
     is_featured: false,
   },
   {
-    id: '3',
+    id: '4',
     title: 'Claude 3.5 Sonnet의 혁신적인 코딩 능력',
     slug: 'claude-35-sonnet-coding-abilities',
     summary: 'Anthropic의 Claude 3.5 Sonnet이 보여주는 놀라운 코딩 및 추론 능력을 살펴보세요.',
@@ -63,7 +74,7 @@ const staticTrends = [
     is_featured: true,
   },
   {
-    id: '4',
+    id: '5',
     title: 'AI 기반 디자인 도구의 진화',
     slug: 'ai-design-tools-evolution',
     summary: 'Figma, Canva 등 디자인 도구에 AI가 통합되면서 창작 과정이 어떻게 변화하고 있는지 알아보세요.',
@@ -74,7 +85,7 @@ const staticTrends = [
     is_featured: false,
   },
   {
-    id: '5',
+    id: '6',
     title: 'AI와 함께하는 스마트 워크플로우',
     slug: 'smart-workflow-with-ai',
     summary: '업무 효율성을 극대화하는 AI 도구들과 워크플로우 구축 방법을 소개합니다.',
@@ -85,7 +96,7 @@ const staticTrends = [
     is_featured: false,
   },
   {
-    id: '6',
+    id: '7',
     title: '금융업계의 AI 혁신 사례',
     slug: 'fintech-ai-innovations',
     summary: '은행, 핀테크 기업들이 AI를 활용해 금융 서비스를 혁신하는 사례들을 살펴보세요.',
