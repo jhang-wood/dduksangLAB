@@ -105,6 +105,17 @@ const staticTrends = [
     published_at: '2025-08-07',
     view_count: 1123,
     is_featured: false,
+  },
+  {
+    id: '8',
+    title: '실시간 AI 트렌드 자동화 테스트 완료',
+    slug: 'realtime-ai-trends-automation-test-complete',
+    summary: '떡상연구소 AI 트렌드 블로그 자동화 시스템이 성공적으로 테스트되었습니다.',
+    category: 'AI 기술',
+    tags: ['테스트', '자동화', '성공', '혁신'],
+    published_at: '2025-08-12',
+    view_count: 0,
+    is_featured: true,
   }
 ];
 

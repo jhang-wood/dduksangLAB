@@ -31,7 +31,7 @@ interface AITrendDetailClientProps {
   relatedTrends: AITrend[];
 }
 
-export default function AITrendDetailClient({ slug, trend: initialTrend, relatedTrends: initialRelatedTrends }: AITrendDetailClientProps) {
+export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, relatedTrends: initialRelatedTrends }: AITrendDetailClientProps) {
   const [trend] = useState<AITrend | null>(initialTrend);
   const [relatedTrends] = useState<AITrend[]>(initialRelatedTrends);
   const [loading] = useState(false);

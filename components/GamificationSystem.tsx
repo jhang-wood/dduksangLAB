@@ -127,7 +127,7 @@ export function BadgeSystem({ userId: _ }: { userId?: string }) {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [mockBadges]);
 
   const rarityStyles = {
     common: {

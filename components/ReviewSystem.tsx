@@ -153,7 +153,7 @@ export default function ReviewSystem({
     }
 
     setReviews(filteredReviews);
-  }, [courseId, filter, selectedRating, showLatest, maxReviews]);
+  }, [courseId, filter, selectedRating, showLatest, maxReviews, mockReviews]);
 
   const getTimeAgo = (date: Date) => {
     const now = new Date();

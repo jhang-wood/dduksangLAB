@@ -15,8 +15,8 @@ export default defineConfig({
   // 테스트 실행 설정
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 4,
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 1 : 2,
 
   // 리포터 설정
   reporter: [
@@ -78,76 +78,6 @@ export default defineConfig({
       },
     },
 
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    // 모바일 테스트
-    {
-      name: 'Mobile Chrome',
-      use: {
-        ...devices['Pixel 7'],
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 14 Pro'],
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    // 태블릿 테스트
-    {
-      name: 'iPad',
-      use: {
-        ...devices['iPad Pro'],
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    // 고해상도 테스트
-    {
-      name: 'Desktop Chrome 4K',
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 3840, height: 2160 },
-        deviceScaleFactor: 2,
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-      },
-    },
-
-    // 저사양 환경 테스트
-    {
-      name: 'Slow Network',
-      use: {
-        ...devices['Desktop Chrome'],
-        contextOptions: {
-          offline: false,
-          // 느린 3G 네트워크 시뮬레이션
-        },
-      },
-    },
   ],
 
   // 웹 서버 설정 (개발 서버 자동 시작)

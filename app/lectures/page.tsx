@@ -242,6 +242,72 @@ export default function LecturesPage() {
           </div>
         </section>
 
+        {/* Statistics Section - FastCampus Style */}
+        <section className="py-20 bg-deepBlack-800 border-t border-deepBlack-700">
+          <div className="container mx-auto max-w-7xl px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-offWhite-200 mb-4">
+                숫자로 보는 <span className="text-metallicGold-500">떡상연구소</span>
+              </h2>
+              <p className="text-xl text-offWhite-400">
+                데이터가 증명하는 확실한 성과
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: '👥', number: '2,847', label: '누적 수강생', desc: '실제 수익 창출 경험' },
+                { icon: '💰', number: '100만원+', label: '평균 월 수익', desc: 'AI 도구만으로 달성' },
+                { icon: '⚡', number: '3개월', label: '평균 첫 수익', desc: '빠른 수익 창출' },
+                { icon: '🎯', number: '87%', label: '강의 완주율', desc: '높은 만족도' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center p-8 bg-deepBlack-900 rounded-2xl border border-deepBlack-700 hover:border-metallicGold-500/50 transition-all duration-300 group"
+                >
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
+                    {stat.icon}
+                  </div>
+                  <div className="text-4xl md:text-5xl font-bold text-metallicGold-500 mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-lg font-semibold text-offWhite-200 mb-2">
+                    {stat.label}
+                  </div>
+                  <div className="text-sm text-offWhite-400">
+                    {stat.desc}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Additional proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="mt-16 text-center"
+            >
+              <div className="inline-flex items-center px-6 py-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-full text-metallicGold-500">
+                <Flame className="w-5 h-5 mr-2" />
+                매월 새로운 성공 사례가 계속 업데이트되고 있습니다!
+                <TrendingUp className="w-5 h-5 ml-2" />
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Enhanced Pain Points Section with Cards */}
         <section className="py-24 px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20">
           <div className="container mx-auto max-w-6xl">

@@ -11,10 +11,63 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: '떡상연구소 - AI 기반 교육 플랫폼',
-  description: 'AI/노코드 교육 콘텐츠 제공, 수강생 간 커뮤니티 활성화, 개인/팀 SaaS 홍보 플랫폼',
-  keywords: 'AI 교육, 노코드, 커뮤니티, SaaS, 온라인 강의',
+  title: {
+    default: '떡상연구소 : AI 노코드로 SaaS 만들고 수익화하는 실전 교육 플랫폼',
+    template: '%s | 떡상연구소'
+  },
+  description: 'AI 도구와 노코드로 실제 수익 창출한 수강생 1,200명+! 0원으로 시작해서 월 100만원까지, 떡상연구소에서 SaaS 수익화 전 과정을 배워보세요',
+  keywords: [
+    'AI 교육', 'AI 수익화', '노코드', '노코드 창업', 'SaaS 제작', 'SaaS 수익화', 
+    '온라인 강의', '창업', '부업', 'AI 도구', 'Claude', 'ChatGPT', 
+    '떡상연구소', '웹앱 개발', '자동화', '1인 개발자'
+  ],
   authors: [{ name: '떡상연구소' }],
+  creator: '떡상연구소',
+  publisher: '떡상연구소',
+  metadataBase: new URL('https://www.dduksang.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    url: 'https://www.dduksang.com',
+    siteName: '떡상연구소',
+    title: '떡상연구소 : AI 노코드로 SaaS 만들고 수익화하는 실전 교육 플랫폼',
+    description: 'AI 도구와 노코드로 실제 수익 창출한 수강생 1,200명+! 0원으로 시작해서 월 100만원까지',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: '떡상연구소 - AI 노코드 SaaS 수익화 교육',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '떡상연구소 : AI 노코드로 SaaS 만들고 수익화하는 실전 교육 플랫폼',
+    description: 'AI 도구와 노코드로 실제 수익 창출한 수강생 1,200명+!',
+    images: ['/twitter-image.jpg'],
+    creator: '@dduksang_lab',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    other: {
+      'naver-site-verification': 'your-naver-verification-code',
+    },
+  },
 };
 
 export const viewport = {
