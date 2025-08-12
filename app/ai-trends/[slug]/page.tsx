@@ -122,17 +122,11 @@ GitHub Copilot Chat이 개발자들의 코딩 경험을 더욱 향상시키는 �
 
 // Generate static params for all known slugs
 export async function generateStaticParams() {
-  // Include both encoded and decoded versions
-  const params = [];
-  
-  for (const trend of mockTrends) {
-    // Original slug
-    params.push({ slug: trend.slug });
-    // URL encoded version
-    params.push({ slug: encodeURIComponent(trend.slug) });
-  }
-  
-  return params;
+  return [
+    { slug: 'test-ai-automation-2025' },
+    { slug: 'chatgpt-4-multimodal-features' }, 
+    { slug: 'github-copilot-chat-update' }
+  ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -204,9 +198,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Dynamic routing with ISR
-export const dynamic = 'auto';
-export const revalidate = 3600; // 1시간마다 revalidate
+// Force static generation
+export const dynamic = 'force-static';
 
 export default async function AITrendDetailPage({ params }: Props) {
   let { slug } = params;
