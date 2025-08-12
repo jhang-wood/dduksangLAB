@@ -260,18 +260,18 @@ AI 도구를 활용한 효율적인 워크플로우 구축 방법을 알아보�
   }
 ];
 
-// Generate static params for all known slugs
-export async function generateStaticParams() {
-  return [
-    { slug: '2025년-ai-자동화-혁명-테스트-게시글' },
-    { slug: 'chatgpt-4-multimodal-features' }, 
-    { slug: 'github-copilot-chat-update' },
-    { slug: 'claude-35-sonnet-coding-abilities' },
-    { slug: 'ai-design-tools-evolution' },
-    { slug: 'smart-workflow-with-ai' },
-    { slug: 'fintech-ai-innovations' }
-  ];
-}
+// Generate static params for all known slugs - commented out for dynamic rendering
+// export async function generateStaticParams() {
+//   return [
+//     { slug: '2025년-ai-자동화-혁명-테스트-게시글' },
+//     { slug: 'chatgpt-4-multimodal-features' }, 
+//     { slug: 'github-copilot-chat-update' },
+//     { slug: 'claude-35-sonnet-coding-abilities' },
+//     { slug: 'ai-design-tools-evolution' },
+//     { slug: 'smart-workflow-with-ai' },
+//     { slug: 'fintech-ai-innovations' }
+//   ];
+// }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   let { slug } = params;
@@ -342,8 +342,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Force static generation
-export const dynamic = 'force-static';
+// Use dynamic rendering to avoid build errors
+export const dynamic = 'force-dynamic';
 
 export default async function AITrendDetailPage({ params }: Props) {
   let { slug } = params;

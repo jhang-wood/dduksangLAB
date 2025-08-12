@@ -23,9 +23,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Static generation 강제 설정
-export const dynamic = 'force-static';
-export const revalidate = 3600;
+// Dynamic rendering to avoid build errors
+export const dynamic = 'force-dynamic';
 
 // Static mock data - synchronized with [slug]/page.tsx
 const staticTrends = [
