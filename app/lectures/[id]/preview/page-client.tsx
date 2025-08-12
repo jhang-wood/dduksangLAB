@@ -110,6 +110,44 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
   const router = useRouter();
   const { user } = useAuth();
 
+  const fetchRecommendedLectures = useCallback(async () => {
+    try {
+      const { data: lecturesData } = await supabase
+        .from('lectures')
+        .select('*')
+        .neq('id', params.id)
+        .limit(12);
+
+      if (lecturesData) {
+        const recommended: RecommendedLecture[] = lecturesData.map((lec: any) => ({
+          id: lec.id,
+          title: lec.title,
+          instructor_name: lec.instructor_name,
+          thumbnail_url: lec.thumbnail_url,
+          category: lec.category,
+          level: lec.level as 'beginner' | 'intermediate' | 'advanced',
+          duration: lec.duration,
+          price: lec.price,
+          rating: lec.rating,
+          student_count: lec.student_count,
+          tags: lec.tags,
+          reason: getRecommendationReason(lec, lecture),
+          ...(Math.random() > 0.7
+            ? {
+                discount: {
+                  original_price: lec.price,
+                  discount_percentage: Math.floor(Math.random() * 30) + 10,
+                },
+              }
+            : {}),
+        }));
+        setRecommendedLectures(recommended);
+      }
+    } catch (error) {
+      logger.error('Error fetching recommended lectures:', error);
+    }
+  }, [params.id, lecture]);
+
   const fetchLectureData = useCallback(async () => {
     try {
       // 수강 여부 확인
@@ -175,7 +213,7 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
     } finally {
       setLoading(false);
     }
-  }, [params.id, user, router]);
+  }, [params.id, user, router, fetchRecommendedLectures]);
 
   const getTagCategory = (tag: string): Tag['category'] => {
     const languageKeywords = [
@@ -212,43 +250,6 @@ export default function LecturePreviewClient({ params }: { params: { id: string 
     return 'topic';
   };
 
-  const fetchRecommendedLectures = async () => {
-    try {
-      const { data: lecturesData } = await supabase
-        .from('lectures')
-        .select('*')
-        .neq('id', params.id)
-        .limit(12);
-
-      if (lecturesData) {
-        const recommended: RecommendedLecture[] = lecturesData.map((lec: any) => ({
-          id: lec.id,
-          title: lec.title,
-          instructor_name: lec.instructor_name,
-          thumbnail_url: lec.thumbnail_url,
-          category: lec.category,
-          level: lec.level as 'beginner' | 'intermediate' | 'advanced',
-          duration: lec.duration,
-          price: lec.price,
-          rating: lec.rating,
-          student_count: lec.student_count,
-          tags: lec.tags,
-          reason: getRecommendationReason(lec, lecture),
-          ...(Math.random() > 0.7
-            ? {
-                discount: {
-                  original_price: lec.price,
-                  discount_percentage: Math.floor(Math.random() * 30) + 10,
-                },
-              }
-            : {}),
-        }));
-        setRecommendedLectures(recommended);
-      }
-    } catch (error) {
-      logger.error('Error fetching recommended lectures:', error);
-    }
-  };
 
   const getRecommendationReason = (
     recommended: any,

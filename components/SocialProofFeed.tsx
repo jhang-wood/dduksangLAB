@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Play, Star, Trophy } from 'lucide-react';
 
@@ -18,8 +18,8 @@ export default function SocialProofFeed() {
   const [activities, setActivities] = useState<SocialActivity[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // 더미 활동 데이터
-  const mockActivities: SocialActivity[] = [
+  // 더미 활동 데이터 - useMemo로 최적화
+  const mockActivities: SocialActivity[] = useMemo(() => [
     {
       id: '1',
       type: 'enrollment',
@@ -57,7 +57,7 @@ export default function SocialProofFeed() {
       course: '노코드로 만드는 자동화 시스템',
       timestamp: new Date(Date.now() - 15 * 60 * 1000),
     },
-  ];
+  ], []);
 
   useEffect(() => {
     // 실제로는 서버에서 실시간 데이터를 가져와야 함
@@ -86,7 +86,7 @@ export default function SocialProofFeed() {
     }, 30000); // 30초마다 새 활동 추가
 
     return () => clearInterval(interval);
-  }, []);
+  }, [mockActivities]);
 
   useEffect(() => {
     // 3초마다 다음 활동으로 전환

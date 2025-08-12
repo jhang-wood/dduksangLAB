@@ -8,7 +8,7 @@ const nextConfig = {
   
   // 실험적 기능 (성능 개선)
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false, // critters 모듈 오류로 인해 비활성화
     serverComponentsExternalPackages: [],
     turbo: {
       rules: {
@@ -41,6 +41,11 @@ const nextConfig = {
   
   // 번들 최적화
   webpack: (config, { dev, isServer }) => {
+    // 서버 사이드에서 self 객체 정의 (가장 먼저 실행)
+    if (isServer && typeof global !== 'undefined' && typeof global.self === 'undefined') {
+      global.self = global;
+    }
+    
     // 서버/클라이언트 호환성 문제 해결
     if (isServer) {
       config.resolve.fallback = {
@@ -54,18 +59,10 @@ const nextConfig = {
       };
     }
     
-    // 프로덕션 빌드 최적화
-    if (!dev) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      };
+    // 프로덕션 빌드 최적화 (vendors.js 분할 비활성화)
+    if (!dev && isServer) {
+      // 서버사이드에서는 청크 분할을 하지 않음
+      config.optimization.splitChunks = false;
     }
     
     // Tree shaking 개선
@@ -76,8 +73,10 @@ const nextConfig = {
     const webpack = require('webpack');
     config.plugins.push(
       new webpack.DefinePlugin({
-        'typeof self': JSON.stringify(typeof globalThis !== 'undefined' ? 'object' : 'undefined'),
-        self: 'typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : {}',
+        'typeof self': JSON.stringify('object'),
+        self: isServer 
+          ? 'global' 
+          : 'typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : {}',
         'process.browser': JSON.stringify(!isServer),
       })
     );
@@ -169,5 +168,10 @@ const nextConfig = {
     ];
   },
 };
+
+// 서버 시작 시 polyfill 로드
+if (typeof global !== 'undefined' && typeof self === 'undefined') {
+  require('./lib/server-polyfill.js');
+}
 
 module.exports = nextConfig;

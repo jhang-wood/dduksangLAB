@@ -1,67 +1,5 @@
-.env
-*.log
-__pycache__/
-venv/
+# Dependencies
 node_modules/
-.DS_Store
-*.pyc
-*.pid
-.vscode/
-automation_*.log
-
-# 클린업된 불필요한 파일들
-cookies.txt
-*.tmp
-Thumbs.db
-
-# TypeScript 빌드 관련
-*.tsbuildinfo
-
-# 백업 파일
-*.backup
-*~
-telegram_*.log
-claude_*.log
-*.secret
-credentials/
-.ssh/
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-venv/
-/venv/
-.venv/
-
-# IDE & Editor specific
-.vscode/
-.idea/
-.cursor-server/
-.claude/
-
-# Cache & Dependencies
-.cache/
-.npm/
-
-# Log files
-*.log
-*.lock
-*.pid
-*.jsonl
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Next.js specific
-.next/
-out/
-build/
-dist/
-
-# Vercel
-.vercel
 
 # Environment variables - NEVER COMMIT THESE
 .env
@@ -74,12 +12,64 @@ dist/
 .env.production
 *.env
 
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+
+# Log files
+*.log
+*.jsonl
+*.pid
+automation_*.log
+telegram_*.log
+claude_*.log
+
+# Cache & Dependencies
+.cache/
+.npm/
+
+# IDE & Editor specific
+.vscode/
+.idea/
+.cursor-server/
+.claude/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+
+# Backup files
+*.backup
+*.bak
+*~
+*.swp
+*.swo
+*.tmp
+
 # API Keys and Secrets
 *secret*
 *token*
 *key*
 *.pem
-*.key
 *.cert
 *.crt
 *.p12
@@ -87,13 +77,6 @@ dist/
 credentials/
 .credentials.json
 config/secrets/
-
-# Backup files
-*.bak
-*.backup
-*~
-*.swp
-*.swo
 
 # Database files
 *.db
@@ -105,6 +88,4 @@ config/secrets/
 create-admin.js
 init-admin.js
 *admin*.js
-.env.local
-.env.local.backup
 scripts/*admin*

@@ -33,18 +33,49 @@ export default function SignupPage() {
   };
 
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('비밀번호가 일치하지 않습니다.');
+    // 기본 필드 검증
+    if (!formData.email.trim()) {
+      setError('이메일을 입력해주세요.');
       return false;
     }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('올바른 이메일 형식을 입력해주세요.');
+      return false;
+    }
+
+    if (!formData.password) {
+      setError('비밀번호를 입력해주세요.');
+      return false;
+    }
+    
     if (formData.password.length < 6) {
       setError('비밀번호는 최소 6자 이상이어야 합니다.');
       return false;
     }
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return false;
+    }
+    
     if (!formData.name.trim()) {
       setError('이름을 입력해주세요.');
       return false;
     }
+    
+    if (formData.name.trim().length < 2) {
+      setError('이름은 최소 2자 이상이어야 합니다.');
+      return false;
+    }
+
+    // 전화번호는 선택사항이지만 입력된 경우 유효성 검사
+    if (formData.phone && !/^[0-9-+\s()]*$/.test(formData.phone)) {
+      setError('올바른 전화번호 형식을 입력해주세요.');
+      return false;
+    }
+    
     return true;
   };
 
@@ -60,20 +91,34 @@ export default function SignupPage() {
 
     try {
       const { error } = await signUp(formData.email, formData.password, {
-        name: formData.name,
-        phone: formData.phone,
+        name: formData.name.trim(),
+        phone: formData.phone?.trim() || undefined,
       });
 
       if (error) {
-        setError(error.message ?? '회원가입에 실패했습니다.');
+        // Supabase 에러 메시지를 한국어로 번역
+        let errorMessage = error.message ?? '회원가입에 실패했습니다.';
+        
+        if (error.message?.includes('already registered')) {
+          errorMessage = '이미 가입된 이메일 주소입니다.';
+        } else if (error.message?.includes('Password should be at least 6 characters')) {
+          errorMessage = '비밀번호는 최소 6자 이상이어야 합니다.';
+        } else if (error.message?.includes('Invalid email')) {
+          errorMessage = '올바른 이메일 형식을 입력해주세요.';
+        } else if (error.message?.includes('email rate limit')) {
+          errorMessage = '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해주세요.';
+        }
+        
+        setError(errorMessage);
       } else {
         setSuccess(true);
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push('/auth/login?message=회원가입이 완료되었습니다. 로그인해주세요.');
         }, 2000);
       }
     } catch (err) {
-      setError('회원가입 중 오류가 발생했습니다.');
+      console.error('회원가입 오류:', err);
+      setError('회원가입 중 예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }

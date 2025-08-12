@@ -26,6 +26,11 @@ lib/mcp/
 lib/orchestrator/
 lib/workers/
 
+# Polyfill 파일들
+lib/server-polyfill.js
+lib/global-polyfill.ts
+polyfills.js
+
 # 스크립트
 scripts/
 

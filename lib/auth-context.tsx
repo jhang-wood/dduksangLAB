@@ -2,6 +2,7 @@
 
 import { logger } from '@/lib/logger';
 import { validateRequiredEnvVars } from '@/lib/env';
+import { createUserProfile, getUserProfile, validateSignupData } from '@/lib/auth-utils';
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js';
@@ -49,51 +50,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
     logger.log('[Auth] Fetching profile for user:', userId);
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    
+    const result = await getUserProfile(userId);
+    
+    if (result.success && result.profile) {
+      logger.log('[Auth] Profile fetched:', result.profile);
+      setUserProfile(result.profile as UserProfile);
+    } else {
+      // 프로필이 없는 경우 생성 시도
+      logger.log('[Auth] Profile not found, creating new profile...');
+      const { data: userData } = await supabase.auth.getUser();
 
-    if (error) {
-      logger.error('[Auth] Error fetching profile:', error);
+      if (userData?.user) {
+        const createResult = await createUserProfile({
+          id: userId,
+          email: userData.user.email!,
+          name: userData.user.email?.split('@')[0] ?? 'User',
+          role: 'user',
+        });
 
-      // 프로필이 없는 경우 생성
-      if (error.code === 'PGRST116') {
-        logger.log('[Auth] Profile not found, creating new profile...');
-        const { data: userData } = await supabase.auth.getUser();
-
-        if (userData?.user) {
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert({
-              id: userId,
-              email: userData.user.email,
-              name: userData.user.email?.split('@')[0] ?? 'User',
-              role: 'user',
-              created_at: new Date().toISOString(),
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            logger.error('[Auth] Error creating profile:', createError);
-            setUserProfile(null);
-          } else {
-            logger.log('[Auth] Profile created:', newProfile);
-            setUserProfile(newProfile as UserProfile);
-          }
+        if (createResult.success && createResult.profile) {
+          logger.log('[Auth] Profile created:', createResult.profile);
+          setUserProfile(createResult.profile as UserProfile);
+        } else {
+          logger.error('[Auth] Failed to create profile:', createResult.error);
+          setUserProfile(null);
         }
       } else {
         setUserProfile(null);
       }
-    } else if (data) {
-      logger.log('[Auth] Profile fetched:', data);
-      logger.log('[Auth] User role:', data.role);
-      setUserProfile(data as UserProfile);
     }
   };
 
   useEffect(() => {
+    setMounted(true);
+    
     // 초기 세션 확인
     void supabase.auth.getSession().then(({ data: { session } }: any) => {
       setUser(session?.user ?? null);
@@ -118,6 +113,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // SSR 중에는 컨텍스트 제공하지 않음
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -132,6 +132,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, metadata?: SignUpMetadata) => {
+    // 입력 데이터 검증
+    const validation = validateSignupData({
+      email,
+      password,
+      name: metadata?.name,
+      phone: metadata?.phone,
+    });
+
+    if (!validation.isValid) {
+      return {
+        error: {
+          message: validation.errors[0],
+        } as SupabaseAuthError,
+      };
+    }
+
     const { data, error } = await supabase.auth.signUp(
       metadata
         ? {
@@ -149,17 +165,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (data.user && !error) {
       // 사용자 프로필 생성
-      const { error: profileError } = await supabase.from('profiles').insert({
+      const createResult = await createUserProfile({
         id: data.user.id,
-        email: data.user.email,
+        email: data.user.email!,
         name: metadata?.name ?? email.split('@')[0],
-        phone: metadata?.phone ?? '',
+        phone: metadata?.phone,
         role: 'user',
-        created_at: new Date().toISOString(),
       });
 
-      if (profileError) {
-        logger.error('프로필 생성 오류:', profileError);
+      if (!createResult.success) {
+        logger.error('프로필 생성 오류:', createResult.error);
+        // 프로필 생성 실패 시에도 회원가입은 완료된 상태이므로 계속 진행
       }
     }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ThumbsUp, MessageSquare, User, Verified, Filter } from 'lucide-react';
 
@@ -38,8 +38,8 @@ export default function ReviewSystem({
   const [filter, setFilter] = useState<'all' | 'recent' | 'helpful' | 'verified'>('all');
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
 
-  // 더미 리뷰 데이터
-  const mockReviews: Review[] = [
+  // 더미 리뷰 데이터 - useMemo로 최적화
+  const mockReviews: Review[] = useMemo(() => [
     {
       id: '1',
       userId: 'user1',
@@ -120,7 +120,7 @@ export default function ReviewSystem({
       progress: 95,
       tags: ['가성비최고', '업무효율성', '추천강의'],
     },
-  ];
+  ], []);
 
   useEffect(() => {
     // 실제로는 서버에서 리뷰 데이터를 가져와야 함

@@ -32,7 +32,7 @@ const customJestConfig = {
   ],
   
   // 모듈 맵핑
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^~/(.*)$': '<rootDir>/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'

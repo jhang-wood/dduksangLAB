@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "env:validate": "node scripts/validate-env.js",
-    "env:check": "npm run env:validate",
     "type-check": "tsc --noEmit",
     
     "test": "jest",
@@ -28,11 +27,6 @@
     "claude:status": "node scripts/claude-helper.js status",
     "prepare": "husky install",
     "pre-commit": "npm run type-check && npm run test:ci"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run type-check"
-    }
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",

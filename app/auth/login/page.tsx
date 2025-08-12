@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { motion } from 'framer-motion';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
@@ -14,24 +14,63 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn } = useAuth();
+
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message) {
+      setSuccessMessage(message);
+      // URL에서 메시지 파라미터 제거
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('message');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setLoading(true);
 
+    // 기본 검증
+    if (!email.trim()) {
+      setError('이메일을 입력해주세요.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!password) {
+      setError('비밀번호를 입력해주세요.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(email.trim(), password);
       if (error) {
-        setError(error.message ?? '로그인에 실패했습니다.');
+        // 에러 메시지 한국어화
+        let errorMessage = error.message ?? '로그인에 실패했습니다.';
+        
+        if (error.message?.includes('Invalid login credentials')) {
+          errorMessage = '이메일 또는 비밀번호가 올바르지 않습니다.';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = '이메일 인증이 완료되지 않았습니다. 이메일을 확인해주세요.';
+        } else if (error.message?.includes('Too many requests')) {
+          errorMessage = '너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.';
+        }
+        
+        setError(errorMessage);
       } else {
         router.push('/');
       }
     } catch (err) {
-      setError('로그인 중 오류가 발생했습니다.');
+      console.error('로그인 오류:', err);
+      setError('로그인 중 예기치 못한 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -72,6 +111,17 @@ export default function LoginPage() {
               >
                 <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                 <p className="text-sm text-red-400">{error}</p>
+              </motion.div>
+            )}
+
+            {successMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 flex items-center gap-3"
+              >
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <p className="text-sm text-green-400">{successMessage}</p>
               </motion.div>
             )}
 

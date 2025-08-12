@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy,
@@ -34,8 +34,8 @@ export function BadgeSystem({ userId: _ }: { userId?: string }) {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
 
-  // 더미 배지 데이터
-  const mockBadges: Badge[] = [
+  // 더미 배지 데이터 - useMemo로 최적화
+  const mockBadges: Badge[] = useMemo(() => [
     {
       id: 'first-steps',
       name: '첫 발걸음',
@@ -91,7 +91,7 @@ export function BadgeSystem({ userId: _ }: { userId?: string }) {
       maxProgress: 10,
       rarity: 'legendary',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     setBadges(mockBadges);

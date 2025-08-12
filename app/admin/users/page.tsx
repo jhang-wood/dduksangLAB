@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Users, Search, Filter, Trash2, Shield, ShieldCheck, Eye } from 'lucide-react';
 import Header from '@/components/Header';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 
@@ -21,7 +22,7 @@ interface User {
   updated_at: string;
 }
 
-export default function AdminUsersPage() {
+function AdminUsersPageContent() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,30 +62,9 @@ export default function AdminUsersPage() {
     }
   }, [searchTerm, roleFilter]);
 
-  const checkAdminAccess = useCallback(async () => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role !== 'admin') {
-      router.push('/');
-      return;
-    }
-
-    void fetchUsers();
-  }, [user, router, fetchUsers]);
-
   useEffect(() => {
-    void checkAdminAccess();
-  }, [checkAdminAccess]);
+    void fetchUsers();
+  }, [fetchUsers]);
 
   useEffect(() => {
     if (!loading) {
@@ -306,5 +286,13 @@ export default function AdminUsersPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <ProtectedRoute requireAdmin>
+      <AdminUsersPageContent />
+    </ProtectedRoute>
   );
 }
