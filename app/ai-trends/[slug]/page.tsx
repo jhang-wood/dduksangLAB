@@ -42,13 +42,25 @@ const mockTrends = [
 
 // Generate static params for all known slugs
 export async function generateStaticParams() {
-  return mockTrends.map((trend) => ({
-    slug: trend.slug,
-  }));
+  // Include both encoded and decoded versions
+  const params = [];
+  
+  for (const trend of mockTrends) {
+    // Original slug
+    params.push({ slug: trend.slug });
+    // URL encoded version
+    params.push({ slug: encodeURIComponent(trend.slug) });
+  }
+  
+  console.log('Generated static params:', params);
+  return params;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+  let { slug } = params;
+
+  // URL decode the slug to handle Korean characters
+  slug = decodeURIComponent(slug);
 
   // Find trend data from mock data
   const trend = mockTrends.find(t => t.slug === slug);
@@ -109,12 +121,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Force static generation
-export const dynamic = 'force-static';
-export const revalidate = false; // 완전 정적 생성
+// Dynamic routing with ISR
+export const dynamic = 'auto';
+export const revalidate = 3600; // 1시간마다 revalidate
 
 export default async function AITrendDetailPage({ params }: Props) {
-  const { slug } = params;
+  let { slug } = params;
+
+  // URL decode the slug to handle Korean characters
+  slug = decodeURIComponent(slug);
+  
+  console.log('Page - Looking for slug:', slug);
+  console.log('Page - Available slugs:', mockTrends.map(t => t.slug));
 
   // Check if slug exists in our mock data
   const trendExists = mockTrends.some(trend => trend.slug === slug);

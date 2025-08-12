@@ -135,7 +135,13 @@ GitHub Copilot Chat이 개발자들의 코딩 경험을 더욱 향상시키는 �
 
 export async function GET(_request: Request, { params }: Props) {
   try {
-    const { slug } = params;
+    let { slug } = params;
+    
+    // URL decode the slug to handle Korean characters
+    slug = decodeURIComponent(slug);
+    
+    console.log('Looking for slug:', slug);
+    console.log('Available slugs:', mockTrends.map(t => t.slug));
     
     // Find the trend by slug
     const trend = mockTrends.find(t => t.slug === slug);
