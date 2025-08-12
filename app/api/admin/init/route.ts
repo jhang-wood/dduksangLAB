@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { initializeAdminUser, checkAdminExists } from '@/lib/admin-utils';
 import { logger } from '@/lib/logger';
 
+// Prevent this route from being pre-rendered at build time
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     logger.log('[API] Admin initialization requested');
