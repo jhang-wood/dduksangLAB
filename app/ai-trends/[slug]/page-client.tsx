@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Calendar, Eye, ArrowLeft, Tag, Share2, Copy } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,37 +27,15 @@ interface AITrend {
 
 interface AITrendDetailClientProps {
   slug: string;
+  trend: AITrend | null;
+  relatedTrends: AITrend[];
 }
 
-export default function AITrendDetailClient({ slug }: AITrendDetailClientProps) {
-  const [trend, setTrend] = useState<AITrend | null>(null);
-  const [relatedTrends, setRelatedTrends] = useState<AITrend[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function AITrendDetailClient({ slug, trend: initialTrend, relatedTrends: initialRelatedTrends }: AITrendDetailClientProps) {
+  const [trend] = useState<AITrend | null>(initialTrend);
+  const [relatedTrends] = useState<AITrend[]>(initialRelatedTrends);
+  const [loading] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    const fetchTrend = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/ai-trends/slug/${slug}`);
-        if (response.ok) {
-          const data = await response.json();
-          setTrend(data);
-          setRelatedTrends(data.relatedTrends || []);
-        } else {
-          console.error('Failed to fetch trend');
-        }
-      } catch (error) {
-        console.error('Error fetching trend:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      void fetchTrend();
-    }
-  }, [slug]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
