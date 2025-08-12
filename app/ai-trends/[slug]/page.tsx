@@ -11,7 +11,7 @@ const mockTrends = [
   {
     id: '1',
     title: '2025년 AI 자동화 혁명: 테스트 게시글',
-    slug: 'test-ai-automation-2025',
+    slug: '2025년-AI-자동화-혁명-테스트-게시글',
     summary: 'AI 자동화가 2025년에 어떻게 모든 산업을 변화시킬지 살펴보겠습니다.',
     content: `# 2025년 AI 자동화 혁명: 테스트 게시글
 
@@ -123,7 +123,7 @@ GitHub Copilot Chat이 개발자들의 코딩 경험을 더욱 향상시키는 �
 // Generate static params for all known slugs
 export async function generateStaticParams() {
   return [
-    { slug: 'test-ai-automation-2025' },
+    { slug: '2025년-AI-자동화-혁명-테스트-게시글' },
     { slug: 'chatgpt-4-multimodal-features' }, 
     { slug: 'github-copilot-chat-update' }
   ];
