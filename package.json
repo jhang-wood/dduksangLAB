@@ -9,7 +9,6 @@
     "lint": "next lint",
     "env:validate": "node scripts/validate-env.js",
     "type-check": "tsc --noEmit",
-    
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -17,7 +16,6 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:all": "npm run test:ci && npm run test:e2e",
-    
     "claude": "node scripts/claude-helper.js",
     "claude:fix": "node scripts/claude-helper.js fix",
     "claude:commit": "node scripts/claude-helper.js commit",
@@ -47,6 +45,7 @@
     "@playwright/test": "^1.54.2",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

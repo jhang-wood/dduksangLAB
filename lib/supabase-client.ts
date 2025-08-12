@@ -5,8 +5,10 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // Validate environment variables
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing required Supabase environment variables. Please check your .env file.');
+// Validate environment variables - Skip in CI/test environments
+const isCIEnvironment = process.env.CI === "true" || process.env.NODE_ENV === "test";
+if (!isCIEnvironment && (!supabaseUrl || !supabaseAnonKey)) {
+  throw new Error("Missing required Supabase environment variables. Please check your .env file.");
 }
 
 // Log environment variable status for debugging (development only)

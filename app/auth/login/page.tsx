@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
@@ -17,20 +17,22 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { signIn } = useAuth();
 
   useEffect(() => {
-    const message = searchParams.get('message');
-    if (message) {
-      setSuccessMessage(message);
-      // URL에서 메시지 파라미터 제거
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete('message');
-      window.history.replaceState({}, '', newUrl.toString());
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get("message");
+      if (message) {
+        setSuccessMessage(message);
+        
+        // URL에서 메시지 파라미터 제거
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("message");
+        window.history.replaceState({}, "", newUrl.toString());
+      }
     }
-  }, [searchParams]);
-
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

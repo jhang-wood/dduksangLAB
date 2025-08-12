@@ -50,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
     logger.log('[Auth] Fetching profile for user:', userId);
@@ -87,7 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    setMounted(true);
     
     // 초기 세션 확인
     void supabase.auth.getSession().then(({ data: { session } }: any) => {
@@ -113,10 +111,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // SSR 중에는 컨텍스트 제공하지 않음
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -189,14 +183,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = useMemo(() => {
-    const adminStatus = userProfile?.role === 'admin';
+    if (!userProfile) return false;
+    const adminStatus = userProfile.role === 'admin';
     logger.log('[Auth] isAdmin calculation:', {
       userProfile: userProfile,
-      role: userProfile?.role,
+      role: userProfile.role,
       isAdmin: adminStatus,
     });
     return adminStatus;
-  }, [userProfile]);
+  }, [userProfile]); // 의존성을 더 구체적으로 지정
 
   const value = {
     user,
