@@ -49,7 +49,18 @@ const nextConfig = {
         net: false,
         tls: false,
         crypto: false,
+        'ws': false,
+        'websocket': false,
       };
+      
+      // 서버 빌드에서 브라우저 전용 모듈들 완전 차단
+      config.externals = [
+        ...(config.externals || []),
+        '@supabase/realtime-js',
+        '@supabase/gotrue-js',
+        'websocket',
+        'ws'
+      ];
     }
     
     // 프로덕션 빌드 최적화
@@ -75,13 +86,17 @@ const nextConfig = {
       new (require('webpack')).DefinePlugin({
         'typeof self': JSON.stringify('undefined'),
         self: 'undefined',
+        'process.browser': JSON.stringify(false),
       })
     );
     
-    // 추가 webpack 설정으로 self 오류 방지
+    // 추가 webpack 설정으로 self 오류 방지 및 problematic 모듈 무시
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@supabase/realtime-js': false,
+      '@supabase/realtime-js': require.resolve('./lib/mock-realtime.ts'),
+      '@supabase/gotrue-js': false,
+      'ws': false,
+      'websocket': false,
     };
     
     return config;
