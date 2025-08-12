@@ -11,7 +11,7 @@ const mockTrends = [
   {
     id: '1',
     title: '2025년 AI 자동화 혁명: 테스트 게시글',
-    slug: '2025년-AI-자동화-혁명-테스트-게시글',
+    slug: 'test-ai-automation-2025',
     summary: 'AI 자동화가 2025년에 어떻게 모든 산업을 변화시킬지 살펴보겠습니다.',
     seo_title: '2025년 AI 자동화 혁명 완전 분석',
     seo_description: 'AI 자동화가 2025년에 어떻게 모든 산업을 변화시킬지 상세히 분석합니다.',
@@ -52,7 +52,6 @@ export async function generateStaticParams() {
     params.push({ slug: encodeURIComponent(trend.slug) });
   }
   
-  console.log('Generated static params:', params);
   return params;
 }
 
@@ -60,7 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   let { slug } = params;
 
   // URL decode the slug to handle Korean characters
-  slug = decodeURIComponent(slug);
+  try {
+    slug = decodeURIComponent(slug);
+  } catch (e) {
+    // If decoding fails, use original slug
+  }
 
   // Find trend data from mock data
   const trend = mockTrends.find(t => t.slug === slug);
@@ -129,10 +132,11 @@ export default async function AITrendDetailPage({ params }: Props) {
   let { slug } = params;
 
   // URL decode the slug to handle Korean characters
-  slug = decodeURIComponent(slug);
-  
-  console.log('Page - Looking for slug:', slug);
-  console.log('Page - Available slugs:', mockTrends.map(t => t.slug));
+  try {
+    slug = decodeURIComponent(slug);
+  } catch (e) {
+    // If decoding fails, use original slug
+  }
 
   // Check if slug exists in our mock data
   const trendExists = mockTrends.some(trend => trend.slug === slug);
