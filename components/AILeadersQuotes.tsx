@@ -76,20 +76,20 @@ export default function AILeadersQuotes() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-offWhite-200 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-offWhite-200 mb-4">
             2025년 8월,{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
               AI 리더들이 말하는 미래
             </span>
           </h2>
-          <p className="text-lg text-offWhite-400">
+          <p className="text-base sm:text-lg text-offWhite-400">
             세계 최고의 AI 기업 CEO들이 예측하는 AGI 시대
           </p>
         </motion.div>
 
         {/* Quote Carousel */}
         <div className="relative">
-          <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 md:p-12">
+          <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentLeader.id}
@@ -100,26 +100,26 @@ export default function AILeadersQuotes() {
                 className="relative"
               >
                 {/* Quote Icon */}
-                <Quote className="absolute -top-4 -left-4 w-12 h-12 text-metallicGold-500/20" />
+                <Quote className="absolute -top-2 -left-2 sm:-top-4 sm:-left-4 w-8 h-8 sm:w-12 sm:h-12 text-metallicGold-500/20" />
                 
                 {/* Quote Content */}
-                <div className={`bg-gradient-to-br ${currentLeader.color} rounded-2xl p-8 mb-6`}>
-                  <p className="text-xl md:text-2xl lg:text-3xl font-medium text-offWhite-200 leading-relaxed">
+                <div className={`bg-gradient-to-br ${currentLeader.color} rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-4 sm:mb-6`}>
+                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-medium text-offWhite-200 leading-relaxed">
                     "{currentLeader.quote}"
                   </p>
                 </div>
 
                 {/* Leader Info */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                   <div>
-                    <h3 className="text-2xl font-bold text-metallicGold-500">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-metallicGold-500">
                       {currentLeader.name}
                     </h3>
-                    <p className="text-offWhite-400">
+                    <p className="text-sm sm:text-base text-offWhite-400">
                       {currentLeader.role}, {currentLeader.company}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-offWhite-500">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-offWhite-500">
                     <ExternalLink className="w-4 h-4" />
                     <span>{currentLeader.source}</span>
                   </div>
@@ -128,13 +128,13 @@ export default function AILeadersQuotes() {
             </AnimatePresence>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between mt-8">
+            <div className="flex items-center justify-between mt-6 sm:mt-8">
               <button
                 onClick={prevQuote}
-                className="p-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-xl hover:bg-metallicGold-500/20 transition-all"
+                className="p-2 sm:p-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-lg sm:rounded-xl hover:bg-metallicGold-500/20 transition-all"
                 aria-label="Previous quote"
               >
-                <ChevronLeft className="w-6 h-6 text-metallicGold-500" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-metallicGold-500" />
               </button>
 
               {/* Dots Indicator */}
@@ -155,10 +155,10 @@ export default function AILeadersQuotes() {
 
               <button
                 onClick={nextQuote}
-                className="p-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-xl hover:bg-metallicGold-500/20 transition-all"
+                className="p-2 sm:p-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-lg sm:rounded-xl hover:bg-metallicGold-500/20 transition-all"
                 aria-label="Next quote"
               >
-                <ChevronRight className="w-6 h-6 text-metallicGold-500" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-metallicGold-500" />
               </button>
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function AILeadersQuotes() {
           viewport={{ once: true }}
           className="mt-12 text-center"
         >
-          <p className="text-lg text-offWhite-400">
+          <p className="text-sm sm:text-base md:text-lg text-offWhite-400 px-4">
             <span className="text-metallicGold-500 font-semibold">공통 예측:</span>{' '}
             AGI는 2-5년 내 현실이 됩니다. 지금 준비하지 않으면 늦습니다.
           </p>
