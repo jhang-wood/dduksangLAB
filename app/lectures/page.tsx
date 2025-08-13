@@ -147,10 +147,10 @@ export default function LecturesPage() {
         <RealTimeCounter />
         
         {/* Main Content Container with 2 Columns */}
-        <div className="container mx-auto max-w-7xl px-4 py-8">
-          <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="flex flex-col lg:flex-row gap-12">
             {/* Left Column: Main Content */}
-            <div className="w-full">
+            <div className="flex-1 max-w-4xl">
               {/* Claude Hero Section */}
               <ClaudeHeroSection />
 
@@ -355,7 +355,7 @@ export default function LecturesPage() {
             </div>
 
             {/* Right Column: Sticky Price Card */}
-            <div className="lg:block hidden">
+            <div className="lg:block hidden w-[380px] flex-shrink-0">
               <StickyPriceCard
                 originalPrice={masterCourse.originalPrice}
                 discountedPrice={masterCourse.price}

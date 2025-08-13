@@ -29,14 +29,14 @@ export default function StickyPriceCard({
 
   return (
     <motion.div 
-      className="sticky top-32"
+      className="sticky top-24"
       style={{ y }}
     >
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-deepBlack-300/50 backdrop-blur-xl rounded-3xl p-6 shadow-2xl"
+        className="bg-gradient-to-b from-deepBlack-300/60 to-deepBlack-400/60 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-metallicGold-900/20"
       >
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -56,21 +56,21 @@ export default function StickyPriceCard({
         </div>
 
         {/* Price Section */}
-        <div className="bg-deepBlack-600/50 rounded-2xl p-4 mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-offWhite-500 line-through text-sm">
+        <div className="bg-gradient-to-r from-deepBlack-600/60 to-deepBlack-700/60 rounded-2xl p-6 mb-6 border border-metallicGold-900/10">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-offWhite-400 line-through text-base">
               ₩{originalPrice.toLocaleString()}
             </span>
-            <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">
+            <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
               {discount}% OFF
             </span>
           </div>
           <div className="text-center">
-            <p className="text-3xl font-bold text-metallicGold-500">
+            <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-400 to-metallicGold-600">
               ₩{discountedPrice.toLocaleString()}
             </p>
-            <p className="text-xs text-offWhite-500 mt-1">
-              총 {Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)}% 할인
+            <p className="text-sm text-metallicGold-400 mt-2 font-medium">
+              무려 {((originalPrice - discountedPrice)).toLocaleString()}원 할인!
             </p>
           </div>
         </div>
@@ -79,19 +79,19 @@ export default function StickyPriceCard({
         {isEnrolled ? (
           <button
             onClick={() => router.push('/lectures/claude-code-master')}
-            className="w-full py-4 bg-green-500/20 text-green-400 rounded-xl font-bold text-lg hover:bg-green-500/30 transition-all flex items-center justify-center gap-2"
+            className="w-full py-5 bg-green-500/20 text-green-400 rounded-2xl font-bold text-lg hover:bg-green-500/30 transition-all flex items-center justify-center gap-2 border border-green-500/30"
           >
-            <Check size={20} />
+            <Check size={22} />
             학습 계속하기
           </button>
         ) : (
           <button
             onClick={onEnrollClick}
-            className="w-full py-4 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold text-lg hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-2"
+            className="w-full py-5 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-2xl font-bold text-xl hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-xl hover:shadow-2xl transform hover:scale-[1.02] flex items-center justify-center gap-3"
           >
-            <Gift size={20} />
+            <Gift size={24} />
             지금 수강 신청하기
-            <ArrowRight size={18} />
+            <ArrowRight size={20} />
           </button>
         )}
 
@@ -142,12 +142,14 @@ export default function StickyPriceCard({
         <motion.div
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="mt-6 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl"
+          className="mt-6 p-5 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-2xl border border-orange-500/20"
         >
-          <p className="text-sm text-center text-offWhite-200">
-            ⏰ <span className="font-bold text-yellow-500">24시간 한정</span>
+          <p className="text-center">
+            <span className="text-2xl">⏰</span>
             <br />
-            <span className="text-xs text-offWhite-400">이 가격은 다시 없습니다</span>
+            <span className="font-bold text-yellow-400 text-base">24시간 한정 특가</span>
+            <br />
+            <span className="text-sm text-offWhite-300 mt-1">이 가격은 곧 종료됩니다</span>
           </p>
         </motion.div>
 
