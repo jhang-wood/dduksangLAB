@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,32 +12,45 @@ export async function GET(request: NextRequest) {
     // Query parameters
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '12');
+    const page = parseInt(searchParams.get('page') || '1');
+    const offset = (page - 1) * limit;
 
-    // Build query
-    let query = supabase
+    // Build base query for counting
+    let countQuery = supabase
+      .from('ai_trends')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_published', true);
+
+    // Build data query
+    let dataQuery = supabase
       .from('ai_trends')
       .select('*')
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
-    // Apply filters
+    // Apply filters to both queries
     if (category && category !== 'all') {
-      query = query.eq('category', category);
+      countQuery = countQuery.eq('category', category);
+      dataQuery = dataQuery.eq('category', category);
     }
 
     if (featured === 'true') {
-      query = query.eq('is_featured', true);
+      countQuery = countQuery.eq('is_featured', true);
+      dataQuery = dataQuery.eq('is_featured', true);
     }
 
-    // Apply pagination
-    query = query.range(offset, offset + limit - 1);
+    // Apply pagination to data query
+    dataQuery = dataQuery.range(offset, offset + limit - 1);
 
-    const { data: trends, error } = await query;
+    // Execute both queries
+    const [{ count: totalCount, error: countError }, { data: trends, error: dataError }] = await Promise.all([
+      countQuery,
+      dataQuery
+    ]);
 
-    if (error) {
-      console.error('Database error:', error);
+    if (countError || dataError) {
+      console.error('Database error:', countError || dataError);
       return NextResponse.json({ error: 'Failed to fetch trends' }, { status: 500 });
     }
 
@@ -48,11 +62,23 @@ export async function GET(request: NextRequest) {
       seo_keywords: trend.seo_keywords || []
     })) || [];
 
-    return NextResponse.json({
-      trends: transformedTrends,
-      count: transformedTrends.length,
-      hasMore: transformedTrends.length === limit
+    const totalPages = Math.ceil((totalCount || 0) / limit);
+
+    const response = NextResponse.json({
+      data: transformedTrends,
+      pagination: {
+        page,
+        limit,
+        total: totalCount || 0,
+        totalPages,
+        hasMore: page < totalPages
+      }
     });
+
+    // Add cache headers for better performance
+    response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=300');
+    
+    return response;
 
   } catch (error) {
     console.error('API error:', error);
