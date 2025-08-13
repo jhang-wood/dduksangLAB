@@ -6,8 +6,8 @@ import { logger } from '@/lib/logger'
 import { env } from '@/lib/env'
 
 const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseServiceKey
+  env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY!
 )
 
 interface Props {
