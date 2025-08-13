@@ -14,10 +14,22 @@ const nextConfig = {
     return 'build-' + Date.now();
   },
   
+  // 정적 생성 완전 비활성화
+  trailingSlash: false,
+  skipTrailingSlashRedirect: true,
+  
+  // 모든 페이지를 서버사이드 렌더링으로 강제 (빌드 시 정적 생성 방지)
+  async generateStaticParams() {
+    return [];
+  },
+  
   // 실험적 기능 (성능 개선)
   experimental: {
     optimizeCss: false,
     serverComponentsExternalPackages: [],
+    // 정적 생성 완전 비활성화
+    staticPageGenerationTimeout: 0,
+    workerThreads: false,
     turbo: {
       rules: {
         '*.svg': {
