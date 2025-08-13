@@ -320,7 +320,7 @@ export default function HomePage() {
                   badge: '비법 공개',
                   title: '고가 강의 "자동 분석 시스템" 구축법',
                   description:
-                    "300만원짜리 강의 결제 대신, AI에게 강의 내용을 분석시켜 핵심 커리큘럼과 노하우만 추출하는 시스템을 직접 만듭니다. 더 이상 정보의 소비자가 아닌, 정보의 '지배자'가 되십시오.",
+                    '300만원짜리 강의 결제 대신,\nAI에게 강의 내용을 분석시켜\n핵심 커리큘럼과 노하우만 추출하는 시스템을 직접 만듭니다.\n더 이상 정보의 소비자가 아닌, 정보의 \'지배자\'가 되십시오.',
                   icon: Brain,
                   highlight: '정보의 지배자',
                 },
@@ -329,7 +329,7 @@ export default function HomePage() {
                   badge: '실전 데모',
                   title: '실시간 "텔레그램 코딩" 시연',
                   description:
-                    '지하철에서, 카페에서, 어디서든 텔레그램 채팅만으로 즉시 프로그램을 만드는 혁신적인 방법. 컴퓨터 없이도 아이디어를 현실로 만드는 경험을 하게 됩니다.',
+                    '지하철에서, 카페에서, 어디서든\n텔레그램 채팅만으로 즉시 프로그램을 만드는 혁신적인 방법.\n컴퓨터 없이도 아이디어를 현실로 만드는 경험을 하게 됩니다.',
                   icon: MessageSquare,
                   highlight: '언제 어디서든',
                 },
@@ -338,7 +338,7 @@ export default function HomePage() {
                   badge: '즉시 활용',
                   title: '밥 먹듯이 EXE 뽑아내는 "메타 자동화" 설계도',
                   description:
-                    "아이디어만 있으면 클릭 몇 번에 자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다. 이는 당신이 평생 써먹을 '디지털 건물'을 짓는 능력입니다.",
+                    '아이디어만 있으면 클릭 몇 번에\n자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다.\n이는 당신이 평생 써먹을 \'디지털 건물\'을 짓는 능력입니다.',
                   icon: Rocket,
                   highlight: '평생 써먹을 능력',
                 },
@@ -366,7 +366,7 @@ export default function HomePage() {
                       <h3 className="text-xl md:text-2xl font-bold text-offWhite-200 mb-3">
                         {secret.title}
                       </h3>
-                      <p className="text-lg text-offWhite-400 leading-relaxed">
+                      <p className="text-lg text-offWhite-400 leading-relaxed whitespace-pre-line">
                         {secret.description}
                       </p>
                       <p className="text-metallicGold-500 font-bold mt-3">→ {secret.highlight}</p>
