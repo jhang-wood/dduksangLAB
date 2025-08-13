@@ -36,7 +36,7 @@ import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { PaymentButton } from '@/hooks/usePayment';
-import AILeadersQuotes from '@/components/AILeadersQuotes';
+import AILeadersCards from '@/components/AILeadersCards';
 import VibeCodingShowcase from '@/components/VibeCodingShowcase';
 import CouponSystem from '@/components/CouponSystem';
 import RealTimeCounter from '@/components/RealTimeCounter';
@@ -272,8 +272,8 @@ export default function LecturesPage() {
           </div>
         </section>
 
-        {/* AI Leaders Quotes */}
-        <AILeadersQuotes />
+        {/* AI Leaders Cards */}
+        <AILeadersCards />
         
         {/* Vibe Coding Showcase */}
         <VibeCodingShowcase />
