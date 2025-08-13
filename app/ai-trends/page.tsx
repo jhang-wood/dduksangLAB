@@ -1,27 +1,10 @@
-import { Metadata } from 'next';
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'AI 트렌드 | 떡상연구소',
-  description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-  keywords: 'AI, 인공지능, AI 트렌드, AI 기술, AI 도구, 떡상연구소',
-  openGraph: {
-    title: 'AI 트렌드 | 떡상연구소',
-    description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-    type: 'website',
-    locale: 'ko_KR',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AI 트렌드 | 떡상연구소',
-    description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-  },
-  alternates: {
-    canonical: '/ai-trends',
-  },
-};
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 
 // Dynamic rendering to avoid build errors
 export const dynamic = 'force-dynamic';
@@ -129,6 +112,11 @@ const categories = [
 
 export default function AITrendsPage() {
   const featuredTrends = staticTrends.filter(trend => trend.is_featured);
+
+  // 페이지 제목만 간단히 설정
+  useEffect(() => {
+    document.title = 'AI 트렌드 | 떡상연구소';
+  }, []);
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -147,125 +135,121 @@ export default function AITrendsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Simple Header */}
-      <header className="bg-gray-800 py-4">
-        <div className="container mx-auto px-4">
-          <Link href="/" className="text-xl font-bold text-yellow-400">
-            떡상연구소
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+      <NeuralNetworkBackground />
+      <div className="relative z-10">
+        <Header currentPage="ai-trends" />
 
-      {/* Hero Section */}
-      <section className="pt-16 pb-16 px-4">
-        <div className="container mx-auto max-w-7xl text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-yellow-400">
-            AI 트렌드
-          </h1>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요
-          </p>
-        </div>
-      </section>
-
-      {/* Category Tabs */}
-      <section className="px-4 mb-8">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                className="px-6 py-3 rounded-lg font-medium whitespace-nowrap bg-yellow-500 text-gray-900"
-              >
-                {category.label}
-              </button>
-            ))}
+        {/* Hero Section */}
+        <section className="pt-32 pb-16 px-4">
+          <div className="container mx-auto max-w-7xl text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900">
+              AI 트렌드
+            </h1>
+            <p className="text-lg text-offWhite-300 max-w-3xl mx-auto">
+              매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요
+            </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Trends */}
-      <section className="px-4 mb-12">
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-2xl font-bold text-white mb-6">주목할 만한 트렌드</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredTrends.map(trend => (
-              <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
-                <article className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-yellow-500 transition-all">
-                  <div className="relative h-48 bg-gray-700 flex items-center justify-center">
-                    <div className="text-4xl">🤖</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-400">
-                      <span className="px-2 py-1 bg-yellow-500/20 rounded-full text-yellow-400">
-                        {trend.category}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {formatDate(trend.published_at)}
-                      </span>
+        {/* Category Tabs */}
+        <section className="px-4 mb-8">
+          <div className="container mx-auto max-w-7xl">
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  className="px-6 py-3 rounded-lg font-medium whitespace-nowrap bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Trends */}
+        <section className="px-4 mb-12">
+          <div className="container mx-auto max-w-7xl">
+            <h2 className="text-2xl font-bold text-offWhite-200 mb-6">주목할 만한 트렌드</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredTrends.map(trend => (
+                <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
+                  <article className="bg-deepBlack-800/30 border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/40 transition-all backdrop-blur-sm">
+                    <div className="relative h-48 bg-deepBlack-600/50 flex items-center justify-center">
+                      <div className="text-4xl">🤖</div>
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-yellow-400 transition-colors">
-                      {trend.title}
-                    </h3>
-                    <p className="text-gray-300 mb-4">{trend.summary}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <Eye className="w-4 h-4" />
-                        <span>{formatViewCount(trend.view_count)}</span>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3 text-xs text-offWhite-400">
+                        <span className="px-2 py-1 bg-metallicGold-500/20 rounded-full text-metallicGold-500">
+                          {trend.category}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {formatDate(trend.published_at)}
+                        </span>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* All Trends Grid */}
-      <section className="px-4 pb-20">
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-2xl font-bold text-white mb-6">모든 트렌드</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {staticTrends.map(trend => (
-              <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
-                <article className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-yellow-500 transition-all h-full">
-                  <div className="relative h-48 bg-gray-700 flex items-center justify-center">
-                    <div className="text-3xl">✨</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-400">
-                      <span className="px-2 py-1 bg-yellow-500/20 rounded-full text-yellow-400">
-                        {trend.category}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatDate(trend.published_at)}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors">
-                      {trend.title}
-                    </h3>
-                    <p className="text-sm text-gray-300 mb-4">
-                      {trend.summary}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <Eye className="w-4 h-4" />
-                        <span>{formatViewCount(trend.view_count)}</span>
+                      <h3 className="text-xl font-semibold text-offWhite-200 mb-3 group-hover:text-metallicGold-500 transition-colors">
+                        {trend.title}
+                      </h3>
+                      <p className="text-offWhite-300 mb-4">{trend.summary}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-offWhite-400">
+                          <Eye className="w-4 h-4" />
+                          <span>{formatViewCount(trend.view_count)}</span>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-metallicGold-500 group-hover:translate-x-1 transition-transform" />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform" />
                     </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+                  </article>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* All Trends Grid */}
+        <section className="px-4 pb-20">
+          <div className="container mx-auto max-w-7xl">
+            <h2 className="text-2xl font-bold text-offWhite-200 mb-6">모든 트렌드</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {staticTrends.map(trend => (
+                <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
+                  <article className="bg-deepBlack-800/30 border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/40 transition-all h-full backdrop-blur-sm">
+                    <div className="relative h-48 bg-deepBlack-600/50 flex items-center justify-center">
+                      <div className="text-3xl">✨</div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3 text-xs text-offWhite-400">
+                        <span className="px-2 py-1 bg-metallicGold-500/20 rounded-full text-metallicGold-500">
+                          {trend.category}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {formatDate(trend.published_at)}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-offWhite-200 mb-2 group-hover:text-metallicGold-500 transition-colors">
+                        {trend.title}
+                      </h3>
+                      <p className="text-sm text-offWhite-300 mb-4">
+                        {trend.summary}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-offWhite-400">
+                          <Eye className="w-4 h-4" />
+                          <span>{formatViewCount(trend.view_count)}</span>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-metallicGold-500 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
