@@ -167,15 +167,15 @@ export default function HomePage() {
               {[
                 {
                   icon: Brain,
-                  title: '최정상 1%의 AI Toolset',
+                  title: '휴대폰 코딩',
                   description:
-                    'Claude Code + Super Claude\n대부분이 세팅조차 못하는\n압도적인 도구를 10분 만에',
+                    '지하철에서, 카페에서, 침대에서\n휴대폰 하나로 AI와 대화하며\n실시간으로 프로그램을 만듭니다',
                 },
                 {
                   icon: MessageSquare,
                   title: 'AI Agent 조직 협업',
                   description:
-                    'AI agent끼리 협업을 하고\n조직을 만들어갑니다.\ncontext7 MCP로 최신문서기준 UI 디자인',
+                    '당신이 CEO가 되고 AI들이 직원이 됩니다\n서로 업무를 나누고 보고하며\n24시간 일하는 AI 회사를 만듭니다',
                 },
                 {
                   icon: Rocket,
