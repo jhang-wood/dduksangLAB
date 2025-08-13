@@ -7,68 +7,81 @@ import { Quote, Sparkles, Brain, Cpu, Zap, Rocket, Globe } from 'lucide-react';
 const aiLeaders = [
   {
     id: 1,
-    name: 'Sam Altman',
-    role: 'OpenAI CEO',
+    name: '샘 알트먼',
+    role: 'OpenAI 최고경영자',
     company: 'OpenAI',
-    quote: '2025년 AI 에이전트가 직장에 합류합니다. AGI는 전통적 이해대로 구축 가능합니다',
-    source: 'Bloomberg Interview 2025',
+    quote: 'AI 에이전트가 2025년 직장에 합류할 것입니다. AGI는 우리가 생각하는 방식대로 구현 가능합니다.',
+    source: '블룸버그 인터뷰 2025',
     gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
     bgGradient: 'from-emerald-500/10 via-teal-500/10 to-cyan-500/10',
     icon: Brain,
-    avatar: '👨‍💼',
+    avatar: '/images/Ai_human/샘알트먼.png',
     glow: 'shadow-emerald-500/50',
   },
   {
     id: 2,
-    name: 'Elon Musk',
-    role: 'xAI Founder',
+    name: '일론 머스크',
+    role: 'xAI 창립자',
     company: 'xAI',
-    quote: 'AGI는 2025-2026년 사이 도래. 인간보다 똑똑한 AI가 내년 현실화됩니다',
-    source: 'Norway Wealth Fund Interview',
+    quote: 'AGI는 2025-2026년 사이에 도래할 것입니다. 인간보다 똑똑한 AI가 내년에 현실이 됩니다.',
+    source: '노르웨이 국부펀드 인터뷰',
     gradient: 'from-blue-500 via-indigo-500 to-purple-500',
     bgGradient: 'from-blue-500/10 via-indigo-500/10 to-purple-500/10',
     icon: Rocket,
-    avatar: '🚀',
+    avatar: '/images/Ai_human/일론머스크.png',
     glow: 'shadow-blue-500/50',
   },
   {
     id: 3,
-    name: 'Jensen Huang',
-    role: 'NVIDIA CEO',
+    name: '젠슨 황',
+    role: 'NVIDIA 최고경영자',
     company: 'NVIDIA',
-    quote: '5년 내 AGI가 모든 테스트에서 인간을 능가할 것입니다',
-    source: 'GTC 2025 Keynote',
+    quote: '5년 안에 AGI가 모든 테스트에서 인간을 능가할 것입니다. GPU가 AI 혁명의 중심입니다.',
+    source: 'GTC 2025 키노트',
     gradient: 'from-green-500 via-lime-500 to-yellow-500',
     bgGradient: 'from-green-500/10 via-lime-500/10 to-yellow-500/10',
     icon: Cpu,
-    avatar: '💻',
+    avatar: '/images/Ai_human/젠슨황.png',
     glow: 'shadow-green-500/50',
   },
   {
     id: 4,
-    name: 'Demis Hassabis',
-    role: 'DeepMind CEO',
+    name: '데미스 하사비스',
+    role: 'DeepMind 최고경영자',
     company: 'Google DeepMind',
-    quote: '5-10년 내 AGI 도래, 산업혁명보다 10배 크고 10배 빠른 변화',
-    source: 'Fortune Interview 2025',
+    quote: '5-10년 내에 AGI가 도래할 것입니다. 산업혁명보다 10배 크고 10배 빠른 변화가 올 것입니다.',
+    source: '포춘 인터뷰 2025',
     gradient: 'from-purple-500 via-pink-500 to-rose-500',
     bgGradient: 'from-purple-500/10 via-pink-500/10 to-rose-500/10',
     icon: Zap,
-    avatar: '🧠',
+    avatar: '/images/Ai_human/Hassabis.png',
     glow: 'shadow-purple-500/50',
   },
   {
     id: 5,
-    name: 'Satya Nadella',
-    role: 'Microsoft CEO',
+    name: '사티아 나델라',
+    role: 'Microsoft 최고경영자',
     company: 'Microsoft',
-    quote: 'AI 에이전트가 비즈니스 애플리케이션의 개념 자체를 붕괴시킬 것',
+    quote: 'AI 에이전트가 비즈니스 애플리케이션의 개념 자체를 완전히 바꿀 것입니다.',
     source: 'Microsoft AI Tour 2025',
     gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     bgGradient: 'from-orange-500/10 via-amber-500/10 to-yellow-500/10',
     icon: Globe,
-    avatar: '🌐',
+    avatar: '/images/Ai_human/Satya Nadella.png',
     glow: 'shadow-orange-500/50',
+  },
+  {
+    id: 6,
+    name: '제프리 힌튼',
+    role: 'AI의 아버지',
+    company: '토론토 대학교',
+    quote: 'AI가 인간의 지능을 뛰어넘는 순간이 생각보다 빨리 올 것입니다. 우리는 준비해야 합니다.',
+    source: 'AI 안전성 연구 2025',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    bgGradient: 'from-indigo-500/10 via-purple-500/10 to-pink-500/10',
+    icon: Brain,
+    avatar: '/images/Ai_human/Geoffrey Hinton.png',
+    glow: 'shadow-indigo-500/50',
   },
 ];
 
@@ -198,11 +211,19 @@ export default function AILeadersCards() {
                           
                           {/* Avatar */}
                           <motion.div
-                            animate={isHovered ? { scale: [1, 1.2, 1], rotate: [0, 360] } : {}}
-                            transition={{ duration: 3 }}
+                            animate={isHovered ? { scale: [1, 1.05, 1], x: [0, 2, -2, 0] } : {}}
+                            transition={{ duration: 2 }}
                             className="relative z-10"
                           >
-                            <div className="text-6xl">{leader.avatar}</div>
+                            {leader.avatar.startsWith('/images') ? (
+                              <img 
+                                src={leader.avatar} 
+                                alt={leader.name}
+                                className="w-full h-full rounded-2xl object-cover"
+                              />
+                            ) : (
+                              <div className="text-6xl">{leader.avatar}</div>
+                            )}
                           </motion.div>
                           
                           {/* Icon */}
@@ -241,7 +262,7 @@ export default function AILeadersCards() {
                       </div>
 
                       {/* Source */}
-                      <div className="mt-4 pt-4 border-t border-metallicGold-900/20">
+                      <div className="mt-4 pt-4">
                         <p className="text-xs text-offWhite-600 flex items-center gap-1">
                           <span className="w-2 h-2 bg-metallicGold-500 rounded-full animate-pulse" />
                           {leader.source}

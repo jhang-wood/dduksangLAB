@@ -13,7 +13,7 @@ export default function ClaudeHeroSection() {
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left: Text Content */}
           <motion.div

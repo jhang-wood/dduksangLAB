@@ -173,15 +173,15 @@ export default function HomePage() {
                 },
                 {
                   icon: MessageSquare,
-                  title: '텔레그램 코딩',
+                  title: 'AI Agent 조직 협업',
                   description:
-                    '언제 어디서든 채팅 하나로\n아이디어를 즉시 프로그램으로\n생각과 현실화 사이의 딜레이 0',
+                    'AI agent끼리 협업을 하고\n조직을 만들어갑니다.\ncontext7 MCP로 최신문서기준 UI 디자인',
                 },
                 {
                   icon: Rocket,
                   title: '메타 자동화',
                   description:
-                    '자동화를 자동화하는 기술\n명령어 한 줄로 복잡한 시스템을\n1분 만에 구축',
+                    '자동화를 자동화하는 기술\n명령어 한 줄로 복잡한 시스템을\n10분 만에 구축',
                 },
               ].map((item, index) => (
                 <motion.div
@@ -518,8 +518,23 @@ export default function HomePage() {
         </section>
 
         {/* Free Course CTA Section - 하단 무료강의 신청 */}
-        <section className="py-32 px-4 bg-deepBlack-800/50">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-32 px-4 relative overflow-hidden">
+          {/* Enhanced Multi-layer Background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-800/50 via-deepBlack-900/70 to-deepBlack-950/80" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,215,0,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(255,215,0,0.08),transparent_60%)]" />
+          
+          {/* Floating Geometric Elements */}
+          <div className="absolute top-20 left-10 w-24 h-24 border border-metallicGold-500/20 rounded-full animate-pulse-soft" />
+          <div className="absolute bottom-32 right-16 w-32 h-32 border border-metallicGold-600/15 rounded-full animate-float" />
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-metallicGold-400/25 rounded-xl rotate-45 animate-pulse-soft" />
+          
+          {/* Subtle Grid Pattern */}
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,215,0,0.3) 1px, transparent 0)`,
+            backgroundSize: '50px 50px'
+          }} />
+          <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -541,19 +556,30 @@ export default function HomePage() {
                 </span>
               </motion.div>
 
-              {/* 카드 2장을 맨 위로 이동 */}
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
-                {/* 자동화 프로그램 카드 */}
+              {/* Enhanced 3D 카드 2장을 맨 위로 이동 */}
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16" style={{ perspective: '1000px' }}>
+                {/* 자동화 프로그램 카드 - Enhanced 3D */}
                 <motion.div
-                  initial={{ x: -30, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
+                  initial={{ x: -30, opacity: 0, rotateY: -15 }}
+                  whileInView={{ x: 0, opacity: 1, rotateY: 0 }}
+                  whileHover={{ 
+                    rotateY: 8, 
+                    y: -15, 
+                    scale: 1.02,
+                    boxShadow: "0 25px 50px rgba(255, 215, 0, 0.25)"
+                  }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
                   viewport={{ once: true }}
-                  className="group relative"
+                  className="group relative transform-gpu"
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {/* Enhanced Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/30 to-metallicGold-600/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 scale-110" />
                   
-                  <div className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/40 transition-all duration-300">
+                  {/* 3D Card Body */}
+                  <div className="relative h-full bg-gradient-to-br from-deepBlack-300/60 via-deepBlack-400/40 to-deepBlack-500/60 backdrop-blur-md border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/50 transition-all duration-500 shadow-2xl">
+                    {/* Top Edge Highlight */}
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-metallicGold-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                       <Rocket className="w-10 h-10 text-metallicGold-500" />
                     </div>
@@ -585,17 +611,28 @@ export default function HomePage() {
                   </div>
                 </motion.div>
 
-                {/* 웹사이트 제작 카드 */}
+                {/* 웹사이트 제작 카드 - Enhanced 3D */}
                 <motion.div
-                  initial={{ x: 30, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  initial={{ x: 30, opacity: 0, rotateY: 15 }}
+                  whileInView={{ x: 0, opacity: 1, rotateY: 0 }}
+                  whileHover={{ 
+                    rotateY: -8, 
+                    y: -15, 
+                    scale: 1.02,
+                    boxShadow: "0 25px 50px rgba(255, 215, 0, 0.25)"
+                  }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
                   viewport={{ once: true }}
-                  className="group relative"
+                  className="group relative transform-gpu"
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {/* Enhanced Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/30 to-metallicGold-600/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 scale-110" />
                   
-                  <div className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/40 transition-all duration-300">
+                  {/* 3D Card Body */}
+                  <div className="relative h-full bg-gradient-to-br from-deepBlack-300/60 via-deepBlack-400/40 to-deepBlack-500/60 backdrop-blur-md border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/50 transition-all duration-500 shadow-2xl">
+                    {/* Top Edge Highlight */}
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-metallicGold-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                       <Sparkles className="w-10 h-10 text-metallicGold-500" />
                     </div>
@@ -639,29 +676,133 @@ export default function HomePage() {
                 <LimitedTimer />
               </div>
               
-              <p className="text-xl md:text-2xl text-offWhite-400 mb-16 leading-relaxed">
-                자동화 프로그램 / 웹사이트 무료로 만들어보기
-              </p>
+              {/* 모바일 친화적 체험 버튼 그룹 */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 max-w-2xl mx-auto mb-16">
+                {/* 자동화 프로그램 체험 버튼 */}
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -3,
+                    rotateX: 5,
+                    boxShadow: "0 20px 40px rgba(255, 215, 0, 0.3)"
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative flex-1 min-h-[48px] sm:min-h-[56px] overflow-hidden bg-gradient-to-br from-deepBlack-300/60 via-deepBlack-400/40 to-deepBlack-500/60 backdrop-blur-md border border-metallicGold-900/30 rounded-2xl p-6 hover:border-metallicGold-500/50 transition-all duration-500"
+                  style={{ perspective: '1000px' }}
+                >
+                  {/* 배경 글로우 효과 */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 via-transparent to-metallicGold-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                  
+                  {/* 상단 샤인 효과 */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-metallicGold-400/60 to-transparent" />
+                  </div>
+                  
+                  {/* 콘텐츠 */}
+                  <div className="relative flex flex-col items-center text-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Rocket className="w-6 h-6 text-metallicGold-500" />
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-offWhite-200 mb-1">
+                        자동화 프로그램 체험
+                      </h3>
+                      <p className="text-xs sm:text-sm text-offWhite-500">
+                        10분만에 EXE 파일 생성
+                      </p>
+                    </div>
+                    
+                    {/* 하단 액센트 */}
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                </motion.button>
 
-              {/* 콜투액션 버튼 추가 */}
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mb-8">
+                {/* 웹사이트 제작 체험 버튼 */}
+                <motion.button
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -3,
+                    rotateX: 5,
+                    boxShadow: "0 20px 40px rgba(255, 215, 0, 0.3)"
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative flex-1 min-h-[48px] sm:min-h-[56px] overflow-hidden bg-gradient-to-br from-deepBlack-300/60 via-deepBlack-400/40 to-deepBlack-500/60 backdrop-blur-md border border-metallicGold-900/30 rounded-2xl p-6 hover:border-metallicGold-500/50 transition-all duration-500"
+                  style={{ perspective: '1000px' }}
+                >
+                  {/* 배경 글로우 효과 */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 via-transparent to-metallicGold-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                  
+                  {/* 상단 샤인 효과 */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-metallicGold-400/60 to-transparent" />
+                  </div>
+                  
+                  {/* 콘텐츠 */}
+                  <div className="relative flex flex-col items-center text-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="w-6 h-6 text-metallicGold-500" />
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-offWhite-200 mb-1">
+                        웹사이트 제작 체험
+                      </h3>
+                      <p className="text-xs sm:text-sm text-offWhite-500">
+                        1시간만에 배포까지
+                      </p>
+                    </div>
+                    
+                    {/* 하단 액센트 */}
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                </motion.button>
+              </div>
+
+              {/* Enhanced 메인 CTA 버튼 */}
+              <motion.div 
+                whileHover={{ 
+                  scale: 1.03, 
+                  y: -3,
+                  boxShadow: "0 30px 60px rgba(255, 215, 0, 0.4)"
+                }} 
+                whileTap={{ scale: 0.97 }} 
+                className="relative mb-8"
+              >
+                {/* Enhanced Glow Background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-700 rounded-2xl blur-xl opacity-60 animate-pulse-soft scale-110" />
+                
                 <Link
                   href="/register"
-                  className="group relative inline-flex items-center gap-3 px-12 py-5 overflow-hidden rounded-2xl font-bold text-lg tracking-wide transition-all duration-300"
+                  className="group relative block overflow-hidden rounded-2xl transform-gpu"
                 >
-                  {/* Background gradient */}
+                  {/* Enhanced Gradient Background */}
                   <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 transition-all duration-300 group-hover:scale-105" />
-
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/30 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                  
+                  {/* Top Edge Highlight */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Enhanced Multi-layer Shine Effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1200" />
+                  </div>
+                  
+                  {/* Secondary Shine Wave */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-150">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/40 to-transparent -skew-x-6 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
                   </div>
 
-                  {/* Content */}
-                  <div className="relative flex items-center gap-3 text-deepBlack-900">
-                    <Sparkles className="w-6 h-6" />
-                    <span>무료 강의 즉시 신청하기</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {/* Enhanced Button Content */}
+                  <div className="relative px-12 py-5 flex items-center justify-center gap-3 text-deepBlack-900 font-bold text-lg tracking-wide">
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                      className="group-hover:animate-none"
+                    >
+                      <Sparkles className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                    </motion.div>
+                    <span className="group-hover:scale-105 transition-transform">무료 강의 즉시 신청하기</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 group-hover:scale-110 transition-all" />
                   </div>
                 </Link>
               </motion.div>

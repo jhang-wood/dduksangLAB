@@ -30,7 +30,7 @@ export default function StickyPriceCard({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-deepBlack-300/50 backdrop-blur-xl border border-metallicGold-500/30 rounded-3xl p-6 shadow-2xl"
+        className="bg-deepBlack-300/50 backdrop-blur-xl rounded-3xl p-6 shadow-2xl"
       >
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -73,7 +73,7 @@ export default function StickyPriceCard({
         {isEnrolled ? (
           <button
             onClick={() => router.push('/lectures/claude-code-master')}
-            className="w-full py-4 bg-green-500/20 text-green-400 rounded-xl font-bold text-lg border border-green-500/30 hover:bg-green-500/30 transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 bg-green-500/20 text-green-400 rounded-xl font-bold text-lg hover:bg-green-500/30 transition-all flex items-center justify-center gap-2"
           >
             <Check size={20} />
             학습 계속하기
@@ -136,7 +136,7 @@ export default function StickyPriceCard({
         <motion.div
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="mt-6 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl border border-red-500/30"
+          className="mt-6 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl"
         >
           <p className="text-sm text-center text-offWhite-200">
             ⏰ <span className="font-bold text-yellow-500">24시간 한정</span>
@@ -146,7 +146,7 @@ export default function StickyPriceCard({
         </motion.div>
 
         {/* Trust Badges */}
-        <div className="mt-6 pt-6 border-t border-metallicGold-900/20">
+        <div className="mt-6 pt-6">
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
               <p className="text-2xl font-bold text-metallicGold-500">100%</p>
