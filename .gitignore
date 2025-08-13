@@ -1,48 +1,19 @@
-.env
-*.log
-__pycache__/
-venv/
+# Dependencies
 node_modules/
-.DS_Store
-*.pyc
-*.pid
-.vscode/
-automation_*.log
-telegram_*.log
-claude_*.log
-*.secret
-credentials/
-.ssh/
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-venv/
-/venv/
-.venv/
 
-# IDE & Editor specific
-.vscode/
-.idea/
-.cursor-server/
-.claude/
+# Environment variables - NEVER COMMIT THESE
+.env
+.env.*
+!.env.example
+!.env.local.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+*.env
 
-# Cache & Dependencies
-.cache/
-.npm/
-
-# Log files
-*.log
-*.lock
-*.pid
-*.jsonl
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Next.js specific
+# Next.js
 .next/
 out/
 build/
@@ -51,23 +22,55 @@ dist/
 # Vercel
 .vercel
 
-# Environment variables - NEVER COMMIT THESE
-.env
-.env.*
-!.env.example
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.production
-*.env
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+
+# Log files
+*.log
+*.jsonl
+*.pid
+automation_*.log
+telegram_*.log
+claude_*.log
+
+# Cache & Dependencies
+.cache/
+.npm/
+
+# IDE & Editor specific
+.vscode/
+.idea/
+.cursor-server/
+.claude/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+
+# Backup files
+*.backup
+*.bak
+*~
+*.swp
+*.swo
+*.tmp
 
 # API Keys and Secrets
 *secret*
 *token*
 *key*
 *.pem
-*.key
 *.cert
 *.crt
 *.p12
@@ -75,13 +78,6 @@ dist/
 credentials/
 .credentials.json
 config/secrets/
-
-# Backup files
-*.bak
-*.backup
-*~
-*.swp
-*.swo
 
 # Database files
 *.db
@@ -93,4 +89,4 @@ config/secrets/
 create-admin.js
 init-admin.js
 *admin*.js
-tsconfig.tsbuildinfo
+scripts/*admin*

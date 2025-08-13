@@ -59,7 +59,7 @@ export class BlogPublisher {
     validateContent: true,
     schedulePublish: false,
     notifyOnComplete: false,
-    captureScreenshot: false
+    captureScreenshot: false,
   };
 
   constructor() {}
@@ -67,16 +67,13 @@ export class BlogPublisher {
   /**
    * 단일 블로그 포스트 게시
    */
-  async publishPost(
-    postData: BlogPostData, 
-    options: PublishOptions
-  ): Promise<PublishResult> {
+  async publishPost(postData: BlogPostData, options: PublishOptions): Promise<PublishResult> {
     const finalOptions = { ...this.defaultOptions, ...options };
-    
+
     try {
-      logger.info('블로그 포스트 게시 시작', { 
+      logger.info('블로그 포스트 게시 시작', {
         title: postData.title,
-        category: postData.category 
+        category: postData.category,
       });
 
       // 1. 콘텐츠 검증
@@ -86,14 +83,14 @@ export class BlogPublisher {
           return {
             success: false,
             error: '콘텐츠 검증 실패',
-            validationErrors: validation.errors
+            validationErrors: validation.errors,
           };
         }
 
         if (validation.warnings.length > 0) {
-          logger.warn('콘텐츠 검증 경고', { 
+          logger.warn('콘텐츠 검증 경고', {
             warnings: validation.warnings,
-            title: postData.title 
+            title: postData.title,
           });
         }
       }
@@ -109,7 +106,7 @@ export class BlogPublisher {
       // 3. 오케스트레이터를 통한 실제 게시
       const orchestrator = getOrchestrator({
         captureScreenshots: finalOptions.captureScreenshot,
-        performanceMonitoring: true
+        performanceMonitoring: true,
       });
 
       if (!orchestrator.isReady()) {
@@ -122,7 +119,7 @@ export class BlogPublisher {
         category: postData.category,
         tags: postData.tags,
         publishDate: postData.publishDate,
-        featured: postData.featured
+        featured: postData.featured,
       };
 
       const result = await orchestrator.executePublishWorkflow(
@@ -139,7 +136,7 @@ export class BlogPublisher {
         success: true,
         publishedId: result.contentId,
         publishedUrl: result.publishedUrl,
-        performanceMetrics: result.performanceMetrics
+        performanceMetrics: result.performanceMetrics,
       };
 
       // 5. 알림 발송 (옵션)
@@ -150,26 +147,25 @@ export class BlogPublisher {
       logger.info('블로그 포스트 게시 완료', {
         title: postData.title,
         publishedId: publishResult.publishedId,
-        publishedUrl: publishResult.publishedUrl
+        publishedUrl: publishResult.publishedUrl,
       });
 
       return publishResult;
-
     } catch (error) {
-      logger.error('블로그 포스트 게시 실패', { 
+      logger.error('블로그 포스트 게시 실패', {
         error,
-        title: postData.title 
+        title: postData.title,
       });
 
       await handleAutomationError(error as Error, {
         operation: 'blog_publish',
         component: 'automation',
-        metadata: { title: postData.title }
+        metadata: { title: postData.title },
       });
 
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -178,7 +174,7 @@ export class BlogPublisher {
    * 여러 블로그 포스트 일괄 게시
    */
   async publishBatch(
-    posts: BlogPostData[], 
+    posts: BlogPostData[],
     options: PublishOptions,
     batchOptions?: {
       delayBetweenPosts?: number;
@@ -189,15 +185,15 @@ export class BlogPublisher {
     const defaultBatchOptions = {
       delayBetweenPosts: 5000,
       continueOnError: true,
-      maxConcurrent: 1
+      maxConcurrent: 1,
     };
 
     const finalBatchOptions = { ...defaultBatchOptions, ...batchOptions };
     const results: PublishResult[] = [];
 
-    logger.info('일괄 블로그 게시 시작', { 
+    logger.info('일괄 블로그 게시 시작', {
       postsCount: posts.length,
-      maxConcurrent: finalBatchOptions.maxConcurrent 
+      maxConcurrent: finalBatchOptions.maxConcurrent,
     });
 
     try {
@@ -205,7 +201,7 @@ export class BlogPublisher {
         // 순차 처리
         for (let i = 0; i < posts.length; i++) {
           const post = posts[i];
-          
+
           try {
             const result = await this.publishPost(post, options);
             results.push(result);
@@ -214,13 +210,12 @@ export class BlogPublisher {
             if (i < posts.length - 1 && finalBatchOptions.delayBetweenPosts > 0) {
               await this.delay(finalBatchOptions.delayBetweenPosts);
             }
-
           } catch (error) {
             const failResult: PublishResult = {
               success: false,
-              error: (error as Error).message
+              error: (error as Error).message,
             };
-            
+
             results.push(failResult);
 
             if (!finalBatchOptions.continueOnError) {
@@ -231,13 +226,16 @@ export class BlogPublisher {
       } else {
         // 병렬 처리 (제한적)
         const chunks = this.chunkArray(posts, finalBatchOptions.maxConcurrent);
-        
+
         for (const chunk of chunks) {
-          const chunkPromises = chunk.map(post => 
-            this.publishPost(post, options).catch(error => ({
-              success: false,
-              error: (error as Error).message
-            } as PublishResult))
+          const chunkPromises = chunk.map(post =>
+            this.publishPost(post, options).catch(
+              error =>
+                ({
+                  success: false,
+                  error: (error as Error).message,
+                }) as PublishResult
+            )
           );
 
           const chunkResults = await Promise.all(chunkPromises);
@@ -256,7 +254,7 @@ export class BlogPublisher {
       logger.info('일괄 블로그 게시 완료', {
         total: posts.length,
         success: successCount,
-        failed: failCount
+        failed: failCount,
       });
 
       // 일괄 처리 결과 로깅
@@ -269,17 +267,16 @@ export class BlogPublisher {
           total_posts: posts.length,
           successful: successCount,
           failed: failCount,
-          batch_options: finalBatchOptions
-        }
+          batch_options: finalBatchOptions,
+        },
       });
-
     } catch (error) {
       logger.error('일괄 게시 중 치명적 오류', { error });
-      
+
       await handleAutomationError(error as Error, {
         operation: 'blog_batch_publish',
         component: 'automation',
-        metadata: { postsCount: posts.length }
+        metadata: { postsCount: posts.length },
       });
     }
 
@@ -290,13 +287,13 @@ export class BlogPublisher {
    * 게시 예약
    */
   private async schedulePost(
-    postData: BlogPostData, 
+    postData: BlogPostData,
     options: PublishOptions
   ): Promise<PublishResult> {
     try {
-      logger.info('블로그 포스트 예약 등록', { 
+      logger.info('블로그 포스트 예약 등록', {
         title: postData.title,
-        scheduledFor: postData.publishDate 
+        scheduledFor: postData.publishDate,
       });
 
       const supabaseController = getSupabaseController();
@@ -317,8 +314,8 @@ export class BlogPublisher {
           featured: postData.featured,
           automated: true,
           scheduled: true,
-          original_schedule_date: postData.publishDate?.toISOString()
-        }
+          original_schedule_date: postData.publishDate?.toISOString(),
+        },
       });
 
       // 예약 로그 기록
@@ -329,21 +326,20 @@ export class BlogPublisher {
         metadata: {
           content_id: contentId,
           scheduled_for: postData.publishDate?.toISOString(),
-          title: postData.title
-        }
+          title: postData.title,
+        },
       });
 
       return {
         success: true,
         publishedId: contentId || undefined,
-        scheduledFor: postData.publishDate
+        scheduledFor: postData.publishDate,
       };
-
     } catch (error) {
       logger.error('블로그 포스트 예약 실패', { error });
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -356,7 +352,7 @@ export class BlogPublisher {
       isValid: true,
       errors: [],
       warnings: [],
-      suggestions: []
+      suggestions: [],
     };
 
     // 필수 필드 검증
@@ -423,7 +419,7 @@ export class BlogPublisher {
       title: postData.title,
       isValid: result.isValid,
       errorsCount: result.errors.length,
-      warningsCount: result.warnings.length
+      warningsCount: result.warnings.length,
     });
 
     return result;
@@ -433,14 +429,14 @@ export class BlogPublisher {
    * 게시 완료 알림 발송
    */
   private async sendPublishNotification(
-    postData: BlogPostData, 
+    postData: BlogPostData,
     result: PublishResult
   ): Promise<void> {
     try {
       // TODO: 실제 알림 시스템 연동 (이메일, 슬랙, 텔레그램 등)
       logger.info('게시 완료 알림 발송', {
         title: postData.title,
-        publishedUrl: result.publishedUrl
+        publishedUrl: result.publishedUrl,
       });
 
       const supabaseController = getSupabaseController();
@@ -451,10 +447,9 @@ export class BlogPublisher {
         metadata: {
           title: postData.title,
           published_url: result.publishedUrl,
-          notification_type: 'publish_complete'
-        }
+          notification_type: 'publish_complete',
+        },
       });
-
     } catch (error) {
       logger.error('게시 완료 알림 발송 실패', { error });
     }
@@ -468,13 +463,15 @@ export class BlogPublisher {
       logger.info('예약된 포스트 실행 시작');
 
       const supabaseController = getSupabaseController();
-      
+
       // 현재 시간 이전에 예약된 포스트 조회
       const scheduledPosts = await supabaseController.getContent(50, 'scheduled');
       const now = new Date();
 
       const duePosts = scheduledPosts.filter(post => {
-        if (!post.published_at) {return false;}
+        if (!post.published_at) {
+          return false;
+        }
         return new Date(post.published_at) <= now;
       });
 
@@ -495,19 +492,19 @@ export class BlogPublisher {
             category: post.category,
             tags: post.tags,
             featured: post.metadata?.featured,
-            status: 'published'
+            status: 'published',
           };
 
           // 관리자 로그인 정보 (환경변수에서 가져오기)
           const loginCredentials: LoginCredentials = {
             email: process.env.ADMIN_EMAIL || '',
-            password: process.env.ADMIN_PASSWORD || ''
+            password: process.env.ADMIN_PASSWORD || '',
           };
 
           const result = await this.publishPost(blogPost, {
             loginCredentials,
             validateContent: false, // 이미 저장된 콘텐츠이므로 스킵
-            notifyOnComplete: true
+            notifyOnComplete: true,
           });
 
           if (result.success) {
@@ -518,27 +515,25 @@ export class BlogPublisher {
               metadata: {
                 ...post.metadata,
                 executed_at: new Date().toISOString(),
-                automated_execution: true
-              }
+                automated_execution: true,
+              },
             });
 
-            logger.info('예약된 포스트 실행 완료', { 
+            logger.info('예약된 포스트 실행 완료', {
               title: post.title,
-              id: post.id 
+              id: post.id,
             });
           }
-
         } catch (error) {
-          logger.error('예약된 포스트 실행 실패', { 
+          logger.error('예약된 포스트 실행 실패', {
             error,
             title: post.title,
-            id: post.id 
+            id: post.id,
           });
         }
       }
 
       logger.info('예약된 포스트 실행 완료');
-
     } catch (error) {
       logger.error('예약된 포스트 실행 중 오류', { error });
     }

@@ -2,12 +2,12 @@
  * 고급 에러 핸들링 및 복구 시스템
  */
 
-import { 
-  SystemError, 
-  ErrorSeverity, 
-  ServiceType, 
-  RecoveryAction,
-  SystemStatus 
+import {
+  SystemError,
+  ErrorSeverity,
+  ServiceType,
+  // RecoveryAction, // 사용하지 않음
+  // SystemStatus, // 사용하지 않음
 } from '../../types/monitoring';
 
 export class ErrorHandler {
@@ -56,7 +56,7 @@ export class ErrorHandler {
     context?: Record<string, any>
   ): SystemError {
     const severity = this.determineSeverity(service, error);
-    
+
     return {
       id: this.generateErrorId(),
       timestamp: new Date(),
@@ -66,11 +66,11 @@ export class ErrorHandler {
       details: {
         name: error.name,
         cause: error.cause,
-        ...context
+        ...context,
       },
       stackTrace: error.stack,
       context,
-      resolved: false
+      resolved: false,
     };
   }
 
@@ -83,21 +83,17 @@ export class ErrorHandler {
       /database.*connection/i,
       /authentication.*failed/i,
       /out of memory/i,
-      /disk.*full/i
+      /disk.*full/i,
     ];
 
-    const errorPatterns = [
-      /network.*timeout/i,
-      /api.*error/i,
-      /validation.*failed/i
-    ];
+    const errorPatterns = [/network.*timeout/i, /api.*error/i, /validation.*failed/i];
 
     const message = error.message.toLowerCase();
-    
+
     if (criticalPatterns.some(pattern => pattern.test(message))) {
       return ErrorSeverity.CRITICAL;
     }
-    
+
     if (errorPatterns.some(pattern => pattern.test(message))) {
       return ErrorSeverity.ERROR;
     }
@@ -140,10 +136,10 @@ export class ErrorHandler {
   private async handleCriticalError(error: SystemError): Promise<void> {
     // 즉시 알림 발송
     await this.notifyImmediately(error);
-    
+
     // 시스템 보호 모드 활성화
     await this.activateProtectionMode(error.service);
-    
+
     // 긴급 백업 절차 실행
     await this.executeEmergencyBackup(error);
   }
@@ -153,9 +149,10 @@ export class ErrorHandler {
    */
   private async attemptRecovery(error: SystemError): Promise<boolean> {
     const strategyKey = `${error.service}:${error.severity}`;
-    const strategy = this.recoveryStrategies.get(strategyKey) || 
-                    this.recoveryStrategies.get(error.service) ||
-                    this.recoveryStrategies.get('default');
+    const strategy =
+      this.recoveryStrategies.get(strategyKey) ||
+      this.recoveryStrategies.get(error.service) ||
+      this.recoveryStrategies.get('default');
 
     if (!strategy) {
       return false;
@@ -205,11 +202,14 @@ export class ErrorHandler {
    */
   private initializeCircuitBreakers(): void {
     Object.values(ServiceType).forEach(service => {
-      this.circuitBreakers.set(service, new CircuitBreaker({
-        failureThreshold: 5,
-        timeout: 30000,
-        retryTimeout: 60000
-      }));
+      this.circuitBreakers.set(
+        service,
+        new CircuitBreaker({
+          failureThreshold: 5,
+          timeout: 30000,
+          retryTimeout: 60000,
+        })
+      );
     });
   }
 
@@ -231,8 +231,9 @@ export class ErrorHandler {
   }
 
   private shouldAttemptRecovery(error: SystemError): boolean {
-    return error.severity !== ErrorSeverity.INFO && 
-           !this.circuitBreakers.get(error.service)?.isOpen();
+    return (
+      error.severity !== ErrorSeverity.INFO && !this.circuitBreakers.get(error.service)?.isOpen()
+    );
   }
 
   private async markErrorResolved(errorId: string, action: string): Promise<void> {
@@ -261,14 +262,20 @@ export class ErrorHandler {
 
   // 추상 메서드들 - 구체적 구현 필요
   private async notifyImmediately(error: SystemError): Promise<void> {
+    // Suppress unused parameter warning
+    void error;
     // NotificationService에서 구현
   }
 
   private async activateProtectionMode(service: ServiceType): Promise<void> {
+    // Suppress unused parameter warning
+    void service;
     // 보호 모드 활성화 로직
   }
 
   private async executeEmergencyBackup(error: SystemError): Promise<void> {
+    // Suppress unused parameter warning
+    void error;
     // 긴급 백업 로직
   }
 
@@ -296,11 +303,13 @@ class CircuitBreaker {
   private failureCount = 0;
   private nextAttempt = 0;
 
-  constructor(private options: {
-    failureThreshold: number;
-    timeout: number;
-    retryTimeout: number;
-  }) {}
+  constructor(
+    private options: {
+      failureThreshold: number;
+      timeout: number;
+      retryTimeout: number;
+    }
+  ) {}
 
   isOpen(): boolean {
     return this.state === 'OPEN';
@@ -313,7 +322,7 @@ class CircuitBreaker {
 
   onFailure(): void {
     this.failureCount++;
-    
+
     if (this.failureCount >= this.options.failureThreshold) {
       this.state = 'OPEN';
       this.nextAttempt = Date.now() + this.options.retryTimeout;
@@ -321,7 +330,9 @@ class CircuitBreaker {
   }
 
   canAttempt(): boolean {
-    if (this.state === 'CLOSED') {return true;}
+    if (this.state === 'CLOSED') {
+      return true;
+    }
     if (this.state === 'OPEN' && Date.now() > this.nextAttempt) {
       this.state = 'HALF_OPEN';
       return true;

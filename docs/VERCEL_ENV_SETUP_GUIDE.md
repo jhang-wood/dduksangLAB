@@ -1,12 +1,14 @@
-# Vercel 환경변수 설정 가이드
+# # Vercel 환경변수 설정 가이드
 
-## 📋 필수 환경변수 설정
+> 중복된 가이드 통합: docs/vercel/VERCEL_ENV_SETUP.md 참조
+>
+> 자세한 내용은 [Supabase 환경변수 가이드](guides/SUPABASE_ENV_GUIDE.md)를 참조하세요.
 
-Vercel 대시보드 (https://vercel.com) 에서 다음 환경변수들을 설정해야 합니다:
+## Quick Start
 
-### 1. Vercel 대시보드 접속
-1. https://vercel.com 로그인
-2. `dduksangLAB` 프로젝트 선택
+1. Vercel 대시보드에서 환경변수 설정
+2. .env.local 파일로 로컬 개발 환경 설정
+3. 빌드 테스트 및 배포 확인
 3. Settings → Environment Variables 이동
 
 ### 2. 필수 환경변수 추가
@@ -24,8 +26,8 @@ NEXT_PUBLIC_APP_URL=https://dduksang.com
 NEXT_PUBLIC_SITE_URL=https://dduksang.com
 
 # 관리자 계정 (선택사항)
-ADMIN_EMAIL=admin@dduksang.com
-ADMIN_PASSWORD=dduksang2025!@#
+ADMIN_EMAIL=[ADMIN_EMAIL_ADDRESS]
+ADMIN_PASSWORD=[ADMIN_PASSWORD]
 
 # 보안 키 (선택사항 - 추천)
 JWT_SECRET=dduksang-jwt-secret-2025-secure-token-min-32chars
@@ -43,8 +45,8 @@ CRON_SECRET=dduksang-cron-secret-2025-secure
 
 1. 배포 완료 후 https://dduksang.com 접속
 2. 로그인 페이지에서 테스트
-   - 이메일: admin@dduksang.com
-   - 비밀번호: dduksang2025!@#
+   - 이메일: [ADMIN_EMAIL_ADDRESS]
+   - 비밀번호: [ADMIN_PASSWORD]
 
 ## ⚠️ 주의사항
 
@@ -56,11 +58,13 @@ CRON_SECRET=dduksang-cron-secret-2025-secure
 ## 🔧 문제 해결
 
 ### 로그인이 안 될 경우
+
 1. Vercel 대시보드 → Functions 탭에서 에러 로그 확인
 2. 환경변수가 모두 올바르게 설정되었는지 확인
 3. 재배포 후 5분 정도 대기
 
 ### CSP 에러가 발생할 경우
+
 - `NEXT_PUBLIC_SUPABASE_URL`이 올바른지 확인
 - https로 시작하는지 확인 (http 아님)
 

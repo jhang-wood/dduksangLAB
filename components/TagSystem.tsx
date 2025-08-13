@@ -1,45 +1,37 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Hash, 
-  Search, 
-  X, 
-  TrendingUp, 
-  Filter,
-  ChevronDown,
-  Star
-} from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Hash, Search, X, TrendingUp, Filter, ChevronDown, Star } from 'lucide-react';
 
 interface Tag {
-  id: string
-  name: string
-  category: 'language' | 'framework' | 'level' | 'topic' | 'industry'
-  count: number
-  trending?: boolean
-  color?: string
+  id: string;
+  name: string;
+  category: 'language' | 'framework' | 'level' | 'topic' | 'industry';
+  count: number;
+  trending?: boolean;
+  color?: string;
 }
 
 interface TagSystemProps {
-  tags: Tag[]
-  selectedTags: string[]
-  onTagSelect: (tagId: string) => void
-  onTagRemove: (tagId: string) => void
-  onSearch: (query: string) => void
-  className?: string
-  maxVisibleTags?: number
-  showSearch?: boolean
-  showCategories?: boolean
+  tags: Tag[];
+  selectedTags: string[];
+  onTagSelect: (tagId: string) => void;
+  onTagRemove: (tagId: string) => void;
+  onSearch: (query: string) => void;
+  className?: string;
+  maxVisibleTags?: number;
+  showSearch?: boolean;
+  showCategories?: boolean;
 }
 
 const categoryLabels = {
-  'language': { label: '언어', icon: '🔤', color: 'from-blue-500 to-blue-600' },
-  'framework': { label: '프레임워크', icon: '⚛️', color: 'from-purple-500 to-purple-600' },
-  'level': { label: '레벨', icon: '📊', color: 'from-green-500 to-green-600' },
-  'topic': { label: '주제', icon: '💡', color: 'from-yellow-500 to-yellow-600' },
-  'industry': { label: '산업', icon: '🏭', color: 'from-red-500 to-red-600' }
-}
+  language: { label: '언어', icon: '🔤', color: 'from-blue-500 to-blue-600' },
+  framework: { label: '프레임워크', icon: '⚛️', color: 'from-purple-500 to-purple-600' },
+  level: { label: '레벨', icon: '📊', color: 'from-green-500 to-green-600' },
+  topic: { label: '주제', icon: '💡', color: 'from-yellow-500 to-yellow-600' },
+  industry: { label: '산업', icon: '🏭', color: 'from-red-500 to-red-600' },
+};
 
 const tagColors = [
   'from-metallicGold-500 to-metallicGold-600',
@@ -49,8 +41,8 @@ const tagColors = [
   'from-pink-500 to-pink-600',
   'from-indigo-500 to-indigo-600',
   'from-teal-500 to-teal-600',
-  'from-orange-500 to-orange-600'
-]
+  'from-orange-500 to-orange-600',
+];
 
 export default function TagSystem({
   tags,
@@ -61,53 +53,58 @@ export default function TagSystem({
   className = '',
   maxVisibleTags = 20,
   showSearch = true,
-  showCategories = true
+  showCategories = true,
 }: TagSystemProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [showAllTags, setShowAllTags] = useState(false)
-  const [localTags, setLocalTags] = useState(tags)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showAllTags, setShowAllTags] = useState(false);
+  const [localTags, setLocalTags] = useState(tags);
 
   useEffect(() => {
-    setLocalTags(tags)
-  }, [tags])
+    setLocalTags(tags);
+  }, [tags]);
 
   // 태그 검색 필터링
   const filteredTags = localTags.filter(tag => {
-    const matchesSearch = tag.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || tag.category === selectedCategory
-    return matchesSearch && matchesCategory && !selectedTags.includes(tag.id)
-  })
+    const matchesSearch = tag.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || tag.category === selectedCategory;
+    return matchesSearch && matchesCategory && !selectedTags.includes(tag.id);
+  });
 
   // 인기 태그 (조회수 기준 정렬)
-  const popularTags = [...filteredTags]
-    .sort((a, b) => b.count - a.count)
-    .slice(0, maxVisibleTags)
+  const popularTags = [...filteredTags].sort((a, b) => b.count - a.count).slice(0, maxVisibleTags);
 
   // 트렌딩 태그
-  const trendingTags = filteredTags.filter(tag => tag.trending)
+  const trendingTags = filteredTags.filter(tag => tag.trending);
 
   // 카테고리별 그룹화
-  const tagsByCategory = filteredTags.reduce((acc, tag) => {
-    if (!acc[tag.category]) {acc[tag.category] = []}
-    acc[tag.category]?.push(tag)
-    return acc
-  }, {} as Record<string, Tag[]>)
+  const tagsByCategory = filteredTags.reduce(
+    (acc, tag) => {
+      if (!acc[tag.category]) {
+        acc[tag.category] = [];
+      }
+      acc[tag.category]?.push(tag);
+      return acc;
+    },
+    {} as Record<string, Tag[]>
+  );
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    onSearch(query)
-  }
+    setSearchQuery(query);
+    onSearch(query);
+  };
 
   const handleTagClick = (tag: Tag) => {
-    onTagSelect(tag.id)
-  }
+    onTagSelect(tag.id);
+  };
 
   const getTagColor = (tag: Tag) => {
-    if (tag.color) {return tag.color}
-    const index = tag.name.length % tagColors.length
-    return tagColors[index]
-  }
+    if (tag.color) {
+      return tag.color;
+    }
+    const index = tag.name.length % tagColors.length;
+    return tagColors[index];
+  };
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -116,11 +113,14 @@ export default function TagSystem({
         <div className="space-y-4">
           {/* 검색바 */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-offWhite-600" size={20} />
+            <Search
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-offWhite-600"
+              size={20}
+            />
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               placeholder="태그를 검색해보세요..."
               className="w-full pl-12 pr-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-xl text-offWhite-200 placeholder-offWhite-600 focus:outline-none focus:border-metallicGold-500 focus:ring-1 focus:ring-metallicGold-500 transition-all"
             />
@@ -181,8 +181,10 @@ export default function TagSystem({
           <div className="flex flex-wrap gap-2">
             <AnimatePresence>
               {selectedTags.map((tagId, index) => {
-                const tag = localTags.find(t => t.id === tagId)
-                if (!tag) {return null}
+                const tag = localTags.find(t => t.id === tagId);
+                if (!tag) {
+                  return null;
+                }
 
                 return (
                   <motion.button
@@ -198,7 +200,7 @@ export default function TagSystem({
                     <span>{tag.name}</span>
                     <X size={14} className="group-hover:scale-110 transition-transform" />
                   </motion.button>
-                )
+                );
               })}
             </AnimatePresence>
           </div>
@@ -235,9 +237,7 @@ export default function TagSystem({
                 <div className="absolute inset-0 bg-white/20 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <Hash size={14} />
                 <span>{tag.name}</span>
-                <span className="px-2 py-0.5 bg-black/20 rounded-full text-xs">
-                  {tag.count}
-                </span>
+                <span className="px-2 py-0.5 bg-black/20 rounded-full text-xs">{tag.count}</span>
                 <TrendingUp size={12} className="text-white/80" />
               </motion.button>
             ))}
@@ -264,7 +264,7 @@ export default function TagSystem({
                 </motion.div>
               </button>
             </div>
-            
+
             <div className="flex flex-wrap gap-3">
               <AnimatePresence>
                 {(showAllTags ? filteredTags : popularTags).map((tag, index) => (
@@ -290,8 +290,10 @@ export default function TagSystem({
         ) : (
           // 카테고리별 태그 표시
           Object.entries(tagsByCategory).map(([categoryKey, categoryTags]) => {
-            const category = categoryLabels[categoryKey as keyof typeof categoryLabels]
-            if (!category || categoryTags.length === 0) {return null}
+            const category = categoryLabels[categoryKey as keyof typeof categoryLabels];
+            if (!category || categoryTags.length === 0) {
+              return null;
+            }
 
             return (
               <motion.div
@@ -301,7 +303,9 @@ export default function TagSystem({
                 className="space-y-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 bg-gradient-to-r ${category.color} rounded-full flex items-center justify-center text-white text-sm`}>
+                  <div
+                    className={`w-8 h-8 bg-gradient-to-r ${category.color} rounded-full flex items-center justify-center text-white text-sm`}
+                  >
                     {category.icon}
                   </div>
                   <h4 className="font-semibold text-offWhite-200">{category.label}</h4>
@@ -309,7 +313,7 @@ export default function TagSystem({
                     {categoryTags.length}
                   </span>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-3 pl-11">
                   {categoryTags.map((tag, index) => (
                     <motion.button
@@ -332,7 +336,7 @@ export default function TagSystem({
                   ))}
                 </div>
               </motion.div>
-            )
+            );
           })
         )}
       </div>
@@ -345,14 +349,10 @@ export default function TagSystem({
           className="text-center py-12 bg-deepBlack-300/30 rounded-xl border border-metallicGold-900/30"
         >
           <Hash className="mx-auto mb-4 text-offWhite-600" size={48} />
-          <p className="text-offWhite-400 text-lg mb-2">
-            "{searchQuery}"에 대한 태그가 없습니다
-          </p>
-          <p className="text-offWhite-600 text-sm">
-            다른 키워드로 검색해보세요
-          </p>
+          <p className="text-offWhite-400 text-lg mb-2">"{searchQuery}"에 대한 태그가 없습니다</p>
+          <p className="text-offWhite-600 text-sm">다른 키워드로 검색해보세요</p>
         </motion.div>
       )}
     </div>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import React from 'react'
-import { inputStyles } from './index'
+import React from 'react';
+import { inputStyles } from './index';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  error?: string
-  variant?: 'dark' | 'light'
+  label?: string;
+  error?: string;
+  variant?: 'dark' | 'light';
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, variant = 'dark', className = '', ...props }, ref) => {
-    const combinedClasses = `${inputStyles.base} ${inputStyles[variant]} ${className}`
-    
+    const combinedClasses = `${inputStyles.base} ${inputStyles[variant]} ${className}`;
+
     return (
       <div className="w-full">
         {label && (
@@ -18,21 +18,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          className={combinedClasses}
-          {...props}
-        />
-        {error && (
-          <p className="mt-1 text-sm text-red-400">
-            {error}
-          </p>
-        )}
+        <input ref={ref} className={combinedClasses} {...props} />
+        {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
       </div>
-    )
+    );
   }
-)
+);
 
-Input.displayName = 'Input'
+Input.displayName = 'Input';
 
-export default Input
+export default Input;

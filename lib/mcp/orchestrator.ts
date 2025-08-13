@@ -4,9 +4,18 @@
  */
 
 import { logger } from '@/lib/logger';
-import { getPlaywrightController, LoginCredentials, ContentPublishOptions } from './playwright-controller';
-import { getSupabaseController, AutomationLog, ContentItem, PerformanceMetric } from './supabase-controller';
-import { getErrorHandler, handleAutomationError, withRetry, ErrorContext } from './error-handler';
+import {
+  getPlaywrightController,
+  LoginCredentials,
+  ContentPublishOptions,
+} from './playwright-controller';
+import {
+  getSupabaseController,
+  // AutomationLog, // 사용하지 않음
+  ContentItem,
+  PerformanceMetric,
+} from './supabase-controller';
+import { getErrorHandler, /* handleAutomationError, */ withRetry, ErrorContext } from './error-handler';
 
 export interface WorkflowConfig {
   retryCount: number;
@@ -55,7 +64,7 @@ export class AutomationOrchestrator {
       captureScreenshots: false,
       performanceMonitoring: true,
       cleanupOnFailure: true,
-      ...config
+      ...config,
     };
   }
 
@@ -81,9 +90,8 @@ export class AutomationOrchestrator {
       await supabaseController.logAutomation({
         type: 'health_check',
         status: 'success',
-        message: '자동화 오케스트레이터 초기화 완료'
+        message: '자동화 오케스트레이터 초기화 완료',
       });
-
     } catch (error) {
       logger.error('오케스트레이터 초기화 실패', { error });
       throw error;
@@ -96,48 +104,52 @@ export class AutomationOrchestrator {
   async executeLoginWorkflow(credentials: LoginCredentials): Promise<LoginWorkflowResult> {
     const context: Omit<ErrorContext, 'timestamp'> = {
       operation: 'login_workflow',
-      component: 'orchestrator'
+      component: 'orchestrator',
     };
 
     try {
       logger.info('관리자 로그인 워크플로우 시작', { email: credentials.email });
 
-      const result = await withRetry(async () => {
-        // 1. Playwright 초기화
-        const playwrightController = getPlaywrightController({
-          headless: !this.config.captureScreenshots
-        });
+      const result = await withRetry(
+        async () => {
+          // 1. Playwright 초기화
+          const playwrightController = getPlaywrightController({
+            headless: !this.config.captureScreenshots,
+          });
 
-        if (!playwrightController.isInitialized()) {
-          await playwrightController.initialize();
-        }
+          if (!playwrightController.isInitialized()) {
+            await playwrightController.initialize();
+          }
 
-        // 2. 로그인 실행
-        const loginSuccess = await playwrightController.loginToAdmin(credentials);
+          // 2. 로그인 실행
+          const loginSuccess = await playwrightController.loginToAdmin(credentials);
 
-        if (!loginSuccess) {
-          throw new Error('로그인 실패');
-        }
+          if (!loginSuccess) {
+            throw new Error('로그인 실패');
+          }
 
-        // 3. 스크린샷 캡처 (옵션)
-        let screenshotPath;
-        if (this.config.captureScreenshots) {
-          screenshotPath = `/tmp/login-success-${Date.now()}.png`;
-          await playwrightController.captureScreenshot(screenshotPath);
-        }
+          // 3. 스크린샷 캡처 (옵션)
+          let screenshotPath;
+          if (this.config.captureScreenshots) {
+            screenshotPath = `/tmp/login-success-${Date.now()}.png`;
+            await playwrightController.captureScreenshot(screenshotPath);
+          }
 
-        // 4. 세션 정보 수집
-        const currentUrl = await playwrightController.getCurrentUrl();
-        const pageTitle = await playwrightController.getPageTitle();
+          // 4. 세션 정보 수집
+          const currentUrl = await playwrightController.getCurrentUrl();
+          const pageTitle = await playwrightController.getPageTitle();
 
-        return {
-          success: true,
-          sessionId: this.generateSessionId(),
-          screenshot: screenshotPath,
-          url: currentUrl,
-          title: pageTitle
-        };
-      }, context, { maxRetries: this.config.retryCount });
+          return {
+            success: true,
+            sessionId: this.generateSessionId(),
+            screenshot: screenshotPath,
+            url: currentUrl,
+            title: pageTitle,
+          };
+        },
+        context,
+        { maxRetries: this.config.retryCount }
+      );
 
       // 성공 로그 기록
       const supabaseController = getSupabaseController();
@@ -147,8 +159,8 @@ export class AutomationOrchestrator {
         message: '관리자 로그인 성공',
         metadata: {
           email: credentials.email,
-          session_id: result.sessionId
-        }
+          session_id: result.sessionId,
+        },
       });
 
       logger.info('관리자 로그인 워크플로우 완료', { sessionId: result.sessionId });
@@ -156,9 +168,8 @@ export class AutomationOrchestrator {
       return {
         success: true,
         sessionId: result.sessionId,
-        screenshot: result.screenshot
+        screenshot: result.screenshot,
       };
-
     } catch (error) {
       logger.error('로그인 워크플로우 실패', { error });
 
@@ -170,8 +181,8 @@ export class AutomationOrchestrator {
         message: `로그인 실패: ${(error as Error).message}`,
         metadata: {
           email: credentials.email,
-          error_message: (error as Error).message
-        }
+          error_message: (error as Error).message,
+        },
       });
 
       if (this.config.cleanupOnFailure) {
@@ -180,7 +191,7 @@ export class AutomationOrchestrator {
 
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -194,103 +205,106 @@ export class AutomationOrchestrator {
   ): Promise<PublishWorkflowResult> {
     const context: Omit<ErrorContext, 'timestamp'> = {
       operation: 'publish_workflow',
-      component: 'orchestrator'
+      component: 'orchestrator',
     };
 
     try {
       logger.info('콘텐츠 게시 워크플로우 시작', { title: options.title });
 
-      const result = await withRetry(async () => {
-        const playwrightController = getPlaywrightController();
-        const supabaseController = getSupabaseController();
+      const result = await withRetry(
+        async () => {
+          const playwrightController = getPlaywrightController();
+          const supabaseController = getSupabaseController();
 
-        // 1. 브라우저 초기화
-        if (!playwrightController.isInitialized()) {
-          await playwrightController.initialize();
-        }
-
-        // 2. 로그인 확인/실행 (필요한 경우)
-        if (ensureLogin) {
-          await this.delay(this.config.delayBetweenSteps);
-          const loginResult = await playwrightController.loginToAdmin(ensureLogin);
-          if (!loginResult) {
-            throw new Error('사전 로그인 실패');
-          }
-        }
-
-        // 3. 성능 모니터링 시작
-        let performanceMetrics;
-        if (this.config.performanceMonitoring) {
-          const startTime = Date.now();
-          
-          // 콘텐츠 게시 실행
-          const publishSuccess = await playwrightController.publishContent(options);
-          
-          if (!publishSuccess) {
-            throw new Error('콘텐츠 게시 실패');
+          // 1. 브라우저 초기화
+          if (!playwrightController.isInitialized()) {
+            await playwrightController.initialize();
           }
 
-          // 성능 메트릭 수집
-          const endTime = Date.now();
-          performanceMetrics = await playwrightController.getPerformanceMetrics();
-          performanceMetrics.totalTime = endTime - startTime;
-
-          // 성능 데이터 저장
-          await supabaseController.recordPerformanceMetric({
-            metric_type: 'content_publish_time',
-            value: performanceMetrics.totalTime,
-            unit: 'ms',
-            page_url: await playwrightController.getCurrentUrl() || undefined,
-            timestamp: new Date().toISOString(),
-            metadata: {
-              title: options.title,
-              category: options.category,
-              tags_count: options.tags?.length || 0
+          // 2. 로그인 확인/실행 (필요한 경우)
+          if (ensureLogin) {
+            await this.delay(this.config.delayBetweenSteps);
+            const loginResult = await playwrightController.loginToAdmin(ensureLogin);
+            if (!loginResult) {
+              throw new Error('사전 로그인 실패');
             }
-          });
-        } else {
-          // 성능 모니터링 없이 게시
-          const publishSuccess = await playwrightController.publishContent(options);
-          if (!publishSuccess) {
-            throw new Error('콘텐츠 게시 실패');
           }
-        }
 
-        // 4. 콘텐츠 정보 데이터베이스 저장
-        const contentItem: ContentItem = {
-          title: options.title,
-          content: options.content,
-          category: options.category,
-          tags: options.tags,
-          status: 'published',
-          published_at: new Date().toISOString(),
-          metadata: {
-            featured: options.featured,
-            publish_date: options.publishDate?.toISOString(),
-            automated: true
+          // 3. 성능 모니터링 시작
+          let performanceMetrics;
+          if (this.config.performanceMonitoring) {
+            const startTime = Date.now();
+
+            // 콘텐츠 게시 실행
+            const publishSuccess = await playwrightController.publishContent(options);
+
+            if (!publishSuccess) {
+              throw new Error('콘텐츠 게시 실패');
+            }
+
+            // 성능 메트릭 수집
+            const endTime = Date.now();
+            performanceMetrics = await playwrightController.getPerformanceMetrics();
+            performanceMetrics.totalTime = endTime - startTime;
+
+            // 성능 데이터 저장
+            await supabaseController.recordPerformanceMetric({
+              metric_type: 'content_publish_time',
+              value: performanceMetrics.totalTime,
+              unit: 'ms',
+              page_url: (await playwrightController.getCurrentUrl()) || undefined,
+              timestamp: new Date().toISOString(),
+              metadata: {
+                title: options.title,
+                category: options.category,
+                tags_count: options.tags?.length || 0,
+              },
+            });
+          } else {
+            // 성능 모니터링 없이 게시
+            const publishSuccess = await playwrightController.publishContent(options);
+            if (!publishSuccess) {
+              throw new Error('콘텐츠 게시 실패');
+            }
           }
-        };
 
-        const contentId = await supabaseController.upsertContent(contentItem);
-        
-        // 5. 게시 후 URL 수집
-        const publishedUrl = await playwrightController.getCurrentUrl();
+          // 4. 콘텐츠 정보 데이터베이스 저장
+          const contentItem: ContentItem = {
+            title: options.title,
+            content: options.content,
+            category: options.category,
+            tags: options.tags,
+            status: 'published',
+            published_at: new Date().toISOString(),
+            metadata: {
+              featured: options.featured,
+              publish_date: options.publishDate?.toISOString(),
+              automated: true,
+            },
+          };
 
-        return {
-          success: true,
-          contentId: contentId || undefined,
-          publishedUrl: publishedUrl || undefined,
-          performanceMetrics
-        };
-      }, context, { maxRetries: this.config.retryCount });
+          const contentId = await supabaseController.upsertContent(contentItem);
 
-      logger.info('콘텐츠 게시 워크플로우 완료', { 
+          // 5. 게시 후 URL 수집
+          const publishedUrl = await playwrightController.getCurrentUrl();
+
+          return {
+            success: true,
+            contentId: contentId || undefined,
+            publishedUrl: publishedUrl || undefined,
+            performanceMetrics,
+          };
+        },
+        context,
+        { maxRetries: this.config.retryCount }
+      );
+
+      logger.info('콘텐츠 게시 워크플로우 완료', {
         contentId: result.contentId,
-        title: options.title 
+        title: options.title,
       });
 
       return result;
-
     } catch (error) {
       logger.error('게시 워크플로우 실패', { error, title: options.title });
 
@@ -303,8 +317,8 @@ export class AutomationOrchestrator {
         metadata: {
           title: options.title,
           category: options.category,
-          error_message: (error as Error).message
-        }
+          error_message: (error as Error).message,
+        },
       });
 
       if (this.config.cleanupOnFailure) {
@@ -313,7 +327,7 @@ export class AutomationOrchestrator {
 
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -329,25 +343,25 @@ export class AutomationOrchestrator {
       services: {
         playwright: 'healthy',
         supabase: 'healthy',
-        database: 'healthy'
+        database: 'healthy',
       },
-      details: {}
+      details: {},
     };
 
     try {
       // 1. Supabase 연결 테스트
       const supabaseController = getSupabaseController();
       const supabaseStartTime = Date.now();
-      
+
       try {
         await supabaseController.getAutomationLogs(1);
         results.details.supabase_response_time = Date.now() - supabaseStartTime;
-        
+
         await supabaseController.recordHealthCheck({
           service: 'supabase',
           status: 'healthy',
           response_time: results.details.supabase_response_time,
-          checked_at: new Date().toISOString()
+          checked_at: new Date().toISOString(),
         });
       } catch (error) {
         results.services.supabase = 'unhealthy';
@@ -366,7 +380,7 @@ export class AutomationOrchestrator {
 
         await playwrightController.navigateTo('data:text/html,<h1>Health Check</h1>');
         const title = await playwrightController.getPageTitle();
-        
+
         results.details.playwright_response_time = Date.now() - browserStartTime;
         results.details.browser_test = title === '' ? 'success' : 'warning';
 
@@ -375,7 +389,7 @@ export class AutomationOrchestrator {
           status: 'healthy',
           response_time: results.details.playwright_response_time,
           checked_at: new Date().toISOString(),
-          metadata: { test_page_loaded: true }
+          metadata: { test_page_loaded: true },
         });
 
         await playwrightController.cleanup();
@@ -402,7 +416,9 @@ export class AutomationOrchestrator {
       }
 
       // 4. 전체 상태 평가
-      const unhealthyServices = Object.values(results.services).filter(s => s === 'unhealthy').length;
+      const unhealthyServices = Object.values(results.services).filter(
+        s => s === 'unhealthy'
+      ).length;
       const degradedServices = Object.values(results.services).filter(s => s === 'degraded').length;
 
       if (unhealthyServices > 0) {
@@ -414,17 +430,20 @@ export class AutomationOrchestrator {
       // 헬스체크 결과 로깅
       await supabaseController.logAutomation({
         type: 'health_check',
-        status: results.overall === 'healthy' ? 'success' : 
-                results.overall === 'degraded' ? 'warning' : 'failure',
+        status:
+          results.overall === 'healthy'
+            ? 'success'
+            : results.overall === 'degraded'
+              ? 'warning'
+              : 'failure',
         message: `시스템 헬스체크 완료 - ${results.overall}`,
         metadata: {
           services: results.services,
-          details: results.details
-        }
+          details: results.details,
+        },
       });
 
       logger.info('종합 헬스체크 완료', { overall: results.overall, services: results.services });
-
     } catch (error) {
       results.overall = 'unhealthy';
       results.details.general_error = (error as Error).message;
@@ -444,10 +463,10 @@ export class AutomationOrchestrator {
 
       // 기본 통계
       const stats = await supabaseController.getAutomationStats(days);
-      
+
       // 에러 분석
       const errorAnalysis = errorHandler.getErrorAnalysis(days);
-      
+
       // 성능 메트릭
       const performanceMetrics = await supabaseController.getPerformanceMetrics(
         undefined, // all metric types
@@ -465,17 +484,16 @@ export class AutomationOrchestrator {
         error_analysis: errorAnalysis,
         performance_summary: this.summarizePerformanceMetrics(performanceMetrics),
         health_summary: this.summarizeHealthChecks(healthChecks),
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       };
 
-      logger.info('자동화 분석 완료', { 
-        days, 
+      logger.info('자동화 분석 완료', {
+        days,
         totalLogs: stats.log_summary?.total,
-        totalErrors: errorAnalysis.total_errors
+        totalErrors: errorAnalysis.total_errors,
       });
 
       return analytics;
-
     } catch (error) {
       logger.error('자동화 분석 수집 실패', { error });
       return { error: (error as Error).message };
@@ -488,11 +506,11 @@ export class AutomationOrchestrator {
   private summarizePerformanceMetrics(metrics: PerformanceMetric[]): Record<string, any> {
     const summary: Record<string, any> = {
       total_metrics: metrics.length,
-      by_type: {} as Record<string, { count: number; avg: number; min: number; max: number }>
+      by_type: {} as Record<string, { count: number; avg: number; min: number; max: number }>,
     };
 
     const typeGroups: Record<string, number[]> = {};
-    
+
     metrics.forEach(metric => {
       if (!typeGroups[metric.metric_type]) {
         typeGroups[metric.metric_type] = [];
@@ -505,7 +523,7 @@ export class AutomationOrchestrator {
         count: values.length,
         avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length),
         min: Math.min(...values),
-        max: Math.max(...values)
+        max: Math.max(...values),
       };
     });
 
@@ -519,7 +537,7 @@ export class AutomationOrchestrator {
     const summary = {
       total_checks: healthChecks.length,
       by_service: {} as Record<string, Record<string, number>>,
-      overall_health_rate: 0
+      overall_health_rate: 0,
     };
 
     healthChecks.forEach(check => {
@@ -527,10 +545,10 @@ export class AutomationOrchestrator {
         summary.by_service[check.service] = {
           healthy: 0,
           degraded: 0,
-          unhealthy: 0
+          unhealthy: 0,
         };
       }
-      
+
       if (summary.by_service[check.service][check.status] !== undefined) {
         summary.by_service[check.service][check.status]++;
       }
@@ -538,8 +556,8 @@ export class AutomationOrchestrator {
 
     // 전체 건강도 계산
     const healthyCount = healthChecks.filter(c => c.status === 'healthy').length;
-    summary.overall_health_rate = healthChecks.length > 0 ? 
-      (healthyCount / healthChecks.length) * 100 : 0;
+    summary.overall_health_rate =
+      healthChecks.length > 0 ? (healthyCount / healthChecks.length) * 100 : 0;
 
     return summary;
   }
@@ -606,7 +624,9 @@ export function getOrchestrator(config?: Partial<WorkflowConfig>): AutomationOrc
 /**
  * 오케스트레이터 초기화
  */
-export async function initializeOrchestrator(config?: Partial<WorkflowConfig>): Promise<AutomationOrchestrator> {
+export async function initializeOrchestrator(
+  config?: Partial<WorkflowConfig>
+): Promise<AutomationOrchestrator> {
   const orc = getOrchestrator(config);
   if (!orc.isReady()) {
     await orc.initialize();

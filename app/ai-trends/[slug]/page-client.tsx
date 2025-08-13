@@ -7,7 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground'
-import { useAuth } from '@/lib/auth-context'
+import { useSimpleAuth } from '@/hooks/useSimpleAuth'
 import { logger } from '@/lib/logger'
 
 interface AITrend {
@@ -33,53 +33,10 @@ interface AITrendDetailClientProps {
   relatedTrends: AITrend[]
 }
 
-export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDetailClientProps) {
-  const { isAdmin } = useAuth()
-  const [copied, setCopied] = useState(false)
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
-
-  const formatViewCount = (count: number) => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`
-    }
-    return count.toString()
-  }
-
-  const handleShare = async () => {
-    const url = window.location.href
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: trend?.title ?? '',
-          text: trend?.summary ?? '',
-          url: url
-        })
-      } catch (error) {
-        logger.error('Error sharing:', error)
-      }
-    } else {
-      // Copy to clipboard as fallback
-      try {
-        await navigator.clipboard.writeText(url)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      } catch (error) {
-        logger.error('Error copying to clipboard:', error)
-      }
-    }
-  }
-
+// Memoized content renderer for better performance
+const ContentRenderer = React.memo(({ content }: { content: string }) => {
   const renderContent = (content: string) => {
-    // Simple markdown-like rendering
+    // Simple markdown-like rendering with better performance
     return content
       .split('\n\n')
       .map((paragraph, index) => {
@@ -103,22 +60,156 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
         if (paragraph.startsWith('- ')) {
           const items = paragraph.split('\n').filter(line => line.startsWith('- '))
           return (
-            <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
+            <ul key={index} className="space-y-2 mb-6 text-offWhite-400">
               {items.map((item, i) => (
-                <li key={i}>{item.replace('- ', '')}</li>
+                <li key={i} className="flex items-start">
+                  <span className="text-metallicGold-500 mr-3 mt-1">•</span>
+                  <span>{item.replace('- ', '')}</span>
+                </li>
               ))}
             </ul>
           )
         }
+
+        // Bold text
+        const boldRegex = /\*\*(.*?)\*\*/g
+        const withBold = paragraph.replace(boldRegex, '<strong class="text-metallicGold-500 font-semibold">$1</strong>')
         
-        // Regular paragraphs
         return (
-          <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
-            {paragraph}
-          </p>
+          <p 
+            key={index} 
+            className="text-offWhite-400 leading-relaxed mb-6"
+            dangerouslySetInnerHTML={{ __html: withBold }}
+          />
         )
       })
   }
+
+  return <div>{renderContent(content)}</div>
+})
+
+ContentRenderer.displayName = 'ContentRenderer'
+
+// Memoized related trends component
+const RelatedTrendsSection = React.memo(({ trends }: { trends: AITrend[] }) => {
+  const formatDate = React.useCallback((dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }, [])
+
+  const formatViewCount = React.useCallback((count: number) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`
+    }
+    return count.toString()
+  }, [])
+
+  if (trends.length === 0) return null
+
+  return (
+    <section className="px-4 py-16 bg-deepBlack-800/30">
+      <div className="container mx-auto max-w-4xl">
+        <h2 className="text-2xl font-bold text-offWhite-200 mb-8">관련 트렌드</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {trends.map((relatedTrend) => (
+            <Link
+              key={relatedTrend.id}
+              href={`/ai-trends/${relatedTrend.slug}`}
+              className="group"
+              prefetch={false}
+            >
+              <motion.article
+                whileHover={{ y: -3 }}
+                className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl overflow-hidden hover:border-metallicGold-500/50 transition-all"
+              >
+                {relatedTrend.thumbnail_url && (
+                  <div className="relative h-32 overflow-hidden">
+                    <Image
+                      src={relatedTrend.thumbnail_url}
+                      alt={relatedTrend.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/60 to-transparent" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-2 text-xs text-offWhite-600">
+                    <span className="px-2 py-1 bg-metallicGold-900/20 rounded-full text-metallicGold-500">
+                      {relatedTrend.category}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {formatDate(relatedTrend.published_at)}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-offWhite-200 line-clamp-2 group-hover:text-metallicGold-500 transition-colors mb-2">
+                    {relatedTrend.title}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs text-offWhite-600">
+                    <Eye className="w-3 h-3" />
+                    <span>{formatViewCount(relatedTrend.view_count)}</span>
+                  </div>
+                </div>
+              </motion.article>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+})
+
+RelatedTrendsSection.displayName = 'RelatedTrendsSection'
+
+export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDetailClientProps) {
+  const { isAdmin } = useSimpleAuth()
+  const [copied, setCopied] = useState(false)
+
+  // Memoized formatting functions
+  const formatDate = React.useCallback((dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }, [])
+
+  const formatViewCount = React.useCallback((count: number) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`
+    }
+    return count.toString()
+  }, [])
+
+  // Memoized share handler
+  const handleShare = React.useCallback(async () => {
+    const url = window.location.href
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: trend?.title,
+          text: trend?.summary,
+          url: url
+        })
+      } catch (error) {
+        logger.error('Error sharing:', error)
+      }
+    } else {
+      // Copy to clipboard as fallback
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }, [trend?.title, trend?.summary])
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
@@ -181,9 +272,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
               
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => {
-                    void handleShare()
-                  }}
+                  onClick={handleShare}
                   className="flex items-center gap-2 px-4 py-2 bg-deepBlack-300/50 text-offWhite-500 rounded-lg hover:bg-deepBlack-300/70 transition-colors"
                 >
                   {copied ? <Copy className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
@@ -214,7 +303,9 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
                 src={trend.thumbnail_url}
                 alt={trend.title}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 className="object-cover"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/60 to-transparent" />
             </motion.div>
@@ -227,7 +318,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
             transition={{ delay: 0.3 }}
             className="prose prose-invert max-w-none"
           >
-            {renderContent(trend.content)}
+            <ContentRenderer content={trend.content} />
           </motion.div>
 
           {/* Source Information */}
@@ -254,47 +345,7 @@ export default function AITrendDetailClient({ trend, relatedTrends }: AITrendDet
         </article>
 
         {/* Related Trends */}
-        {relatedTrends.length > 0 && (
-          <section className="py-16 px-4 border-t border-metallicGold-900/20">
-            <div className="container mx-auto max-w-7xl">
-              <h2 className="text-2xl font-bold text-offWhite-200 mb-8">관련 트렌드</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedTrends.map((relatedTrend) => (
-                  <Link
-                    key={relatedTrend.id}
-                    href={`/ai-trends/${relatedTrend.slug}`}
-                    className="group"
-                  >
-                    <motion.article
-                      whileHover={{ y: -5 }}
-                      className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl overflow-hidden hover:border-metallicGold-500/50 transition-all h-full"
-                    >
-                      {relatedTrend.thumbnail_url && (
-                        <div className="relative h-48 overflow-hidden">
-                          <Image
-                            src={relatedTrend.thumbnail_url}
-                            alt={relatedTrend.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-deepBlack-900/60 to-transparent" />
-                        </div>
-                      )}
-                      <div className="p-6">
-                        <h3 className="text-lg font-semibold text-offWhite-200 mb-2 line-clamp-2 group-hover:text-metallicGold-500 transition-colors">
-                          {relatedTrend.title}
-                        </h3>
-                        <p className="text-sm text-offWhite-600 line-clamp-3">
-                          {relatedTrend.summary}
-                        </p>
-                      </div>
-                    </motion.article>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        <RelatedTrendsSection trends={relatedTrends} />
       </div>
     </div>
   )

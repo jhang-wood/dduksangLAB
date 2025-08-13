@@ -48,7 +48,12 @@ export class PlaywrightError extends AutomationError {
 }
 
 export class SupabaseError extends AutomationError {
-  constructor(message: string, context: Omit<ErrorContext, 'component'>, recoverable = true, cause?: Error) {
+  constructor(
+    message: string,
+    context: Omit<ErrorContext, 'component'>,
+    recoverable = true,
+    cause?: Error
+  ) {
     super(message, { ...context, component: 'supabase' }, recoverable, cause);
     this.name = 'SupabaseError';
   }
@@ -76,7 +81,7 @@ export class ErrorHandler {
       delayMs: 1000,
       backoffFactor: 2,
       maxDelayMs: 30000,
-      ...retryConfig
+      ...retryConfig,
     };
 
     this.initializeRecoveryActions();
@@ -101,8 +106,8 @@ export class ErrorHandler {
           } catch {
             return false;
           }
-        }
-      }
+        },
+      },
     ]);
 
     // Playwright 네트워크 에러 복구 액션
@@ -113,8 +118,8 @@ export class ErrorHandler {
         handler: async () => {
           await this.delay(2000);
           return true;
-        }
-      }
+        },
+      },
     ]);
 
     // Supabase 연결 에러 복구 액션
@@ -130,8 +135,8 @@ export class ErrorHandler {
           } catch {
             return false;
           }
-        }
-      }
+        },
+      },
     ]);
 
     // 일반적인 타임아웃 복구 액션
@@ -142,8 +147,8 @@ export class ErrorHandler {
         handler: async () => {
           await this.delay(5000);
           return true;
-        }
-      }
+        },
+      },
     ]);
   }
 
@@ -158,7 +163,7 @@ export class ErrorHandler {
       error: automationError.message,
       context: automationError.context,
       recoverable: automationError.recoverable,
-      cause: automationError.cause?.message
+      cause: automationError.cause?.message,
     });
 
     // 데이터베이스에 에러 로그 기록
@@ -182,24 +187,34 @@ export class ErrorHandler {
     }
 
     // 에러 타입별 분류
-    if (error.message.includes('Browser closed') || 
-        error.message.includes('Target closed') ||
-        error.message.includes('Protocol error')) {
+    if (
+      error.message.includes('Browser closed') ||
+      error.message.includes('Target closed') ||
+      error.message.includes('Protocol error')
+    ) {
       return new PlaywrightError(error.message, context, error);
     }
 
-    if (error.message.includes('network') || 
-        error.message.includes('timeout') ||
-        error.message.includes('NETWORK_ERROR')) {
-      return new PlaywrightError(error.message, { 
-        ...context, 
-        metadata: { ...context.metadata, errorType: 'network' }
-      }, error);
+    if (
+      error.message.includes('network') ||
+      error.message.includes('timeout') ||
+      error.message.includes('NETWORK_ERROR')
+    ) {
+      return new PlaywrightError(
+        error.message,
+        {
+          ...context,
+          metadata: { ...context.metadata, errorType: 'network' },
+        },
+        error
+      );
     }
 
-    if (error.message.includes('supabase') || 
-        error.message.includes('database') ||
-        error.message.includes('PostgreSQL')) {
+    if (
+      error.message.includes('supabase') ||
+      error.message.includes('database') ||
+      error.message.includes('PostgreSQL')
+    ) {
       return new SupabaseError(error.message, context, true, error);
     }
 
@@ -212,26 +227,27 @@ export class ErrorHandler {
    */
   private async attemptRecovery(error: AutomationError): Promise<boolean> {
     const errorKey = this.getErrorKey(error);
-    const actions = this.recoveryActions.get(errorKey) || 
-                   this.recoveryActions.get(`${error.context.component}:generic`) ||
-                   this.getDefaultRecoveryActions();
+    const actions =
+      this.recoveryActions.get(errorKey) ||
+      this.recoveryActions.get(`${error.context.component}:generic`) ||
+      this.getDefaultRecoveryActions();
 
-    logger.info('에러 복구 시도 시작', { 
-      errorKey, 
+    logger.info('에러 복구 시도 시작', {
+      errorKey,
       actionsCount: actions.length,
-      operation: error.context.operation 
+      operation: error.context.operation,
     });
 
     for (const action of actions) {
       try {
         logger.info(`복구 액션 실행: ${action.description}`, { type: action.type });
-        
+
         const success = await action.handler();
-        
+
         if (success) {
-          logger.info('복구 성공', { 
+          logger.info('복구 성공', {
             action: action.description,
-            operation: error.context.operation 
+            operation: error.context.operation,
           });
 
           // 성공 로그 기록
@@ -239,16 +255,16 @@ export class ErrorHandler {
           return true;
         }
       } catch (recoveryError) {
-        logger.error('복구 액션 실행 실패', { 
+        logger.error('복구 액션 실행 실패', {
           action: action.description,
-          error: recoveryError 
+          error: recoveryError,
         });
       }
     }
 
-    logger.error('모든 복구 시도 실패', { 
+    logger.error('모든 복구 시도 실패', {
       operation: error.context.operation,
-      errorMessage: error.message 
+      errorMessage: error.message,
     });
 
     // 복구 실패 로그 기록
@@ -294,8 +310,8 @@ export class ErrorHandler {
         handler: async () => {
           await this.delay(1000);
           return true;
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -314,9 +330,9 @@ export class ErrorHandler {
     for (let attempt = 0; attempt <= finalConfig.maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          logger.info(`재시도 ${attempt}/${finalConfig.maxRetries}`, { 
+          logger.info(`재시도 ${attempt}/${finalConfig.maxRetries}`, {
             operation: context.operation,
-            delay 
+            delay,
           });
           await this.delay(delay);
         }
@@ -324,13 +340,13 @@ export class ErrorHandler {
         return await operation();
       } catch (error) {
         lastError = error as Error;
-        
+
         if (attempt === finalConfig.maxRetries) {
           // 최종 실패
-          logger.error('최대 재시도 횟수 초과', { 
+          logger.error('최대 재시도 횟수 초과', {
             operation: context.operation,
             attempts: attempt + 1,
-            error: lastError.message 
+            error: lastError.message,
           });
           break;
         }
@@ -363,7 +379,7 @@ export class ErrorHandler {
    */
   private addToHistory(error: AutomationError): void {
     this.errorHistory.push(error);
-    
+
     // 히스토리 크기 제한
     if (this.errorHistory.length > this.maxHistorySize) {
       this.errorHistory.shift();
@@ -386,8 +402,8 @@ export class ErrorHandler {
           recoverable: error.recoverable,
           errorName: error.name,
           cause: error.cause?.message,
-          ...error.context.metadata
-        }
+          ...error.context.metadata,
+        },
       });
     } catch (dbError) {
       logger.error('에러 로그 데이터베이스 기록 실패', { dbError });
@@ -398,8 +414,8 @@ export class ErrorHandler {
    * 복구 시도 결과 로그 기록
    */
   private async logRecoveryToDatabase(
-    originalError: AutomationError, 
-    recoveryAction: string, 
+    originalError: AutomationError,
+    recoveryAction: string,
     success: boolean
   ): Promise<void> {
     try {
@@ -412,8 +428,8 @@ export class ErrorHandler {
           original_error: originalError.message,
           recovery_action: recoveryAction,
           component: originalError.context.component,
-          operation: originalError.context.operation
-        }
+          operation: originalError.context.operation,
+        },
       });
     } catch (dbError) {
       logger.error('복구 로그 데이터베이스 기록 실패', { dbError });
@@ -427,16 +443,14 @@ export class ErrorHandler {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
 
-    const recentErrors = this.errorHistory.filter(
-      error => error.context.timestamp >= cutoff
-    );
+    const recentErrors = this.errorHistory.filter(error => error.context.timestamp >= cutoff);
 
     const analysis = {
       total_errors: recentErrors.length,
       by_component: {} as Record<string, number>,
       by_operation: {} as Record<string, number>,
       recoverable_rate: 0,
-      most_common_errors: [] as Array<{ message: string; count: number }>
+      most_common_errors: [] as Array<{ message: string; count: number }>,
     };
 
     // 컴포넌트별 집계
@@ -450,8 +464,8 @@ export class ErrorHandler {
 
     // 복구 가능률 계산
     const recoverableCount = recentErrors.filter(e => e.recoverable).length;
-    analysis.recoverable_rate = recentErrors.length > 0 ? 
-      (recoverableCount / recentErrors.length) * 100 : 0;
+    analysis.recoverable_rate =
+      recentErrors.length > 0 ? (recoverableCount / recentErrors.length) * 100 : 0;
 
     // 가장 흔한 에러 메시지
     const errorCounts: Record<string, number> = {};
@@ -460,7 +474,7 @@ export class ErrorHandler {
     });
 
     analysis.most_common_errors = Object.entries(errorCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([message, count]) => ({ message, count }));
 
@@ -524,7 +538,7 @@ export async function handleAutomationError(
   const handler = getErrorHandler();
   return await handler.handleError(error, {
     ...context,
-    timestamp: new Date()
+    timestamp: new Date(),
   });
 }
 
@@ -537,8 +551,12 @@ export async function withRetry<T>(
   config?: Partial<RetryConfig>
 ): Promise<T> {
   const handler = getErrorHandler();
-  return await handler.withRetry(operation, {
-    ...context,
-    timestamp: new Date()
-  }, config);
+  return await handler.withRetry(
+    operation,
+    {
+      ...context,
+      timestamp: new Date(),
+    },
+    config
+  );
 }

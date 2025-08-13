@@ -1,5 +1,5 @@
 // Re-export client functions only
-export { supabase, signUp, signIn, signOut, getCurrentUser } from './supabase-client'
+export { supabase, signUp, signIn, signOut, getCurrentUser } from './supabase-client';
 
 // Re-export unified types
 export type {
@@ -8,73 +8,71 @@ export type {
   SystemSettings,
   APIResponse,
   PaginationInfo,
-  PaginatedResponse
-} from '@/types'
+  PaginatedResponse,
+} from '@/types';
 
 // Database helpers with unified types
 
 // Import supabase client for database operations
-import { supabase } from './supabase-client'
-import type { UserProfile } from '@/types'
+import { supabase } from './supabase-client';
+import type { UserProfile } from '@/types';
 
 export const getUserProfile = async (userId: string) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-  return { data: data as UserProfile | null, error }
-}
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  return { data: data as UserProfile | null, error };
+};
 
 export const updateUserProfile = async (userId: string, updates: Partial<UserProfile>) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .update(updates)
-    .eq('id', userId)
-    .single()
-  return { data: data as UserProfile | null, error }
-}
+  const { data, error } = await supabase.from('profiles').update(updates).eq('id', userId).single();
+  return { data: data as UserProfile | null, error };
+};
 
 // Helper function to build query filters
-function applyLectureFilters(query: any, filters?: {
-  category?: string
-  level?: string
-  search?: string
-}) {
-  if (!filters) {return query}
-  
+function applyLectureFilters(
+  query: any,
+  filters?: {
+    category?: string;
+    level?: string;
+    search?: string;
+  }
+) {
+  if (!filters) {
+    return query;
+  }
+
   if (filters.category) {
-    query = query.eq('category', filters.category)
+    query = query.eq('category', filters.category);
   }
-  
+
   if (filters.level) {
-    query = query.eq('level', filters.level)
+    query = query.eq('level', filters.level);
   }
-  
+
   if (filters.search) {
-    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
   }
-  
-  return query
+
+  return query;
 }
 
 export const getLectures = async (filters?: {
-  category?: string
-  level?: string
-  search?: string
+  category?: string;
+  level?: string;
+  search?: string;
 }) => {
-  let query = supabase.from('lectures').select('*').eq('is_published', true)
-  query = applyLectureFilters(query, filters)
-  
-  const { data, error } = await query.order('created_at', { ascending: false })
-  return { data, error }
-}
+  let query = supabase.from('lectures').select('*').eq('is_published', true);
+  query = applyLectureFilters(query, filters);
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+  return { data, error };
+};
 
 // Helper function for community posts query building
 function buildCommunityPostsQuery() {
   return supabase
     .from('community_posts')
-    .select(`
+    .select(
+      `
       *,
       profiles (
         name,
@@ -83,142 +81,148 @@ function buildCommunityPostsQuery() {
       community_comments!inner (
         count
       )
-    `)
-    .eq('is_published', true)
+    `
+    )
+    .eq('is_published', true);
 }
 
-function applyCommunityFilters(query: any, filters?: {
-  category?: string
-  search?: string
-}) {
-  if (!filters) {return query}
-  
+function applyCommunityFilters(
+  query: any,
+  filters?: {
+    category?: string;
+    search?: string;
+  }
+) {
+  if (!filters) {
+    return query;
+  }
+
   if (filters.category && filters.category !== '전체') {
-    query = query.eq('category', filters.category)
+    query = query.eq('category', filters.category);
   }
-  
+
   if (filters.search) {
-    query = query.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`)
+    query = query.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`);
   }
-  
-  return query
+
+  return query;
 }
 
-export const getCommunityPosts = async (filters?: {
-  category?: string
-  search?: string
-}) => {
-  let query = buildCommunityPostsQuery()
-  query = applyCommunityFilters(query, filters)
-  
-  const { data, error } = await query.order('created_at', { ascending: false })
-  return { data, error }
-}
+export const getCommunityPosts = async (filters?: { category?: string; search?: string }) => {
+  let query = buildCommunityPostsQuery();
+  query = applyCommunityFilters(query, filters);
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+  return { data, error };
+};
 
 export const getPostComments = async (postId: string) => {
   const { data, error } = await supabase
     .from('community_comments')
-    .select(`
+    .select(
+      `
       *,
       profiles (
         name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq('post_id', postId)
     .eq('is_published', true)
-    .order('created_at', { ascending: true })
-  
-  return { data, error }
-}
+    .order('created_at', { ascending: true });
+
+  return { data, error };
+};
 
 export const createCommunityPost = async (post: {
-  title: string
-  content: string
-  category: string
-  tags: string[]
-  author_id: string
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  author_id: string;
 }) => {
-  const { data, error } = await supabase
-    .from('community_posts')
-    .insert([post])
-    .select()
-    .single()
-  
-  return { data, error }
-}
+  const { data, error } = await supabase.from('community_posts').insert([post]).select().single();
+
+  return { data, error };
+};
 
 export const createComment = async (comment: {
-  post_id: string
-  content: string
-  author_id: string
-  parent_id?: string
+  post_id: string;
+  content: string;
+  author_id: string;
+  parent_id?: string;
 }) => {
   const { data, error } = await supabase
     .from('community_comments')
     .insert([comment])
     .select()
-    .single()
-  
-  return { data, error }
-}
+    .single();
+
+  return { data, error };
+};
 
 export const likePost = async (postId: string) => {
   const { data, error } = await supabase.rpc('increment_post_likes', {
-    post_uuid: postId
-  })
-  
-  return { data, error }
-}
+    post_uuid: postId,
+  });
+
+  return { data, error };
+};
 
 export const incrementPostViews = async (postId: string) => {
   const { data, error } = await supabase.rpc('increment_post_views', {
-    post_uuid: postId
-  })
-  
-  return { data, error }
-}
+    post_uuid: postId,
+  });
+
+  return { data, error };
+};
 
 // Helper function for SaaS products filters
-function applySaaSFilters(query: any, filters?: {
-  category?: string
-  search?: string
-  featured?: boolean
-  trending?: boolean
-}) {
-  if (!filters) {return query}
-  
+function applySaaSFilters(
+  query: any,
+  filters?: {
+    category?: string;
+    search?: string;
+    featured?: boolean;
+    trending?: boolean;
+  }
+) {
+  if (!filters) {
+    return query;
+  }
+
   if (filters.category) {
-    query = query.eq('category', filters.category)
+    query = query.eq('category', filters.category);
   }
-  
+
   if (filters.search) {
-    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
   }
-  
+
   if (filters.featured) {
-    query = query.eq('is_featured', true)
+    query = query.eq('is_featured', true);
   }
-  
+
   if (filters.trending) {
-    query = query.eq('is_trending', true)
+    query = query.eq('is_trending', true);
   }
-  
-  return query
+
+  return query;
 }
 
 export const getSaaSProducts = async (filters?: {
-  category?: string
-  search?: string
-  featured?: boolean
-  trending?: boolean
+  category?: string;
+  search?: string;
+  featured?: boolean;
+  trending?: boolean;
 }) => {
-  let query = supabase.from('saas_products').select('*').eq('is_approved', true)
-  query = applySaaSFilters(query, filters)
-  
-  const { data, error } = await query.order('created_at', { ascending: false })
-  return { data, error }
-}
+  let query = supabase.from('saas_products').select('*').eq('is_approved', true);
+  query = applySaaSFilters(query, filters);
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+  return { data, error };
+};
 
 // Lecture Progress helpers
 export const updateLectureProgress = async (
@@ -228,46 +232,52 @@ export const updateLectureProgress = async (
   watchTime: number,
   completed: boolean
 ) => {
-  const { data, error } = await supabase
-    .from('lecture_progress')
-    .upsert({
+  const { data, error } = await supabase.from('lecture_progress').upsert(
+    {
       user_id: userId,
       lecture_id: lectureId,
       chapter_id: chapterId,
       watch_time: watchTime,
       completed,
-      last_watched_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,lecture_id,chapter_id'
-    })
-  return { data, error }
-}
+      last_watched_at: new Date().toISOString(),
+    },
+    {
+      onConflict: 'user_id,lecture_id,chapter_id',
+    }
+  );
+  return { data, error };
+};
 
 export const getLectureProgress = async (userId: string, lectureId: string) => {
   const { data, error } = await supabase
     .from('lecture_progress')
     .select('*')
     .eq('user_id', userId)
-    .eq('lecture_id', lectureId)
-  return { data, error }
-}
+    .eq('lecture_id', lectureId);
+  return { data, error };
+};
 
 export const getLectureWithChapters = async (lectureId: string) => {
   const { data, error } = await supabase
     .from('lectures')
-    .select(`
+    .select(
+      `
       *,
       chapters:lecture_chapters(*)
-    `)
+    `
+    )
     .eq('id', lectureId)
-    .single()
-  
+    .single();
+
   if (data) {
-    data.chapters = data.chapters?.sort((a: { order_index: number }, b: { order_index: number }) => a.order_index - b.order_index) ?? []
+    data.chapters =
+      data.chapters?.sort(
+        (a: { order_index: number }, b: { order_index: number }) => a.order_index - b.order_index
+      ) ?? [];
   }
-  
-  return { data, error }
-}
+
+  return { data, error };
+};
 
 export const checkEnrollment = async (userId: string, lectureId: string) => {
   const { data, error } = await supabase
@@ -276,10 +286,10 @@ export const checkEnrollment = async (userId: string, lectureId: string) => {
     .eq('user_id', userId)
     .eq('lecture_id', lectureId)
     .eq('status', 'active')
-    .single()
-  
-  return { data, error }
-}
+    .single();
+
+  return { data, error };
+};
 
 // Helper function to create like increment function in database
 export const createLikeFunctions = `
@@ -295,4 +305,4 @@ BEGIN
   WHERE id = post_uuid;
 END;
 $$;
-`
+`;

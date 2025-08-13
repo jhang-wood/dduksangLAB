@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { executeSecureBlogAutomation } from '@/lib/security/secure-blog-automation';
 import { getAccessControlManager, getClientIP } from '@/lib/security/access-control';
-import { env } from '@/lib/env';
+import { serverEnv } from '@/lib/env';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -20,13 +20,11 @@ export async function POST(request: NextRequest) {
     // 1. 인증 헤더 확인
     const authHeader = request.headers.get('authorization');
     const cronSecret = request.headers.get('x-cron-secret');
-    
+
     // Cron Job 또는 인증된 요청인지 확인
-    const isAuthorized = (
-      cronSecret && cronSecret === env.cronSecret
-    ) || (
-      authHeader && authHeader.startsWith('Bearer ')
-    );
+    const isAuthorized =
+      (cronSecret && cronSecret === serverEnv.cronSecret()) ||
+      (authHeader && authHeader.startsWith('Bearer '));
 
     if (!isAuthorized) {
       const accessControlManager = getAccessControlManager();
@@ -35,14 +33,14 @@ export async function POST(request: NextRequest) {
         timestamp: new Date(),
         success: false,
         user_agent: userAgent,
-        failure_reason: '인증 실패'
+        failure_reason: '인증 실패',
       });
 
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: '인증되지 않은 요청',
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         },
         { status: 401 }
       );
@@ -50,14 +48,14 @@ export async function POST(request: NextRequest) {
 
     // 2. 요청 본문 파싱
     const body = await request.json();
-    const { posts, options = {} } = body;
+    const { posts } = body;
 
     if (!posts || !Array.isArray(posts) || posts.length === 0) {
       return NextResponse.json(
         {
           success: false,
           error: '게시할 포스트가 없습니다',
-          code: 'INVALID_REQUEST'
+          code: 'INVALID_REQUEST',
         },
         { status: 400 }
       );
@@ -69,7 +67,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: '한 번에 최대 10개의 포스트만 게시할 수 있습니다',
-          code: 'TOO_MANY_POSTS'
+          code: 'TOO_MANY_POSTS',
         },
         { status: 400 }
       );
@@ -86,7 +84,7 @@ export async function POST(request: NextRequest) {
       success: result.success,
       postsCount: posts.length,
       totalTime,
-      sourceIP
+      sourceIP,
     });
 
     // 5. 응답 반환
@@ -98,20 +96,19 @@ export async function POST(request: NextRequest) {
         securityEvents: result.securityEvents,
         performanceMetrics: {
           ...result.performanceMetrics,
-          totalTime
-        }
+          totalTime,
+        },
       },
       ...(result.error && { error: result.error }),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     const totalTime = Date.now() - startTime;
-    
-    logger.error('보안 블로그 자동화 API 오류', { 
+
+    logger.error('보안 블로그 자동화 API 오류', {
       error,
       sourceIP,
-      totalTime
+      totalTime,
     });
 
     // 보안 이벤트 기록
@@ -127,8 +124,8 @@ export async function POST(request: NextRequest) {
         metadata: {
           api_endpoint: '/api/automation/secure-blog',
           error_type: (error as Error).constructor.name,
-          execution_time: totalTime
-        }
+          execution_time: totalTime,
+        },
       });
     } catch (logError) {
       logger.error('보안 이벤트 로깅 실패', { logError });
@@ -139,7 +136,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: '서버 내부 오류가 발생했습니다',
         code: 'INTERNAL_ERROR',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );
@@ -153,10 +150,7 @@ export async function GET(request: NextRequest) {
     // 시스템 상태 확인용 엔드포인트
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: '인증 필요' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '인증 필요' }, { status: 401 });
     }
 
     const { getSecureBlogAutomation } = await import('@/lib/security/secure-blog-automation');
@@ -173,17 +167,16 @@ export async function GET(request: NextRequest) {
         security_stats: {
           failed_attempts: securityStats.failedAttemptsCount,
           blocked_ips: securityStats.blockedIPsCount,
-          recent_failures: securityStats.recentFailures.length
+          recent_failures: securityStats.recentFailures.length,
         },
         system_info: {
           memory_usage: process.memoryUsage(),
           uptime: process.uptime(),
-          node_version: process.version
-        }
+          node_version: process.version,
+        },
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     logger.error('시스템 상태 조회 오류', { error, sourceIP });
 
@@ -191,7 +184,7 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: '시스템 상태를 조회할 수 없습니다',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );

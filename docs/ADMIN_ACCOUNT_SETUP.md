@@ -5,6 +5,7 @@
 이 가이드는 dduksangLAB 프로젝트에 관리자 계정을 생성하는 방법을 설명합니다.
 
 **관리자 계정 정보:**
+
 - **Email**: `.env.local` 파일 참조 (`ADMIN_EMAIL`)
 - **Password**: `.env.local` 파일 참조 (`ADMIN_PASSWORD`)
 - **Role**: admin
@@ -44,9 +45,11 @@ node scripts/create-admin.js
 3. **사용자 ID 확인**
    - `SQL Editor` 탭으로 이동
    - 다음 쿼리 실행:
+
    ```sql
    SELECT id, email FROM auth.users WHERE email = '[ADMIN_EMAIL]';
    ```
+
    - 결과에서 `id` 값을 복사
 
 4. **관리자 권한 부여**
@@ -63,7 +66,7 @@ node scripts/create-admin.js
      NOW()
    )
    ON CONFLICT (id) DO UPDATE
-   SET 
+   SET
      role = 'admin',
      name = '떡상연구소 관리자',
      updated_at = NOW();
@@ -81,7 +84,7 @@ Supabase Dashboard의 SQL Editor에서 다음 파일의 내용을 실행:
 계정이 올바르게 생성되었는지 확인하려면:
 
 ```sql
-SELECT 
+SELECT
   p.id,
   p.email,
   p.name,
@@ -103,12 +106,15 @@ WHERE p.email = '[ADMIN_EMAIL]';
 ## 🛠️ 문제 해결
 
 ### "사용자가 이미 존재합니다" 오류
+
 - 이미 생성된 사용자입니다. 프로필만 업데이트하면 됩니다.
 
 ### "profiles 테이블을 찾을 수 없습니다" 오류
+
 - 마이그레이션이 실행되지 않았습니다. 먼저 `/supabase/migrations/`의 SQL 파일들을 실행하세요.
 
 ### 로그인이 안 되는 경우
+
 1. Email confirm이 되었는지 확인
 2. 비밀번호가 정확한지 확인
 3. profiles 테이블에 role이 'admin'으로 설정되었는지 확인
@@ -116,6 +122,7 @@ WHERE p.email = '[ADMIN_EMAIL]';
 ## 📞 지원
 
 문제가 지속되면 다음을 확인하세요:
+
 - Supabase Dashboard의 로그
 - 브라우저 콘솔의 에러 메시지
 - 네트워크 탭의 API 응답

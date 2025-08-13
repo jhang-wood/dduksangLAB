@@ -39,7 +39,6 @@ export class QueueManager {
   private queues: Map<string, Queue> = new Map();
   private workers: Map<string, Worker> = new Map();
   private queueEvents: Map<string, QueueEvents> = new Map();
-  private isInitialized = false;
   private healthCheckInterval?: NodeJS.Timer;
 
   constructor() {
@@ -65,9 +64,8 @@ export class QueueManager {
       await this.createQueue('system-maintenance');
 
       this.startHealthCheck();
-      this.isInitialized = true;
+      // Queue system initialized successfully
       logger.info('큐 시스템 초기화 완료');
-
     } catch (error) {
       logger.error('큐 시스템 초기화 실패:', error);
       throw error;
@@ -77,7 +75,7 @@ export class QueueManager {
   private async createQueue(name: string, options: any = {}): Promise<Queue> {
     const queue = new Queue(name, { connection: this.redis, ...options });
     const queueEvents = new QueueEvents(name, { connection: this.redis });
-    
+
     queueEvents.on('completed', ({ jobId }) => {
       logger.info(`작업 완료: ${name}/${jobId}`);
     });
@@ -93,7 +91,9 @@ export class QueueManager {
 
   async addJob(queueName: string, jobData: JobData): Promise<Job<JobData> | null> {
     const queue = this.queues.get(queueName);
-    if (!queue) {return null;}
+    if (!queue) {
+      return null;
+    }
 
     try {
       const job = await queue.add(jobData.type, jobData, {
@@ -101,7 +101,7 @@ export class QueueManager {
         attempts: jobData.retries || 3,
         delay: jobData.delay || 0,
       });
-      
+
       logger.info(`작업 추가됨: ${queueName}/${job.id}`);
       return job;
     } catch (error) {
@@ -111,7 +111,7 @@ export class QueueManager {
   }
 
   private setupRedisErrorHandling(): void {
-    this.redis.on('error', (error) => logger.error('Redis 오류:', error));
+    this.redis.on('error', error => logger.error('Redis 오류:', error));
     this.redis.on('connect', () => logger.info('Redis 연결됨'));
   }
 
@@ -127,14 +127,14 @@ export class QueueManager {
 
   async shutdown(): Promise<void> {
     if (this.healthCheckInterval) {
-      clearInterval(this.healthCheckInterval);
+      clearInterval(this.healthCheckInterval as NodeJS.Timeout);
     }
 
-    for (const [name, worker] of this.workers) {
+    for (const [, worker] of this.workers) {
       await worker.close();
     }
 
-    for (const [name, queue] of this.queues) {
+    for (const [, queue] of this.queues) {
       await queue.close();
     }
 

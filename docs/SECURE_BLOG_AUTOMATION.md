@@ -14,6 +14,7 @@ dduksangLAB 관리자 계정 자동 로그인 및 블로그 자동 게시 시스
 ## 🏗️ 시스템 아키텍처
 
 ### 보안 계층
+
 1. **자격증명 관리** (`lib/security/credential-manager.ts`)
    - AES-256-GCM 암호화
    - 환경변수 기반 안전한 저장
@@ -30,6 +31,7 @@ dduksangLAB 관리자 계정 자동 로그인 및 블로그 자동 게시 시스
    - 재시도 로직 및 오류 복구
 
 ### 자동화 계층
+
 4. **블로그 게시 자동화** (`lib/security/secure-blog-automation.ts`)
    - 통합 보안 검증
    - 관리자 로그인 + 블로그 게시 워크플로우
@@ -114,12 +116,14 @@ curl -X GET http://localhost:3000/api/automation/secure-blog \
 ```typescript
 import { executeSecureBlogAutomation } from '@/lib/security/secure-blog-automation';
 
-const posts = [{
-  title: "새로운 블로그 포스트",
-  content: "포스트 내용...",
-  category: "기술",
-  tags: ["자동화", "블로그"]
-}];
+const posts = [
+  {
+    title: '새로운 블로그 포스트',
+    content: '포스트 내용...',
+    category: '기술',
+    tags: ['자동화', '블로그'],
+  },
+];
 
 const result = await executeSecureBlogAutomation(posts, req);
 
@@ -133,16 +137,19 @@ if (result.success) {
 ## 🔒 보안 기능
 
 ### 1. 다층 보안 검증
+
 - **IP 기반 접근 제어**: 신뢰할 수 있는 IP만 허용
 - **로그인 시도 제한**: 5회 실패 시 15분간 IP 차단
 - **세션 만료 관리**: 24시간 후 자동 세션 만료
 
 ### 2. 암호화 및 데이터 보호
+
 - **AES-256-GCM**: 관리자 자격증명 암호화
 - **환경변수 분리**: 민감한 정보의 안전한 저장
 - **메모리 보안**: 런타임 중 자격증명 보호
 
 ### 3. 감사 및 모니터링
+
 - **보안 이벤트 로깅**: 모든 보안 관련 활동 기록
 - **성능 모니터링**: 자동화 작업 성능 추적
 - **실시간 알림**: 심각한 보안 이벤트 즉시 알림
@@ -150,6 +157,7 @@ if (result.success) {
 ## 📊 모니터링 및 로깅
 
 ### 보안 이벤트 유형
+
 - `login_success`: 성공적인 로그인
 - `login_failure`: 로그인 실패
 - `access_denied`: 접근 거부
@@ -157,6 +165,7 @@ if (result.success) {
 - `credential_rotation`: 자격증명 회전 필요
 
 ### 로그 위치
+
 - **보안 로그**: `logs/security/access-control.log`
 - **자동화 로그**: `logs/automation/blog-publisher.log`
 - **Supabase 로그**: 데이터베이스 automation_logs 테이블
@@ -164,12 +173,14 @@ if (result.success) {
 ## ⚠️ 보안 주의사항
 
 ### 필수 보안 조치
+
 1. **HTTPS 사용**: 프로덕션에서 반드시 HTTPS 사용
 2. **정기적 비밀번호 변경**: 30일마다 관리자 비밀번호 변경
 3. **IP 화이트리스트**: 신뢰할 수 있는 IP만 허용 목록에 추가
 4. **로그 모니터링**: 보안 로그를 정기적으로 검토
 
 ### 권장 보안 설정
+
 ```bash
 # 강력한 암호화 키 생성
 ENCRYPTION_KEY=$(openssl rand -hex 32)
@@ -184,6 +195,7 @@ ADMIN_ALLOWED_IPS=127.0.0.1,your-server-ip
 ## 🚀 고급 사용법
 
 ### CRON Job 설정
+
 ```bash
 # 매일 오전 9시에 예약된 포스트 자동 게시
 0 9 * * * curl -X POST https://your-domain.com/api/automation/secure-blog \
@@ -192,13 +204,14 @@ ADMIN_ALLOWED_IPS=127.0.0.1,your-server-ip
 ```
 
 ### 대량 포스트 게시
+
 ```typescript
 const posts = await generateAIContent(10); // AI로 10개 포스트 생성
 const result = await executeSecureBlogAutomation(posts, {
   sourceIP: '127.0.0.1',
   validateContent: true,
   notifyOnComplete: true,
-  retryCount: 3
+  retryCount: 3,
 });
 ```
 
@@ -219,6 +232,7 @@ const result = await executeSecureBlogAutomation(posts, {
    - 키 변경 시 기존 암호화 데이터 재암호화 필요
 
 ### 디버깅 팁
+
 ```bash
 # 상세 로그 활성화
 DEBUG=automation:* npm run dev
@@ -233,11 +247,13 @@ curl -v http://localhost:3000/api/automation/secure-blog/status
 ## 📈 성능 최적화
 
 ### 권장 설정
+
 - **동시 게시**: 최대 1개 포스트 (안정성 우선)
 - **재시도**: 3회 시도, 5초 간격
 - **세션 재사용**: 기존 세션 있으면 재로그인 생략
 
 ### 모니터링 메트릭
+
 - 평균 로그인 시간: ~3-5초
 - 평균 게시 시간: ~10-15초/포스트
 - 메모리 사용량: ~100MB 추가

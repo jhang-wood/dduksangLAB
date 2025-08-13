@@ -5,9 +5,9 @@
 // 에러 심각도 레벨
 export enum ErrorSeverity {
   INFO = 'info',
-  WARN = 'warn', 
+  WARN = 'warn',
   ERROR = 'error',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // 시스템 상태
@@ -15,7 +15,7 @@ export enum SystemStatus {
   HEALTHY = 'healthy',
   DEGRADED = 'degraded',
   UNHEALTHY = 'unhealthy',
-  DOWN = 'down'
+  DOWN = 'down',
 }
 
 // 서비스 타입
@@ -25,7 +25,7 @@ export enum ServiceType {
   AI_API = 'ai_api',
   SYSTEM = 'system',
   NETWORK = 'network',
-  BLOG = 'blog'
+  BLOG = 'blog',
 }
 
 // 에러 타입
@@ -82,7 +82,7 @@ export enum NotificationChannel {
   EMAIL = 'email',
   SLACK = 'slack',
   WEBHOOK = 'webhook',
-  DASHBOARD = 'dashboard'
+  DASHBOARD = 'dashboard',
 }
 
 // 알림 메시지

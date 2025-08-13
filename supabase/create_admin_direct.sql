@@ -13,13 +13,13 @@ DECLARE
 BEGIN
   -- auth.users에 사용자 생성 (Supabase의 내부 함수 사용)
   -- 주의: 이 부분은 Supabase Dashboard의 Authentication 탭에서 수동으로 생성해야 합니다
-  -- Email: admin@dduksang.com
-  -- Password: dduksang2025!@#
+  -- Email: [ADMIN_EMAIL_ADDRESS]
+  -- Password: [ADMIN_PASSWORD]
   
   -- 생성된 사용자의 ID 가져오기
   SELECT id INTO new_user_id
   FROM auth.users
-  WHERE email = 'admin@dduksang.com'
+  WHERE email = '[ADMIN_EMAIL_ADDRESS]'
   LIMIT 1;
   
   -- 사용자가 존재하는 경우 profiles 테이블에 관리자 정보 추가
@@ -27,7 +27,7 @@ BEGIN
     INSERT INTO public.profiles (id, email, name, phone, role, created_at, updated_at)
     VALUES (
       new_user_id,
-      'admin@dduksang.com',
+      '[ADMIN_EMAIL_ADDRESS]',
       '떡상연구소 관리자',
       '010-0000-0000',
       'admin',
@@ -65,4 +65,4 @@ SELECT
   u.last_sign_in_at
 FROM public.profiles p
 JOIN auth.users u ON p.id = u.id
-WHERE p.email = 'admin@dduksang.com';
+WHERE p.email = '[ADMIN_EMAIL_ADDRESS]';

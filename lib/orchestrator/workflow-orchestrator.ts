@@ -3,11 +3,12 @@ export class WorkflowOrchestrator {
   private startTime?: Date;
 
   async start(): Promise<void> {
-    if (this.isRunning) {return;}
-    
+    if (this.isRunning) {
+      return;
+    }
+
     this.startTime = new Date();
     this.isRunning = true;
-    console.log("워크플로우 시작");
   }
 
   getSystemStatus() {
@@ -15,13 +16,15 @@ export class WorkflowOrchestrator {
       orchestrator: {
         isRunning: this.isRunning,
         uptime: this.getUptime(),
-        startTime: this.startTime
-      }
+        startTime: this.startTime,
+      },
     };
   }
 
   private getUptime(): number {
-    if (!this.startTime) {return 0;}
+    if (!this.startTime) {
+      return 0;
+    }
     return Math.floor((Date.now() - this.startTime.getTime()) / 1000);
   }
 

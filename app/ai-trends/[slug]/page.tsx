@@ -3,11 +3,10 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import AITrendDetailClient from './page-client'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
 
 const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseServiceKey
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
 interface Props {
@@ -32,37 +31,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }
     }
 
-    const title = trend.seo_title ?? trend.title
-    const description = trend.seo_description ?? trend.summary
+    const title = trend.seo_title || trend.title
+    const description = trend.seo_description || trend.summary
 
     return {
       title: `${title} | 떡상연구소`,
       description,
-      keywords: trend.seo_keywords?.join(', ') ?? 'AI 트렌드, 인공지능',
+      keywords: trend.seo_keywords?.join(', ') || 'AI 트렌드, 인공지능',
       openGraph: {
         title: `${title} | 떡상연구소`,
         description,
         type: 'article',
         locale: 'ko_KR',
         siteName: '떡상연구소',
-        ...(trend.thumbnail_url && {
-          images: [
-            {
-              url: trend.thumbnail_url,
-              width: 1200,
-              height: 630,
-              alt: trend.title,
-            }
-          ]
-        }),
+        images: trend.thumbnail_url ? [
+          {
+            url: trend.thumbnail_url,
+            width: 1200,
+            height: 630,
+            alt: trend.title,
+          }
+        ] : undefined,
       },
       twitter: {
         card: 'summary_large_image',
         title: `${title} | 떡상연구소`,
         description,
-        ...(trend.thumbnail_url && {
-          images: [trend.thumbnail_url]
-        }),
+        images: trend.thumbnail_url ? [trend.thumbnail_url] : undefined,
       },
       alternates: {
         canonical: `/ai-trends/${slug}`,
@@ -99,12 +94,12 @@ export default async function AITrendDetailPage({ params }: Props) {
     .eq('is_published', true)
     .single()
 
-  if (error !== null || !trend) {
+  if (error || !trend) {
     notFound()
   }
 
   // Increment view count
-  void supabase.rpc('increment_ai_trend_views', { trend_id: trend.id })
+  await supabase.rpc('increment_ai_trend_views', { trend_id: trend.id })
 
   // Fetch related trends
   let relatedTrends = []
@@ -118,7 +113,7 @@ export default async function AITrendDetailPage({ params }: Props) {
       .limit(3)
       .order('published_at', { ascending: false })
 
-    relatedTrends = data ?? []
+    relatedTrends = data || []
   }
 
   return <AITrendDetailClient trend={trend} relatedTrends={relatedTrends} />

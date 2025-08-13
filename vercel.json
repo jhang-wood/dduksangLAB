@@ -13,6 +13,19 @@
       "schedule": "0 9 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "dduksang.com"
+        }
+      ],
+      "destination": "https://www.dduksang.com/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

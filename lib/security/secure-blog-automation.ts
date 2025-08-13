@@ -63,7 +63,7 @@ export class SecureBlogAutomation {
       notifyOnComplete: true,
       retryCount: 3,
       retryDelay: 5000,
-      ...options
+      ...options,
     };
 
     // 중복 실행 방지
@@ -71,7 +71,7 @@ export class SecureBlogAutomation {
       return {
         success: false,
         error: '이미 실행 중인 자동화 작업이 있습니다.',
-        securityEvents: ['중복 실행 시도 차단']
+        securityEvents: ['중복 실행 시도 차단'],
       };
     }
 
@@ -80,7 +80,7 @@ export class SecureBlogAutomation {
     try {
       logger.info('보안 블로그 자동화 시작', {
         postsCount: posts.length,
-        sourceIP: finalOptions.sourceIP
+        sourceIP: finalOptions.sourceIP,
       });
 
       // 1. 보안 검증
@@ -89,20 +89,20 @@ export class SecureBlogAutomation {
         return {
           success: false,
           error: '보안 검증 실패',
-          securityEvents: [...securityValidation.warnings, ...securityValidation.blockers]
+          securityEvents: [...securityValidation.warnings, ...securityValidation.blockers],
         };
       }
 
       // 2. 관리자 자동 로그인
       logger.info('관리자 자동 로그인 시도');
       const loginStartTime = Date.now();
-      
+
       const adminAuth = getAdminAuthAutomation();
       const loginResult = await adminAuth.performSecureAutoLogin(finalOptions.sourceIP, {
         userAgent: finalOptions.userAgent,
         captureScreenshot: finalOptions.captureScreenshot,
         maxRetries: finalOptions.retryCount,
-        retryDelay: finalOptions.retryDelay
+        retryDelay: finalOptions.retryDelay,
       });
 
       const loginTime = Date.now() - loginStartTime;
@@ -113,14 +113,14 @@ export class SecureBlogAutomation {
           severity: 'high',
           sourceIP: finalOptions.sourceIP,
           description: `자동 로그인 실패: ${loginResult.error}`,
-          metadata: { automation: true }
+          metadata: { automation: true },
         });
 
         return {
           success: false,
           loginResult,
           error: `로그인 실패: ${loginResult.error}`,
-          securityEvents: loginResult.securityWarnings || []
+          securityEvents: loginResult.securityWarnings || [],
         };
       }
 
@@ -139,16 +139,16 @@ export class SecureBlogAutomation {
         {
           loginCredentials: {
             email: credentials.email,
-            password: credentials.password
+            password: credentials.password,
           },
           validateContent: finalOptions.validateContent,
           notifyOnComplete: finalOptions.notifyOnComplete,
-          captureScreenshot: finalOptions.captureScreenshot
+          captureScreenshot: finalOptions.captureScreenshot,
         },
         {
           delayBetweenPosts: 3000,
           continueOnError: true,
-          maxConcurrent: 1
+          maxConcurrent: 1,
         }
       );
 
@@ -168,8 +168,8 @@ export class SecureBlogAutomation {
           total_posts: posts.length,
           successful_posts: successfulPosts.length,
           failed_posts: failedPosts.length,
-          session_id: loginResult.sessionId
-        }
+          session_id: loginResult.sessionId,
+        },
       });
 
       const totalTime = Date.now() - startTime;
@@ -179,7 +179,7 @@ export class SecureBlogAutomation {
         successfulPosts: successfulPosts.length,
         failedPosts: failedPosts.length,
         totalTime,
-        sessionId: loginResult.sessionId
+        sessionId: loginResult.sessionId,
       });
 
       return {
@@ -191,10 +191,9 @@ export class SecureBlogAutomation {
           totalTime,
           loginTime,
           publishTime,
-          validationTime: 0
-        }
+          validationTime: 0,
+        },
       };
-
     } catch (error) {
       logger.error('보안 블로그 자동화 오류', { error });
 
@@ -205,16 +204,15 @@ export class SecureBlogAutomation {
         description: `자동화 시스템 오류: ${(error as Error).message}`,
         metadata: {
           automation: true,
-          error_type: (error as Error).constructor.name
-        }
+          error_type: (error as Error).constructor.name,
+        },
       });
 
       return {
         success: false,
         error: (error as Error).message,
-        securityEvents: ['시스템 오류 발생']
+        securityEvents: ['시스템 오류 발생'],
       };
-
     } finally {
       this.isRunning = false;
     }
@@ -247,15 +245,14 @@ export class SecureBlogAutomation {
         description: '예약된 포스트 자동 실행 완료',
         metadata: {
           automation: true,
-          scheduled_execution: true
-        }
+          scheduled_execution: true,
+        },
       });
 
       return {
         success: true,
-        securityEvents: ['예약된 포스트 실행 완료']
+        securityEvents: ['예약된 포스트 실행 완료'],
       };
-
     } catch (error) {
       logger.error('예약된 포스트 실행 오류', { error });
 
@@ -266,13 +263,13 @@ export class SecureBlogAutomation {
         description: `예약된 포스트 실행 오류: ${(error as Error).message}`,
         metadata: {
           automation: true,
-          scheduled_execution: true
-        }
+          scheduled_execution: true,
+        },
       });
 
       return {
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       };
     }
   }
@@ -297,7 +294,7 @@ export class SecureBlogAutomation {
 
       // 보안 통계 확인
       const securityStats = accessControlManager.getSecurityStats();
-      
+
       if (securityStats.recentFailures.length > 20) {
         warnings.push('최근 로그인 실패 시도가 매우 많음');
       }
@@ -309,7 +306,7 @@ export class SecureBlogAutomation {
       // 자격증명 검증
       const credentialManager = getCredentialManager();
       const credentials = await credentialManager.getAdminCredentials();
-      
+
       if (credentialManager.needsCredentialRotation(credentials)) {
         warnings.push('관리자 자격증명 회전 필요');
       }
@@ -323,15 +320,14 @@ export class SecureBlogAutomation {
       return {
         passed: blockers.length === 0,
         warnings,
-        blockers
+        blockers,
       };
-
     } catch (error) {
       logger.error('보안 검증 오류', { error });
       return {
         passed: false,
         warnings: ['보안 검증 중 오류 발생'],
-        blockers: ['보안 검증 실패']
+        blockers: ['보안 검증 실패'],
       };
     }
   }
@@ -348,16 +344,15 @@ export class SecureBlogAutomation {
   }): Promise<void> {
     try {
       const accessControlManager = getAccessControlManager();
-      
+
       await accessControlManager.logSecurityEvent({
         type: event.type as any,
         severity: event.severity as any,
         source_ip: event.sourceIP,
         description: event.description,
         timestamp: new Date(),
-        metadata: event.metadata
+        metadata: event.metadata,
       });
-
     } catch (error) {
       logger.error('보안 이벤트 로깅 실패', { error });
     }
@@ -373,7 +368,7 @@ export class SecureBlogAutomation {
   } {
     return {
       isRunning: this.isRunning,
-      systemHealth: 'healthy' // TODO: 실제 시스템 헬스 체크 구현
+      systemHealth: 'healthy', // TODO: 실제 시스템 헬스 체크 구현
     };
   }
 
@@ -393,14 +388,13 @@ export class SecureBlogAutomation {
         description: `자동화 시스템 긴급 중지: ${reason}`,
         metadata: {
           emergency_stop: true,
-          reason
-        }
+          reason,
+        },
       });
 
       // 활성 세션 종료
       const adminAuth = getAdminAuthAutomation();
       await adminAuth.logout();
-
     } catch (error) {
       logger.error('긴급 중지 처리 오류', { error });
     }
@@ -431,12 +425,12 @@ export async function executeSecureBlogAutomation(
   const userAgent = req?.headers['user-agent'] || 'dduksangLAB-API/1.0';
 
   const automation = getSecureBlogAutomation();
-  
+
   return await automation.executeSecureBlogPublish(posts, {
     sourceIP,
     userAgent,
     validateContent: true,
     notifyOnComplete: true,
-    captureScreenshot: false
+    captureScreenshot: false,
   });
 }

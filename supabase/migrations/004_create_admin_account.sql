@@ -5,8 +5,8 @@
 -- Supabase Dashboard에서 다음 단계를 따라주세요:
 
 -- Step 1: Authentication > Users 탭에서 수동으로 사용자 생성
--- Email: admin@dduksang.com
--- Password: dduksang2025!@#
+-- Email: [ADMIN_EMAIL_ADDRESS]
+-- Password: [ADMIN_PASSWORD]
 -- Auto Confirm Email: 체크
 
 -- Step 2: 생성된 사용자의 ID 확인
@@ -14,7 +14,7 @@
 /*
 SELECT id, email, created_at 
 FROM auth.users 
-WHERE email = 'admin@dduksang.com';
+WHERE email = '[ADMIN_EMAIL_ADDRESS]';
 */
 
 -- Step 3: profiles 테이블에 관리자 정보 추가
@@ -23,7 +23,7 @@ WHERE email = 'admin@dduksang.com';
 INSERT INTO public.profiles (id, email, name, phone, role, created_at, updated_at)
 VALUES (
   'YOUR-USER-ID-HERE', -- 실제 auth.users의 ID로 교체
-  'admin@dduksang.com',
+  '[ADMIN_EMAIL_ADDRESS]',
   '떡상연구소 관리자',
   '010-0000-0000',
   'admin',
@@ -49,11 +49,11 @@ SELECT
   u.last_sign_in_at
 FROM public.profiles p
 JOIN auth.users u ON p.id = u.id
-WHERE p.email = 'admin@dduksang.com';
+WHERE p.email = '[ADMIN_EMAIL_ADDRESS]';
 */
 
 -- 생성된 관리자 계정 정보:
--- Email: admin@dduksang.com
--- Password: dduksang2025!@#
+-- Email: [ADMIN_EMAIL_ADDRESS]
+-- Password: [ADMIN_PASSWORD]
 -- Role: admin
 -- Name: 떡상연구소 관리자

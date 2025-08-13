@@ -1,44 +1,39 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Menu, X, User, LogOut } from 'lucide-react'
-import { useAuth } from '@/lib/auth-context'
-import { logger } from '@/lib/logger'
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 interface HeaderProps {
-  currentPage?: string
+  currentPage?: string;
 }
 
 export default function Header({ currentPage = 'home' }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const router = useRouter()
-  const { user, userProfile, signOut, isAdmin } = useAuth()
-
-  logger.debug('[Header] Auth state:', {
-    user: user?.email,
-    userProfile: userProfile,
-    role: userProfile?.role,
-    isAdmin: isAdmin
-  })
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const userProfile = useAuthStore((state) => state.userProfile);
+  const signOut = useAuthStore((state) => state.signOut);
+  const isAdmin = useAuthStore((state) => state.isAdmin);
+  const mounted = useAuthStore((state) => state.mounted);
+  const loading = useAuthStore((state) => state.loading);
 
   const navItems = [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
     { id: 'sites', label: '사이트홍보관', href: '/sites' },
     { id: 'community', label: '커뮤니티', href: '/community' },
     { id: 'lectures', label: '강의', href: '/lectures' },
-    ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : [])
-  ]
-
-  logger.debug('[Header] Nav items:', navItems)
+    ...(mounted && isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : []),
+  ];
 
   const handleSignOut = async () => {
-    await signOut()
-    setIsUserMenuOpen(false)
-  }
+    await signOut();
+    setIsUserMenuOpen(false);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-deepBlack-900/80 backdrop-blur-xl border-b border-metallicGold-900/20">
@@ -56,13 +51,15 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   priority
                 />
               </div>
-              <span className="hidden md:block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">떡상연구소</span>
+              <span className="hidden md:block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                떡상연구소
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+            {navItems.map(item => (
               <Link
                 key={item.id}
                 href={item.href}
@@ -79,7 +76,9 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center">
-            {user ? (
+            {(!mounted || loading) ? (
+              <div className="px-6 py-2 bg-deepBlack-600/50 text-offWhite-600 text-sm rounded-lg">로딩 중...</div>
+            ) : user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -88,7 +87,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   <User size={18} />
                   <span>{userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}</span>
                 </button>
-                
+
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-deepBlack-300 border border-metallicGold-900/30 rounded-lg shadow-xl">
                     <div className="py-1">
@@ -97,8 +96,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                       </div>
                       <button
                         onClick={() => {
-                          router.push('/mypage')
-                          setIsUserMenuOpen(false)
+                          router.push('/mypage');
+                          setIsUserMenuOpen(false);
                         }}
                         className="w-full px-4 py-2 text-sm text-left text-offWhite-500 hover:bg-deepBlack-600/50 hover:text-metallicGold-500 transition-colors"
                       >
@@ -138,7 +137,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
         {isMenuOpen && (
           <div className="md:hidden border-t border-metallicGold-900/20 py-4">
             <nav className="space-y-1">
-              {navItems.map((item) => (
+              {navItems.map(item => (
                 <Link
                   key={item.id}
                   href={item.href}
@@ -152,18 +151,20 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   {item.label}
                 </Link>
               ))}
-              
+
               {/* Mobile Auth Section */}
               <div className="pt-4 px-4 border-t border-metallicGold-900/20">
-                {user ? (
+                {(!mounted || loading) ? (
+                  <div className="px-6 py-2 bg-deepBlack-600/50 text-offWhite-600 text-sm rounded-lg">로딩 중...</div>
+                ) : user ? (
                   <div className="space-y-2">
                     <div className="text-sm text-offWhite-600 mb-2">
                       {userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}
                     </div>
                     <button
                       onClick={() => {
-                        router.push('/mypage')
-                        setIsMenuOpen(false)
+                        router.push('/mypage');
+                        setIsMenuOpen(false);
                       }}
                       className="block w-full py-2 text-sm text-left text-offWhite-500 hover:text-metallicGold-500"
                     >
@@ -171,8 +172,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                     </button>
                     <button
                       onClick={() => {
-                        void handleSignOut()
-                        setIsMenuOpen(false)
+                        void handleSignOut();
+                        setIsMenuOpen(false);
                       }}
                       className="block w-full py-2 text-sm text-left text-red-400 hover:text-red-300"
                     >
@@ -194,6 +195,5 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
         )}
       </div>
     </header>
-  )
+  );
 }
-// Force cache invalidation: 1752976128

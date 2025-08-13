@@ -1,21 +1,23 @@
-'use client'
+'use client';
 
-import { logger, userNotification } from '@/lib/logger'
+import { logger, userNotification } from '@/lib/logger';
 
-import React, { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import { supabase } from '@/lib/supabase'
+import React, { useEffect, useState } from 'react';
+import { useAuthStore } from '@/providers/auth-store-provider';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminDebug() {
-  const { user, userProfile, isAdmin } = useAuth()
+  const user = useAuthStore((state) => state.user);
+  const userProfile = useAuthStore((state) => state.userProfile);
+  const isAdmin = useAuthStore((state) => state.isAdmin);
   const [debugInfo, setDebugInfo] = useState<{
     userId: string;
     email: string | undefined;
     profileRole: string | undefined;
     isAdmin: boolean;
     profileName: string | undefined;
-  } | null>(null)
-  const [updating, setUpdating] = useState(false)
+  } | null>(null);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -24,36 +26,37 @@ export default function AdminDebug() {
         email: user.email,
         profileRole: userProfile?.role,
         isAdmin: isAdmin,
-        profileName: userProfile?.name
-      })
+        profileName: userProfile?.name,
+      });
     }
-  }, [user, userProfile, isAdmin])
+  }, [user, userProfile, isAdmin]);
 
   const updateToAdmin = async () => {
-    if (!user) {return}
+    if (!user) {
+      return;
+    }
 
-    setUpdating(true)
+    setUpdating(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: 'admin' })
-        .eq('id', user.id)
+      const { error } = await supabase.from('profiles').update({ role: 'admin' }).eq('id', user.id);
 
       if (!error) {
-        userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.')
-        window.location.reload()
+        userNotification.alert('관리자 권한이 부여되었습니다. 페이지를 새로고침합니다.');
+        window.location.reload();
       } else {
-        userNotification.alert(`오류 발생: ${  error.message}`)
+        userNotification.alert(`오류 발생: ${error.message}`);
       }
     } catch (err: unknown) {
-      logger.error(err)
-      userNotification.alert('업데이트 중 오류가 발생했습니다.')
+      logger.error(err);
+      userNotification.alert('업데이트 중 오류가 발생했습니다.');
     } finally {
-      setUpdating(false)
+      setUpdating(false);
     }
-  }
+  };
 
-  if (!user) {return null}
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-4 right-4 bg-deepBlack-900 border-2 border-metallicGold-500 rounded-lg p-4 max-w-sm z-[9999] shadow-2xl">
@@ -65,11 +68,11 @@ export default function AdminDebug() {
         <p>Is Admin: {debugInfo?.isAdmin ? 'Yes' : 'No'}</p>
         <p>Name: {debugInfo?.profileName ?? 'null'}</p>
       </div>
-      
+
       {!isAdmin && (
         <button
           onClick={() => {
-            void updateToAdmin()
+            void updateToAdmin();
           }}
           disabled={updating}
           className="mt-3 w-full px-3 py-1 bg-metallicGold-500 text-deepBlack-900 text-xs font-semibold rounded hover:bg-metallicGold-600 disabled:opacity-50"
@@ -78,5 +81,5 @@ export default function AdminDebug() {
         </button>
       )}
     </div>
-  )
+  );
 }
