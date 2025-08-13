@@ -74,16 +74,6 @@ export function middleware(request: NextRequest) {
     response.headers.set('Access-Control-Max-Age', '86400');
   }
 
-  // Cron 엔드포인트 보안 강화
-  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
-    const cronSecret =
-      request.headers.get('authorization') ?? request.nextUrl.searchParams.get('secret');
-    const expectedSecret = process.env.CRON_SECRET;
-
-    if (!cronSecret || !expectedSecret || cronSecret !== expectedSecret) {
-      return new NextResponse('Unauthorized', { status: 401 });
-    }
-  }
 
   // 관리자 페이지 접근 제한
   if (request.nextUrl.pathname.startsWith('/admin')) {
