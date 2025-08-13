@@ -11,11 +11,10 @@ export async function withFallback<T>(
     const result = await main();
     return result;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[fallback:${label}]`, errorMessage);
-    
+    // Only log in development mode to reduce production noise
     if (process.env.NODE_ENV === "development") {
-      console.warn(`[fallback:${label}] Using fallback data source`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`[fallback:${label}] ${errorMessage} - using fallback`);
     }
     
     return await Promise.resolve(fallback());

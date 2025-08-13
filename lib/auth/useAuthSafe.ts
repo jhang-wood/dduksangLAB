@@ -25,19 +25,12 @@ export function useAuthSafe(): AuthState & {
     status: "loading"
   });
 
-  // SSR protection
-  if (typeof window === "undefined") {
-    return {
-      user: null,
-      loading: false,
-      mounted: false,
-      status: "unauthenticated",
-      signOut: async () => {},
-      refresh: async () => {}
-    };
-  }
+  const isSSR = typeof window === "undefined";
 
   useEffect(() => {
+    // Skip loading user in SSR
+    if (isSSR) return;
+
     let mounted = true;
 
     const loadUser = async () => {
@@ -55,7 +48,10 @@ export function useAuthSafe(): AuthState & {
           });
         }
       } catch (error) {
-        console.warn("[useAuthSafe] Failed to load user:", error);
+        // Only log auth errors in development
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[useAuthSafe] Failed to load user:", error);
+        }
         if (mounted) {
           setAuthState({
             user: null,
@@ -72,7 +68,7 @@ export function useAuthSafe(): AuthState & {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [isSSR]); // Add isSSR to dependencies
 
   const signOut = async () => {
     try {
@@ -83,7 +79,10 @@ export function useAuthSafe(): AuthState & {
         status: "unauthenticated"
       }));
     } catch (error) {
-      console.error("[useAuthSafe] Sign out failed:", error);
+      // Only log sign out errors in development
+      if (process.env.NODE_ENV === "development") {
+        console.error("[useAuthSafe] Sign out failed:", error);
+      }
     }
   };
 
@@ -98,7 +97,10 @@ export function useAuthSafe(): AuthState & {
         status: user ? "authenticated" : "unauthenticated"
       }));
     } catch (error) {
-      console.warn("[useAuthSafe] Refresh failed:", error);
+      // Only log refresh errors in development
+      if (process.env.NODE_ENV === "development") {
+        console.warn("[useAuthSafe] Refresh failed:", error);
+      }
       setAuthState(prev => ({
         ...prev,
         loading: false,
@@ -106,6 +108,18 @@ export function useAuthSafe(): AuthState & {
       }));
     }
   };
+
+  // Return safe defaults for SSR
+  if (isSSR) {
+    return {
+      user: null,
+      loading: false,
+      mounted: false,
+      status: "unauthenticated",
+      signOut: async () => {},
+      refresh: async () => {}
+    };
+  }
 
   return {
     ...authState,

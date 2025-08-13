@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Providers from "./providers";
+import DataSourceBadge from "@/components/DataSourceBadge";
 
 export const metadata: Metadata = {
   title: "Front-dduksangLAB",
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko">
       <body>
         <Providers>{children}</Providers>
+        <DataSourceBadge />
       </body>
     </html>
   );

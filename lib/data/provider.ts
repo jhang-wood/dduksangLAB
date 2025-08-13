@@ -161,7 +161,16 @@ export const data = {
           role: profile?.role || 'user'
         };
       },
-      () => mock.getCurrentUser(),
+      async () => {
+        const user = await mock.getCurrentUser();
+        if (!user) return null;
+        return {
+          id: user.id,
+          email: user.email || undefined,
+          name: user.name,
+          role: user.role
+        };
+      },
       "getCurrentUser"
     );
   },

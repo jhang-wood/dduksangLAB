@@ -65,7 +65,8 @@ const createLogger = () => {
   return {
     log: (...args: any[]) => {
       if (isDevelopment) console.log(...args);
-      writeToFile('app.log', 'info', String(args[0]), ...args.slice(1));
+      // Only write to file in production for important logs
+      if (isProduction) writeToFile('app.log', 'info', String(args[0]), ...args.slice(1));
     },
     
     error: (...args: any[]) => {
@@ -80,12 +81,14 @@ const createLogger = () => {
     
     warn: (...args: any[]) => {
       if (isDevelopment) console.warn(...args);
-      writeToFile('app.log', 'warn', String(args[0]), ...args.slice(1));
+      // Only log warnings to file in production for critical warnings
+      if (isProduction) writeToFile('app.log', 'warn', String(args[0]), ...args.slice(1));
     },
     
     info: (...args: any[]) => {
       if (isDevelopment) console.info(...args);
-      writeToFile('app.log', 'info', String(args[0]), ...args.slice(1));
+      // Minimal info logging in production
+      if (isProduction) writeToFile('app.log', 'info', String(args[0]), ...args.slice(1));
     },
     
     debug: (...args: any[]) => {

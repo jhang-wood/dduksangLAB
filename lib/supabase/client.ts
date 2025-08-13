@@ -10,7 +10,10 @@ export const supabase = (() => {
     try {
       return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
     } catch (error) {
-      console.error("[supabase] Failed to create client:", error);
+      // Only log errors in development mode
+      if (process.env.NODE_ENV === "development") {
+        console.error("[supabase] Failed to create client:", error);
+      }
       return null;
     }
   }
