@@ -8,7 +8,7 @@ const nextConfig = {
   
   // 실험적 기능 (성능 개선)
   experimental: {
-    optimizeCss: false, // critters 모듈 오류로 인해 비활성화
+    optimizeCss: false,
     serverComponentsExternalPackages: [],
     turbo: {
       rules: {
@@ -32,71 +32,60 @@ const nextConfig = {
   
   // 컴파일 최적화
   eslint: {
-    ignoreDuringBuilds: false, // ESLint 오류 검사 활성화
+    ignoreDuringBuilds: false,
     dirs: ['app', 'lib', 'components'],
   },
   typescript: {
-    ignoreBuildErrors: false, // TypeScript 오류 검사 활성화
+    ignoreBuildErrors: false,
   },
   
   // 번들 최적화
   webpack: (config, { dev, isServer }) => {
-    // fallback 설정 통합
-    const fallbackConfig = {
+    // fallback 설정
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
       fs: false,
       net: false,
       tls: false,
       crypto: false,
     };
     
-    if (isServer) {
-      fallbackConfig['ws'] = false;
-      fallbackConfig['websocket'] = false;
-    }
-    
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      ...fallbackConfig,
-    };
-    
-    // Tree shaking 개선
+    // Tree shaking 강화
     config.optimization.usedExports = true;
     config.optimization.sideEffects = false;
+    
+    // 청크 분할 최적화
+    if (!dev) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          lucide: {
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            name: 'lucide',
+            chunks: 'all',
+            priority: 20,
+          },
+          supabase: {
+            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+            name: 'supabase',
+            chunks: 'all',
+            priority: 20,
+          },
+        },
+      };
+    }
     
     return config;
   },
 
   async headers() {
     return [
-      {
-        source: '/((?\!api/).*)',
-        headers: [
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains; preload',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=()',
-          },
-        ],
-      },
       {
         source: '/api/(.*)',
         headers: [
@@ -106,11 +95,16 @@ const nextConfig = {
           },
           {
             key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            value: 'no-store, no-cache, must-revalidate',
           },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

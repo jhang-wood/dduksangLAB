@@ -31,7 +31,6 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.38.0",
     "bullmq": "^5.56.10",
-    "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
     "framer-motion": "^10.16.4",
     "ioredis": "^5.7.0",
