@@ -89,25 +89,57 @@ function analyzeChanges() {
   };
 }
 
-// 1인 개발자 모드 - 모든 검증 스킵
+// 스마트 1인 개발자 모드 - 핵심 안전장치 유지
 function autoFixLint() {
-  log.info('🎯 1인 개발자 모드: 모든 검증 완전 스킵');
-  log.success('⚡ 개발 속도 최우선 - 검증 과정 생략');
-  return true; // 항상 통과 - 2025년 1인 개발자 기준
+  log.task('🛡️ 스마트 1인 개발자 모드: 핵심 ESLint만 체크...');
+  
+  // 치명적 오류만 체크하는 ESLint 실행
+  const result = runCommand('npm run lint -- --quiet --max-warnings 0 --no-fix', { silent: true });
+  
+  if (result.success) {
+    log.success('✅ 핵심 ESLint 체크 통과!');
+    return true;
+  } else {
+    // 경고 수준: 진행은 하되 알림
+    log.warning('⚠️ ESLint 경고 발견 (진행 가능):');
+    console.log(result.output);
+    log.info('💡 치명적 오류가 아니므로 배포를 계속합니다.');
+    return true; // 경고는 통과
+  }
 }
 
-// 1인 개발자 모드 - TypeScript 체크 스킵
+// CRITICAL: TypeScript 체크 필수 (런타임 에러 방지)
 function checkTypes() {
-  log.info('🎯 1인 개발자 모드: TypeScript 체크 완전 스킵');
-  log.success('⚡ 개발 속도 최우선 - 타입 체크 생략');
-  return true; // 항상 통과 - 2025년 1인 개발자 기준
+  log.task('🚨 CRITICAL: TypeScript 타입 체크 중... (필수 검증)');
+  
+  const result = runCommand('npm run type-check', { silent: true });
+  
+  if (result.success) {
+    log.success('✅ TypeScript 타입 체크 통과!');
+    return true;
+  } else {
+    log.error('❌ CRITICAL: TypeScript 타입 오류 발견 (런타임 크래시 위험):');
+    console.log(result.output);
+    log.error('🚫 타입 오류는 반드시 수정해야 합니다. 배포를 중단합니다.');
+    return false; // 필수: 타입 에러는 절대 통과 불가
+  }
 }
 
-// 1인 개발자 모드 - 빌드 테스트 스킵
+// CRITICAL: 빌드 테스트 필수 (사이트 다운 방지)
 function smartBuildTest(changes) {
-  log.info('🎯 1인 개발자 모드: 빌드 테스트 완전 스킵');
-  log.success('⚡ 개발 속도 최우선 - 빌드 검증 생략');
-  return true; // 항상 통과 - 2025년 1인 개발자 기준
+  log.task('🚨 CRITICAL: 빌드 테스트 중... (사이트 다운 방지)');
+  
+  // 항상 빌드 테스트 수행 (중요 변경사항과 관계없이)
+  const result = runCommand('npm run build', { silent: false });
+  
+  if (result.success) {
+    log.success('✅ 빌드 테스트 통과!');
+    return true;
+  } else {
+    log.error('❌ CRITICAL: 빌드 실패 (사이트 다운 위험):');
+    log.error('🚫 빌드 실패는 반드시 수정해야 합니다. 배포를 중단합니다.');
+    return false; // 필수: 빌드 실패는 절대 통과 불가
+  }
 }
 
 // Git 상태 확인
@@ -309,24 +341,24 @@ async function deploy() {
   const changes = analyzeChanges();
   log.info(`변경된 파일: ${changes.files.length}개`);
 
-  // 1. ESLint 자동 수정
+  // 1. ESLint 검증 (경고 수준)
   const lintFixed = autoFixLint();
   if (!lintFixed) {
-    log.warning('ESLint 오류가 있지만 완화 모드로 계속 진행합니다.');
-    // process.exit(1); // 완화: 에러로 중단하지 않음
+    log.warning('ESLint 경고가 있지만 진행 가능합니다.');
   }
 
-  // 2. TypeScript 체크 (스킵)
+  // 2. TypeScript 체크 (CRITICAL - 필수)
   const typesOk = checkTypes();
   if (!typesOk) {
-    log.warning('TypeScript 오류가 있지만 1인 개발자 모드로 계속 진행합니다.');
+    log.error('🚫 CRITICAL: TypeScript 타입 오류로 배포를 중단합니다.');
+    process.exit(1); // 필수: 타입 에러는 반드시 중단
   }
 
-  // 3. 스마트 빌드 테스트 (완화)
+  // 3. 빌드 테스트 (CRITICAL - 필수)
   const buildOk = smartBuildTest(changes);
   if (!buildOk) {
-    log.warning('빌드에 문제가 있지만 완화 모드로 계속 진행합니다.');
-    // process.exit(1); // 완화: 빌드 실패로 중단하지 않음
+    log.error('🚫 CRITICAL: 빌드 실패로 배포를 중단합니다.');
+    process.exit(1); // 필수: 빌드 실패는 반드시 중단
   }
 
   // 4. 자동 커밋
