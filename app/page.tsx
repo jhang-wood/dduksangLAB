@@ -13,6 +13,7 @@ import {
   Rocket,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import CountdownTimer from '@/components/CountdownTimer';
@@ -34,6 +35,24 @@ export default function HomePage() {
               transition={{ duration: 1 }}
               className="text-center"
             >
+              {/* Logo Image */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="mb-12"
+              >
+                <div className="relative w-48 h-32 md:w-64 md:h-40 lg:w-80 lg:h-48 mx-auto">
+                  <Image
+                    src="/images/떡상연구소_로고/누끼_떡상연구소.png"
+                    alt="떡상연구소"
+                    fill
+                    className="object-contain filter drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]"
+                    priority
+                  />
+                </div>
+              </motion.div>
+
               {/* Main Headline with Logo - 도발적이고 강력한 메시지 */}
               <motion.h1
                 initial={{ y: 30, opacity: 0 }}
@@ -83,7 +102,7 @@ export default function HomePage() {
                 </p>
                 <CountdownTimer />
                 <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">
-                  2025년 8월 12일 (화) 오후 7시
+                  2025년 8월 15일 (금) 오후 7시
                 </p>
               </motion.div>
 
@@ -488,6 +507,149 @@ export default function HomePage() {
               >
                 단 1시간만에 웹사이트와 자동화 EXE파일을 만드는 기술
               </motion.p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Free Course CTA Section - 하단 무료강의 신청 */}
+        <section className="py-32 px-4 bg-deepBlack-800/50">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-8">
+                무료 강의 신청하고{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                  인생 바꾸기
+                </span>
+              </h2>
+              
+              <p className="text-xl md:text-2xl text-offWhite-400 mb-16 leading-relaxed">
+                자동화 프로그램 / 웹사이트 무료로 만들어보기
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {/* 자동화 프로그램 카드 */}
+                <motion.div
+                  initial={{ x: -30, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  viewport={{ once: true }}
+                  className="group relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/40 transition-all duration-300">
+                    <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <Rocket className="w-10 h-10 text-metallicGold-500" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-offWhite-200 mb-4">
+                      자동화 프로그램 만들기
+                    </h3>
+                    
+                    <p className="text-offWhite-400 mb-6 leading-relaxed">
+                      AI와 함께 나만의 자동화 프로그램(EXE)을
+                      <br />
+                      단 10분 만에 완성하는 비법 공개
+                    </p>
+                    
+                    <ul className="text-left text-offWhite-500 space-y-2 mb-8">
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        코딩 경험 0% 필요
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        텔레그램으로 명령만 전송
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        즉시 실행 가능한 프로그램 생성
+                      </li>
+                    </ul>
+                  </div>
+                </motion.div>
+
+                {/* 웹사이트 제작 카드 */}
+                <motion.div
+                  initial={{ x: 30, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className="group relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-10 hover:border-metallicGold-500/40 transition-all duration-300">
+                    <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="w-10 h-10 text-metallicGold-500" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-offWhite-200 mb-4">
+                      웹사이트 무료로 만들기
+                    </h3>
+                    
+                    <p className="text-offWhite-400 mb-6 leading-relaxed">
+                      전문가급 웹사이트를 AI와 함께
+                      <br />
+                      1시간 안에 완성하고 배포하는 방법
+                    </p>
+                    
+                    <ul className="text-left text-offWhite-500 space-y-2 mb-8">
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        호스팅 비용 0원
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        반응형 디자인 자동 적용
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-metallicGold-500">✓</span>
+                        즉시 URL 발급 및 공유 가능
+                      </li>
+                    </ul>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* CTA Button */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
+                className="mt-12"
+              >
+                <Link
+                  href="/register"
+                  className="group relative inline-flex items-center gap-3 px-14 py-6 overflow-hidden rounded-2xl font-bold text-xl tracking-wide transition-all duration-300"
+                >
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 transition-all duration-300 group-hover:scale-105" />
+
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/30 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative flex items-center gap-3 text-deepBlack-900">
+                    <Gift className="w-7 h-7" />
+                    <span>지금 바로 무료 강의 신청하기</span>
+                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </motion.div>
+
+              <p className="mt-8 text-offWhite-500 text-lg">
+                ⏰ 선착순 마감 임박 - 지금이 마지막 기회입니다
+              </p>
             </motion.div>
           </div>
         </section>

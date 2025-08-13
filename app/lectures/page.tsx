@@ -21,7 +21,7 @@ import {
   TrendingUp,
   Flame,
   Clock,
-  Users,
+  Sparkles,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
@@ -31,11 +31,9 @@ import {
   ProgressBar,
   LearningDashboard,
   CourseStatusIcons,
-  SocialProof,
   LessonStatus,
 } from '@/components/CourseVisualElements';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
-import EnhancedSocialProof from '@/components/EnhancedSocialProof';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { PaymentButton } from '@/hooks/usePayment';

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Building2, User, FileText } from 'lucide-react';
+import Image from 'next/image';
+import { Mail, Phone, Building2, User, FileText } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -13,7 +14,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">떡상연구소</h3>
+            <div className="mb-6">
+              <div className="relative w-32 h-20 mb-4">
+                <Image
+                  src="/images/떡상연구소_로고/누끼_떡상연구소.png"
+                  alt="떡상연구소"
+                  fill
+                  className="object-contain filter brightness-110"
+                />
+              </div>
+            </div>
             <div className="space-y-3 text-offWhite-400">
               <div className="flex items-start space-x-3">
                 <User size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />

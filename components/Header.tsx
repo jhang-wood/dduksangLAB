@@ -46,19 +46,16 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="relative w-10 h-10 md:w-12 md:h-12">
+            <Link href="/" className="flex items-center">
+              <div className="relative w-12 h-12 md:w-14 md:h-14">
                 <Image
-                  src="/images/떡상연구소_로고-removebg-preview.png"
+                  src="/images/떡상연구소_로고/누끼_떡상연구소.png"
                   alt="떡상연구소"
                   fill
                   className="object-contain filter drop-shadow-[0_0_8px_rgba(255,215,0,0.3)]"
                   priority
                 />
               </div>
-              <span className="hidden md:block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                떡상연구소
-              </span>
             </Link>
           </div>
 

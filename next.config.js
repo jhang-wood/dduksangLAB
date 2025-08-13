@@ -10,14 +10,6 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
     serverComponentsExternalPackages: [],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
   
   // 이미지 최적화
@@ -50,9 +42,11 @@ const nextConfig = {
       crypto: false,
     };
     
-    // Tree shaking 강화
-    config.optimization.usedExports = true;
-    config.optimization.sideEffects = false;
+    // Tree shaking 강화 (개발 모드에서는 비활성화)
+    if (!dev) {
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+    }
     
     // 청크 분할 최적화
     if (!dev) {
