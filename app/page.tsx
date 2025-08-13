@@ -211,8 +211,19 @@ export default function HomePage() {
         </section>
 
         {/* Pain Point Section - 문제 제기 */}
-        <section className="py-32 px-4 bg-deepBlack-800/30">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-32 px-4 relative overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-800/50 via-deepBlack-900/60 to-deepBlack-800/50" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl animate-pulse-soft" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-metallicGold-500/5 rounded-full blur-3xl animate-pulse-soft" />
+          
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `linear-gradient(90deg, rgba(255,215,0,0.1) 1px, transparent 1px), linear-gradient(rgba(255,215,0,0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }} />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -229,9 +240,9 @@ export default function HomePage() {
             <div className="space-y-8 max-w-5xl mx-auto">
               {[
                 {
-                  title: '"열심히 하는데 왜 결과가 안나오지?"',
+                  title: '"똑같은 AI인데 왜 나만 성과가 없지?"',
                   description:
-                    "수많은 사람들이 아직도 Cursor, Replit 같은 '보급형' AI를 쓰고 있습니다. 자동차로 비유하면, 당신이 경차로 낑낑댈 때, 누군가는 F1 머신으로 질주하고 있습니다. 애초에 도구가 다릅니다.",
+                    'AI Agent는 누가 어떻게 쓰느냐에 따라 생산성이 극단적으로 달라집니다. 누군가는 월 1억을 자동화하고, 누군가는 여전히 GPT에게 단순 질문만 하죠. 당신은 어느 쪽인가요?',
                   icon: '😤',
                 },
                 {
@@ -253,12 +264,18 @@ export default function HomePage() {
                   whileInView={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.2 + index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 hover:border-metallicGold-500/30 transition-all"
+                  className="group bg-gradient-to-br from-deepBlack-300/60 to-deepBlack-400/40 backdrop-blur-md border border-metallicGold-900/20 rounded-3xl p-8 hover:border-metallicGold-500/40 hover:shadow-2xl hover:shadow-metallicGold-500/10 transition-all duration-500 transform hover:-translate-y-1"
                 >
-                  <div className="flex items-start gap-6">
-                    <span className="text-4xl flex-shrink-0">{pain.icon}</span>
+                  {/* Glow Effect on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/0 to-metallicGold-600/0 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                  
+                  <div className="relative flex items-start gap-6">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-metallicGold-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <span className="relative text-4xl flex-shrink-0 block transform group-hover:scale-110 transition-transform duration-300">{pain.icon}</span>
+                    </div>
                     <div>
-                      <h3 className="text-xl md:text-2xl font-bold text-metallicGold-500 mb-4">
+                      <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-metallicGold-400 to-metallicGold-600 bg-clip-text text-transparent mb-4 group-hover:from-metallicGold-300 group-hover:to-metallicGold-500 transition-all duration-300">
                         {pain.title}
                       </h3>
                       <p className="text-lg text-offWhite-400 leading-relaxed">
