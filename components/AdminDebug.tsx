@@ -3,7 +3,7 @@
 import { logger, userNotification } from '@/lib/logger';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { supabase } from '@/lib/supabase';
 
 export default function AdminDebug() {

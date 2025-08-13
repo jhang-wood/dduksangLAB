@@ -1,5 +1,8 @@
 'use client';
 
+// 관리자 페이지는 CSR + 동적 렌더링 (인증 필요)
+export const dynamic = 'force-dynamic';
+
 import { userNotification, logger } from '@/lib/logger';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -7,7 +10,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import Link from 'next/link';
 import AdminHeader from '@/components/AdminHeader';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 
 const categories = [
   { id: 'AI 기술', label: 'AI 기술' },

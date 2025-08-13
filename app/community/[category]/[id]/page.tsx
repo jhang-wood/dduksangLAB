@@ -9,7 +9,7 @@ import { ArrowLeft, Eye, MessageSquare, User, Calendar, Trash2 } from 'lucide-re
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { supabase } from '@/lib/supabase';
 
 interface Post {

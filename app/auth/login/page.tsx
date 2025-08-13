@@ -1,11 +1,14 @@
 'use client';
 
+// 인증 페이지는 CSR + 동적 렌더링 (유저 상태 확인 필요)
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { motion } from 'framer-motion';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 

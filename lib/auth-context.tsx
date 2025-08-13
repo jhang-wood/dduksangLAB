@@ -33,6 +33,7 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
+  mounted: boolean; // SSR 하이드레이션 안전성을 위한 상태
   signIn: (email: string, password: string) => Promise<{ error: SupabaseAuthError | null }>;
   signUp: (
     email: string,
@@ -43,13 +44,31 @@ interface AuthContextType {
   isAdmin: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// SSR 안전성을 위한 기본값 설정
+const defaultAuthContext: AuthContextType = {
+  user: null,
+  userProfile: null,
+  loading: true,
+  mounted: false,
+  signIn: async () => ({ error: null }),
+  signUp: async () => ({ error: null }),
+  signOut: async () => {},
+  isAdmin: false,
+};
+
+const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false); // 하이드레이션 안전성을 위한 상태
   const router = useRouter();
+
+  // SSR 하이드레이션 안전성을 위한 mounted 상태 관리
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchUserProfile = async (userId: string) => {
     logger.log('[Auth] Fetching profile for user:', userId);
@@ -86,6 +105,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // 클라이언트에서만 인증 로직 실행
+    if (!mounted) return;
     
     // 초기 세션 확인
     void supabase.auth.getSession().then(({ data: { session } }: any) => {
@@ -109,8 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
+  }, [mounted]); // mounted 상태 변경 시에만 실행
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -182,22 +202,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/');
   };
 
-  // Hook을 조건문 밖에서 호출
+  // Hook을 조건문 밖에서 호출하고 SSR 안전성 확보
   const isAdmin = useMemo(() => {
-    if (!userProfile) return false;
+    // 마운트되지 않은 상태에서는 기본값 반환 (SSR 안전성)
+    if (!mounted || !userProfile) return false;
+    
     const adminStatus = userProfile.role === 'admin';
     logger.log('[Auth] isAdmin calculation:', {
       userProfile: userProfile,
       role: userProfile.role,
       isAdmin: adminStatus,
+      mounted: mounted,
     });
     return adminStatus;
-  }, [userProfile]);
+  }, [userProfile, mounted]);
 
   const value = {
     user,
     userProfile,
-    loading,
+    loading: loading || !mounted, // 마운트되지 않은 상태도 로딩으로 처리
+    mounted,
     signIn,
     signUp,
     signOut,
@@ -209,8 +233,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  // Context가 기본값으로 설정되어 있어 항상 정의됨 (SSR 안전성)
   return context;
 };

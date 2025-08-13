@@ -4,7 +4,7 @@ import { logger, userNotification } from '@/lib/logger';
 
 import { useState } from 'react';
 import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 
 interface PaymentButtonProps {
   planId: keyof typeof PRICING_PLANS;

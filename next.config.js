@@ -6,6 +6,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
+  // SSR useContext 에러 해결을 위한 설정
+  output: 'standalone',
+  
   // 실험적 기능 (성능 개선)
   experimental: {
     optimizeCss: false,
@@ -50,9 +53,11 @@ const nextConfig = {
       crypto: false,
     };
     
-    // Tree shaking 강화
-    config.optimization.usedExports = true;
-    config.optimization.sideEffects = false;
+    // Tree shaking 강화 (개발 환경에서만)
+    if (!dev) {
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+    }
     
     // 청크 분할 최적화
     if (!dev) {

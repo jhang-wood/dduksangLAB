@@ -1,12 +1,15 @@
 'use client';
 
+// 개인 페이지는 CSR + 동적 렌더링 (인증 필요)
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Search, Filter, BookOpen, Clock } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import CourseCard from '@/components/CourseCard';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { useRouter } from 'next/navigation';
 
 interface BookmarkedCourse {

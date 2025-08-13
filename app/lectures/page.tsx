@@ -40,7 +40,7 @@ import EnhancedSocialProof from '@/components/EnhancedSocialProof';
 import ConversionOptimizer from '@/components/ConversionOptimizer';
 import EnhancedStatisticsSection from '@/components/EnhancedStatisticsSection';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { PaymentButton } from '@/hooks/usePayment';
 
 // AI Agent 마스터과정 데이터

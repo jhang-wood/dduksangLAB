@@ -1,5 +1,8 @@
 'use client';
 
+// 관리자 페이지는 CSR + 동적 렌더링 (인증 필요)
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -17,7 +20,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { logger } from '@/lib/logger';
 
 interface Stats {

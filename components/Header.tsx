@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, User, LogOut } from 'lucide-react';
-import { useAuth } from '@/lib/auth-context';
-import { logger } from '@/lib/logger';
+import { useAuth } from '@/lib/stores/auth-store';
 
 interface HeaderProps {
   currentPage?: string;
@@ -16,24 +15,15 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
-  const { user, userProfile, signOut, isAdmin } = useAuth();
-
-  logger.debug('[Header] Auth state:', {
-    user: user?.email,
-    userProfile: userProfile,
-    role: userProfile?.role,
-    isAdmin: isAdmin,
-  });
+  const { user, userProfile, signOut, isAdmin, mounted, loading } = useAuth();
 
   const navItems = [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
     { id: 'sites', label: '사이트홍보관', href: '/sites' },
     { id: 'community', label: '커뮤니티', href: '/community' },
     { id: 'lectures', label: '강의', href: '/lectures' },
-    ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : []),
+    ...(mounted && isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : []),
   ];
-
-  logger.debug('[Header] Nav items:', navItems);
 
   const handleSignOut = async () => {
     await signOut();
@@ -81,7 +71,9 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center">
-            {user ? (
+            {(!mounted || loading) ? (
+              <div className="px-6 py-2 bg-deepBlack-600/50 text-offWhite-600 text-sm rounded-lg">로딩 중...</div>
+            ) : user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -157,7 +149,9 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
               {/* Mobile Auth Section */}
               <div className="pt-4 px-4 border-t border-metallicGold-900/20">
-                {user ? (
+                {(!mounted || loading) ? (
+                  <div className="px-6 py-2 bg-deepBlack-600/50 text-offWhite-600 text-sm rounded-lg">로딩 중...</div>
+                ) : user ? (
                   <div className="space-y-2">
                     <div className="text-sm text-offWhite-600 mb-2">
                       {userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}
@@ -198,4 +192,3 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     </header>
   );
 }
-// Force cache invalidation: 1752976128

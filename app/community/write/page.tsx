@@ -9,7 +9,7 @@ import { ArrowLeft, MessageSquare, Users, HelpCircle, Briefcase } from 'lucide-r
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { supabase } from '@/lib/supabase';
 
 const categories = [

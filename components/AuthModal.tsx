@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, Check } from 'lucide-react';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { PRICING_PLANS, generatePayAppUrl, generateOrderId } from '@/lib/payment/payapp';
 // UI components are not used in this modal
 // import Input from '@/components/ui/Input'

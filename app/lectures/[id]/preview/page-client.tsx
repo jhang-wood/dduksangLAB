@@ -23,7 +23,7 @@ import TagSystem from '@/components/TagSystem';
 import RecommendationSlider from '@/components/RecommendationSlider';
 import CourseStructuredData, { BreadcrumbStructuredData } from '@/components/StructuredData';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { PaymentButton } from '@/hooks/usePayment';
 import { logger } from '@/lib/logger';
 

@@ -7,7 +7,7 @@ import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lu
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { logger, userNotification } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
 

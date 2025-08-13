@@ -1,12 +1,15 @@
 'use client';
 
+// 관리자 페이지는 CSR + 동적 렌더링 (인증 필요)
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Shield, Users, BookOpen, TrendingUp, Settings, Brain } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 
 export default function AdminPage() {
   const { user, userProfile, isAdmin, loading } = useAuth();

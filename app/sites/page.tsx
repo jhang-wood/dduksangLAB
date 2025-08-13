@@ -21,7 +21,7 @@ import {
 
 import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/stores/auth-store';
 import { useRouter } from 'next/navigation';
 
 interface Site {

@@ -1,4 +1,7 @@
+// 임시로 CSR 적용 (빌드 문제 해결용)
 'use client';
+
+export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import { motion } from 'framer-motion';
