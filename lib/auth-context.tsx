@@ -182,6 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/');
   };
 
+  // Hook을 조건문 밖에서 호출
   const isAdmin = useMemo(() => {
     if (!userProfile) return false;
     const adminStatus = userProfile.role === 'admin';
@@ -191,7 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdmin: adminStatus,
     });
     return adminStatus;
-  }, [userProfile]); // 의존성을 더 구체적으로 지정
+  }, [userProfile]);
 
   const value = {
     user,

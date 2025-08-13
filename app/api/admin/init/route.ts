@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger';
 // Prevent this route from being pre-rendered at build time
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(_request: Request) {
   try {
     logger.log('[API] Admin initialization requested');
 
@@ -42,7 +42,7 @@ export async function POST() {
   }
 }
 
-export async function GET() {
+export async function GET(_request: Request) {
   try {
     const adminExists = await checkAdminExists();
     
