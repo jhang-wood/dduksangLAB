@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 interface BookmarkButtonProps {
   courseId: string;
@@ -22,7 +22,7 @@ export default function BookmarkButton({
 }: BookmarkButtonProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   // 사이즈 설정
   const sizeClasses = {

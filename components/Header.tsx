@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, User, LogOut } from 'lucide-react';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 interface HeaderProps {
   currentPage?: string;
@@ -15,7 +15,12 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
-  const { user, userProfile, signOut, isAdmin, mounted, loading } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const userProfile = useAuthStore((state) => state.userProfile);
+  const signOut = useAuthStore((state) => state.signOut);
+  const isAdmin = useAuthStore((state) => state.isAdmin);
+  const mounted = useAuthStore((state) => state.mounted);
+  const loading = useAuthStore((state) => state.loading);
 
   const navItems = [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },

@@ -2,6 +2,52 @@
  * Environment variable validation utility
  * Ensures required environment variables are present and properly separated
  */
+import { z } from "zod";
+
+// Zod schema for environment variables
+const envSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+  NEXT_PUBLIC_USE_MOCK: z.enum(["1", "0"]).optional(),
+});
+
+// Parse and validate environment variables
+const rawEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_USE_MOCK: process.env.NEXT_PUBLIC_USE_MOCK,
+};
+
+const parsedEnv = envSchema.safeParse(rawEnv);
+
+if (!parsedEnv.success && process.env.NODE_ENV === "development") {
+  console.warn("[env] Invalid environment variables:", parsedEnv.error.format());
+}
+
+const safeEnv = parsedEnv.success ? parsedEnv.data : {};
+
+// Determine if we have real keys (not dummy values)
+const isDummyKey = (key: string | undefined) => {
+  if (!key) return true;
+  const dummyPatterns = [
+    "your-supabase-anon-key",
+    "your-project.supabase.co",
+    "example",
+    "dummy",
+    "test-key",
+    "placeholder"
+  ];
+  return dummyPatterns.some(pattern => key.toLowerCase().includes(pattern));
+};
+
+export const HAS_REAL_KEYS = !!(
+  safeEnv.NEXT_PUBLIC_SUPABASE_URL &&
+  safeEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  !isDummyKey(safeEnv.NEXT_PUBLIC_SUPABASE_URL) &&
+  !isDummyKey(safeEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+);
+
+export const USE_MOCK_FLAG = safeEnv.NEXT_PUBLIC_USE_MOCK === "1";
 
 // 개발 환경에서 환경 변수 분리 검증 (서버 사이드만)
 if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
@@ -149,6 +195,12 @@ export const validateRequiredEnvVars = (): void => {
  * Combines client and server environment variables with helper utilities
  */
 export const env = {
+  // New safe environment variables
+  SUPABASE_URL: safeEnv.NEXT_PUBLIC_SUPABASE_URL,
+  SUPABASE_ANON_KEY: safeEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  HAS_REAL_KEYS,
+  USE_MOCK: USE_MOCK_FLAG,
+
   // Client variables (safe to use in browser)
   ...Object.fromEntries(
     Object.entries(CLIENT_ENV_VARS).map(([key, fn]) => [

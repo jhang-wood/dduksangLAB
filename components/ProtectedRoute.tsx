@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 import { logger } from '@/lib/logger';
 
 interface ProtectedRouteProps {
@@ -16,7 +16,11 @@ export default function ProtectedRoute({
   requireAdmin = false,
   redirectTo = '/auth/login',
 }: ProtectedRouteProps) {
-  const { user, userProfile, loading, isAdmin, mounted } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const userProfile = useAuthStore((state) => state.userProfile);
+  const loading = useAuthStore((state) => state.loading);
+  const isAdmin = useAuthStore((state) => state.isAdmin);
+  const mounted = useAuthStore((state) => state.mounted);
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 

@@ -1,25 +1,18 @@
-'use client';
+import type { Metadata } from "next";
+import Providers from "./providers";
 
-// 전체 앱 CSR 전환으로 단순화
+export const metadata: Metadata = {
+  title: "Front-dduksangLAB",
+};
+
+// Force dynamic rendering to avoid SSR issues with context
 export const dynamic = 'force-dynamic';
-import { Montserrat } from 'next/font/google';
-import './globals.css';
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-});
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className="dark">
-      <body
-        className={`${montserrat.variable} font-sans bg-deepBlack-900 text-offWhite-200 antialiased`}
-      >
-        {children}
+    <html lang="ko">
+      <body>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

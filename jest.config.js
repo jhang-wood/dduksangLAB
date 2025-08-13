@@ -9,20 +9,12 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Jest에 전달할 사용자 정의 설정 옵션
 const customJestConfig = {
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'], // 파일이 없으므로 비활성화
-  
-  // 테스트 환경 설정
   testEnvironment: 'jsdom',
-  
-  // 테스트 파일 패턴
   testMatch: [
     '**/__tests__/**/*.{js,ts,tsx}',
     '**/*.(test|spec).{js,ts,tsx}'
   ],
-  
-  // 무시할 파일/디렉토리 패턴
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
@@ -30,19 +22,12 @@ const customJestConfig = {
     '<rootDir>/test-results/',
     '<rootDir>/playwright-report/'
   ],
-  
-  // 모듈 맵핑
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^~/(.*)$': '<rootDir>/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
-  
-  // 환경 변수 설정
-  // setupFiles: ['<rootDir>/jest.env.js'], // 파일이 없으므로 비활성화
-  
-  // 커버리지 설정 - 현실적인 수준으로 완화
-  collectCoverage: process.env.CI ? true : false, // 로컬에서는 커버리지 수집 안함
+  collectCoverage: process.env.CI ? true : false,
   collectCoverageFrom: [
     'lib/**/*.{js,ts,tsx}',
     'components/**/*.{js,ts,tsx}',
@@ -57,33 +42,21 @@ const customJestConfig = {
     '\!**/jest.*.js',
     '\!**/playwright.config.ts'
   ],
-  
-  // 커버리지 리포터 - 간소화
   coverageReporters: [
     'text',
     'lcov'
   ],
-  
-  // 커버리지 디렉토리
   coverageDirectory: 'coverage',
-  
-  // 커버리지 임계값 - 현실적으로 완화
   coverageThreshold: {
     global: {
-      branches: 0,    // 임시로 0으로 설정
-      functions: 0,   // 임시로 0으로 설정
-      lines: 0,       // 임시로 0으로 설정
-      statements: 0   // 임시로 0으로 설정
+      branches: 0,
+      functions: 0,
+      lines: 0,
+      statements: 0
     }
   },
-  
-  // 타임아웃 설정 - 단축
-  testTimeout: 8000, // 10000 -> 8000으로 단축
-  
-  // 병렬 실행 설정 - CI에서만 제한
+  testTimeout: 8000,
   maxWorkers: process.env.CI ? 1 : '50%',
-  
-  // Verbose 출력 - CI에서만 활성화
   verbose: !!process.env.CI
 };
 

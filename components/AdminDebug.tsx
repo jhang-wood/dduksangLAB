@@ -3,11 +3,13 @@
 import { logger, userNotification } from '@/lib/logger';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 import { supabase } from '@/lib/supabase';
 
 export default function AdminDebug() {
-  const { user, userProfile, isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const userProfile = useAuthStore((state) => state.userProfile);
+  const isAdmin = useAuthStore((state) => state.isAdmin);
   const [debugInfo, setDebugInfo] = useState<{
     userId: string;
     email: string | undefined;

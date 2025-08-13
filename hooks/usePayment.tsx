@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 interface PaymentOptions {
   onSuccess?: () => void;
@@ -13,7 +13,7 @@ export function usePayment(options?: PaymentOptions) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   const initiateLecturePayment = async (lectureId: string) => {
     if (!user) {
