@@ -290,8 +290,30 @@ export default function HomePage() {
         </section>
 
         {/* First Gateway Section - 첫 번째 관문 (Section 3) */}
-        <section className="py-32 px-4">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-32 px-4 relative overflow-hidden">
+          {/* Creative Background Pattern */}
+          <div className="absolute inset-0">
+            {/* Diagonal Gradient Stripes */}
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
+            
+            {/* Animated Diagonal Lines */}
+            <div className="absolute inset-0" style={{
+              backgroundImage: `repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(255, 215, 0, 0.03) 100px,
+                rgba(255, 215, 0, 0.03) 200px
+              )`
+            }} />
+            
+            {/* Floating Orbs */}
+            <div className="absolute top-20 left-[10%] w-64 h-64 bg-metallicGold-500/10 rounded-full blur-3xl animate-pulse-soft" />
+            <div className="absolute bottom-20 right-[10%] w-64 h-64 bg-metallicGold-600/10 rounded-full blur-3xl animate-pulse-soft animation-delay-2000" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -313,7 +335,8 @@ export default function HomePage() {
               <div className="w-32 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
             </motion.div>
 
-            <div className="space-y-8">
+            {/* Creative Cards Layout - Zigzag Pattern */}
+            <div className="space-y-12">
               {[
                 {
                   number: '1',
@@ -345,32 +368,76 @@ export default function HomePage() {
               ].map((secret, index) => (
                 <motion.div
                   key={index}
-                  initial={{ y: 30, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 + index * 0.15 }}
+                  initial={{ 
+                    x: index % 2 === 0 ? -50 : 50, 
+                    opacity: 0,
+                    rotateY: index % 2 === 0 ? -5 : 5
+                  }}
+                  whileInView={{ 
+                    x: 0, 
+                    opacity: 1,
+                    rotateY: 0
+                  }}
+                  whileHover={{
+                    scale: 1.02,
+                    rotateY: index % 2 === 0 ? 3 : -3,
+                    transition: { duration: 0.3 }
+                  }}
+                  transition={{ delay: 0.2 + index * 0.15, duration: 0.6 }}
                   viewport={{ once: true }}
-                  className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 hover:border-metallicGold-500/40 transition-all"
+                  className={`group relative ${index % 2 === 0 ? 'md:mr-auto md:w-[85%]' : 'md:ml-auto md:w-[85%]'}`}
+                  style={{ perspective: '1000px' }}
                 >
-                  <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="relative">
-                        <div className="w-16 h-16 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-2xl flex items-center justify-center">
-                          <secret.icon className="w-8 h-8 text-deepBlack-900" />
+                  {/* Card Glow Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 via-metallicGold-600/10 to-transparent rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-110" />
+                  
+                  {/* Main Card */}
+                  <div className="relative bg-gradient-to-br from-deepBlack-300/70 via-deepBlack-400/50 to-deepBlack-500/70 backdrop-blur-md border border-metallicGold-900/30 rounded-3xl overflow-hidden group-hover:border-metallicGold-500/50 transition-all duration-500 shadow-2xl">
+                    {/* Number Badge - Large Background */}
+                    <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-600/10 rounded-full blur-2xl" />
+                    <div className="absolute top-8 left-8 text-8xl font-black text-metallicGold-500/10">
+                      {secret.number}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="relative p-10">
+                      <div className="flex items-start gap-6">
+                        <div className="flex-shrink-0">
+                          <motion.div 
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.6 }}
+                            className="relative"
+                          >
+                            <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/30 to-metallicGold-900/30 rounded-2xl flex items-center justify-center group-hover:from-metallicGold-500/40 group-hover:to-metallicGold-900/40 transition-all duration-300">
+                              <secret.icon className="w-10 h-10 text-metallicGold-500" />
+                            </div>
+                            <span className="absolute -top-2 -right-2 px-3 py-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 text-deepBlack-900 text-xs font-bold rounded-full shadow-lg">
+                              {secret.badge}
+                            </span>
+                          </motion.div>
                         </div>
-                        <span className="absolute -top-2 -right-2 px-2 py-1 bg-metallicGold-500 text-deepBlack-900 text-xs font-bold rounded-lg">
-                          {secret.badge}
-                        </span>
+                        
+                        <div className="flex-1">
+                          <h3 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-offWhite-100 to-offWhite-300 bg-clip-text text-transparent mb-4">
+                            {secret.title}
+                          </h3>
+                          <p className="text-lg text-offWhite-400 leading-relaxed whitespace-pre-line mb-4">
+                            {secret.description}
+                          </p>
+                          
+                          {/* Highlight Bar */}
+                          <div className="flex items-center gap-3 mt-6 p-4 bg-metallicGold-500/10 rounded-xl border border-metallicGold-500/30">
+                            <div className="w-2 h-2 bg-metallicGold-500 rounded-full animate-pulse" />
+                            <p className="text-metallicGold-400 font-bold text-lg">
+                              {secret.highlight}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl md:text-2xl font-bold text-offWhite-200 mb-3">
-                        {secret.title}
-                      </h3>
-                      <p className="text-lg text-offWhite-400 leading-relaxed whitespace-pre-line">
-                        {secret.description}
-                      </p>
-                      <p className="text-metallicGold-500 font-bold mt-3">→ {secret.highlight}</p>
-                    </div>
+                    
+                    {/* Bottom Gradient Line */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-metallicGold-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
                 </motion.div>
               ))}
