@@ -450,66 +450,69 @@ export default function HomePage() {
         </section>
 
         {/* Final CTA Section - 기회를 선점하세요 */}
-        <section className="py-32 px-4">
-          <div className="container mx-auto max-w-5xl">
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 backdrop-blur-sm border border-metallicGold-500/30 rounded-3xl p-12 md:p-20 text-center"
+              className="relative bg-gradient-to-br from-deepBlack-800 via-deepBlack-700 to-deepBlack-800 backdrop-blur-sm border border-red-500/30 rounded-3xl p-8 md:p-12 text-center overflow-hidden"
             >
-              <Gift className="w-20 h-20 text-metallicGold-500 mx-auto mb-8" />
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 right-4 w-32 h-32 border border-red-500/20 rounded-full" />
+                <div className="absolute bottom-4 left-4 w-24 h-24 border border-metallicGold-500/20 rounded-full" />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-red-500/10 rounded-full" />
+              </div>
 
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-8">
+              {/* Warning Icon with Glow */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                viewport={{ once: true }}
+                className="relative mb-6"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-red-500/50">
+                  <AlertTriangle className="w-8 h-8 text-white" />
+                </div>
+              </motion.div>
+
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold text-offWhite-200 mb-4">
                 지금이 아니면,{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">
                   영원히 못합니다
                 </span>
               </h2>
 
-              <p className="text-xl md:text-2xl text-offWhite-400 mb-6 leading-relaxed">
+              <p className="text-lg md:text-xl text-offWhite-400 mb-4 leading-relaxed max-w-2xl mx-auto">
                 대부분의 사람들은 이 페이지를 그냥 지나칩니다.
                 <br />
                 그리고 1년 후에도 여전히 같은 자리에 있을 겁니다.
               </p>
 
-              <p className="text-lg md:text-xl text-metallicGold-500 font-bold mb-12">
+              <p className="text-base md:text-lg text-metallicGold-500 font-bold">
                 당신은 다르길 바랍니다.
               </p>
 
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  href="/register"
-                  className="group relative inline-flex items-center gap-3 px-12 py-5 overflow-hidden rounded-2xl font-bold text-lg tracking-wide transition-all duration-300"
-                >
-                  {/* Background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 transition-all duration-300 group-hover:scale-105" />
-
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/30 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="relative flex items-center gap-3 text-deepBlack-900">
-                    <Crown className="w-6 h-6" />
-                    <span>한시적 무료 강의 신청하기 (선착순 마감)</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-              </motion.div>
-
-              {/* Bottom CTA */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
+              {/* Scroll Down Animation - 이 섹션 바로 아래에 추가 */}
+              <motion.div
+                initial={{ y: 0, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
                 viewport={{ once: true }}
-                className="mt-12 text-lg text-offWhite-500"
+                className="mt-8 flex flex-col items-center"
               >
-                단 1시간만에 웹사이트와 자동화 EXE파일을 만드는 기술
-              </motion.p>
+                <p className="text-offWhite-400 mb-3 text-sm">지금이 아니면 영원히 못합니다</p>
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="pointer-events-none"
+                >
+                  <ChevronDown className="w-8 h-8 text-red-500" />
+                </motion.div>
+              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -524,36 +527,22 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-center"
             >
-              {/* Warning Box */}
+              {/* Warning Box - 수정된 텍스트 */}
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 viewport={{ once: true }}
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 border border-metallicGold-500/40 rounded-2xl px-8 py-4 mb-8"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/40 rounded-2xl px-8 py-4 mb-8"
               >
-                <AlertTriangle className="w-6 h-6 text-metallicGold-500" />
-                <span className="text-lg font-bold text-metallicGold-500">
-                  지금이 아니면 영원히 못합니다.
+                <Sparkles className="w-6 h-6 text-green-500" />
+                <span className="text-lg font-bold text-green-500">
+                  지금 바로 무료로 배워보세요!
                 </span>
               </motion.div>
 
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-8">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                  한시적 무료 오픈!
-                </span>
-              </h2>
-              
-              {/* Timer */}
-              <div className="mb-12">
-                <LimitedTimer />
-              </div>
-              
-              <p className="text-xl md:text-2xl text-offWhite-400 mb-16 leading-relaxed">
-                자동화 프로그램 / 웹사이트 무료로 만들어보기
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* 카드 2장을 맨 위로 이동 */}
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
                 {/* 자동화 프로그램 카드 */}
                 <motion.div
                   initial={{ x: -30, opacity: 0 }}
@@ -639,24 +628,44 @@ export default function HomePage() {
                 </motion.div>
               </div>
 
-              {/* Scroll Down Animation */}
-              <motion.div
-                initial={{ y: 0, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                viewport={{ once: true }}
-                className="mt-12 flex flex-col items-center"
-              >
-                <p className="text-offWhite-400 mb-4">아래로 스크롤하여 자세히 보기</p>
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="cursor-pointer"
-                  onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-8">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                  한시적 무료 오픈!
+                </span>
+              </h2>
+              
+              {/* Timer */}
+              <div className="mb-12">
+                <LimitedTimer />
+              </div>
+              
+              <p className="text-xl md:text-2xl text-offWhite-400 mb-16 leading-relaxed">
+                자동화 프로그램 / 웹사이트 무료로 만들어보기
+              </p>
+
+              {/* 콜투액션 버튼 추가 */}
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mb-8">
+                <Link
+                  href="/register"
+                  className="group relative inline-flex items-center gap-3 px-12 py-5 overflow-hidden rounded-2xl font-bold text-lg tracking-wide transition-all duration-300"
                 >
-                  <ChevronDown className="w-10 h-10 text-metallicGold-500" />
-                </motion.div>
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 transition-all duration-300 group-hover:scale-105" />
+
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/30 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative flex items-center gap-3 text-deepBlack-900">
+                    <Sparkles className="w-6 h-6" />
+                    <span>무료 강의 즉시 신청하기</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
               </motion.div>
+
             </motion.div>
           </div>
         </section>

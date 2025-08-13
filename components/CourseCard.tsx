@@ -52,7 +52,7 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
         transition={{ delay: index * 0.1 }}
         className="group relative"
       >
-        <Link href={`/courses/${course.id}`} className="block">
+        <Link href={`/lectures/${course.id}`} className="block">
           <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl p-4 hover:border-metallicGold-500/40 transition-all duration-300">
             <div className="flex items-start gap-4">
               {/* 썸네일 */}
@@ -93,7 +93,7 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
       >
         <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <Link href={`/courses/${course.id}`} className="block">
+        <Link href={`/lectures/${course.id}`} className="block">
           <div className="relative bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl p-8 hover:border-metallicGold-500/40 transition-all duration-300 overflow-hidden">
             {/* Featured Badge */}
             <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg text-xs font-bold">
@@ -189,7 +189,7 @@ export default function CourseCard({ course, index = 0, variant = 'default' }: C
     >
       <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-      <Link href={`/courses/${course.id}`} className="block">
+      <Link href={`/lectures/${course.id}`} className="block">
         <div className="relative bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl p-6 hover:border-metallicGold-500/40 transition-all duration-300">
           {/* 북마크 버튼 */}
           <BookmarkButton

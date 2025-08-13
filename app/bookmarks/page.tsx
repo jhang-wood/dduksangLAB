@@ -282,7 +282,7 @@ export default function BookmarksPage() {
                     </h3>
                     <p className="text-offWhite-600 mb-6">관심있는 강의를 찜해보세요</p>
                     <button
-                      onClick={() => router.push('/courses')}
+                      onClick={() => router.push('/lectures')}
                       className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
                     >
                       강의 둘러보기

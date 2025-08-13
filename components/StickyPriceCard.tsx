@@ -20,7 +20,7 @@ export default function StickyPriceCard({
   onEnrollClick,
 }: StickyPriceCardProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { } = useAuth();
 
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
 

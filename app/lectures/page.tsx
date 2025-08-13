@@ -8,8 +8,6 @@ import {
   AlertTriangle,
   Timer,
   Target,
-  Shield,
-  TrendingUp,
   MessageSquare,
   Zap,
   Brain,
