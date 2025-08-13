@@ -1,30 +1,11 @@
-import { Metadata } from 'next';
-import React from 'react';
-import { Clock, Eye, Calendar, ChevronRight } from 'lucide-react';
+'use client';
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Clock, Eye, Calendar, ChevronRight, Brain, Sparkles, TrendingUp, MessageSquare, Zap } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'AI 트렌드 | 떡상연구소',
-  description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-  keywords: 'AI, 인공지능, AI 트렌드, AI 기술, AI 도구, 떡상연구소',
-  openGraph: {
-    title: 'AI 트렌드 | 떡상연구소',
-    description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-    type: 'website',
-    locale: 'ko_KR',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AI 트렌드 | 떡상연구소',
-    description: '매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요',
-  },
-  alternates: {
-    canonical: '/ai-trends',
-  },
-};
-
-// Dynamic rendering to avoid build errors
-export const dynamic = 'force-dynamic';
+import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 
 // Static mock data - synchronized with [slug]/page.tsx
 const staticTrends = [
@@ -38,6 +19,7 @@ const staticTrends = [
     published_at: '2024-12-01',
     view_count: 1500,
     is_featured: true,
+    icon: Brain,
   },
   {
     id: '2',
@@ -49,6 +31,7 @@ const staticTrends = [
     published_at: '2024-11-15',
     view_count: 1234,
     is_featured: true,
+    icon: MessageSquare,
   },
   {
     id: '3',
@@ -60,6 +43,7 @@ const staticTrends = [
     published_at: '2024-11-10',
     view_count: 856,
     is_featured: false,
+    icon: Zap,
   },
   {
     id: '4',
@@ -71,6 +55,7 @@ const staticTrends = [
     published_at: '2025-08-10',
     view_count: 2341,
     is_featured: true,
+    icon: Brain,
   },
   {
     id: '5',
@@ -82,6 +67,7 @@ const staticTrends = [
     published_at: '2025-08-09',
     view_count: 1567,
     is_featured: false,
+    icon: Sparkles,
   },
   {
     id: '6',
@@ -93,6 +79,7 @@ const staticTrends = [
     published_at: '2025-08-08',
     view_count: 1890,
     is_featured: false,
+    icon: TrendingUp,
   },
   {
     id: '7',
@@ -104,6 +91,7 @@ const staticTrends = [
     published_at: '2025-08-07',
     view_count: 1123,
     is_featured: false,
+    icon: TrendingUp,
   },
   {
     id: '8',
@@ -115,20 +103,27 @@ const staticTrends = [
     published_at: '2025-08-12',
     view_count: 0,
     is_featured: true,
+    icon: Sparkles,
   }
 ];
 
 const categories = [
-  { id: 'all', label: '전체' },
-  { id: 'AI 기술', label: 'AI 기술' },
-  { id: 'AI 도구', label: 'AI 도구' },
-  { id: 'AI 활용', label: 'AI 활용' },
-  { id: 'AI 비즈니스', label: 'AI 비즈니스' },
-  { id: 'AI 교육', label: 'AI 교육' },
+  { id: 'all', label: '전체', icon: Brain },
+  { id: 'AI 기술', label: 'AI 기술', icon: Brain },
+  { id: 'AI 도구', label: 'AI 도구', icon: Zap },
+  { id: 'AI 활용', label: 'AI 활용', icon: MessageSquare },
+  { id: 'AI 비즈니스', label: 'AI 비즈니스', icon: TrendingUp },
+  { id: 'AI 교육', label: 'AI 교육', icon: Sparkles },
 ];
 
 export default function AITrendsPage() {
-  const featuredTrends = staticTrends.filter(trend => trend.is_featured);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  
+  const filteredTrends = selectedCategory === 'all' 
+    ? staticTrends 
+    : staticTrends.filter(trend => trend.category === selectedCategory);
+  
+  const featuredTrends = filteredTrends.filter(trend => trend.is_featured);
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -147,125 +142,253 @@ export default function AITrendsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Simple Header */}
-      <header className="bg-gray-800 py-4">
-        <div className="container mx-auto px-4">
-          <Link href="/" className="text-xl font-bold text-yellow-400">
-            떡상연구소
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+      <NeuralNetworkBackground />
+      <div className="relative z-10">
+        <Header currentPage="ai-trends" />
 
-      {/* Hero Section */}
-      <section className="pt-16 pb-16 px-4">
-        <div className="container mx-auto max-w-7xl text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-yellow-400">
-            AI 트렌드
-          </h1>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            매일 업데이트되는 최신 AI 기술과 도구, 활용 사례를 쉽게 알아보세요
-          </p>
-        </div>
-      </section>
-
-      {/* Category Tabs */}
-      <section className="px-4 mb-8">
-        <div className="container mx-auto max-w-7xl">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                className="px-6 py-3 rounded-lg font-medium whitespace-nowrap bg-yellow-500 text-gray-900"
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="text-center"
+            >
+              <motion.h1
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="font-montserrat font-bold mb-6"
               >
-                {category.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
+                  AI 트렌드
+                </span>
+              </motion.h1>
+              
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-lg md:text-xl text-offWhite-400 max-w-3xl mx-auto leading-relaxed"
+              >
+                매일 업데이트되는 최신 AI 기술과 도구를{' '}
+                <span className="text-metallicGold-500 font-bold">실전에서 바로 활용</span>할 수 있는
+                <br />
+                압도적인 인사이트로 전달합니다
+              </motion.p>
 
-      {/* Featured Trends */}
-      <section className="px-4 mb-12">
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-2xl font-bold text-white mb-6">주목할 만한 트렌드</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredTrends.map(trend => (
-              <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
-                <article className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-yellow-500 transition-all">
-                  <div className="relative h-48 bg-gray-700 flex items-center justify-center">
-                    <div className="text-4xl">🤖</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-400">
-                      <span className="px-2 py-1 bg-yellow-500/20 rounded-full text-yellow-400">
-                        {trend.category}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {formatDate(trend.published_at)}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-yellow-400 transition-colors">
-                      {trend.title}
-                    </h3>
-                    <p className="text-gray-300 mb-4">{trend.summary}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <Eye className="w-4 h-4" />
-                        <span>{formatViewCount(trend.view_count)}</span>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-12 inline-flex items-center gap-2 px-6 py-3 bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-full"
+              >
+                <Sparkles className="w-5 h-5 text-metallicGold-500" />
+                <span className="text-metallicGold-500 font-semibold">실시간 AI 트렌드 자동 수집 시스템 가동 중</span>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* All Trends Grid */}
-      <section className="px-4 pb-20">
-        <div className="container mx-auto max-w-7xl">
-          <h2 className="text-2xl font-bold text-white mb-6">모든 트렌드</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {staticTrends.map(trend => (
-              <Link key={trend.id} href={`/ai-trends/${trend.slug}`} className="group">
-                <article className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-yellow-500 transition-all h-full">
-                  <div className="relative h-48 bg-gray-700 flex items-center justify-center">
-                    <div className="text-3xl">✨</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-400">
-                      <span className="px-2 py-1 bg-yellow-500/20 rounded-full text-yellow-400">
-                        {trend.category}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatDate(trend.published_at)}
-                      </span>
+        {/* Category Tabs */}
+        <section className="px-4 mb-16">
+          <div className="container mx-auto max-w-7xl">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide"
+            >
+              {categories.map((category, index) => {
+                const Icon = category.icon;
+                return (
+                  <motion.button
+                    key={category.id}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.8 + index * 0.1 }}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`group relative px-6 py-3 rounded-2xl font-medium whitespace-nowrap transition-all duration-300 ${
+                      selectedCategory === category.id
+                        ? 'text-deepBlack-900'
+                        : 'text-offWhite-400 hover:text-metallicGold-500'
+                    }`}
+                  >
+                    {selectedCategory === category.id && (
+                      <motion.div
+                        layoutId="categoryBg"
+                        className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 rounded-2xl"
+                      />
+                    )}
+                    <div className={`relative flex items-center gap-2 ${
+                      selectedCategory === category.id ? '' : 'bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl px-6 py-3 hover:border-metallicGold-500/40'
+                    }`}>
+                      <Icon className="w-4 h-4" />
+                      <span>{category.label}</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors">
-                      {trend.title}
-                    </h3>
-                    <p className="text-sm text-gray-300 mb-4">
-                      {trend.summary}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <Eye className="w-4 h-4" />
-                        <span>{formatViewCount(trend.view_count)}</span>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+                  </motion.button>
+                );
+              })}
+            </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Featured Trends */}
+        {featuredTrends.length > 0 && (
+          <section className="px-4 mb-20">
+            <div className="container mx-auto max-w-7xl">
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <h2 className="text-3xl md:text-4xl font-montserrat font-bold text-offWhite-200 mb-2">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+                    주목할 만한
+                  </span>{' '}
+                  트렌드
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900" />
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {featuredTrends.map((trend, index) => {
+                  const IconComponent = trend.icon;
+                  return (
+                    <motion.div
+                      key={trend.id}
+                      initial={{ y: 30, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Link href={`/ai-trends/${trend.slug}`} className="group block h-full">
+                        <article className="relative h-full bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl overflow-hidden hover:border-metallicGold-500/40 transition-all duration-300">
+                          {/* Hover effect */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          
+                          {/* Icon Header */}
+                          <div className="relative h-48 bg-gradient-to-br from-metallicGold-500/5 to-deepBlack-800/50 flex items-center justify-center">
+                            <div className="w-24 h-24 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                              <IconComponent className="w-12 h-12 text-metallicGold-500" />
+                            </div>
+                            {trend.is_featured && (
+                              <div className="absolute top-4 right-4 px-3 py-1 bg-metallicGold-500/20 border border-metallicGold-500/30 rounded-full">
+                                <span className="text-xs font-semibold text-metallicGold-500">FEATURED</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="relative p-8">
+                            <div className="flex items-center gap-3 mb-4">
+                              <span className="px-3 py-1 bg-metallicGold-500/10 border border-metallicGold-500/20 rounded-full text-xs font-medium text-metallicGold-500">
+                                {trend.category}
+                              </span>
+                              <span className="flex items-center gap-1 text-xs text-offWhite-600">
+                                <Calendar className="w-3 h-3" />
+                                {formatDate(trend.published_at)}
+                              </span>
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-offWhite-200 mb-3 group-hover:text-metallicGold-500 transition-colors line-clamp-2">
+                              {trend.title}
+                            </h3>
+                            
+                            <p className="text-offWhite-500 mb-6 line-clamp-3 leading-relaxed">
+                              {trend.summary}
+                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-offWhite-600">
+                                <Eye className="w-4 h-4" />
+                                <span>{formatViewCount(trend.view_count)}</span>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-metallicGold-500 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </div>
+                        </article>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* All Trends Grid */}
+        <section className="px-4 pb-32">
+          <div className="container mx-auto max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="mb-12"
+            >
+              <h2 className="text-3xl md:text-4xl font-montserrat font-bold text-offWhite-200 mb-2">
+                모든 트렌드
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900" />
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTrends.map((trend, index) => {
+                const IconComponent = trend.icon;
+                return (
+                  <motion.div
+                    key={trend.id}
+                    initial={{ y: 30, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    viewport={{ once: true }}
+                  >
+                    <Link href={`/ai-trends/${trend.slug}`} className="group block h-full">
+                      <article className="relative h-full bg-deepBlack-300/30 backdrop-blur-sm border border-metallicGold-900/10 rounded-2xl overflow-hidden hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all duration-300">
+                        <div className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                              <IconComponent className="w-6 h-6 text-metallicGold-500" />
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-offWhite-600">
+                              <Clock className="w-3 h-3" />
+                              <span>{formatDate(trend.published_at)}</span>
+                            </div>
+                          </div>
+                          
+                          <span className="inline-block px-2 py-1 bg-metallicGold-500/5 border border-metallicGold-500/10 rounded-lg text-xs font-medium text-metallicGold-500 mb-3">
+                            {trend.category}
+                          </span>
+                          
+                          <h3 className="text-lg font-semibold text-offWhite-200 mb-2 group-hover:text-metallicGold-500 transition-colors line-clamp-2">
+                            {trend.title}
+                          </h3>
+                          
+                          <p className="text-sm text-offWhite-500 mb-4 line-clamp-2 leading-relaxed">
+                            {trend.summary}
+                          </p>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm text-offWhite-600">
+                              <Eye className="w-4 h-4" />
+                              <span>{formatViewCount(trend.view_count)}</span>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-metallicGold-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                          </div>
+                        </div>
+                      </article>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
