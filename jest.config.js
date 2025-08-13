@@ -11,7 +11,7 @@ const createJestConfig = nextJest({
 
 // Jest에 전달할 사용자 정의 설정 옵션
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'], // 파일이 없으므로 비활성화
   
   // 테스트 환경 설정
   testEnvironment: 'jsdom',
@@ -39,7 +39,7 @@ const customJestConfig = {
   },
   
   // 환경 변수 설정
-  setupFiles: ['<rootDir>/jest.env.js'],
+  // setupFiles: ['<rootDir>/jest.env.js'], // 파일이 없으므로 비활성화
   
   // 커버리지 설정 - 현실적인 수준으로 완화
   collectCoverage: process.env.CI ? true : false, // 로컬에서는 커버리지 수집 안함
