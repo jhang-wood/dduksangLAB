@@ -11,11 +11,10 @@ import {
 } from './playwright-controller';
 import {
   getSupabaseController,
-  // AutomationLog, // 사용하지 않음
   ContentItem,
   PerformanceMetric,
 } from './supabase-controller';
-import { getErrorHandler, /* handleAutomationError, */ withRetry, ErrorContext } from './error-handler';
+import { getErrorHandler, withRetry, ErrorContext } from './error-handler';
 
 export interface WorkflowConfig {
   retryCount: number;

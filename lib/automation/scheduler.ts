@@ -6,9 +6,7 @@
 import { logger } from '@/lib/logger';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
 import { getContentManager } from './content-manager';
-// import { getBlogPublisher } from './blog-publisher'; // 사용하지 않음
 import { getOrchestrator } from '@/lib/mcp/orchestrator';
-// import { handleAutomationError } from '@/lib/mcp/error-handler'; // 사용하지 않음
 
 export interface ScheduledTask {
   id: string;

@@ -418,8 +418,8 @@ export default function HomePage() {
                 {
                   icon: Crown,
                   badge: '독점 할인',
-                  title: "80만원 즉시 할인! 'AI 올인원 마스터 패키지' 쿠폰",
-                  value: '80만원 할인',
+                  title: "초보자 전용 AI 수익화 모델 정리본.PDF",
+                  value: '약 100page 분량',
                 },
               ].map((benefit, index) => (
                 <motion.div

@@ -4,7 +4,6 @@ import { userNotification, logger } from '@/lib/logger';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import {} from 'framer-motion';
 import { Save, RefreshCw, Database, Shield, Globe, Server, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import { supabase } from '@/lib/supabase';

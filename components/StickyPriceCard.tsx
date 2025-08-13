@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Clock, Users, Star, Shield, Check, ArrowRight, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
@@ -21,11 +21,17 @@ export default function StickyPriceCard({
 }: StickyPriceCardProps) {
   const router = useRouter();
   const { } = useAuth();
+  
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 200]);
 
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
 
   return (
-    <div className="sticky top-32">
+    <motion.div 
+      className="sticky top-32"
+      style={{ y }}
+    >
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -163,6 +169,6 @@ export default function StickyPriceCard({
           </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
