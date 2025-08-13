@@ -33,57 +33,70 @@ import {
   SocialProof,
   LessonStatus,
 } from '@/components/CourseVisualElements';
-import { ReviewSection, sampleReviews } from '@/components/ReviewSection';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
-import { InstructorSection, sampleInstructor } from '@/components/InstructorSection';
 import EnhancedSocialProof from '@/components/EnhancedSocialProof';
-import ConversionOptimizer from '@/components/ConversionOptimizer';
-import EnhancedStatisticsSection from '@/components/EnhancedStatisticsSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { PaymentButton } from '@/hooks/usePayment';
 
-// AI Agent 마스터과정 데이터
+// Claude Code CLI 마스터과정 데이터
 const masterCourse = {
-  id: 'ai-agent-master',
-  title: 'AI Agent 마스터과정',
-  subtitle: 'AI 300만원짜리 강의, 더 이상 돈 주고 듣지 마세요',
+  id: 'claude-code-master',
+  title: '비개발자도 Claude Code CLI 하나로 모든 것을 다한다!',
+  subtitle: '코딩 몰라도 AI로 프로그램 만들기',
   description:
-    'AI로 비싼 강의의 핵심만 추출하고, 실행 가능한 자동화 프로그램으로 만드는 압도적인 방법을 알려드립니다.',
-  instructor_name: '떡상연구소 대표',
-  duration: 480, // 8시간
-  price: 990000,
-  originalPrice: 1800000,
-  discount: 45,
+    '비개발자를 위한 Claude Code CLI 완벽 마스터 과정. 복잡한 개발 지식 없이도 AI를 활용해 자동화 프로그램과 웹사이트를 만들 수 있습니다.',
+  instructor_name: '떡상연구소',
+  duration: 1620, // 27시간 (27개 모듈 x 60분)
+  price: 179000,
+  originalPrice: 179000,
+  discount: 0,
   category: 'AI',
-  level: 'all',
+  level: 'beginner',
   preview_url: '',
   thumbnail_url: '',
-  studentCount: 2847,
-  rating: 4.9,
-  reviewCount: 342,
-  completionRate: 87,
-  liveStudents: 23,
+  accessPeriod: '1년',
+  isFirstLaunch: true,
   features: [
-    '최정상 1%의 AI Toolset',
-    '시공간 제약 없는 텔레그램 코딩',
-    '자동화를 자동화하는 메타 자동화',
-    '비개발자를 위한 최소 지식 원칙',
+    'Claude Code CLI 완벽 마스터',
+    'MCP 한줄 명령 세팅',
+    '자동화 봇 만들기',
+    '실전 프로젝트 구축',
   ],
   benefits: [
-    'Claude Code + Super Claude 세팅',
-    '텔레그램 바이블 코딩 시스템',
-    '메타 자동화 프로그램 생성',
-    'EXE 파일 자동 생성 시스템',
-    '1:1 맞춤형 멘토링',
-    '평생 업데이트 제공',
+    '1년 수강 기간',
+    '실습 위주 커리큘럼',
+    '비개발자 친화적 설명',
+    'Q&A 지원',
   ],
   modules: [
-    { id: 1, title: 'AI 시대의 게임체인저가 되는 법', duration: '60분', completed: false },
-    { id: 2, title: 'Claude Code + Super Claude 완벽 세팅', duration: '90분', completed: false },
-    { id: 3, title: '텔레그램 바이블 코딩 마스터', duration: '120분', completed: false },
-    { id: 4, title: '메타 자동화 시스템 구축', duration: '90분', completed: false },
-    { id: 5, title: '실전 프로젝트: 나만의 AI 비즈니스', duration: '120분', completed: false },
+    { id: 1, title: '기초 개발환경 세팅', duration: '60분', completed: false },
+    { id: 2, title: '한줄 명령으로 세팅하는 MCP', duration: '60분', completed: false },
+    { id: 3, title: 'GitHub 이해하기', duration: '60분', completed: false },
+    { id: 4, title: 'Docker 이해하기', duration: '60분', completed: false },
+    { id: 5, title: '서브에이전트 간의 협업', duration: '60분', completed: false },
+    { id: 6, title: 'Claude Code CLI 자동화 워크플로우', duration: '60분', completed: false },
+    { id: 7, title: '숏폼 자동화 업로드', duration: '60분', completed: false },
+    { id: 8, title: '네이버 블로그 자동화 포스팅 봇 만들기', duration: '60분', completed: false },
+    { id: 9, title: '쓰레드 자동화 포스팅 봇 만들기', duration: '60분', completed: false },
+    { id: 10, title: 'n8n 자동화 워크플로우 생성', duration: '60분', completed: false },
+    { id: 11, title: '회사 사이트 만들기', duration: '60분', completed: false },
+    { id: 12, title: '월구독 SaaS 사이트 만들기', duration: '60분', completed: false },
+    { id: 13, title: 'Supabase 완벽 가이드', duration: '60분', completed: false },
+    { id: 14, title: '나만의 AI비서 생성', duration: '60분', completed: false },
+    { id: 15, title: 'RAG 구축', duration: '60분', completed: false },
+    { id: 16, title: '휴대폰 코딩', duration: '60분', completed: false },
+    { id: 17, title: '커스텀 tmux 병렬작업', duration: '60분', completed: false },
+    { id: 18, title: '최상의 CLAUDE.md 작성법', duration: '60분', completed: false },
+    { id: 19, title: 'Claude 컨텍스트 한계 뚫기', duration: '60분', completed: false },
+    { id: 20, title: 'GitHub 인기 프레임워크 장착하고 커스텀하기', duration: '60분', completed: false },
+    { id: 21, title: '바이브코딩의 진짜 바이브 감 잡기', duration: '60분', completed: false },
+    { id: 22, title: 'MVP 초고속 런칭 절차', duration: '60분', completed: false },
+    { id: 23, title: '내 사이트에 초고속 결제연동', duration: '60분', completed: false },
+    { id: 24, title: '프레임워크 선정법 (Ruby on Rails, Next.js 등)', duration: '60분', completed: false },
+    { id: 25, title: '최적의 폴더구조 및 작업플로우', duration: '60분', completed: false },
+    { id: 26, title: 'Git worktree와 관련 프레임워크', duration: '60분', completed: false },
+    { id: 27, title: '클로드코드를 천재적으로 만드는 공식', duration: '60분', completed: false },
   ],
 };
 
@@ -178,50 +191,50 @@ export default function LecturesPage() {
                 transition={{ duration: 0.8 }}
                 className="text-center mb-16"
               >
-                {/* Urgent Badge */}
+                {/* Launch Badge */}
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-500/20 to-red-900/20 rounded-full border border-red-500/50 mb-12 backdrop-blur-sm"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full border border-metallicGold-500/50 mb-12 backdrop-blur-sm"
                 >
-                  <Flame className="w-6 h-6 text-red-500" />
-                  <span className="text-red-400 font-bold text-lg">
-                    ⚠️ 경고: 이 가격은 다시 돌아오지 않습니다
+                  <Sparkles className="w-6 h-6 text-metallicGold-500" />
+                  <span className="text-metallicGold-400 font-bold text-lg">
+                    🎉 첫 런칭 오픈 특가
                   </span>
-                  <Flame className="w-6 h-6 text-red-500" />
+                  <Sparkles className="w-6 h-6 text-metallicGold-500" />
                 </motion.div>
 
                 {/* Main headline */}
                 <h1 className="font-montserrat font-bold mb-12">
-                  <span className="block text-red-400 mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight">
-                    AI 300만원짜리 강의,
+                  <span className="block text-offWhite-400 mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight">
+                    비개발자도
                   </span>
                   <span className="block bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl leading-none">
-                    더 이상 돈 주고
+                    Claude Code CLI 하나로
                     <br className="sm:hidden" />
-                    듣지 마세요
+                    모든 것을 다한다!
                   </span>
                 </h1>
 
                 {/* Subheadline */}
                 <div className="max-w-5xl mx-auto mb-10">
                   <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-offWhite-400 leading-relaxed mb-8">
-                    AI로 비싼 강의의 핵심만
+                    복잡한 개발 지식 없이도
                     <br className="sm:hidden" />
-                    <span className="text-metallicGold-500 font-bold">'추출'</span>하고,
+                    <span className="text-metallicGold-500 font-bold">AI를 활용해</span>
                     <br />
                     <span className="text-metallicGold-500 font-bold">
-                      '실행 가능한 자동화 프로그램'
+                      자동화 프로그램과 웹사이트
                     </span>
-                    으로
+                    를
                     <br className="sm:hidden" />
-                    만드는 압도적인 방법을 알려드립니다.
+                    만드는 방법을 알려드립니다.
                   </p>
 
                   <p className="text-xl sm:text-2xl md:text-3xl text-offWhite-200 font-bold">
-                    비개발자인 제가 해냈으니,
+                    코딩을 몰라도 괜찮습니다.
                     <br className="sm:hidden" />
-                    <span className="text-metallicGold-500">당신은 더 빨리 할 수 있습니다.</span>
+                    <span className="text-metallicGold-500">Claude Code CLI가 모든 것을 해결합니다.</span>
                   </p>
                 </div>
 
@@ -229,15 +242,15 @@ export default function LecturesPage() {
                 <div className="flex flex-wrap justify-center items-center gap-8 text-offWhite-500 mb-8">
                   <div className="flex items-center gap-2">
                     <Clock className="text-metallicGold-500" size={20} />
-                    <span className="font-medium">{masterCourse.duration / 60}시간 강의</span>
+                    <span className="font-medium">27개 실습 모듈</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Target className="text-metallicGold-500" size={20} />
-                    <span className="font-medium">실전 중심</span>
+                    <span className="font-medium">1년 수강 기간</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Zap className="text-metallicGold-500" size={20} />
-                    <span className="font-medium">즉시 활용 가능</span>
+                    <span className="font-medium">비개발자 전용</span>
                   </div>
                 </div>
               </motion.div>
@@ -246,7 +259,6 @@ export default function LecturesPage() {
         </section>
 
         {/* Enhanced Statistics Section - Advanced FastCampus Style */}
-        <EnhancedStatisticsSection />
 
         {/* Enhanced Pain Points Section with Cards */}
         <section className="py-24 px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20">
@@ -480,21 +492,6 @@ export default function LecturesPage() {
           </div>
         </section>
 
-        {/* 향상된 소셜 증명 섹션 */}
-        <EnhancedSocialProof className="px-4 py-20 bg-gradient-to-b from-deepBlack-300/20 to-deepBlack-900" />
-
-        {/* 기존 소셜 증명 섹션 (보조) */}
-        <section className="px-4 py-16 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20">
-          <div className="container mx-auto max-w-6xl">
-            <SocialProof
-              studentCount={masterCourse.studentCount}
-              rating={masterCourse.rating}
-              reviewCount={masterCourse.reviewCount}
-              liveStudents={masterCourse.liveStudents}
-              completionRate={masterCourse.completionRate}
-            />
-          </div>
-        </section>
 
         {/* Main Course Display */}
         <section className="px-4 pb-20">
@@ -762,19 +759,6 @@ export default function LecturesPage() {
           </div>
         </section>
 
-        {/* 수강생 리뷰 섹션 */}
-        <ReviewSection
-          reviews={sampleReviews}
-          averageRating={masterCourse.rating}
-          totalReviews={masterCourse.reviewCount}
-          className="px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20"
-        />
-
-        {/* 강사 소개 섹션 */}
-        <InstructorSection
-          instructor={sampleInstructor}
-          className="bg-gradient-to-b from-deepBlack-300/20 to-deepBlack-900"
-        />
 
         {/* FAQ 섹션 */}
         <FAQSection
@@ -782,12 +766,6 @@ export default function LecturesPage() {
           className="bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20"
         />
 
-        {/* 전환율 최적화 컴포넌트 */}
-        <ConversionOptimizer
-          isVisible={true}
-          currentStudents={masterCourse.studentCount}
-          priceEndDate="2024-12-31"
-        />
 
         {/* Sticky CTA Button */}
         <motion.div
@@ -818,14 +796,6 @@ export default function LecturesPage() {
                     <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">
                       {masterCourse.discount}% 할인
                     </span>
-                    <motion.span
-                      className="bg-green-400/20 text-green-400 px-2 py-1 rounded text-xs font-bold flex items-center gap-1"
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <Users className="w-3 h-3" />
-                      {masterCourse.liveStudents}명 수강중
-                    </motion.span>
                   </div>
                 </div>
               </div>
