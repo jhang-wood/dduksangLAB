@@ -132,7 +132,7 @@ export default function HomePage() {
                   {/* Content */}
                   <div className="relative flex items-center gap-3 text-deepBlack-900">
                     <Sparkles className="w-6 h-6" />
-                    <span>[비공개 무료 강의] 지금 즉시 참여하기</span>
+                    <span>언제 닫힐지 모르는 무료강의 확인하기</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
