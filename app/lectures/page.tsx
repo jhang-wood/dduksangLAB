@@ -22,7 +22,7 @@ import { useAuth } from '@/lib/auth-context';
 import AILeadersCards from '@/components/AILeadersCards';
 import VibeCodingShowcase from '@/components/VibeCodingShowcase';
 import RealTimeCounter from '@/components/RealTimeCounter';
-import ModuleAccordion from '@/components/ModuleAccordion';
+import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
 import StickyPriceCard from '@/components/StickyPriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 
@@ -317,7 +317,7 @@ export default function LecturesPage() {
               {/* Curriculum Section */}
               <section className="py-16">
                 <h2 className="text-3xl font-bold text-offWhite-200 mb-8">커리큘럼</h2>
-                <ModuleAccordion modules={masterCourse.modules} />
+                <EnhancedModuleAccordion modules={masterCourse.modules} />
               </section>
 
               {/* Recommended For Section */}
