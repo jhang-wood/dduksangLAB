@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createStore } from 'zustand/vanilla';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -6,7 +6,7 @@ import { UserProfile, SignUpMetadata } from '@/types';
 import { createUserProfile, getUserProfile, validateSignupData } from '@/lib/auth-utils';
 import { logger } from '@/lib/logger';
 
-interface AuthState {
+export interface AuthStore {
   // State
   user: User | null;
   userProfile: UserProfile | null;
@@ -32,7 +32,9 @@ interface AuthState {
   initializeAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
+// Next.js App Router용 스토어 팩토리 함수
+export const createAuthStore = () => {
+  return createStore<AuthStore>()(
   persist(
     (set, get) => ({
       // Initial state
@@ -231,34 +233,5 @@ export const useAuthStore = create<AuthState>()(
       skipHydration: true, // Critical for SSR safety
     }
   )
-);
-
-// SSR-safe hook that maintains the same API as the old useAuth
-export const useAuth = () => {
-  const store = useAuthStore();
-  
-  // Return the store state with computed properties
-  return {
-    user: store.user,
-    userProfile: store.userProfile,
-    loading: store.loading || !store.mounted, // Loading if not mounted
-    mounted: store.mounted,
-    signIn: store.signIn,
-    signUp: store.signUp,
-    signOut: store.signOut,
-    isAdmin: store.isAdmin,
-  };
-};
-
-// Client-side initialization hook
-export const useAuthInitialization = () => {
-  const setMounted = useAuthStore((state) => state.setMounted);
-  const mounted = useAuthStore((state) => state.mounted);
-  
-  // Initialize on client side
-  if (typeof window !== 'undefined' && !mounted) {
-    setMounted();
-  }
-  
-  return mounted;
+  );
 };

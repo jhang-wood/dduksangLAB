@@ -4,7 +4,7 @@ import { logger, userNotification } from '@/lib/logger';
 
 import { useState } from 'react';
 import { generatePayAppUrl, generateOrderId, PRICING_PLANS } from '@/lib/payment/payapp';
-import { useAuth } from '@/lib/stores/auth-store';
+import { useAuthStore } from '@/providers/auth-store-provider';
 
 interface PaymentButtonProps {
   planId: keyof typeof PRICING_PLANS;
@@ -14,7 +14,7 @@ interface PaymentButtonProps {
 
 export default function PaymentButton({ planId, className, children }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const plan = PRICING_PLANS[planId];
 
   const handlePayment = (): void => {
