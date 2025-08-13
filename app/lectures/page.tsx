@@ -37,6 +37,10 @@ import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { PaymentButton } from '@/hooks/usePayment';
+import AILeadersQuotes from '@/components/AILeadersQuotes';
+import VibeCodingShowcase from '@/components/VibeCodingShowcase';
+import CouponSystem from '@/components/CouponSystem';
+import RealTimeCounter from '@/components/RealTimeCounter';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -175,6 +179,9 @@ export default function LecturesPage() {
       <div className="relative z-10">
         <Header currentPage="lectures" />
 
+        {/* Real-time counter */}
+        <RealTimeCounter />
+        
         {/* Enhanced Hero Section with FastCampus-style layout */}
         <section className="relative pt-24 pb-16 overflow-hidden">
           {/* Background gradient overlay */}
@@ -238,7 +245,7 @@ export default function LecturesPage() {
                 </div>
 
                 {/* Quick stats */}
-                <div className="flex flex-wrap justify-center items-center gap-8 text-offWhite-500 mb-8">
+                <div className="flex flex-wrap justify-center items-center gap-8 text-offWhite-500 mb-12">
                   <div className="flex items-center gap-2">
                     <Clock className="text-metallicGold-500" size={20} />
                     <span className="font-medium">27개 실습 모듈</span>
@@ -252,12 +259,24 @@ export default function LecturesPage() {
                     <span className="font-medium">비개발자 전용</span>
                   </div>
                 </div>
+                
+                {/* Coupon System */}
+                <div className="max-w-2xl mx-auto">
+                  <CouponSystem 
+                    originalPrice={179000}
+                    discountedPrice={149000}
+                  />
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Enhanced Statistics Section - Advanced FastCampus Style */}
+        {/* AI Leaders Quotes */}
+        <AILeadersQuotes />
+        
+        {/* Vibe Coding Showcase */}
+        <VibeCodingShowcase />
 
         {/* Enhanced Pain Points Section with Cards */}
         <section className="py-24 px-4 bg-gradient-to-b from-deepBlack-900 to-deepBlack-300/20">
