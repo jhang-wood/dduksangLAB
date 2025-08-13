@@ -175,7 +175,7 @@ export default function HomePage() {
                   icon: MessageSquare,
                   title: 'AI Agent 조직 협업',
                   description:
-                    '당신이 CEO가 되고 AI들이 직원이 됩니다\n서로 업무를 나누고 보고하며\n24시간 일하는 AI 회사를 만듭니다',
+                    '당신이 CEO가 되고\nAI agent들이 팀장이 됩니다.\n서로 업무를 나누고 보고하며\n24시간 일하는 AI 회사를 만듭니다',
                 },
                 {
                   icon: Rocket,
