@@ -11,12 +11,15 @@ import {
   Crown,
   Brain,
   Rocket,
+  ChevronDown,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import CountdownTimer from '@/components/CountdownTimer';
+import LimitedTimer from '@/components/LimitedTimer';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
@@ -491,7 +494,7 @@ export default function HomePage() {
                   {/* Content */}
                   <div className="relative flex items-center gap-3 text-deepBlack-900">
                     <Crown className="w-6 h-6" />
-                    <span>무료 강의 신청하고 인생 바꾸기 (선착순 마감)</span>
+                    <span>한시적 무료 강의 신청하기 (선착순 마감)</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
@@ -521,12 +524,30 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-center"
             >
+              {/* Warning Box */}
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 border border-metallicGold-500/40 rounded-2xl px-8 py-4 mb-8"
+              >
+                <AlertTriangle className="w-6 h-6 text-metallicGold-500" />
+                <span className="text-lg font-bold text-metallicGold-500">
+                  지금이 아니면 영원히 못합니다.
+                </span>
+              </motion.div>
+
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-8">
-                무료 강의 신청하고{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                  인생 바꾸기
+                  한시적 무료 오픈!
                 </span>
               </h2>
+              
+              {/* Timer */}
+              <div className="mb-12">
+                <LimitedTimer />
+              </div>
               
               <p className="text-xl md:text-2xl text-offWhite-400 mb-16 leading-relaxed">
                 자동화 프로그램 / 웹사이트 무료로 만들어보기
@@ -618,38 +639,24 @@ export default function HomePage() {
                 </motion.div>
               </div>
 
-              {/* CTA Button */}
+              {/* Scroll Down Animation */}
               <motion.div
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 0, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
                 viewport={{ once: true }}
-                className="mt-12"
+                className="mt-12 flex flex-col items-center"
               >
-                <Link
-                  href="/register"
-                  className="group relative inline-flex items-center gap-3 px-14 py-6 overflow-hidden rounded-2xl font-bold text-xl tracking-wide transition-all duration-300"
+                <p className="text-offWhite-400 mb-4">아래로 스크롤하여 자세히 보기</p>
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="cursor-pointer"
+                  onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                 >
-                  {/* Background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 transition-all duration-300 group-hover:scale-105" />
-
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-metallicGold-100/30 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="relative flex items-center gap-3 text-deepBlack-900">
-                    <Gift className="w-7 h-7" />
-                    <span>지금 바로 무료 강의 신청하기</span>
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
+                  <ChevronDown className="w-10 h-10 text-metallicGold-500" />
+                </motion.div>
               </motion.div>
-
-              <p className="mt-8 text-offWhite-500 text-lg">
-                ⏰ 선착순 마감 임박 - 지금이 마지막 기회입니다
-              </p>
             </motion.div>
           </div>
         </section>
