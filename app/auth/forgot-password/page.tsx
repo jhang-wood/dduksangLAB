@@ -1,5 +1,8 @@
 'use client';
 
+// 전체 앱 CSR 전환으로 단순화
+export const dynamic = 'force-dynamic';
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft } from 'lucide-react';

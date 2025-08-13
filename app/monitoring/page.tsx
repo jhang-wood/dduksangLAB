@@ -1,7 +1,7 @@
-/**
- * 모니터링 대시보드 페이지
- */
 'use client';
+
+// 전체 앱 CSR 전환으로 단순화
+export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';

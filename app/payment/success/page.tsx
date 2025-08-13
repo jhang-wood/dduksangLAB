@@ -1,5 +1,8 @@
 'use client';
 
+// 전체 앱 CSR 전환으로 단순화
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';

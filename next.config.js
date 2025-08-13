@@ -6,8 +6,13 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // SSR useContext 에러 해결을 위한 설정
+  // 완전한 CSR 전환을 위한 설정 (SSR/SSG 비활성화)
   output: 'standalone',
+  
+  // 모든 페이지를 동적 렌더링으로 강제
+  async generateBuildId() {
+    return 'build-' + Date.now();
+  },
   
   // 실험적 기능 (성능 개선)
   experimental: {

@@ -1,4 +1,8 @@
-import { Metadata } from 'next';
+'use client';
+
+// 전체 앱 CSR 전환으로 단순화
+export const dynamic = 'force-dynamic';
+
 import { notFound } from 'next/navigation';
 import AITrendDetailClient from './page-client';
 
@@ -273,79 +277,12 @@ AI 도구를 활용한 효율적인 워크플로우 구축 방법을 알아보�
 //   ];
 // }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  let { slug } = params;
+// Metadata generation removed for CSR (Client-Side Rendering) mode
+// SEO will be handled client-side via next/head if needed
 
-  // URL decode the slug to handle Korean characters
-  try {
-    slug = decodeURIComponent(slug);
-  } catch (e) {
-    // If decoding fails, use original slug
-  }
+// Use dynamic rendering to avoid build errors (merged with top CSR config)
 
-  // Find trend data from mock data
-  const trend = mockTrends.find(t => t.slug === slug);
-
-  if (!trend) {
-    return {
-      title: 'AI 트렌드를 찾을 수 없습니다 | 떡상연구소',
-      description: '요청하신 AI 트렌드 콘텐츠를 찾을 수 없습니다.',
-    };
-  }
-
-  const title = trend.seo_title ?? trend.title;
-  const description = trend.seo_description ?? trend.summary;
-
-  return {
-    title: `${title} | 떡상연구소`,
-    description,
-    keywords: trend.seo_keywords?.join(', ') ?? 'AI 트렌드, 인공지능',
-    openGraph: {
-      title: `${title} | 떡상연구소`,
-      description,
-      type: 'article',
-      locale: 'ko_KR',
-      siteName: '떡상연구소',
-      ...(trend.thumbnail_url && {
-        images: [
-          {
-            url: trend.thumbnail_url,
-            width: 1200,
-            height: 630,
-            alt: trend.title,
-          },
-        ],
-      }),
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${title} | 떡상연구소`,
-      description,
-      ...(trend.thumbnail_url && {
-        images: [trend.thumbnail_url],
-      }),
-    },
-    alternates: {
-      canonical: `/ai-trends/${slug}`,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  };
-}
-
-// Use dynamic rendering to avoid build errors
-export const dynamic = 'force-dynamic';
-
-export default async function AITrendDetailPage({ params }: Props) {
+export default function AITrendDetailPage({ params }: Props) {
   let { slug } = params;
 
   // URL decode the slug to handle Korean characters
