@@ -36,14 +36,14 @@ const masterCourse = {
   instructor_name: '떡상연구소',
   duration: 1620, // 27시간 (27개 모듈 x 60분)
   price: 149000,
-  originalPrice: 179000,
-  discount: 17,
+  originalPrice: 899000,
+  discount: 83,
   category: 'AI',
   level: 'beginner',
   preview_url: '',
   thumbnail_url: '',
   accessPeriod: '1년',
-  isFirstLaunch: true,
+  isPreOrder: true,
   features: [
     'Claude Code CLI 완벽 마스터',
     'MCP 한줄 명령 세팅',

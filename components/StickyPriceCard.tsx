@@ -41,7 +41,7 @@ export default function StickyPriceCard({
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-            🔥 첫 런칭 한정 특가
+            🔥 사전예약 마감예정
           </div>
         </div>
 
