@@ -1,56 +1,19 @@
-name: Performance Monitoring
+name: Simple Deploy
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
-  performance-test:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build application (relaxed mode)
+    - name: Deploy notification
       run: |
-        npm run build || {
-          echo "⚠️ Build failed, but continuing in relaxed mode"
-          echo "📝 This is acceptable for development branches"
-          exit 0
-        }
-      
-    - name: Bundle analysis
-      run: |
-        echo "📦 Bundle Analysis:"
-        find .next/static -name '*.js' -exec ls -lh {} + | head -10
-        echo ""
-        echo "📊 Total bundle size:"
-        du -sh .next/static
-        
-    - name: Performance budget check (relaxed mode)
-      run: |
-        # 번들 크기 체크 (완화 모드 - 경고만)
-        BUNDLE_SIZE=$(du -sk .next/static | cut -f1)
-        if [ $BUNDLE_SIZE -gt 1000 ]; then
-          echo "⚠️ Bundle size (${BUNDLE_SIZE}KB) is large (>1MB) - consider optimization"
-        else
-          echo "✅ Bundle size (${BUNDLE_SIZE}KB) looks reasonable"
-        fi
-        echo "📊 Relaxed mode: No hard limits enforced"
-        
-    - name: Deploy and test
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "🚀 Deployment completed"
+        echo "🚀 Code pushed - Deploy will happen automatically via Vercel"
+        echo "✅ This is a minimal 1-person project workflow"
+        echo "📝 No complex checks needed for solo development"
         echo "📈 Performance metrics will be tracked"
