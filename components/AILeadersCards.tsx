@@ -175,7 +175,7 @@ export default function AILeadersCards() {
                   />
 
                   {/* Card */}
-                  <div className={`relative h-full bg-gradient-to-br ${leader.bgGradient} backdrop-blur-xl border border-metallicGold-900/30 rounded-3xl overflow-hidden`}>
+                  <div className={`relative h-full bg-gradient-to-br ${leader.bgGradient} backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl`}>
                     {/* Top Gradient Bar */}
                     <div className={`h-2 bg-gradient-to-r ${leader.gradient}`} />
 

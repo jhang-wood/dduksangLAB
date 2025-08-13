@@ -150,7 +150,7 @@ export default function LecturesPage() {
         
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-7xl px-4 py-8">
-          <div className="grid lg:grid-cols-[1fr_380px] gap-8">
+          <div className="grid lg:grid-cols-[1fr_320px] gap-8">
             {/* Left Column: Main Content */}
             <div className="w-full">
               {/* Claude Hero Section */}

@@ -25,7 +25,7 @@ export default function StickyPriceCard({
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
 
   return (
-    <div className="sticky top-24">
+    <div className="sticky top-32">
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
