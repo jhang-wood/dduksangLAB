@@ -82,7 +82,7 @@ export function hasSqlInjectionRisk(input: string): boolean {
  */
 export function hasXssRisk(input: string): boolean {
   const xssPatterns = [
-    /<script\b[^<]*(?:(?\!<\/script>)<[^<]*)*<\/script>/gi,
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
     /javascript:/gi,
     /on\w+\s*=/gi,
     /<iframe|<object|<embed|<form/gi,
@@ -106,7 +106,7 @@ export function validateSecureInput(
   maxLength: number = 1000
 ): { isValid: boolean; error?: string; sanitized?: string } {
   // null/undefined 체크
-  if (\!input || typeof input \!== 'string') {
+  if (!input || typeof input !== 'string') {
     return {
       isValid: false,
       error: '입력값이 필요합니다.'
@@ -198,7 +198,7 @@ export function validatePasswordStrength(password: string): {
   }
   
   // 연속된 문자 검사
-  if (\!/(.)\1{2,}/.test(password)) {
+  if (!/(.)\1{2,}/.test(password)) {
     score += 1;
   } else {
     feedback.push('연속된 같은 문자를 피해주세요.');
@@ -242,7 +242,7 @@ export function generateCsrfToken(): string {
  * @returns 검증 결과
  */
 export function verifyCsrfToken(token: string, sessionToken: string): boolean {
-  if (\!token || \!sessionToken) {
+  if (!token || !sessionToken) {
     return false;
   }
   
@@ -259,7 +259,7 @@ export function verifyCsrfToken(token: string, sessionToken: string): boolean {
  */
 export function validateSecureEmail(email: string): { isValid: boolean; error?: string } {
   // null/undefined 체크
-  if (\!email || typeof email \!== 'string') {
+  if (!email || typeof email !== 'string') {
     return { isValid: false, error: '이메일 주소가 필요합니다.' };
   }
   
@@ -271,7 +271,7 @@ export function validateSecureEmail(email: string): { isValid: boolean; error?: 
   // 기본 형식 검증
   const emailRegex = /^[a-zA-Z0-9.\!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
   
-  if (\!emailRegex.test(email)) {
+  if (!emailRegex.test(email)) {
     return { isValid: false, error: '올바른 이메일 형식이 아닙니다.' };
   }
   
@@ -289,7 +289,7 @@ export function validateSecureEmail(email: string): { isValid: boolean; error?: 
  * @returns 검증 결과 및 살균된 URL
  */
 export function validateSecureUrl(url: string): { isValid: boolean; error?: string; sanitized?: string } {
-  if (\!url || typeof url \!== 'string') {
+  if (!url || typeof url !== 'string') {
     return { isValid: false, error: 'URL이 필요합니다.' };
   }
   
@@ -298,7 +298,7 @@ export function validateSecureUrl(url: string): { isValid: boolean; error?: stri
     
     // 허용된 프로토콜만 허용
     const allowedProtocols = ['http:', 'https:'];
-    if (\!allowedProtocols.includes(parsedUrl.protocol)) {
+    if (!allowedProtocols.includes(parsedUrl.protocol)) {
       return { isValid: false, error: '허용되지 않은 프로토콜입니다.' };
     }
     
@@ -326,7 +326,7 @@ export function validateSecureFileUpload(
   maxSize: number = 5 * 1024 * 1024 // 5MB
 ): { isValid: boolean; error?: string } {
   // 파일 존재 검사
-  if (\!file || \!file.name || \!file.type) {
+  if (!file || !file.name || !file.type) {
     return { isValid: false, error: '파일 정보가 누락되었습니다.' };
   }
   
@@ -336,7 +336,7 @@ export function validateSecureFileUpload(
   }
   
   // MIME 타입 검사
-  if (\!allowedTypes.includes(file.type)) {
+  if (!allowedTypes.includes(file.type)) {
     return { isValid: false, error: '허용되지 않은 파일 형식입니다.' };
   }
   
@@ -357,12 +357,12 @@ export function validateSecureFileUpload(
  * @returns 검증 결과
  */
 export function validateIpAddress(ip: string): { isValid: boolean; type?: 'ipv4' | 'ipv6'; error?: string } {
-  if (\!ip || typeof ip \!== 'string') {
+  if (!ip || typeof ip !== 'string') {
     return { isValid: false, error: 'IP 주소가 필요합니다.' };
   }
   
   // IPv4 검증
-  const ipv4Regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?\!$)|$)){4}$/;
+  const ipv4Regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
   if (ipv4Regex.test(ip)) {
     return { isValid: true, type: 'ipv4' };
   }
@@ -375,4 +375,3 @@ export function validateIpAddress(ip: string): { isValid: boolean; type?: 'ipv4'
   
   return { isValid: false, error: '올바른 IP 주소 형식이 아닙니다.' };
 }
-EOF < /dev/null
