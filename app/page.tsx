@@ -423,19 +423,22 @@ export default function HomePage() {
                 {
                   icon: Gift,
                   badge: '즉시 사용',
-                  title: 'n8n 자동화 설계 프롬프트 SET',
+                  category: '[N8N 자동화]',
+                  title: '워크플로우 설계 프롬프트 SET',
                   value: '30만원 상당',
                 },
                 {
                   icon: Trophy,
                   badge: '능력 상승',
-                  title: "AI 잠재력 200% 활용 '프롬프트 엔지니어링' 가이드",
+                  category: '[AI 잠재력 200% 활용]',
+                  title: '\'프롬프트 엔지니어링\' 가이드',
                   value: '50만원 상당',
                 },
                 {
                   icon: Crown,
-                  badge: '독점 할인',
-                  title: "초보자 전용 AI 수익화 모델 정리본.PDF",
+                  badge: '독점 자료',
+                  category: '[초보자 전용]',
+                  title: 'AI 수익화 모델 정리본.PDF',
                   value: '약 100page 분량',
                 },
               ].map((benefit, index) => (
@@ -457,8 +460,11 @@ export default function HomePage() {
                       <benefit.icon className="w-6 h-6 text-metallicGold-500" />
                     </div>
 
-                    <h3 className="text-xl font-bold text-offWhite-200 mb-3">{benefit.title}</h3>
-                    <p className="text-2xl font-bold text-metallicGold-500">{benefit.value}</p>
+                    {benefit.category && (
+                      <p className="text-sm text-metallicGold-400 mb-2 font-medium">{benefit.category}</p>
+                    )}
+                    <h3 className="text-lg font-bold text-offWhite-200 mb-3 leading-tight">{benefit.title}</h3>
+                    <p className="text-xl font-bold text-metallicGold-500">{benefit.value}</p>
                   </div>
                 </motion.div>
               ))}
