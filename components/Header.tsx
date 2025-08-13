@@ -47,7 +47,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div className="relative w-12 h-12 md:w-14 md:h-14">
+              <div className="relative w-20 h-12 md:w-28 md:h-16">
                 <Image
                   src="/images/떡상연구소_로고/누끼_떡상연구소.png"
                   alt="떡상연구소"

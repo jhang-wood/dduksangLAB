@@ -31,7 +31,6 @@ import {
   ProgressBar,
   LearningDashboard,
   CourseStatusIcons,
-  LessonStatus,
 } from '@/components/CourseVisualElements';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
@@ -41,6 +40,7 @@ import AILeadersQuotes from '@/components/AILeadersQuotes';
 import VibeCodingShowcase from '@/components/VibeCodingShowcase';
 import CouponSystem from '@/components/CouponSystem';
 import RealTimeCounter from '@/components/RealTimeCounter';
+import ModuleAccordion from '@/components/ModuleAccordion';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -666,7 +666,7 @@ export default function LecturesPage() {
 
                 {/* Course Modules */}
                 <h3 className="text-2xl font-bold text-offWhite-200 mb-6">커리큘럼</h3>
-                <LessonStatus lessons={masterCourse.modules} currentLesson={0} className="mb-10" />
+                <ModuleAccordion modules={masterCourse.modules} className="mb-10" />
 
                 {/* Benefits */}
                 <div className="mt-10 bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 rounded-2xl p-8 border border-metallicGold-500/30">
