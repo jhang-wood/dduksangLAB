@@ -3,10 +3,9 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import AITrendDetailClient from './page-client'
 import { logger } from '@/lib/logger'
-import { env } from '@/lib/env'
 
 const supabase = createClient(
-  env.SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
