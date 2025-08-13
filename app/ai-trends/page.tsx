@@ -6,6 +6,7 @@ import { Clock, Eye, Calendar, ChevronRight, Brain, Sparkles, TrendingUp, Messag
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import Footer from '@/components/Footer';
 
 // Static mock data - synchronized with [slug]/page.tsx
 const staticTrends = [
@@ -388,6 +389,8 @@ export default function AITrendsPage() {
             </div>
           </div>
         </section>
+        
+        <Footer />
       </div>
     </div>
   );

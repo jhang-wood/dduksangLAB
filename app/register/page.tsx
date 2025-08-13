@@ -6,6 +6,7 @@ import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import Footer from '@/components/Footer';
 import CountdownTimer from '@/components/CountdownTimer';
 
 export default function RegisterPage() {
@@ -117,6 +118,7 @@ export default function RegisterPage() {
             </motion.div>
           </div>
         </section>
+        <Footer />
       </div>
     </div>
   );

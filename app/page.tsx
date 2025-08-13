@@ -16,6 +16,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import CountdownTimer from '@/components/CountdownTimer';
+import Footer from '@/components/Footer';
 
 export default function HomePage() {
   return (
@@ -491,17 +492,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-16 px-4 border-t border-metallicGold-900/20 bg-deepBlack-900">
-          <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <span className="text-xl font-semibold text-metallicGold-500">dduksangLAB</span>
-              </div>
-              <p className="text-offWhite-600 text-sm">© 2025 dduksangLAB. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   );

@@ -1,214 +1,104 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { Mail, Phone, MapPin, Instagram, Youtube, Github } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Phone, MapPin, Building2, User, FileText } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    service: [
-      { name: '온라인 강의', href: '/lectures' },
-      { name: '커뮤니티', href: '/community' },
-      { name: 'SaaS 홍보', href: '/saas' },
-      { name: '멤버십', href: '/membership' },
-    ],
-    support: [
-      { name: '고객센터', href: '/support' },
-      { name: 'FAQ', href: '/faq' },
-      { name: '문의하기', href: '/contact' },
-      { name: '피드백', href: '/feedback' },
-    ],
-    company: [
-      { name: '회사소개', href: '/about' },
-      { name: '채용정보', href: '/careers' },
-      { name: '투자정보', href: '/investors' },
-      { name: '파트너십', href: '/partnership' },
-    ],
-    legal: [
-      { name: '이용약관', href: '/terms' },
-      { name: '개인정보처리방침', href: '/privacy' },
-      { name: '환불정책', href: '/refund' },
-      { name: '저작권 정책', href: '/copyright' },
-    ],
-  };
-
-  const socialLinks = [
-    {
-      name: 'Instagram',
-      href: 'https://instagram.com/dduksang-lab',
-      icon: Instagram,
-      color: 'hover:text-pink-400',
-    },
-    {
-      name: 'YouTube',
-      href: 'https://youtube.com/dduksang-lab',
-      icon: Youtube,
-      color: 'hover:text-red-400',
-    },
-    {
-      name: 'GitHub',
-      href: 'https://github.com/dduksang-lab',
-      icon: Github,
-      color: 'hover:text-gray-400',
-    },
-  ];
-
   return (
-    <footer className="bg-black border-t border-yellow-500/20">
+    <footer className="bg-deepBlack-900 border-t border-metallicGold-900/20">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-          {/* Logo & Description */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="relative w-10 h-10">
-                <Image
-                  src="/images/떡상연구소_로고-removebg-preview.png"
-                  alt="떡상연구소 로고"
-                  fill
-                  className="object-contain"
-                />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">떡상연구소</h3>
+            <div className="space-y-3 text-offWhite-400">
+              <div className="flex items-start space-x-3">
+                <User size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-offWhite-200">대표</p>
+                  <p>박지후</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-yellow-400">떡상연구소</h3>
-            </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              AI 시대를 앞서가는 교육 플랫폼으로, 전문적인 강의와 활발한 커뮤니티, 그리고 혁신적인
-              SaaS 홍보를 통해 여러분의 성장을 지원합니다.
-            </p>
-
-            {/* Contact Info */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Mail size={16} />
-                <span className="text-sm">contact@dduksang-lab.com</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Phone size={16} />
-                <span className="text-sm">1588-1234</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <MapPin size={16} />
-                <span className="text-sm">서울시 강남구 테헤란로 123</span>
+              <div className="flex items-start space-x-3">
+                <FileText size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-offWhite-200">사업자번호</p>
+                  <p>405-10-71617</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Footer Links */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">서비스</h4>
-            <ul className="space-y-2">
-              {footerLinks.service.map(link => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Contact Info */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-offWhite-200 mb-6">연락처</h4>
+            <div className="space-y-3 text-offWhite-400">
+              <div className="flex items-start space-x-3">
+                <Phone size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-offWhite-200">전화</p>
+                  <p>010-7200-8322</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <Mail size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-offWhite-200">이메일</p>
+                  <p>dduksanglab@gmail.com</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-4">지원</h4>
-            <ul className="space-y-2">
-              {footerLinks.support.map(link => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Office Location */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-offWhite-200 mb-6">사무실</h4>
+            <div className="space-y-3 text-offWhite-400">
+              <div className="flex items-start space-x-3">
+                <Building2 size={18} className="text-metallicGold-500 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-offWhite-200">주소</p>
+                  <p>인천시 연수구 인천타워대로 323</p>
+                  <p>(송도 센트로드) A동 31층</p>
+                  <p>더블유엑스60호</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <h4 className="text-white font-semibold mb-4">회사</h4>
-            <ul className="space-y-2">
-              {footerLinks.company.map(link => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-semibold mb-4">법적 정보</h4>
-            <ul className="space-y-2">
-              {footerLinks.legal.map(link => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-yellow-400 transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
 
-        {/* Social Links & Newsletter */}
-        <div className="mt-12 pt-8 border-t border-yellow-500/20">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
-            {/* Social Links */}
-            <div className="flex items-center space-x-6">
-              <span className="text-gray-400 text-sm">팔로우하기</span>
-              <div className="flex space-x-4">
-                {socialLinks.map(social => (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`text-gray-400 ${social.color} transition-colors`}
-                    aria-label={social.name}
-                  >
-                    <social.icon size={20} />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Newsletter */}
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-400 text-sm">뉴스레터 구독</span>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="이메일 주소"
-                  className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
-                />
-                <button className="px-4 py-2 bg-yellow-400 text-black rounded-r-lg hover:bg-yellow-500 transition-colors">
-                  구독
-                </button>
-              </div>
-            </div>
+        {/* Quick Links */}
+        <div className="mt-12 pt-8 border-t border-metallicGold-900/20">
+          <div className="flex flex-wrap gap-6 justify-center text-offWhite-400 mb-8">
+            <Link href="/" className="hover:text-metallicGold-500 transition-colors">
+              홈
+            </Link>
+            <Link href="/lectures" className="hover:text-metallicGold-500 transition-colors">
+              강의
+            </Link>
+            <Link href="/ai-trends" className="hover:text-metallicGold-500 transition-colors">
+              AI 트렌드
+            </Link>
+            <Link href="/community" className="hover:text-metallicGold-500 transition-colors">
+              커뮤니티
+            </Link>
+            <Link href="/auth/login" className="hover:text-metallicGold-500 transition-colors">
+              로그인
+            </Link>
+            <Link href="/register" className="hover:text-metallicGold-500 transition-colors">
+              회원가입
+            </Link>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-6 border-t border-yellow-500/20 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="text-gray-400 text-sm">
-            &copy; {currentYear} 떡상연구소. All rights reserved.
-          </div>
-
-          <div className="flex items-center space-x-6 text-gray-400 text-sm">
-            <span>사업자등록번호: 123-45-67890</span>
-            <span>통신판매신고번호: 제2024-서울강남-1234호</span>
-          </div>
+        <div className="text-center text-offWhite-600 text-sm pt-8 border-t border-metallicGold-900/10">
+          <p>&copy; {currentYear} 떡상연구소. All rights reserved.</p>
+          <p className="mt-2">AI 노코드로 SaaS 만들고 수익화하는 실전 교육 플랫폼</p>
         </div>
       </div>
     </footer>

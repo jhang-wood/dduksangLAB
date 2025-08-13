@@ -7,6 +7,7 @@ import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lu
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import Footer from '@/components/Footer';
 import { useAuth } from '@/lib/auth-context';
 import { logger, userNotification } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
@@ -199,6 +200,7 @@ export default function CommunityPage() {
             </div>
           </div>
         </section>
+        <Footer />
       </div>
     </div>
   );

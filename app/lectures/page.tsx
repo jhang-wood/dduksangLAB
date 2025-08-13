@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import Footer from '@/components/Footer';
 import {
   PricingCard,
   ProgressBar,
@@ -830,6 +831,8 @@ export default function LecturesPage() {
             </div>
           </div>
         </motion.div>
+        
+        <Footer />
       </div>
     </div>
   );
