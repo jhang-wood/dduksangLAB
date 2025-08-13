@@ -41,6 +41,7 @@ venv/
 # OS specific
 .DS_Store
 Thumbs.db
+<<<<<<< Updated upstream
 
 # Next.js specific
 .next/
@@ -93,3 +94,6 @@ config/secrets/
 create-admin.js
 init-admin.js
 *admin*.js
+=======
+.vercel
+>>>>>>> Stashed changes
