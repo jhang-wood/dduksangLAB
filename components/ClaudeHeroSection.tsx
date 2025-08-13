@@ -10,7 +10,7 @@ export default function ClaudeHeroSection() {
       {/* Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-purple-500/5" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
@@ -221,17 +221,18 @@ export default function ClaudeHeroSection() {
           background-image: repeating-linear-gradient(
             0deg,
             transparent,
-            transparent 40px,
-            rgba(255, 255, 255, 0.03) 40px,
-            rgba(255, 255, 255, 0.03) 80px
+            transparent 60px,
+            rgba(255, 215, 0, 0.02) 60px,
+            rgba(255, 215, 0, 0.02) 61px
           ),
           repeating-linear-gradient(
             90deg,
             transparent,
-            transparent 40px,
-            rgba(255, 255, 255, 0.03) 40px,
-            rgba(255, 255, 255, 0.03) 80px
+            transparent 60px,
+            rgba(255, 215, 0, 0.02) 60px,
+            rgba(255, 215, 0, 0.02) 61px
           );
+          background-size: 60px 60px;
         }
       `}</style>
     </section>
