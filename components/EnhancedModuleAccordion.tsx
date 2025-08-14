@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { 
-  ChevronDown, Clock, Lock, CheckCircle, PlayCircle, BookOpen, Star,
-  Trophy, Target, Sparkles, Code2, Rocket, Users, TrendingUp, Zap,
-  DollarSign, Award, Gift, Heart, MessageSquare, ArrowRight, AlertTriangle
+  ChevronDown, Clock, Lock, CheckCircle, Star,
+  Sparkles, Rocket, Zap,
+  Award, Gift, AlertTriangle
 } from 'lucide-react';
 
 interface Module {
@@ -523,26 +523,10 @@ const moduleDetails: {
   }
 };
 
-// 진행률 계산 함수
-const calculateProgress = (modules: Module[]) => {
-  const completed = modules.filter(m => m.completed).length;
-  return Math.round((completed / modules.length) * 100);
-};
-
-// 남은 시간 계산 함수
-const calculateRemainingTime = (modules: Module[]) => {
-  const remaining = modules.filter(m => !m.completed).length;
-  return remaining * 60; // 각 모듈 60분
-};
 
 export default function EnhancedModuleAccordion({ modules, className = '' }: ModuleAccordionProps) {
   const [expandedModules, setExpandedModules] = useState<number[]>([]);
   const [hoveredModule, setHoveredModule] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'outcomes' | 'projects'>('overview');
-  const [showProgress, setShowProgress] = useState(false);
-  
-  const progress = calculateProgress(modules);
-  const remainingTime = calculateRemainingTime(modules);
   
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -552,10 +536,6 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
     mouseX.set(e.clientX - rect.left);
     mouseY.set(e.clientY - rect.top);
   };
-
-  useEffect(() => {
-    setShowProgress(true);
-  }, []);
 
   const toggleModule = (moduleId: number) => {
     setExpandedModules(prev =>
@@ -605,90 +585,11 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
   };
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Progress Overview Card */}
-      {showProgress && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-metallicGold-500/10 to-metallicGold-900/10 rounded-3xl p-6 border border-metallicGold-500/30"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-xl font-bold text-metallicGold-500 mb-1">학습 진행률</h3>
-              <p className="text-sm text-offWhite-500">
-                총 {modules.length}개 모듈 중 {modules.filter(m => m.completed).length}개 완료
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-metallicGold-500">{progress}%</div>
-              <p className="text-sm text-offWhite-500">남은 시간: {Math.floor(remainingTime / 60)}시간</p>
-            </div>
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="relative h-3 bg-deepBlack-600 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="absolute h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-full"
-            />
-            <motion.div
-              animate={{
-                x: ["0%", "100%", "0%"]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="absolute h-full w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            />
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="text-center">
-              <Trophy className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-              <p className="text-sm text-offWhite-400">완료 모듈</p>
-              <p className="font-bold text-offWhite-200">{modules.filter(m => m.completed).length}</p>
-            </div>
-            <div className="text-center">
-              <Target className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-              <p className="text-sm text-offWhite-400">진행 중</p>
-              <p className="font-bold text-offWhite-200">
-                {expandedModules.length > 0 ? expandedModules.length : 0}
-              </p>
-            </div>
-            <div className="text-center">
-              <Clock className="w-8 h-8 text-green-500 mx-auto mb-2" />
-              <p className="text-sm text-offWhite-400">총 학습시간</p>
-              <p className="font-bold text-offWhite-200">{modules.length}시간</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Tab Navigation */}
-      <div className="flex gap-2 p-1 bg-deepBlack-600/50 rounded-xl">
-        {(['overview', 'outcomes', 'projects'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`
-              flex-1 py-2 px-4 rounded-lg font-medium transition-all
-              ${activeTab === tab
-                ? 'bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900'
-                : 'text-offWhite-400 hover:text-offWhite-200'
-              }
-            `}
-          >
-            {tab === 'overview' && '커리큘럼'}
-            {tab === 'outcomes' && '학습 성과'}
-            {tab === 'projects' && '실전 프로젝트'}
-          </button>
-        ))}
+    <div className={`space-y-4 ${className}`}>
+      {/* Simple Title */}
+      <div className="text-center mb-6">
+        <h3 className="text-2xl font-bold text-offWhite-200 mb-2">27개 실습 모듈</h3>
+        <p className="text-sm text-offWhite-500">클릭하여 상세 내용을 확인하세요</p>
       </div>
 
       {/* Module List */}
@@ -788,7 +689,7 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
                     {/* Module Info */}
                     <div className="flex-1 text-left">
                       <h4 className={`
-                        font-bold text-xl mb-2 transition-colors
+                        font-bold text-base mb-1 transition-colors
                         ${isLocked 
                           ? 'text-offWhite-600' 
                           : 'text-offWhite-200 group-hover:text-metallicGold-500'
@@ -797,12 +698,12 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
                         {module.title}
                       </h4>
                       <div className="flex items-center gap-3 flex-wrap">
-                        <span className="flex items-center gap-1.5 text-sm text-offWhite-500">
-                          <Clock size={16} />
+                        <span className="flex items-center gap-1 text-xs text-offWhite-500">
+                          <Clock size={14} />
                           {module.duration}
                         </span>
                         <span className={`
-                          flex items-center gap-1.5 text-sm px-3 py-1 rounded-full
+                          flex items-center gap-1 text-xs px-2 py-0.5 rounded-full
                           bg-gradient-to-r ${getDifficultyColor(details.difficulty)} text-white
                         `}>
                           {getDifficultyIcon(details.difficulty)}
@@ -856,187 +757,39 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
                       className="overflow-hidden"
                     >
                       <div className="px-6 pb-6 border-t border-metallicGold-900/20">
-                        {/* Tab Content */}
-                        {activeTab === 'overview' && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="space-y-6 mt-6"
-                          >
-                            {/* Description with Icon */}
-                            <div className="flex gap-4">
-                              <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <BookOpen className="w-6 h-6 text-metallicGold-500" />
-                              </div>
-                              <div>
-                                <h5 className="font-bold text-metallicGold-500 mb-2">강의 소개</h5>
-                                <p className="text-offWhite-400 leading-relaxed">
-                                  {details.description}
-                                </p>
-                              </div>
-                            </div>
+                        {/* Simplified Content - No Tabs */}
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="space-y-4 mt-6"
+                        >
+                          {/* Description */}
+                          <div>
+                            <p className="text-offWhite-400 leading-relaxed mb-4">
+                              {details.description}
+                            </p>
+                          </div>
 
-                            {/* Topics Grid */}
-                            <div className="grid md:grid-cols-2 gap-3">
+                          {/* Key Topics */}
+                          <div>
+                            <h5 className="font-semibold text-metallicGold-500 mb-3">학습 내용</h5>
+                            <div className="space-y-2">
                               {details.topics.map((topic, idx) => (
-                                <motion.div
-                                  key={idx}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: idx * 0.05 }}
-                                  className="flex items-start gap-3 p-3 bg-deepBlack-300/30 rounded-xl hover:bg-deepBlack-300/50 transition-colors"
-                                >
-                                  <Code2 className="w-5 h-5 text-metallicGold-500 mt-0.5 flex-shrink-0" />
+                                <div key={idx} className="flex items-start gap-2">
+                                  <span className="text-metallicGold-500 mt-0.5">•</span>
                                   <span className="text-sm text-offWhite-300">{topic}</span>
-                                </motion.div>
+                                </div>
                               ))}
                             </div>
+                          </div>
 
-                            {/* Time to Master */}
-                            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-500/10 to-blue-900/10 rounded-xl border border-blue-500/30">
-                              <TrendingUp className="w-6 h-6 text-blue-500" />
-                              <div>
-                                <p className="text-sm text-blue-500 font-medium">예상 학습 시간</p>
-                                <p className="text-offWhite-200 font-bold">{details.timeToMaster}</p>
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {activeTab === 'outcomes' && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="space-y-6 mt-6"
-                          >
-                            {/* Learning Outcomes */}
-                            <div>
-                              <h5 className="font-bold text-metallicGold-500 mb-4 flex items-center gap-2">
-                                <Trophy className="w-5 h-5" />
-                                학습 후 달라지는 점
-                              </h5>
-                              <div className="space-y-3">
-                                {details.outcomes.map((outcome, idx) => (
-                                  <motion.div
-                                    key={idx}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
-                                    className="flex items-start gap-3 p-4 bg-gradient-to-r from-green-500/10 to-green-900/10 rounded-xl border border-green-500/30"
-                                  >
-                                    <span className="text-lg">{outcome}</span>
-                                  </motion.div>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Real World Use Cases */}
-                            <div>
-                              <h5 className="font-bold text-metallicGold-500 mb-4 flex items-center gap-2">
-                                <Rocket className="w-5 h-5" />
-                                실제 활용 사례
-                              </h5>
-                              <div className="grid gap-3">
-                                {details.realWorldUse.map((useCase, idx) => (
-                                  <motion.div
-                                    key={idx}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
-                                    className="flex items-center gap-3 p-3 bg-deepBlack-300/50 rounded-xl hover:bg-deepBlack-300/70 transition-colors cursor-pointer group"
-                                  >
-                                    <span className="text-offWhite-300 group-hover:text-metallicGold-500 transition-colors">
-                                      {useCase}
-                                    </span>
-                                    <ArrowRight className="w-4 h-4 text-metallicGold-500 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                                  </motion.div>
-                                ))}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {activeTab === 'projects' && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="space-y-6 mt-6"
-                          >
-                            {/* Main Project */}
-                            <div className="p-6 bg-gradient-to-br from-purple-500/10 to-purple-900/10 rounded-2xl border border-purple-500/30">
-                              <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                                  <Sparkles className="w-6 h-6 text-purple-500" />
-                                </div>
-                                <div>
-                                  <h5 className="font-bold text-purple-500 mb-2">이런 걸 만들 수 있어요!</h5>
-                                  <p className="text-xl font-bold text-offWhite-200 mb-2">
-                                    {details.projectExample}
-                                  </p>
-                                  <p className="text-sm text-offWhite-400">
-                                    실제로 수강생들이 만든 프로젝트 예시입니다
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Success Metrics */}
-                            <div className="grid grid-cols-3 gap-4">
-                              <div className="text-center p-4 bg-deepBlack-300/50 rounded-xl">
-                                <DollarSign className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                                <p className="text-sm text-offWhite-400">평균 수익</p>
-                                <p className="font-bold text-offWhite-200">월 300만원</p>
-                              </div>
-                              <div className="text-center p-4 bg-deepBlack-300/50 rounded-xl">
-                                <Users className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                                <p className="text-sm text-offWhite-400">활용 기업</p>
-                                <p className="font-bold text-offWhite-200">500개+</p>
-                              </div>
-                              <div className="text-center p-4 bg-deepBlack-300/50 rounded-xl">
-                                <Heart className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                                <p className="text-sm text-offWhite-400">만족도</p>
-                                <p className="font-bold text-offWhite-200">98%</p>
-                              </div>
-                            </div>
-
-                            {/* Bonus Content */}
-                            {details.bonus && (
-                              <div className="p-4 bg-gradient-to-r from-yellow-500/10 to-yellow-900/10 rounded-xl border border-yellow-500/30">
-                                <div className="flex items-center gap-3">
-                                  <Gift className="w-6 h-6 text-yellow-500" />
-                                  <div>
-                                    <p className="text-sm text-yellow-500 font-medium">특별 보너스</p>
-                                    <p className="text-offWhite-200 font-bold">{details.bonus}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </motion.div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3 mt-8">
-                          {module.completed ? (
-                            <button className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500/20 text-green-500 rounded-xl font-medium border border-green-500/30 hover:bg-green-500/30 transition-colors">
-                              <CheckCircle size={20} />
-                              다시 학습하기
-                            </button>
-                          ) : (
-                            <>
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-lg"
-                              >
-                                <PlayCircle size={20} />
-                                지금 시작하기
-                              </motion.button>
-                              <button className="px-6 py-3 border border-metallicGold-500/30 text-metallicGold-500 rounded-xl font-medium hover:bg-metallicGold-500/10 transition-colors">
-                                <MessageSquare size={20} />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                          {/* Project Example */}
+                          <div className="p-4 bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-xl">
+                            <p className="text-sm text-metallicGold-500 mb-1">이 모듈을 완료하면</p>
+                            <p className="font-bold text-offWhite-200">{details.projectExample}</p>
+                            <p className="text-xs text-offWhite-500 mt-1">를 만들 수 있습니다</p>
+                          </div>
+                        </motion.div>
                       </div>
                     </motion.div>
                   )}

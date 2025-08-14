@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Clock, Users, Star, Shield, Check, ArrowRight, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +27,26 @@ export default function StickyPriceCard({
 
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
 
+  // 카운트다운 타이머 설정 (24시간)
+  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 59, seconds: 59 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        }
+        return { hours: 23, minutes: 59, seconds: 59 }; // 리셋
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <motion.div 
       className="sticky top-24"
@@ -41,7 +61,7 @@ export default function StickyPriceCard({
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-            🔥 사전예약 마감예정
+            🔥 사전예약 곧 마감
           </div>
         </div>
 
@@ -123,7 +143,7 @@ export default function StickyPriceCard({
             </div>
             <div>
               <p className="text-sm font-semibold text-offWhite-200">1년 수강 기간</p>
-              <p className="text-xs text-offWhite-500">무제한 복습 가능</p>
+              <p className="text-xs text-offWhite-500">복습 가능</p>
             </div>
           </div>
 
@@ -138,19 +158,38 @@ export default function StickyPriceCard({
           </div>
         </div>
 
-        {/* Urgency Message */}
+        {/* Countdown Timer */}
         <motion.div
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="mt-6 p-5 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-2xl border border-orange-500/20"
         >
-          <p className="text-center">
-            <span className="text-2xl">⏰</span>
-            <br />
-            <span className="font-bold text-yellow-400 text-base">24시간 한정 특가</span>
-            <br />
-            <span className="text-sm text-offWhite-300 mt-1">이 가격은 곧 종료됩니다</span>
-          </p>
+          <div className="text-center">
+            <p className="font-bold text-yellow-400 text-base mb-3">사전예약 한정특가 마감까지</p>
+            <div className="flex justify-center gap-3">
+              <div className="bg-deepBlack-800/80 rounded-lg px-3 py-2">
+                <p className="text-2xl font-mono font-bold text-metallicGold-500">
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </p>
+                <p className="text-xs text-offWhite-500">시간</p>
+              </div>
+              <div className="text-2xl font-bold text-metallicGold-500 flex items-center">:</div>
+              <div className="bg-deepBlack-800/80 rounded-lg px-3 py-2">
+                <p className="text-2xl font-mono font-bold text-metallicGold-500">
+                  {String(timeLeft.minutes).padStart(2, '0')}
+                </p>
+                <p className="text-xs text-offWhite-500">분</p>
+              </div>
+              <div className="text-2xl font-bold text-metallicGold-500 flex items-center">:</div>
+              <div className="bg-deepBlack-800/80 rounded-lg px-3 py-2">
+                <p className="text-2xl font-mono font-bold text-metallicGold-500">
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </p>
+                <p className="text-xs text-offWhite-500">초</p>
+              </div>
+            </div>
+            <p className="text-sm text-offWhite-300 mt-3">이 가격은 곧 종료됩니다</p>
+          </div>
         </motion.div>
 
         {/* Trust Badges */}
@@ -165,8 +204,8 @@ export default function StickyPriceCard({
               <p className="text-xs text-offWhite-500">총 강의</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-metallicGold-500">∞</p>
-              <p className="text-xs text-offWhite-500">무제한</p>
+              <p className="text-2xl font-bold text-metallicGold-500">1년</p>
+              <p className="text-xs text-offWhite-500">수강기간</p>
             </div>
           </div>
         </div>
