@@ -20,9 +20,9 @@ export default function BeforeAfterSection() {
       description: '모두가 AI를 활용하는데 나만 모르는 것 같은 느낌'
     },
     {
-      icon: '🤯',
-      title: '어디서부터 시작해야 할지 막막함',
-      description: 'ChatGPT는 써봤지만 진짜 활용법을 모르겠음'
+      icon: '📚',
+      title: '개발자 중심 강의에 좌절',
+      description: '바이브코딩이라면서도 결국 변수, 함수, 클래스... 개발 용어 투성이'
     },
     {
       icon: '💸',
@@ -37,7 +37,7 @@ export default function BeforeAfterSection() {
     {
       icon: '🚫',
       title: '코딩은 너무 어려워 보임',
-      description: '변수, 함수, 클래스... 용어부터 겁이 남'
+      description: 'ChatGPT 써봤지만 복잡한 프로젝트는 여전히 막막함'
     },
     {
       icon: '😔',
@@ -53,9 +53,9 @@ export default function BeforeAfterSection() {
       description: '최신 AI 도구를 자유자재로 활용하는 나'
     },
     {
-      icon: '💡',
-      title: '아이디어를 바로 구현 가능',
-      description: '생각한 것을 3시간 안에 실제 서비스로 런칭'
+      icon: '🎨',
+      title: '바이브만으로 모든 것 구현',
+      description: '코드 이해 없이도 복잡한 사이트와 기능 완성'
     },
     {
       icon: '💰',
@@ -65,12 +65,12 @@ export default function BeforeAfterSection() {
     {
       icon: '⚡',
       title: '하루 1시간으로 충분',
-      description: '복사-붙여넣기로 시작해서 바로 결과물 생성'
+      description: '최소한의 시간으로 최대한의 결과물'
     },
     {
       icon: '🎯',
-      title: '코딩 몰라도 OK',
-      description: 'AI와 대화하듯 자연스럽게 개발'
+      title: '진짜 바이브코딩 완성',
+      description: '개발 용어 없이 AI와 자연스럽게 대화하며 개발'
     },
     {
       icon: '🏆',

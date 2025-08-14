@@ -689,7 +689,7 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
                     {/* Module Info */}
                     <div className="flex-1 text-left">
                       <h4 className={`
-                        font-bold text-xl mb-2 transition-colors
+                        font-bold text-base mb-1 transition-colors
                         ${isLocked 
                           ? 'text-offWhite-600' 
                           : 'text-offWhite-200 group-hover:text-metallicGold-500'
@@ -698,12 +698,12 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
                         {module.title}
                       </h4>
                       <div className="flex items-center gap-3 flex-wrap">
-                        <span className="flex items-center gap-1.5 text-sm text-offWhite-500">
-                          <Clock size={16} />
+                        <span className="flex items-center gap-1 text-xs text-offWhite-500">
+                          <Clock size={14} />
                           {module.duration}
                         </span>
                         <span className={`
-                          flex items-center gap-1.5 text-sm px-3 py-1 rounded-full
+                          flex items-center gap-1 text-xs px-2 py-0.5 rounded-full
                           bg-gradient-to-r ${getDifficultyColor(details.difficulty)} text-white
                         `}>
                           {getDifficultyIcon(details.difficulty)}

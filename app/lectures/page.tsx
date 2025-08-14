@@ -21,6 +21,11 @@ import ProjectGallery from '@/components/ProjectGallery';
 import LearningMethodSection from '@/components/LearningMethodSection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
 import InstructorSection from '@/components/InstructorSection';
+import SimpleInstructorSection from '@/components/SimpleInstructorSection';
+import LearningOverviewSection from '@/components/LearningOverviewSection';
+import PaidToolsSection from '@/components/PaidToolsSection';
+import InstructorStorySection from '@/components/InstructorStorySection';
+import TrialErrorVsShortcutSection from '@/components/TrialErrorVsShortcutSection';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -146,6 +151,7 @@ export default function LecturesPage() {
             <div className="flex-1 lg:max-w-5xl">
               {/* Claude Hero Section */}
               <ClaudeHeroSection />
+              
 
               {/* Project Gallery - 실제로 만들 수 있는 것들 */}
               <ProjectGallery />
@@ -156,8 +162,17 @@ export default function LecturesPage() {
               {/* Learning Method Section - 학습 방식 소개 */}
               <LearningMethodSection />
               
-              {/* Instructor Section - 강사 소개 (앞으로 이동) */}
-              <InstructorSection />
+              {/* Trial Error vs Shortcut Section - 시행착오 vs 지름길 비교 */}
+              <TrialErrorVsShortcutSection />
+              
+              {/* 1. Simple Instructor Section - 단백하고 심플한 자기소개 */}
+              <SimpleInstructorSection />
+              
+              {/* 2. Learning Overview Section - 배울 것들 한눈에 정리 */}
+              <LearningOverviewSection />
+              
+              {/* 3. Paid Tools Section - 유료툴 상세 설명 */}
+              <PaidToolsSection />
               
               {/* Vibe Coding Showcase */}
               {/* <VibeCodingShowcase /> */}
@@ -460,6 +475,9 @@ export default function LecturesPage() {
 
               {/* AI Leaders Cards - 왜 지금 시작해야 하는가 */}
               <AILeadersCards />
+              
+              {/* Instructor Story Section - 강사의 진솔한 이야기 (실습 모듈 위) */}
+              <InstructorStorySection />
 
               {/* Curriculum Section - Simplified */}
               <section className="py-16">
