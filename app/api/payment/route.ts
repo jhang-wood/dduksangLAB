@@ -3,7 +3,7 @@ import { logger } from '@/lib/logger';
 
 // 🚨 PAYAPP 결제 시스템 완전 비활성화 🚨
 // 모든 PayApp 관련 주문 API 호출을 차단합니다.
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   logger.warn('🚨 PayApp 결제 API 호출 차단됨 - 시스템 관리자에 의해 비활성화');
   
   return NextResponse.json(

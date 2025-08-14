@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Globe, Upload, Camera, X, Plus, ArrowLeft, 
+  Upload, Camera, X, Plus, ArrowLeft, 
   Sparkles, Info, Check
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';

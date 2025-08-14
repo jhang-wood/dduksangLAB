@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense } from 'react';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -9,7 +11,7 @@ import { useAuth } from '@/lib/auth-context';
 import { motion } from 'framer-motion';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 
-export default function SignupPage() {
+function SignupPageComponent() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -149,11 +151,14 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const { data: authData, error } = await signUp(formData.email, formData.password, {
+      const result = await signUp(formData.email, formData.password, {
         name: formData.name.trim(),
         phone: formData.phone?.trim() || undefined,
       });
 
+      const { error } = result;
+      const authData = (result as any).data;
+      
       if (error) {
         // Supabase 에러 메시지를 한국어로 번역
         let errorMessage = error.message ?? '회원가입에 실패했습니다.';
@@ -499,5 +504,13 @@ export default function SignupPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupPageComponent />
+    </Suspense>
   );
 }

@@ -166,7 +166,7 @@ export default function SitesPage() {
         thumbnailUrl = await uploadThumbnail(thumbnailFile);
       }
 
-      const { data: profile } = await supabase
+      const { data: _profile } = await supabase
         .from('profiles')
         .select('name')
         .eq('id', user.id)

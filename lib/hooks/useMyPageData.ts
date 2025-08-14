@@ -164,7 +164,7 @@ export function useMyPageData() {
           schema: 'public',
           table: 'user_sites'
         },
-        (payload) => {
+        (payload: any) => {
           // 조회수가 변경되면 사이트 데이터 새로고침
           if (payload.new) {
             setUserSites(prev => 

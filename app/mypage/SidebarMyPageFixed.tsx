@@ -5,8 +5,8 @@ import {
   Eye, Trophy, Coins, UserPlus, Copy, Check,
   Flame, Star, Users, MessageSquare, Activity, TrendingUp,
   Globe, Clock, Heart, ChevronRight, Plus, Gift,
-  Home, History, Settings, Bell, Target, BarChart3,
-  User, Shield, Award, Zap, Menu, X, ArrowUp, ArrowDown
+  Home, History, Settings, Bell, BarChart3,
+  User, Menu, X, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -57,7 +57,7 @@ export default function SidebarMyPageFixed() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [referralCodeCopied, setReferralCodeCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // 사용자 데이터 상태
@@ -115,9 +115,9 @@ export default function SidebarMyPageFixed() {
       setUserSites(userSitesData);
       
       // 통계 계산
-      const totalViews = userSitesData.reduce((sum, site) => sum + (site.views_total || 0), 0);
-      const todayViews = userSitesData.reduce((sum, site) => sum + (site.views_today || 0), 0);
-      const validRanks = userSitesData.filter(s => s.rank_today && s.rank_today > 0).map(s => s.rank_today!);
+      const totalViews = userSitesData.reduce((sum: number, site: any) => sum + (site.views_total || 0), 0);
+      const todayViews = userSitesData.reduce((sum: number, site: any) => sum + (site.views_today || 0), 0);
+      const validRanks = userSitesData.filter((s: any) => s.rank_today && s.rank_today > 0).map((s: any) => s.rank_today!);
       const bestRank = validRanks.length > 0 ? Math.min(...validRanks) : 0;
       
       setUserStats(prev => ({
@@ -607,7 +607,7 @@ export default function SidebarMyPageFixed() {
               <h1 className="text-2xl font-bold text-offWhite-200 mb-6">활동 내역</h1>
               
               <div className="space-y-4">
-                {recentActivities.map((activity, index) => (
+                {recentActivities.map((activity, _index) => (
                   <div
                     key={activity.id}
                     className="bg-deepBlack-300/50 border border-metallicGold-900/30 rounded-xl p-4 hover:border-metallicGold-700/50 transition-all"

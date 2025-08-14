@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       data: {
         code: referralCode.code,
         referrer_id: referralCode.user_id,
-        referrer_name: referralCode.profiles?.name || '추천인',
+        referrer_name: (referralCode.profiles as any)?.name || '추천인',
         usage_count: referralCode.usage_count,
         max_usage: referralCode.max_usage
       }
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         code: referralCode.code,
-        referrer_name: referralCode.profiles?.name || '추천인',
+        referrer_name: (referralCode.profiles as any)?.name || '추천인',
         is_valid: true
       }
     });
