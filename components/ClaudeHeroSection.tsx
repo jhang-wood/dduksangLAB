@@ -14,50 +14,70 @@ export default function ClaudeHeroSection() {
 
       <div className="relative z-10 container mx-auto px-4">
         <div className="flex flex-col gap-8">
-          {/* Top: Mini Terminal Preview */}
+          {/* Top: Text Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/10 to-purple-500/10 blur-2xl" />
-              <div className="relative bg-deepBlack-600/50 backdrop-blur-xl rounded-2xl p-6 shadow-[0_10px_40px_-15px_rgba(255,215,0,0.2)]">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 bg-red-500 rounded-full" />
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <span className="ml-2 text-sm text-offWhite-500">Claude Code CLI</span>
-                </div>
-                <div className="font-mono text-sm space-y-2">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-green-400"
-                  >
-                    $ claude create-app my-saas
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className="text-offWhite-500"
-                  >
-                    ✨ AI가 앱을 생성중...
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.1 }}
-                    className="text-metallicGold-500 font-bold"
-                  >
-                    🚀 앱이 준비되었습니다!
-                  </motion.div>
-                </div>
+            {/* Badge */}
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full mb-6 backdrop-blur-sm"
+            >
+              <Sparkles className="w-4 h-4 text-metallicGold-500" />
+              <span className="text-metallicGold-400 font-bold text-sm">
+                🎉 첫 런칭 오픈 특가
+              </span>
+            </motion.div>
+
+            {/* Main Title */}
+            <h1 className="font-bold mb-6">
+              <span className="block text-offWhite-400 mb-3 text-2xl sm:text-3xl md:text-4xl leading-tight">
+                비개발자도
+              </span>
+              <span className="block bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
+                Claude Code CLI 하나로
+                <br />
+                모든 것을 다한다!
+              </span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg sm:text-xl text-offWhite-400 mb-8 leading-relaxed">
+              복잡한 개발 지식 없이도{' '}
+              <span className="text-metallicGold-500 font-semibold">AI를 활용해</span>
+              {' '}자동화 프로그램과 웹사이트를 만드는 방법을 알려드립니다.
+            </p>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-2xl mx-auto">
+              <div className="flex flex-col items-center gap-2">
+                <Terminal className="w-5 h-5 text-metallicGold-500" />
+                <span className="text-sm text-offWhite-300">27개 실습 모듈</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Zap className="w-5 h-5 text-metallicGold-500" />
+                <span className="text-sm text-offWhite-300">비개발자 전용</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Code className="w-5 h-5 text-metallicGold-500" />
+                <span className="text-sm text-offWhite-300">1년 수강 기간</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Rocket className="w-5 h-5 text-metallicGold-500" />
+                <span className="text-sm text-offWhite-300">실전 프로젝트</span>
               </div>
             </div>
+
+            {/* Sub Message */}
+            <p className="text-xl font-bold text-offWhite-200">
+              코딩을 몰라도 괜찮습니다.
+              <br />
+              <span className="text-metallicGold-500">Claude Code CLI가 모든 것을 해결합니다.</span>
+            </p>
           </motion.div>
 
           {/* Middle: Feature Cards Grid - 4 cards in a row */}
@@ -134,70 +154,176 @@ export default function ClaudeHeroSection() {
             </div>
           </motion.div>
 
-          {/* Bottom: Text Content */}
+          {/* Bottom: Enhanced Terminal View */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-center max-w-4xl mx-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="w-full max-w-4xl mx-auto"
           >
-            {/* Badge */}
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full mb-6 backdrop-blur-sm"
-            >
-              <Sparkles className="w-4 h-4 text-metallicGold-500" />
-              <span className="text-metallicGold-400 font-bold text-sm">
-                🎉 첫 런칭 오픈 특가
-              </span>
-            </motion.div>
-
-            {/* Main Title */}
-            <h1 className="font-bold mb-6">
-              <span className="block text-offWhite-400 mb-3 text-2xl sm:text-3xl md:text-4xl leading-tight">
-                비개발자도
-              </span>
-              <span className="block bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
-                Claude Code CLI 하나로
-                <br />
-                모든 것을 다한다!
-              </span>
-            </h1>
-
-            {/* Description */}
-            <p className="text-lg sm:text-xl text-offWhite-400 mb-8 leading-relaxed">
-              복잡한 개발 지식 없이도{' '}
-              <span className="text-metallicGold-500 font-semibold">AI를 활용해</span>
-              {' '}자동화 프로그램과 웹사이트를 만드는 방법을 알려드립니다.
-            </p>
-
-            {/* Features */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-2xl mx-auto">
-              <div className="flex flex-col items-center gap-2">
-                <Terminal className="w-5 h-5 text-metallicGold-500" />
-                <span className="text-sm text-offWhite-300">27개 실습 모듈</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Zap className="w-5 h-5 text-metallicGold-500" />
-                <span className="text-sm text-offWhite-300">비개발자 전용</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Code className="w-5 h-5 text-metallicGold-500" />
-                <span className="text-sm text-offWhite-300">1년 수강 기간</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Rocket className="w-5 h-5 text-metallicGold-500" />
-                <span className="text-sm text-offWhite-300">실전 프로젝트</span>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/10 to-purple-500/10 blur-3xl" />
+              <div className="relative bg-deepBlack-600/50 backdrop-blur-xl rounded-2xl p-6 shadow-[0_20px_60px_-15px_rgba(255,215,0,0.3)] border border-metallicGold-900/20">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }} />
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <span className="ml-2 text-sm text-offWhite-500">Claude Code CLI Terminal</span>
+                </div>
+                <div className="font-mono text-sm space-y-3">
+                  {/* Step 1: Initialize */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="text-green-400"
+                  >
+                    $ claude create-app my-saas --template nextjs
+                  </motion.div>
+                  
+                  {/* Step 2: Processing */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.2 }}
+                    className="text-offWhite-500 pl-4"
+                  >
+                    <motion.span
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      ⚡ AI 엔진 초기화 중...
+                    </motion.span>
+                  </motion.div>
+                  
+                  {/* Step 3: Creating structure */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.6 }}
+                    className="text-cyan-400 pl-4"
+                  >
+                    📁 프로젝트 구조 생성 중...
+                  </motion.div>
+                  
+                  {/* Step 4: Installing */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.0 }}
+                    className="text-blue-400 pl-4"
+                  >
+                    📦 필요한 패키지 설치 중... (27개)
+                  </motion.div>
+                  
+                  {/* Step 5: Setting up features */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.4 }}
+                    className="text-purple-400 pl-4"
+                  >
+                    🔧 인증 시스템 설정 중...
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.8 }}
+                    className="text-purple-400 pl-4"
+                  >
+                    💳 결제 시스템 연동 중...
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 3.2 }}
+                    className="text-purple-400 pl-4"
+                  >
+                    🗄️ 데이터베이스 설정 중...
+                  </motion.div>
+                  
+                  {/* Step 6: Success with animation */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 3.6, type: "spring", stiffness: 200 }}
+                    className="text-metallicGold-500 font-bold pl-4 text-base"
+                  >
+                    <motion.span
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 0.5, delay: 4 }}
+                      className="inline-block"
+                    >
+                      ✨
+                    </motion.span>
+                    {' '}완료! SaaS 앱이 준비되었습니다
+                  </motion.div>
+                  
+                  {/* Step 7: Running dev server */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 4.2 }}
+                    className="text-green-400"
+                  >
+                    $ npm run dev
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 4.6 }}
+                    className="text-offWhite-400 pl-4"
+                  >
+                    🚀 서버가 http://localhost:3000 에서 실행 중...
+                  </motion.div>
+                  
+                  {/* Progress bar */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 5 }}
+                    className="mt-4 pt-4 border-t border-metallicGold-900/20"
+                  >
+                    <div className="flex items-center justify-between text-xs text-offWhite-500 mb-2">
+                      <span>전체 진행률</span>
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 5.2 }}
+                      >
+                        100%
+                      </motion.span>
+                    </div>
+                    <div className="w-full bg-deepBlack-800 rounded-full h-2 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{ delay: 5.2, duration: 1.5, ease: "easeOut" }}
+                        className="h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-full"
+                      />
+                    </div>
+                  </motion.div>
+                  
+                  {/* Final message */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 6.5 }}
+                    className="text-center mt-6 p-4 bg-gradient-to-r from-metallicGold-500/10 to-purple-500/10 rounded-xl"
+                  >
+                    <p className="text-metallicGold-400 font-bold">
+                      🎉 단 5분 만에 완전한 SaaS 플랫폼 구축 완료!
+                    </p>
+                    <p className="text-offWhite-500 text-xs mt-2">
+                      인증, 결제, 데이터베이스 모두 자동 설정됨
+                    </p>
+                  </motion.div>
+                </div>
               </div>
             </div>
-
-            {/* Sub Message */}
-            <p className="text-xl font-bold text-offWhite-200">
-              코딩을 몰라도 괜찮습니다.
-              <br />
-              <span className="text-metallicGold-500">Claude Code CLI가 모든 것을 해결합니다.</span>
-            </p>
           </motion.div>
         </div>
       </div>
