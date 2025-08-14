@@ -20,11 +20,14 @@ import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import AILeadersCards from '@/components/AILeadersCards';
-import VibeCodingShowcase from '@/components/VibeCodingShowcase';
-import RealTimeCounter from '@/components/RealTimeCounter';
+// import VibeCodingShowcase from '@/components/VibeCodingShowcase';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
 import StickyPriceCard from '@/components/StickyPriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
+import ProjectGallery from '@/components/ProjectGallery';
+import LearningMethodSection from '@/components/LearningMethodSection';
+import BeforeAfterSection from '@/components/BeforeAfterSection';
+import InstructorSection from '@/components/InstructorSection';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -143,24 +146,30 @@ export default function LecturesPage() {
       <div className="relative z-10">
         <Header currentPage="lectures" />
         
-        {/* Real-time counter */}
-        <RealTimeCounter />
-        
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-6xl px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Column: Main Content */}
-            <div className="flex-1 max-w-4xl">
+            {/* Left Column: Main Content - Expanded */}
+            <div className="flex-1 lg:max-w-5xl">
               {/* Claude Hero Section */}
               <ClaudeHeroSection />
 
-              {/* AI Leaders Cards */}
-              <AILeadersCards />
+              {/* Project Gallery - 실제로 만들 수 있는 것들 */}
+              <ProjectGallery />
+              
+              {/* Before/After Section - 학습 전후 비교 (앞으로 이동) */}
+              <BeforeAfterSection />
+
+              {/* Learning Method Section - 학습 방식 소개 */}
+              <LearningMethodSection />
+              
+              {/* Instructor Section - 강사 소개 (앞으로 이동) */}
+              <InstructorSection />
               
               {/* Vibe Coding Showcase */}
-              <VibeCodingShowcase />
+              {/* <VibeCodingShowcase /> */}
 
-              {/* Detailed Course Modules Section - Based on curriculum */}
+              {/* Solution Section (앞으로 이동) */}
               <section className="py-16">
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -171,18 +180,18 @@ export default function LecturesPage() {
                   <div className="text-center mb-12">
                     <h2 className="text-3xl sm:text-4xl font-bold mb-4">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                        27개 모듈로 완성하는 AI 자동화 마스터
+                        27개 실습 프로젝트로 완성하는 포트폴리오
                       </span>
                     </h2>
                     <p className="text-lg text-offWhite-500">
-                      단계별로 체계적으로 배우는 Claude Code CLI의 모든 것
+                      매 프로젝트마다 실제 배포까지 - 이론 없이 바로 만들기
                     </p>
                   </div>
 
-                  {/* Module 1-2: Getting Started */}
+                  {/* Project 1-2: Getting Started */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🚀 STEP 1: 시작하기 (모듈 1-2)
+                      🚀 STEP 1: 시작하기 (프로젝트 1-2)
                     </h3>
                     
                     {/* GIF placeholder for setup */}
@@ -228,10 +237,10 @@ export default function LecturesPage() {
                     </div>
                   </div>
 
-                  {/* Module 3-6: Foundation */}
+                  {/* Project 3-6: Foundation */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🏗️ STEP 2: 기초 다지기 (모듈 3-6)
+                      🏗️ STEP 2: 기초 다지기 (프로젝트 3-6)
                     </h3>
                     
                     <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-6 mb-8">
@@ -258,7 +267,7 @@ export default function LecturesPage() {
                   {/* Module 7-10: Automation */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      ⚡ STEP 3: 자동화 봇 만들기 (모듈 7-10)
+                      ⚡ STEP 3: 자동화 봇 만들기 (프로젝트 7-10)
                     </h3>
                     
                     {/* GIF placeholder for automation */}
@@ -303,7 +312,7 @@ export default function LecturesPage() {
                   {/* Module 11-13: Real Projects */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      💎 STEP 4: 실전 프로젝트 (모듈 11-13)
+                      💎 STEP 4: 실전 프로젝트 (프로젝트 11-13)
                     </h3>
                     
                     {/* GIF placeholder for SaaS */}
@@ -340,7 +349,7 @@ export default function LecturesPage() {
                   {/* Module 14-20: Advanced */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🧠 STEP 5: 고급 기술 (모듈 14-20)
+                      🧠 STEP 5: 고급 기술 (프로젝트 14-20)
                     </h3>
                     
                     {/* GIF placeholder for AI Assistant */}
@@ -389,7 +398,7 @@ export default function LecturesPage() {
                   {/* Module 21-27: Mastery */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🏆 STEP 6: 마스터 되기 (모듈 21-27)
+                      🏆 STEP 6: 마스터 되기 (프로젝트 21-27)
                     </h3>
                     
                     {/* GIF placeholder for MVP */}
@@ -441,7 +450,7 @@ export default function LecturesPage() {
                     className="text-center p-8 bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-3xl border border-metallicGold-500/30"
                   >
                     <h3 className="text-3xl font-bold text-metallicGold-500 mb-4">
-                      27개 모듈, 27시간으로 인생이 바뀝니다
+                      27개 프로젝트, 27시간으로 포트폴리오 완성
                     </h3>
                     <p className="text-lg text-offWhite-300 mb-6">
                       더 이상 망설이지 마세요. 지금이 시작할 최고의 타이밍입니다.
@@ -456,159 +465,8 @@ export default function LecturesPage() {
                 </motion.div>
               </section>
 
-              {/* Pain Points Section */}
-              <section className="py-16">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.8 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="text-center mb-12">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                      <span className="text-red-400">
-                        혹시, 아직도 이렇게 시간 낭비하고 계신가요?
-                      </span>
-                    </h2>
-                    <p className="text-lg text-offWhite-500">
-                      대부분의 사람들이 빠지기 쉬운 함정들
-                    </p>
-                  </div>
-
-                  <div className="space-y-6">
-                    {[
-                      {
-                        icon: AlertTriangle,
-                        title: '열심히 하는데 왜 결과가 안나오지?',
-                        description:
-                          "수많은 사람들이 아직도 Cursor, Replit 같은 '보급형' AI를 쓰고 있습니다.",
-                        highlight: '애초에 도구가 다릅니다.',
-                      },
-                      {
-                        icon: Timer,
-                        title: '자동화 하려다 노가다만 늘어난다?',
-                        description:
-                          'Make, n8n 화면에서 마우스로 점 찍고 선 잇는 작업, 그것도 결국 수작업입니다.',
-                        highlight: '그 과정 자체를 자동화할 생각은 왜 못했을까요?',
-                      },
-                      {
-                        icon: Brain,
-                        title: '코딩, 배워도 배워도 끝이 없다?',
-                        description:
-                          '비개발자에게 C언어, Java는 독입니다. 우리는 개발자가 될 게 아닙니다.',
-                        highlight: '정작 돈 버는 2%의 핵심을 놓치고 있습니다.',
-                      },
-                    ].map((pain, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ y: 20, opacity: 0 }}
-                        whileInView={{ y: 0, opacity: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20 hover:border-red-500/40 transition-all"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <pain.icon className="w-6 h-6 text-red-500" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-offWhite-200 mb-2">
-                              {pain.title}
-                            </h3>
-                            <p className="text-offWhite-500 mb-3">{pain.description}</p>
-                            <p className="text-metallicGold-500 font-bold">{pain.highlight}</p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              </section>
-
-              {/* Solution Section */}
-              <section className="py-16">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.8 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="text-center mb-12">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
-                        떡상연구소는 '게임의 룰'을 바꿉니다
-                      </span>
-                    </h2>
-                    <p className="text-lg text-offWhite-500">
-                      우리의 4가지 원칙으로 당신의 AI 활용 수준을 완전히 다른 차원으로
-                    </p>
-                  </div>
-
-                  <div className="grid gap-6">
-                    {[
-                      {
-                        icon: Rocket,
-                        number: '1',
-                        title: '최정상 1%의 AI Toolset',
-                        description:
-                          "우리는 현존 최강의 성능을 내는 'Claude Code'에 'Super Claude'를 탑재한 우리만의 강화된 AI를 사용합니다.",
-                        highlight:
-                          '대부분의 사람들이 세팅조차 못하는 이 압도적인 도구를, 당신은 강의 시작 10분 만에 손에 넣게 됩니다.',
-                      },
-                      {
-                        icon: MessageSquare,
-                        number: '2',
-                        title: "시공간 제약 없는 '텔레그램 코딩'",
-                        description:
-                          '"지금 아이디어가 떠올랐는데!" 컴퓨터 앞에 앉을 필요 없습니다.',
-                        highlight: '생각과 현실화 사이의 딜레이가 0이 됩니다.',
-                      },
-                      {
-                        icon: Zap,
-                        number: '3',
-                        title: "자동화를 자동화하는 '메타 자동화'",
-                        description:
-                          'Make, n8n의 수작업은 이제 그만. 우리는 코드로 자동화 설계도 자체를 생성합니다.',
-                        highlight:
-                          "명령어 한 줄로 복잡한 자동화 시스템을 1분 만에 구축하는 '메타 자동화' 기술입니다.",
-                      },
-                      {
-                        icon: Target,
-                        number: '4',
-                        title: "비개발자를 위한 '최소 지식 원칙'",
-                        description:
-                          '저는 천재 개발자가 아닙니다. 오히려 코딩을 못했기 때문에, 누구보다 효율적인 길을 찾아야만 했습니다.',
-                        highlight:
-                          "이 강의는 개발 지식의 98%를 버리고, 오직 '결과물'을 만드는 데 필요한 2%의 핵심만 다룹니다.",
-                      },
-                    ].map((solution, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ y: 20, opacity: 0 }}
-                        whileInView={{ y: 0, opacity: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl p-6 border border-metallicGold-500/30 hover:border-metallicGold-500/50 transition-all"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span className="text-2xl font-bold text-deepBlack-900">
-                              {solution.number}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-metallicGold-500 mb-3">
-                              {solution.title}
-                            </h3>
-                            <p className="text-offWhite-400 mb-3">{solution.description}</p>
-                            <p className="text-offWhite-200 font-bold">{solution.highlight}</p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              </section>
+              {/* AI Leaders Cards - 왜 지금 시작해야 하는가 */}
+              <AILeadersCards />
 
               {/* Curriculum Section - Simplified */}
               <section className="py-16">
@@ -649,8 +507,8 @@ export default function LecturesPage() {
               />
             </div>
 
-            {/* Right Column: Sticky Price Card */}
-            <div className="lg:block hidden w-[380px] flex-shrink-0">
+            {/* Right Column: Sticky Price Card - Reduced */}
+            <div className="lg:block hidden w-[320px] flex-shrink-0">
               <StickyPriceCard
                 originalPrice={masterCourse.originalPrice}
                 discountedPrice={masterCourse.price}

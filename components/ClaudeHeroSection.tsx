@@ -42,19 +42,18 @@ export default function ClaudeHeroSection() {
           >
             <h1 className="font-bold">
               <span className="block text-base sm:text-lg md:text-xl text-offWhite-500 mb-2">
-                코딩 1도 몰라도
+                코딩 몰라도 괜찮습니다
               </span>
-              <span className="block text-2xl sm:text-3xl md:text-4xl leading-tight">
-                <span className="text-metallicGold-500">AI와 한국어 대화</span>
-                <span className="text-offWhite-200">만으로</span>
+              <span className="block text-3xl sm:text-4xl md:text-5xl leading-tight">
+                <span className="text-metallicGold-500">3시간 안에</span>
+                <span className="text-offWhite-200"> 첫 웹사이트</span>
+                <span className="text-metallicGold-500"> 런칭</span>
               </span>
-              <span className="block text-xl sm:text-2xl md:text-3xl text-offWhite-300 mt-3">
-                완전 자동화된 웹사이트 구축
+              <span className="block text-lg sm:text-xl md:text-2xl text-offWhite-300 mt-3">
+                복사-붙여넣기로 시작하는 Claude Code CLI 실습
               </span>
             </h1>
-            <p className="text-sm text-offWhite-500 mt-3 max-w-xl mx-auto">
-              복잡한 명령어 NO, 영어 NO, 그저 한국어로 원하는 것을 말하세요
-            </p>
+            
           </motion.div>
 
           {/* Second: Enhanced Terminal View */}
@@ -81,8 +80,16 @@ export default function ClaudeHeroSection() {
                   <div className="text-xs text-offWhite-600 font-mono">실시간 데모</div>
                 </div>
                 
-                {/* Terminal content */}
-                <div className="p-6 font-mono text-sm space-y-3">
+                {/* Terminal content with scrolling animation */}
+                <motion.div 
+                  className="p-6 font-mono text-sm space-y-3 overflow-hidden"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ 
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
                   {/* Initial command */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -211,7 +218,7 @@ export default function ClaudeHeroSection() {
                       <span className="text-metallicGold-400 font-bold">즉시</span> 배포 완료
                     </div>
                   </motion.div>
-                </div>
+                </motion.div>
               </div>
               
               {/* Bottom highlight */}
@@ -222,7 +229,7 @@ export default function ClaudeHeroSection() {
                 className="text-center mt-6"
               >
                 <p className="text-metallicGold-400 font-bold text-lg">
-                  👆 실제 왕초보가 1시간 안에 만든 결과물
+                  👆 최소한의 지식으로도 왕초보도 실제로 가능한 프로세스
                 </p>
                 <p className="text-offWhite-500 text-sm mt-2">
                   코딩 경험 0, 개발 지식 0, 오직 한국어로 대화만 했습니다
@@ -231,28 +238,52 @@ export default function ClaudeHeroSection() {
             </div>
           </motion.div>
 
-          {/* Bottom: Supporting Info - Simplified and Compact */}
+          {/* Bottom: Why This Works */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-center max-w-3xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="max-w-4xl mx-auto mt-12"
           >
-            {/* Compact Features */}
-            <div className="inline-flex flex-wrap justify-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-metallicGold-500 text-center mb-6">
+              100% 실전 위주 커리큘럼
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                <h4 className="font-bold text-offWhite-200 mb-3 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-yellow-500" />
+                  이론 NO, 오직 실습
+                </h4>
+                <p className="text-sm text-offWhite-400">
+                  모든 모듈이 실제 프로젝트 기반. 
+                  배우자마자 바로 적용할 수 있는 살아있는 기술만 담았습니다.
+                </p>
+              </div>
+              
+              <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                <h4 className="font-bold text-offWhite-200 mb-3 flex items-center gap-2">
+                  <Rocket className="w-5 h-5 text-green-500" />
+                  내일 당장 쓸 수 있는 기술
+                </h4>
+                <p className="text-sm text-offWhite-400">
+                  SNS 마케팅, 업무 자동화, 온라인 비즈니스... 
+                  당신이 지금 필요한 모든 자동화 기술을 담았습니다.
+                </p>
+              </div>
+            </div>
+            
+            {/* Features */}
+            <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+              <div className="flex items-center gap-2 px-4 py-2 bg-deepBlack-600/30 rounded-full">
                 <Terminal className="w-4 h-4 text-metallicGold-500" />
                 <span className="text-offWhite-400">27개 실습 모듈</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-offWhite-400">비개발자 전용</span>
-              </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-deepBlack-600/30 rounded-full">
                 <Code className="w-4 h-4 text-metallicGold-500" />
                 <span className="text-offWhite-400">1년 수강 기간</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-deepBlack-600/30 rounded-full">
                 <Rocket className="w-4 h-4 text-metallicGold-500" />
                 <span className="text-offWhite-400">실전 프로젝트</span>
               </div>
@@ -266,7 +297,7 @@ export default function ClaudeHeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full"
           >
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {/* AI 자동화 카드 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
