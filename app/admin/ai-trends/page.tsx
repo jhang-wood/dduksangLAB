@@ -19,6 +19,7 @@ interface AITrend {
   tags: string[];
   published_at: string;
   view_count: number;
+  comment_count: number;
   is_featured: boolean;
   is_published: boolean;
   created_at: string;
@@ -273,6 +274,9 @@ export default function AdminAITrendsPage() {
                       조회수
                     </th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-offWhite-500 uppercase tracking-wider">
+                      댓글수
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-offWhite-500 uppercase tracking-wider">
                       상태
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-offWhite-500 uppercase tracking-wider">
@@ -306,6 +310,9 @@ export default function AdminAITrendsPage() {
                       </td>
                       <td className="px-6 py-4 text-center text-sm text-offWhite-500">
                         {trend.view_count}
+                      </td>
+                      <td className="px-6 py-4 text-center text-sm text-offWhite-500">
+                        {trend.comment_count || 0}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
