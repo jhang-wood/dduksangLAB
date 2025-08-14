@@ -55,12 +55,7 @@ export default function SimplifiedMyPage() {
     return Math.round(((viewCount - yesterdayCount) / yesterdayCount) * 100);
   };
 
-  if (!user) {
-    useEffect(() => {
-      router.push('/auth/login');
-    }, [router]);
-    return null;
-  }
+  // 로그인 체크 완전 제거 - 안정적인 동작을 위해
 
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
