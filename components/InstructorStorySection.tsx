@@ -1,21 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Code2,
-  Target,
-  Clock,
-  Zap,
-  Brain,
-  ArrowRight,
-  CheckCircle,
-  AlertCircle,
-  Sparkles,
-  TrendingUp,
-  MessageSquare,
-  DollarSign
-} from 'lucide-react';
+// Icons removed as they were not used in the component
 
 export default function InstructorStorySection() {
   return (

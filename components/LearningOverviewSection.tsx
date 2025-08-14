@@ -4,12 +4,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   Sparkles, 
-  Code2, 
+ 
   Zap, 
   Target,
-  Bot,
-  Palette,
-  Rocket,
   BookOpen
 } from 'lucide-react';
 

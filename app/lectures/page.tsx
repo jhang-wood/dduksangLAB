@@ -20,7 +20,6 @@ import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 import ProjectGallery from '@/components/ProjectGallery';
 import LearningMethodSection from '@/components/LearningMethodSection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
-import InstructorSection from '@/components/InstructorSection';
 import SimpleInstructorSection from '@/components/SimpleInstructorSection';
 import LearningOverviewSection from '@/components/LearningOverviewSection';
 import PaidToolsSection from '@/components/PaidToolsSection';

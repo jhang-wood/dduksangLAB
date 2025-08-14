@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 import { 
   CreditCard,
   Zap,
-  Bot,
-  Code,
   DollarSign,
   Clock,
   CheckCircle,

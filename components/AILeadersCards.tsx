@@ -164,7 +164,8 @@ export default function AILeadersCards() {
                   <div className="flex flex-col items-center sm:items-start gap-3">
                     {leader.avatar && (
                       <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20">
-                        <img 
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
                           src={leader.avatar} 
                           alt={leader.name}
                           className="w-full h-full object-cover"
