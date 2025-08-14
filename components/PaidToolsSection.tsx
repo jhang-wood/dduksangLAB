@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   CreditCard,
   Zap,
-  Bot,
-  Code,
+  // Bot,
+  // Code,
   DollarSign,
   Clock,
   CheckCircle,
@@ -94,12 +94,12 @@ export default function PaidToolsSection() {
     }
   ];
 
-  const monthlyBudget = [
-    { item: "Claude Pro", cost: "27,000원", necessity: "필수" },
-    { item: "Cursor Pro", cost: "27,000원", necessity: "필수" },
-    { item: "Gemini Advanced", cost: "27,000원", necessity: "선택" },
-    { item: "클라우드 GPU", cost: "50,000원", necessity: "선택" }
-  ];
+  // const _monthlyBudget = [
+  //   { item: "Claude Pro", cost: "27,000원", necessity: "필수" },
+  //   { item: "Cursor Pro", cost: "27,000원", necessity: "필수" },
+  //   { item: "Gemini Advanced", cost: "27,000원", necessity: "선택" },
+  //   { item: "클라우드 GPU", cost: "50,000원", necessity: "선택" }
+  // ];
 
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-deepBlack-800 to-deepBlack-900">
