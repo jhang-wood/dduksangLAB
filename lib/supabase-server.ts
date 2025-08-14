@@ -5,9 +5,22 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key';
+
+// Validate environment variables - Skip in CI/test/build environments
+const isCIEnvironment = process.env.CI === "true" || process.env.NODE_ENV === "test" || process.env.VERCEL === "1";
+if (!isCIEnvironment && (
+  !supabaseUrl || 
+  !supabaseAnonKey || 
+  !supabaseServiceKey ||
+  supabaseUrl.includes('placeholder') ||
+  supabaseAnonKey.includes('placeholder') ||
+  supabaseServiceKey.includes('placeholder')
+)) {
+  console.warn("⚠️  Supabase server environment variables not properly configured. Server features may not work.");
+}
 
 // Admin client
 export const createAdminClient = () => {
