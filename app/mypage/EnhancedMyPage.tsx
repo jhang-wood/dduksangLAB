@@ -31,6 +31,17 @@ export default function EnhancedMyPage() {
   const { user } = useAuth();
   const router = useRouter();
   
+  // 클라이언트 사이드 렌더링 확인
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return null;
+  }
+  
   // Mock 데이터
   const [viewCount, setViewCount] = useState(2456);
   const [yesterdayCount] = useState(2222);
