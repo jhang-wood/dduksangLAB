@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Terminal, Code, Cpu, Zap, Rocket } from 'lucide-react';
+import { Sparkles, Terminal, Code, Cpu, Zap, Rocket, MessageSquare } from 'lucide-react';
 
 export default function ClaudeHeroSection() {
   return (
@@ -10,7 +10,6 @@ export default function ClaudeHeroSection() {
       {/* Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-purple-500/5" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
@@ -80,161 +79,108 @@ export default function ClaudeHeroSection() {
             </p>
           </motion.div>
 
-          {/* Right: Claude Graphic */}
+          {/* Right: Feature Showcase Grid */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="relative w-full max-w-md mx-auto">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/20 to-purple-500/20 blur-3xl" />
-              
-              {/* Claude Terminal Illustration */}
-              <div className="relative bg-deepBlack-600/40 backdrop-blur-2xl rounded-2xl p-6 shadow-[0_20px_70px_-15px_rgba(255,215,0,0.25)] ring-1 ring-metallicGold-500/10">
-                {/* Terminal Header */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 bg-red-500 rounded-full" />
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <span className="ml-2 text-xs text-offWhite-500">Claude Code CLI</span>
-                </div>
-
-                {/* Terminal Content */}
-                <div className="space-y-3 font-mono text-sm">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="flex items-center gap-2"
-                  >
-                    <span className="text-green-500">$</span>
-                    <span className="text-offWhite-300">claude</span>
-                    <span className="text-metallicGold-500">create-app</span>
-                    <span className="text-offWhite-500">my-saas</span>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className="text-offWhite-500"
-                  >
-                    ✨ AI가 앱을 생성중...
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.1 }}
-                    className="text-green-400"
-                  >
-                    ✅ 프론트엔드 구축 완료
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.4 }}
-                    className="text-green-400"
-                  >
-                    ✅ 백엔드 API 생성 완료
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.7 }}
-                    className="text-green-400"
-                  >
-                    ✅ 데이터베이스 연결 완료
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 2 }}
-                    className="text-metallicGold-500 font-bold"
-                  >
-                    🚀 앱이 준비되었습니다!
-                  </motion.div>
-                </div>
-
-                {/* Animated Claude Icon */}
+            <div className="relative w-full">
+              {/* Feature Cards Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* AI 자동화 카드 */}
                 <motion.div
-                  animate={{ 
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{ 
-                    duration: 4,
-                    repeat: Infinity,
-                    repeatType: 'reverse'
-                  }}
-                  className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-metallicGold-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-2xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="relative group"
                 >
-                  <div className="text-4xl">🤖</div>
+                  <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)]">
+                    <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-xl flex items-center justify-center mb-4">
+                      <Terminal className="w-6 h-6 text-metallicGold-500" />
+                    </div>
+                    <h3 className="text-lg font-bold text-offWhite-200 mb-2">AI 자동화</h3>
+                    <p className="text-sm text-offWhite-500">명령어 하나로 복잡한 프로그램 생성</p>
+                  </div>
+                </motion.div>
+
+                {/* 텔레그램 코딩 카드 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="relative group"
+                >
+                  <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)]">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4">
+                      <MessageSquare className="w-6 h-6 text-cyan-500" />
+                    </div>
+                    <h3 className="text-lg font-bold text-offWhite-200 mb-2">텔레그램 코딩</h3>
+                    <p className="text-sm text-offWhite-500">휴대폰으로 어디서든 AI와 대화하며 개발</p>
+                  </div>
+                </motion.div>
+
+                {/* 메타 자동화 카드 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="relative group"
+                >
+                  <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)]">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center mb-4">
+                      <Rocket className="w-6 h-6 text-purple-500" />
+                    </div>
+                    <h3 className="text-lg font-bold text-offWhite-200 mb-2">메타 자동화</h3>
+                    <p className="text-sm text-offWhite-500">자동화를 자동화하는 혁신적 기술</p>
+                  </div>
+                </motion.div>
+
+                {/* AI 에이전트 협업 카드 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="relative group"
+                >
+                  <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)]">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center mb-4">
+                      <Cpu className="w-6 h-6 text-green-500" />
+                    </div>
+                    <h3 className="text-lg font-bold text-offWhite-200 mb-2">AI 에이전트 협업</h3>
+                    <p className="text-sm text-offWhite-500">24시간 일하는 AI 팀 구축</p>
+                  </div>
                 </motion.div>
               </div>
 
-              {/* Floating Elements */}
+              {/* Central Terminal Preview */}
               <motion.div
-                animate={{ 
-                  y: [-10, 10, -10],
-                  rotate: [0, 5, 0]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="mt-6 relative"
               >
-                <Code className="w-8 h-8 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/10 to-purple-500/10 blur-2xl" />
+                <div className="relative bg-deepBlack-600/50 backdrop-blur-xl rounded-2xl p-4 shadow-[0_10px_40px_-15px_rgba(255,215,0,0.2)]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full" />
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <span className="ml-2 text-xs text-offWhite-500">Claude Code CLI</span>
+                  </div>
+                  <div className="font-mono text-xs space-y-2">
+                    <div className="text-green-400">$ claude create-app my-saas</div>
+                    <div className="text-offWhite-500">✨ AI가 앱을 생성중...</div>
+                    <div className="text-metallicGold-500 font-bold">🚀 앱이 준비되었습니다!</div>
+                  </div>
+                </div>
               </motion.div>
 
-              <motion.div
-                animate={{ 
-                  y: [10, -10, 10],
-                  rotate: [0, -5, 0]
-                }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg"
-              >
-                <Cpu className="w-8 h-8 text-white" />
-              </motion.div>
-
-              <motion.div
-                animate={{ 
-                  y: [-10, 10, -10],
-                  rotate: [0, 5, 0]
-                }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                className="absolute -bottom-8 -left-8 w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg"
-              >
-                <Zap className="w-8 h-8 text-white" />
-              </motion.div>
             </div>
           </motion.div>
         </div>
       </div>
-
-      <style jsx>{`
-        .bg-grid-pattern {
-          background-image: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 60px,
-            rgba(255, 215, 0, 0.02) 60px,
-            rgba(255, 215, 0, 0.02) 61px
-          ),
-          repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 60px,
-            rgba(255, 215, 0, 0.02) 60px,
-            rgba(255, 215, 0, 0.02) 61px
-          );
-          background-size: 60px 60px;
-        }
-      `}</style>
     </section>
   );
 }
