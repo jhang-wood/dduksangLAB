@@ -165,8 +165,8 @@ export default function StickyPriceCard({
               <p className="text-xs text-offWhite-500">총 강의</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-metallicGold-500">∞</p>
-              <p className="text-xs text-offWhite-500">무제한</p>
+              <p className="text-2xl font-bold text-metallicGold-500">1년</p>
+              <p className="text-xs text-offWhite-500">수강기간</p>
             </div>
           </div>
         </div>

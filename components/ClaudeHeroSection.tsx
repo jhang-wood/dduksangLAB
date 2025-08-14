@@ -13,28 +13,47 @@ export default function ClaudeHeroSection() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col gap-8">
-          {/* Top: Creative Hook Title */}
+        <div className="flex flex-col gap-6">
+          {/* Top: Badge */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center pt-8"
+            transition={{ duration: 0.5 }}
+            className="text-center pt-6"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full backdrop-blur-sm"
+            >
+              <Sparkles className="w-4 h-4 text-metallicGold-500" />
+              <span className="text-metallicGold-400 font-bold text-sm">
+                🎉 첫 런칭 오픈 특가
+              </span>
+            </motion.div>
+          </motion.div>
+
+          {/* Title Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-center"
           >
             <h1 className="font-bold">
               <span className="block text-base sm:text-lg md:text-xl text-offWhite-500 mb-2">
                 코딩 1도 몰라도
               </span>
-              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
-                <span className="text-metallicGold-500">"그냥 만들어줘"</span>
-                <span className="text-offWhite-200"> 한 마디로</span>
+              <span className="block text-2xl sm:text-3xl md:text-4xl leading-tight">
+                <span className="text-metallicGold-500">AI와 한국어 대화</span>
+                <span className="text-offWhite-200">만으로</span>
               </span>
               <span className="block text-xl sm:text-2xl md:text-3xl text-offWhite-300 mt-3">
-                월 천만원 버는 자동화 시스템 완성
+                완전 자동화된 웹사이트 구축
               </span>
             </h1>
-            <p className="text-sm sm:text-base text-offWhite-500 mt-4 max-w-2xl mx-auto">
-              대기업 개발자들도 몰래 쓰는 Claude Code CLI의 비밀
+            <p className="text-sm text-offWhite-500 mt-3 max-w-xl mx-auto">
+              복잡한 명령어 NO, 영어 NO, 그저 한국어로 원하는 것을 말하세요
             </p>
           </motion.div>
 
@@ -212,58 +231,32 @@ export default function ClaudeHeroSection() {
             </div>
           </motion.div>
 
-          {/* Bottom: Supporting Info */}
+          {/* Bottom: Supporting Info - Simplified and Compact */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-center max-w-4xl mx-auto"
+            className="text-center max-w-3xl mx-auto"
           >
-            {/* Badge */}
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-full mb-6 backdrop-blur-sm"
-            >
-              <Sparkles className="w-4 h-4 text-metallicGold-500" />
-              <span className="text-metallicGold-400 font-bold text-sm">
-                🎉 첫 런칭 오픈 특가
-              </span>
-            </motion.div>
-
-            {/* Description */}
-            <p className="text-base sm:text-lg text-offWhite-400 mb-6 leading-relaxed max-w-2xl mx-auto">
-              복잡한 개발 지식 없이도{' '}
-              <span className="text-metallicGold-500 font-semibold">AI를 활용해</span>
-              {' '}자동화 프로그램과 웹사이트를 만드는 방법을 알려드립니다.
-            </p>
-
-            {/* Features - More compact */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-2xl mx-auto">
-              <div className="flex flex-col items-center gap-1">
+            {/* Compact Features */}
+            <div className="inline-flex flex-wrap justify-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-xs text-offWhite-300">27개 실습</span>
+                <span className="text-offWhite-400">27개 실습 모듈</span>
               </div>
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Zap className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-xs text-offWhite-300">비개발자용</span>
+                <span className="text-offWhite-400">비개발자 전용</span>
               </div>
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Code className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-xs text-offWhite-300">1년 수강</span>
+                <span className="text-offWhite-400">1년 수강 기간</span>
               </div>
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Rocket className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-xs text-offWhite-300">실전 프로젝트</span>
+                <span className="text-offWhite-400">실전 프로젝트</span>
               </div>
             </div>
-
-            {/* Sub Message */}
-            <p className="text-lg font-bold text-offWhite-200">
-              코딩을 몰라도 괜찮습니다.
-              <br />
-              <span className="text-metallicGold-500">Claude Code CLI가 모든 것을 해결합니다.</span>
-            </p>
           </motion.div>
 
           {/* Middle: Feature Cards Grid - 4 cards in a row */}
