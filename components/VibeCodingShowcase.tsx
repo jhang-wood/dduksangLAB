@@ -71,7 +71,7 @@ export default function VibeCodingShowcase() {
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             viewport={{ once: true }}
-            className="bg-metallicGold-500/10 border border-metallicGold-500/30 rounded-3xl p-8 mb-12 max-w-4xl mx-auto"
+            className="bg-metallicGold-500/10 backdrop-blur-md shadow-[0_8px_32px_0_rgba(255,215,0,0.08)] rounded-3xl p-8 mb-12 max-w-4xl mx-auto"
           >
             <div className="flex items-start gap-4 mb-4">
               <div className="p-3 bg-metallicGold-500/20 rounded-xl">
@@ -119,7 +119,7 @@ export default function VibeCodingShowcase() {
                   viewport={{ once: true }}
                   className="group relative"
                 >
-                  <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-2xl p-6 hover:border-metallicGold-500/40 transition-all duration-300">
+                  <div className="bg-deepBlack-300/40 backdrop-blur-xl shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(255,215,0,0.15)] rounded-2xl p-6 transition-all duration-300">
                     {/* Gradient Background on Hover */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500`} />
                     
@@ -161,7 +161,7 @@ export default function VibeCodingShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-metallicGold-500/10 via-metallicGold-600/10 to-metallicGold-900/10 border border-metallicGold-500/30 rounded-3xl p-8"
+          className="bg-gradient-to-r from-metallicGold-500/15 via-metallicGold-600/10 to-metallicGold-900/15 backdrop-blur-lg shadow-[inset_0_1px_0_0_rgba(255,215,0,0.1)] rounded-3xl p-8"
         >
           <h3 className="text-2xl font-bold text-center text-metallicGold-500 mb-8">
             🎮 2025 Vibe Code Game Jam 성과
