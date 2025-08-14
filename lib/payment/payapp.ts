@@ -23,7 +23,7 @@ export const PRICING_PLANS = {
     name: '베이직 플랜',
     price: 9900,
     description: '기본 강의 접근',
-    features: ['기본 강의 무제한 시청', '커뮤니티 접근', '기본 지원'],
+    features: ['기본 강의 1년간 시청', '커뮤니티 접근', '기본 지원'],
   },
   pro: {
     id: 'pro',
@@ -31,7 +31,7 @@ export const PRICING_PLANS = {
     price: 29900,
     description: '전체 강의 + 프리미엄 기능',
     features: [
-      '모든 강의 무제한 시청',
+      '모든 강의 1년간 시청',
       '커뮤니티 프리미엄 접근',
       '1:1 멘토링 월 1회',
       'SaaS 홍보 기회',

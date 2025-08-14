@@ -3,266 +3,222 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  AlertTriangle,
-  CheckCircle,
   Clock,
   DollarSign,
+  AlertTriangle,
   Brain,
   Target,
-  TrendingUp,
+  CheckCircle,
   Zap,
-  ArrowRight
+  Rocket,
+  TrendingDown,
+  TrendingUp
 } from 'lucide-react';
 
 export default function TrialErrorVsShortcutSection() {
-  const trialErrorItems = [
-    {
-      icon: Clock,
-      title: '3-6개월 시행착오',
-      description: '방향성 없이 헤매는 시간',
-      value: '180일',
-      color: 'text-red-500'
-    },
-    {
-      icon: DollarSign,
-      title: 'AI 사용료 폭탄',
-      description: 'Claude Max, ChatGPT Plus 등',
-      value: '월 30만원+',
-      color: 'text-red-500'
-    },
-    {
-      icon: AlertTriangle,
-      title: '정보의 홍수에 압도',
-      description: '뭐가 중요한지 모르겠음',
-      value: '스트레스',
-      color: 'text-red-500'
-    },
-    {
-      icon: Brain,
-      title: '컨텍스트 한계에 갇힘',
-      description: '복잡한 프로젝트는 포기',
-      value: '제한적',
-      color: 'text-red-500'
-    }
-  ];
-
-  const shortcutItems = [
-    {
-      icon: Target,
-      title: '검증된 27시간 커리큘럼',
-      description: '최소 지식으로 최대 효과',
-      value: '27시간',
-      color: 'text-green-500'
-    },
-    {
-      icon: CheckCircle,
-      title: '강의료만 149,000원',
-      description: '몇 달치 AI 사용료보다 저렴',
-      value: '149,000원',
-      color: 'text-green-500'
-    },
-    {
-      icon: TrendingUp,
-      title: '명확한 방향성 제시',
-      description: '단계별 가이드로 길을 잃지 않음',
-      value: '확실함',
-      color: 'text-green-500'
-    },
-    {
-      icon: Zap,
-      title: '바로 적용 가능한 실전',
-      description: '27개 프로젝트 완성 보장',
-      value: '무제한',
-      color: 'text-green-500'
-    }
-  ];
-
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900">
+    <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800 to-deepBlack-900 relative overflow-hidden">
+      {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-green-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-purple-500/5" />
       </div>
       
-      <div className="container mx-auto max-w-7xl relative z-10">
-        {/* Section Header */}
+      <div className="container mx-auto max-w-6xl relative z-10">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-offWhite-200 mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-metallicGold-500 to-green-500">
-              시행착오 vs 지름길
+          <h2 className="text-4xl md:text-5xl font-bold text-offWhite-200 mb-4">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
+              두 가지 선택
             </span>
           </h2>
-          <p className="text-lg sm:text-xl text-offWhite-400">
-            강사가 1500만원 상당의 연구로 찾아낸 지름길의 가치
+          <p className="text-xl text-offWhite-400 max-w-2xl mx-auto">
+            같은 목표, 전혀 다른 과정과 결과
           </p>
         </motion.div>
 
-        {/* Comparison Grid */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Trial & Error Side */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="bg-gradient-to-br from-red-500/10 to-red-900/5 rounded-3xl p-8 border border-red-500/20 h-full">
-              {/* Header */}
-              <div className="flex items-center gap-4 mb-8">
+        {/* Trial Error Card - Top */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <div className="bg-deepBlack-300/50 backdrop-blur-sm rounded-3xl p-8 border border-red-500/20 hover:border-red-500/40 transition-all duration-500 card-hover">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center">
-                  <AlertTriangle className="w-8 h-8 text-red-500" />
+                  <TrendingDown className="w-8 h-8 text-red-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-red-400">혼자 하는 시행착오</h3>
-                  <p className="text-offWhite-500 text-sm">AI에게 물어보며 독학</p>
+                  <h3 className="text-2xl font-bold text-offWhite-200">혼자서 시행착오</h3>
+                  <p className="text-red-400">방향성 없는 독학의 늪</p>
                 </div>
               </div>
-
-              {/* Items */}
-              <div className="space-y-6">
-                {trialErrorItems.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="flex items-center gap-4 p-4 bg-deepBlack-800/50 rounded-xl border border-red-500/10"
-                    >
-                      <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-6 h-6 text-red-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-offWhite-200 mb-1">{item.title}</h4>
-                        <p className="text-sm text-offWhite-500">{item.description}</p>
-                      </div>
-                      <div className={`text-right flex-shrink-0 font-bold ${item.color}`}>
-                        {item.value}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Total Cost */}
-              <div className="mt-8 p-6 bg-red-500/20 rounded-2xl border border-red-500/30">
-                <div className="text-center">
-                  <p className="text-sm text-red-400 mb-2">예상 총 비용</p>
-                  <p className="text-3xl font-bold text-red-500 mb-2">900만원+</p>
-                  <p className="text-xs text-offWhite-500">시간 비용 + AI 사용료 + 기회비용</p>
-                </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-red-500">3-6개월</div>
+                <div className="text-sm text-offWhite-500">예상 소요 시간</div>
               </div>
             </div>
-          </motion.div>
 
-          {/* Arrow in the middle (desktop only) */}
-          <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+            {/* Items Grid - 4 columns horizontal */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { icon: Clock, title: '시간 소요', value: '6개월+', desc: '방향성 없이 헤매는 시간' },
+                { icon: DollarSign, title: '도구 비용', value: '다양한 툴', desc: 'Claude, ChatGPT, Cursor' },
+                { icon: AlertTriangle, title: '정보 과부하', value: '스트레스', desc: '뭐가 중요한지 모름' },
+                { icon: Brain, title: '한계 봉착', value: '막힘', desc: '복잡한 프로젝트 포기' }
+              ].map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-deepBlack-600/50 rounded-xl p-4 border border-red-500/20 hover:border-red-400/40 transition-all text-center"
+                  >
+                    <Icon className="w-8 h-8 text-red-400 mx-auto mb-3" />
+                    <div className="text-xl font-bold text-red-300 mb-1">{item.value}</div>
+                    <div className="text-sm font-medium text-offWhite-300 mb-1">{item.title}</div>
+                    <div className="text-xs text-offWhite-500">{item.desc}</div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Total Impact */}
+            <div className="bg-gradient-to-r from-red-600/30 to-red-800/30 rounded-2xl p-6 text-center border border-red-500/30">
+              <div className="text-sm text-red-300 mb-1">결과</div>
+              <div className="text-4xl font-bold text-red-400 mb-1">포기 확률 높음</div>
+              <div className="text-sm text-offWhite-500">방향 없이 헤매다 중단</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* VS Divider */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex-1 h-px bg-offWhite-800"></div>
+          <div className="mx-8">
             <motion.div
-              animate={{ x: [0, 10, 0] }}
+              animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 p-4 rounded-full shadow-2xl"
+              className="w-20 h-20 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-full flex items-center justify-center shadow-2xl glow-yellow"
             >
-              <ArrowRight className="w-8 h-8 text-deepBlack-900" />
+              <span className="text-deepBlack-900 font-bold text-lg">VS</span>
             </motion.div>
           </div>
+          <div className="flex-1 h-px bg-offWhite-800"></div>
+        </div>
 
-          {/* Shortcut Side */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="bg-gradient-to-br from-green-500/10 to-emerald-900/5 rounded-3xl p-8 border border-green-500/20 h-full">
-              {/* Header */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-green-500" />
+        {/* Shortcut Card - Bottom */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <div className="bg-deepBlack-300/50 backdrop-blur-sm rounded-3xl p-8 border border-metallicGold-500/30 hover:border-metallicGold-500/50 transition-all duration-500 card-hover glow-yellow-hover">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl flex items-center justify-center">
+                  <TrendingUp className="w-8 h-8 text-metallicGold-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-green-400">검증된 지름길</h3>
-                  <p className="text-offWhite-500 text-sm">이 강의로 바로 시작</p>
+                  <h3 className="text-2xl font-bold text-offWhite-200">검증된 지름길</h3>
+                  <p className="text-metallicGold-400">1500만원 연구 결과</p>
                 </div>
               </div>
-
-              {/* Items */}
-              <div className="space-y-6">
-                {shortcutItems.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="flex items-center gap-4 p-4 bg-deepBlack-800/50 rounded-xl border border-green-500/10"
-                    >
-                      <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-6 h-6 text-green-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-offWhite-200 mb-1">{item.title}</h4>
-                        <p className="text-sm text-offWhite-500">{item.description}</p>
-                      </div>
-                      <div className={`text-right flex-shrink-0 font-bold ${item.color}`}>
-                        {item.value}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Total Cost */}
-              <div className="mt-8 p-6 bg-green-500/20 rounded-2xl border border-green-500/30">
-                <div className="text-center">
-                  <p className="text-sm text-green-400 mb-2">실제 총 비용</p>
-                  <p className="text-3xl font-bold text-green-500 mb-2">149,000원</p>
-                  <p className="text-xs text-offWhite-500">강의료 + 1년 수강 기간</p>
-                </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-metallicGold-500">13시간</div>
+                <div className="text-sm text-offWhite-500">실제 소요 시간</div>
               </div>
             </div>
-          </motion.div>
-        </div>
+
+            {/* Items Grid - 4 columns horizontal */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { icon: Rocket, title: '최적화된 시간', value: '13시간', desc: '검증된 커리큘럼' },
+                { icon: CheckCircle, title: '합리적 비용', value: '149,000원', desc: '몇 달치 AI료보다 저렴' },
+                { icon: Target, title: '명확한 방향', value: '확실함', desc: '단계별 가이드' },
+                { icon: Zap, title: '즉시 적용', value: '30개 프로젝트', desc: '바로 써먹는 실전' }
+              ].map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="bg-deepBlack-600/50 rounded-xl p-4 border border-metallicGold-500/20 hover:border-metallicGold-400/40 transition-all text-center"
+                  >
+                    <Icon className="w-8 h-8 text-metallicGold-400 mx-auto mb-3" />
+                    <div className="text-xl font-bold text-metallicGold-300 mb-1">{item.value}</div>
+                    <div className="text-sm font-medium text-offWhite-300 mb-1">{item.title}</div>
+                    <div className="text-xs text-offWhite-500">{item.desc}</div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Total Cost */}
+            <div className="bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl p-6 text-center border border-metallicGold-500/30 backdrop-blur-sm">
+              <div className="text-sm text-metallicGold-400 mb-1">총 투자</div>
+              <div className="text-4xl font-bold text-metallicGold-500 mb-1">149,000원</div>
+              <div className="text-sm text-offWhite-500">몇 달의 시간을 사는 가격</div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Bottom Summary */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
           viewport={{ once: true }}
-          className="mt-12 text-center"
+          className="mt-16 text-center"
         >
-          <div className="bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-3xl p-8 border border-metallicGold-500/30">
-            <h3 className="text-2xl font-bold text-metallicGold-500 mb-4">
-              강사의 1500만원 상당 연구가 여러분의 149,000원
+          <div className="bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-3xl p-8 border border-metallicGold-500/20 backdrop-blur-sm glass-premium">
+            <h3 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mb-6">
+              검증된 커리큘럼으로 시간 절약
             </h3>
-            <div className="grid md:grid-cols-3 gap-6 text-center">
-              <div>
-                <p className="text-3xl font-bold text-metallicGold-500">60배</p>
-                <p className="text-sm text-offWhite-500">비용 절감 효과</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-metallicGold-500">240배</p>
-                <p className="text-sm text-offWhite-500">시간 단축 효과</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-metallicGold-500">∞</p>
-                <p className="text-sm text-offWhite-500">스트레스 해결 가치</p>
-              </div>
+            
+            <div className="grid md:grid-cols-3 gap-6 text-center mb-8">
+              {[
+                { value: '13시간', title: '집중 학습', desc: '핵심만 압축', color: 'from-green-400 to-emerald-500' },
+                { value: '30개', title: '실전 프로젝트', desc: '바로 적용 가능', color: 'from-blue-400 to-cyan-500' },
+                { value: '1년', title: '수강 기간', desc: '충분한 복습', color: 'from-purple-400 to-pink-500' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + index * 0.2 }}
+                  viewport={{ once: true }}
+                  className="bg-deepBlack-600/50 rounded-2xl p-6 border border-metallicGold-500/20 hover:border-metallicGold-500/40 transition-all card-hover"
+                >
+                  <div className={`text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-offWhite-300 font-medium mb-1">{stat.title}</div>
+                  <div className="text-sm text-offWhite-500">{stat.desc}</div>
+                </motion.div>
+              ))}
             </div>
-            <p className="text-offWhite-300 mt-6">
-              여러분이 몇 달간 헤맬 시행착오를 이미 마쳤습니다. 
-              <span className="text-metallicGold-400 font-semibold"> 검증된 길로 바로 가세요.</span>
+
+            <p className="text-lg text-offWhite-300 max-w-3xl mx-auto text-shadow-premium">
+              이미 검증된 길로 바로 가세요. 
+              <span className="text-metallicGold-400 font-semibold"> 제가 밤낮없이 연구해서 찾아낸 길입니다.</span>
             </p>
           </div>
         </motion.div>

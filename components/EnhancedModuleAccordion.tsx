@@ -365,7 +365,7 @@ const moduleDetails: {
     difficulty: 'advanced',
     outcomes: [
       '✅ 100만 줄 코드 처리',
-      '✅ 무제한 대화 지속',
+      '✅ 충분한 대화 지속',
       '✅ 대규모 프로젝트 관리'
     ],
     realWorldUse: [

@@ -22,7 +22,6 @@ import LearningMethodSection from '@/components/LearningMethodSection';
 import BeforeAfterSection from '@/components/BeforeAfterSection';
 import PaidToolsSection from '@/components/PaidToolsSection';
 import TrialErrorVsShortcutSection from '@/components/TrialErrorVsShortcutSection';
-import RealInstructorStorySection from '@/components/RealInstructorStorySection';
 import RealProjectsSection from '@/components/RealProjectsSection';
 
 // Claude Code CLI 마스터과정 데이터
@@ -149,7 +148,7 @@ export default function LecturesPage() {
         <Header currentPage="lectures" />
         
         {/* Main Content Container with 2 Columns */}
-        <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="container mx-auto max-w-6xl px-4 py-12">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column: Main Content - Expanded */}
             <div className="flex-1 lg:max-w-5xl">
@@ -165,7 +164,7 @@ export default function LecturesPage() {
               
               {/* Before/After Section - 학습 전후 비교 (앞으로 이동) */}
               <BeforeAfterSection />
-              
+
               <div className="h-16" />
               
               {/* Learning Method Section - 학습 방식 소개 */}
@@ -178,11 +177,6 @@ export default function LecturesPage() {
               
               <div className="h-16" />
               
-              {/* Real Instructor Story - 강사의 진짜 스토리 */}
-              <RealInstructorStorySection />
-              
-              <div className="h-16" />
-              
               {/* Real Projects Section - 실제로 만들 수 있는 프로젝트들 */}
               <RealProjectsSection />
               
@@ -191,11 +185,11 @@ export default function LecturesPage() {
               {/* 3. Paid Tools Section - 유료툴 상세 설명 */}
               <PaidToolsSection />
               
-              <div className="h-16" />
-              
               {/* Vibe Coding Showcase */}
               {/* <VibeCodingShowcase /> */}
 
+              <div className="h-16" />
+              
               {/* Solution Section (앞으로 이동) */}
               <section className="py-20">
                 <motion.div
@@ -215,90 +209,69 @@ export default function LecturesPage() {
                     </p>
                   </div>
 
-                  {/* Module 1-3: Free Lessons */}
+                  {/* Project 1-2: Getting Started */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🎁 STEP 0: 무료 체험 (모듈 1-3)
+                      🚀 STEP 1: 시작하기 (프로젝트 1-2)
                     </h3>
                     
                     {/* GIF placeholder for setup */}
                     <div className="mb-8 p-8 bg-deepBlack-600/50 rounded-2xl border-2 border-dashed border-metallicGold-500/30">
                       <p className="text-center text-metallicGold-500 font-bold mb-2">
-                        [GIF 추천: 강의 맛보기]
+                        [GIF 추천: 개발환경 세팅 과정]
                       </p>
                       <p className="text-center text-sm text-offWhite-500">
-                        자동화 프로그램과 MVP 만들기 실습 예시
+                        VS Code 설치부터 Claude Code CLI 설정까지 10분 만에 완료하는 모습
                       </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
                       <div className="bg-deepBlack-600/30 rounded-2xl p-6">
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
-                          강의 소개 & 자동화 체험
+                          기초 개발환경 세팅
                         </h4>
                         <p className="text-offWhite-400 mb-4">
-                          코딩 몰라도 따라할 수 있는 강의! 
-                          자동화 프로그램 exe 파일 만들기 실습.
+                          Windows, Mac, Linux 어떤 환경이든 10분이면 완벽 세팅! 
+                          복잡한 설정 없이 한 번에 모든 도구를 설치합니다.
                         </p>
                         <ul className="space-y-2 text-sm text-offWhite-500">
-                          <li>• 강의 커리큘럼 소개</li>
-                          <li>• 자동화 프로그램 체험</li>
-                          <li>• 실전 프로젝트 미리보기</li>
+                          <li>• VS Code 자동 설치 및 최적화</li>
+                          <li>• Node.js & npm 원클릭 설정</li>
+                          <li>• Git 자동 구성</li>
                         </ul>
                       </div>
                       
                       <div className="bg-deepBlack-600/30 rounded-2xl p-6">
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
-                          MVP 1시간안에 만들기
+                          한줄 명령으로 세팅하는 MCP
                         </h4>
                         <p className="text-offWhite-400 mb-4">
-                          웹사이트를 1시간 만에 만들고 배포하는 방법! 
-                          이것만 보고도 따라할 수 있습니다.
+                          복잡하기로 유명한 MCP를 단 한 줄 명령어로 설치! 
+                          이것만으로도 수강료가 아깝지 않습니다.
                         </p>
                         <ul className="space-y-2 text-sm text-offWhite-500">
-                          <li>• 아이디어에서 배포까지 60분</li>
-                          <li>• Vercel로 즉시 배포</li>
-                          <li>• 도메인 연결 팝</li>
+                          <li>• 20개 MCP 서버 자동 설치</li>
+                          <li>• Notion, Supabase 즉시 연동</li>
+                          <li>• 환경변수 자동 설정</li>
                         </ul>
                       </div>
                     </div>
                   </div>
 
-                  {/* Module 4-9: Getting Started & Foundation */}
+                  {/* Project 3-6: Foundation */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🚀 STEP 1: 기초 세팅 & 핵심 개념 (모듈 4-9)
+                      🏗️ STEP 2: 기초 다지기 (프로젝트 3-6)
                     </h3>
                     
-                    <div className="grid md:grid-cols-2 gap-6 mb-8">
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
-                        <h4 className="text-xl font-bold text-offWhite-200 mb-3">
-                          기초 개발환경 & MCP 세팅
-                        </h4>
-                        <p className="text-offWhite-400 mb-4">
-                          모듈 4-5: 개발환경과 MCP를 한번에 세팅!
-                          한줄 명령어로 모든 것이 자동 설치됩니다.
-                        </p>
-                        <ul className="space-y-2 text-sm text-offWhite-500">
-                          <li>• VS Code, Node.js 자동 설치</li>
-                          <li>• 20개 MCP 서버 한번에 세팅</li>
-                          <li>• 환경변수 자동 구성</li>
-                        </ul>
-                      </div>
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
-                        <h4 className="text-xl font-bold text-offWhite-200 mb-3">
-                          핵심 개념 이해
-                        </h4>
-                        <p className="text-offWhite-400 mb-4">
-                          모듈 6-9: GitHub, Docker, 서브에이전트, Claude CLI
-                          개발자 지식 없이도 이해할 수 있게 설명!
-                        </p>
-                        <ul className="space-y-2 text-sm text-offWhite-500">
-                          <li>• GitHub로 코드 관리하기</li>
-                          <li>• Docker 컨테이너 활용법</li>
-                          <li>• AI 에이전트 협업 시스템</li>
-                        </ul>
-                      </div>
+                    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-6 mb-8">
+                      <p className="text-lg text-offWhite-300 mb-4">
+                        <span className="text-metallicGold-500 font-bold">"개발자가 1-2개월 걸려 배울 것을 1주일 만에"</span>
+                      </p>
+                      <p className="text-offWhite-400">
+                        GitHub, Docker, 서브에이전트... 어려워 보이는 개념들을 
+                        비개발자도 이해할 수 있게 쉽게 풀어드립니다.
+                      </p>
                     </div>
 
                     {/* GIF placeholder for GitHub */}
@@ -312,10 +285,10 @@ export default function LecturesPage() {
                     </div>
                   </div>
 
-                  {/* Module 10-13: Automation */}
+                  {/* Module 7-10: Automation */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      ⚡ STEP 2: 자동화 봇 만들기 (모듈 10-13)
+                      ⚡ STEP 3: 자동화 봇 만들기 (프로젝트 7-10)
                     </h3>
                     
                     {/* GIF placeholder for automation */}
@@ -330,37 +303,37 @@ export default function LecturesPage() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="bg-gradient-to-br from-green-500/10 to-green-900/10 rounded-2xl p-6 border border-green-500/30">
-                        <h4 className="text-xl font-bold text-green-400 mb-3">
-                          숏폼 & n8n 자동화
+                        <h4 className="text-lg font-bold text-green-400 mb-3">
+                          콘텐츠 자동화의 정점
                         </h4>
-                        <p className="text-offWhite-400 mb-4">
-                          모듈 10, 13: 숏폼 자동 업로드와 n8n 워크플로우
-                          한번 설정하면 모든 것이 자동으로!
+                        <p className="text-sm text-offWhite-400 mb-4">
+                          숏폼 1개 만들면 10개 플랫폼에 자동 배포! 
+                          월 1000개 콘텐츠도 혼자서 관리 가능합니다.
                         </p>
-                        <div className="text-2xl font-bold text-green-400">
-                          멀티 플랫폼 배포
+                        <div className="text-lg font-bold text-green-400">
+                          멀티 플랫폼 자동 배포
                         </div>
                       </div>
                       
                       <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-900/10 rounded-2xl p-6 border border-yellow-500/30">
-                        <h4 className="text-xl font-bold text-yellow-400 mb-3">
-                          블로그 & 쓰레드 자동화
+                        <h4 className="text-lg font-bold text-yellow-400 mb-3">
+                          블로그 포스팅 자동화
                         </h4>
-                        <p className="text-offWhite-400 mb-4">
-                          모듈 11-12: 네이버 블로그와 쓰레드 포스팅 봇
-                          AI가 알아서 글을 써서 업로드합니다.
+                        <p className="text-sm text-offWhite-400 mb-4">
+                          네이버 블로그 하루 10개 포스팅 자동화! 
+                          SEO 최적화까지 AI가 알아서 처리합니다.
                         </p>
-                        <div className="text-2xl font-bold text-yellow-400">
+                        <div className="text-lg font-bold text-yellow-400">
                           완전 자동화 시스템
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Module 14-16: Real Projects */}
+                  {/* Module 11-13: Real Projects */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      💎 STEP 3: 실전 프로젝트 (모듈 14-16)
+                      💎 STEP 4: 실전 프로젝트 (프로젝트 11-13)
                     </h3>
                     
                     {/* GIF placeholder for SaaS */}
@@ -379,25 +352,25 @@ export default function LecturesPage() {
                       </h4>
                       <div className="flex justify-between text-sm">
                         <div>
-                          <span className="text-metallicGold-400 font-bold">모듈 14</span>
+                          <span className="text-metallicGold-400 font-bold">3시간</span>
                           <span className="text-offWhite-500 ml-1">회사 사이트</span>
                         </div>
                         <div>
-                          <span className="text-metallicGold-400 font-bold">모듈 15</span>
-                          <span className="text-offWhite-500 ml-1">SaaS 사이트</span>
+                          <span className="text-metallicGold-400 font-bold">1주일</span>
+                          <span className="text-offWhite-500 ml-1">SaaS 런칭</span>
                         </div>
                         <div>
-                          <span className="text-metallicGold-400 font-bold">모듈 16</span>
-                          <span className="text-offWhite-500 ml-1">Supabase</span>
+                          <span className="text-metallicGold-400 font-bold">자동화</span>
+                          <span className="text-offWhite-500 ml-1">시스템</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Module 17-20: Advanced */}
+                  {/* Module 14-20: Advanced */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🧠 STEP 4: 고급 기술 (모듈 17-20)
+                      🧠 STEP 5: 고급 기술 (프로젝트 14-20)
                     </h3>
                     
                     {/* GIF placeholder for AI Assistant */}
@@ -417,11 +390,11 @@ export default function LecturesPage() {
                         </div>
                         <div>
                           <h4 className="text-xl font-bold text-offWhite-200 mb-2">
-                            AI 비서 & RAG 구축
+                            나만의 AI 비서 만들기
                           </h4>
                           <p className="text-offWhite-400">
-                            모듈 17-18: 나만의 AI 비서와 전문가 RAG 시스템
-                            PDF 학습한 전문가 AI를 만들어보세요!
+                            JARVIS처럼 모든 업무를 처리하는 개인 AI 비서를 만듭니다. 
+                            이메일 응답, 일정 관리, 문서 작성까지 완전 자동화!
                           </p>
                         </div>
                       </div>
@@ -432,21 +405,21 @@ export default function LecturesPage() {
                         </div>
                         <div>
                           <h4 className="text-xl font-bold text-offWhite-200 mb-2">
-                            휴대폰 코딩 & tmux
+                            RAG 시스템 구축
                           </h4>
                           <p className="text-offWhite-400">
-                            모듈 19-20: 휴대폰으로 코딩하고 tmux로 병렬작업
-                            언제 어디서나 개발할 수 있는 환경 구축!
+                            PDF 1000개를 학습한 전문가 AI를 만듭니다. 
+                            법률, 의료, 금융 등 전문 분야 AI 컨설턴트 구축!
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Module 21-30: Mastery */}
+                  {/* Module 21-27: Mastery */}
                   <div className="mb-16">
                     <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🏆 STEP 5: 마스터 되기 (모듈 21-30)
+                      🏆 STEP 6: 마스터 되기 (프로젝트 21-27)
                     </h3>
                     
                     {/* GIF placeholder for MVP */}
@@ -464,8 +437,8 @@ export default function LecturesPage() {
                         당신도 AI 개발의 정점에 서게 됩니다
                       </h4>
                       <p className="text-lg text-offWhite-300 mb-6">
-                        모듈 21-30: CLAUDE.md 작성법, 컨텍스트 한계 뚫기, 프레임워크 활용,
-                        바이브코딩, MVP 런칭, 결제연동, Git worktree 등 고급 기술!
+                        바이브코딩의 진수, MVP 초고속 런칭, 결제 시스템 연동... 
+                        실리콘밸리 개발자들의 비밀 노하우를 모두 전수합니다.
                       </p>
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
@@ -483,7 +456,7 @@ export default function LecturesPage() {
                             <li>• AI 도구 전문가 수준</li>
                             <li>• 자동화 시스템 구축 가능</li>
                             <li>• 어떤 아이디어든 구현 가능</li>
-                            <li>• AI 컨설턴트로 활동</li>
+                            <li>• 프로젝트 독립 진행</li>
                           </ul>
                         </div>
                       </div>
@@ -513,15 +486,20 @@ export default function LecturesPage() {
                 </motion.div>
               </section>
 
+              <div className="h-16" />
+              
               {/* AI Leaders Cards - 왜 지금 시작해야 하는가 */}
               <AILeadersCards />
               
-              {/* Instructor Story Section - 강사의 진솔한 이야기 (실습 모듈 위) */}
+              <div className="h-16" />
+              
               {/* Curriculum Section - Simplified */}
               <section className="py-20">
                 <EnhancedModuleAccordion modules={masterCourse.modules} />
               </section>
 
+              <div className="h-16" />
+              
               {/* Recommended For Section */}
               <section className="py-20">
                 <h2 className="text-3xl font-bold text-offWhite-200 mb-8">
@@ -549,7 +527,9 @@ export default function LecturesPage() {
                 </div>
               </section>
 
-              {/* FAQ Section */}
+              <div className="h-16" />
+              
+              {/* FAQ Section */>
               <FAQSection
                 faqs={sampleFAQs}
                 className="py-20"
