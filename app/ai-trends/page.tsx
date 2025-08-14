@@ -1,12 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Eye, Calendar, ChevronRight, Brain, Sparkles, TrendingUp, MessageSquare, Zap } from 'lucide-react';
+import { Clock, Eye, Calendar, ChevronRight, Brain, Sparkles, TrendingUp, MessageSquare, Zap, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import Footer from '@/components/Footer';
+
+interface AITrend {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  category: string;
+  tags: string[];
+  published_at: string;
+  view_count: number;
+  comment_count: number;
+  is_featured: boolean;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Icon mapping for categories
+const categoryIcons: Record<string, any> = {
+  'AI 기술': Brain,
+  'AI 도구': Zap,
+  'AI 활용': MessageSquare,
+  'AI 비즈니스': TrendingUp,
+  'AI 교육': Sparkles,
+};
 
 // Static mock data - synchronized with [slug]/page.tsx
 const staticTrends = [
@@ -119,10 +144,46 @@ const categories = [
 
 export default function AITrendsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [trends, setTrends] = useState<AITrend[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [useStaticData, setUseStaticData] = useState(false);
   
-  const filteredTrends = selectedCategory === 'all' 
-    ? staticTrends 
-    : staticTrends.filter(trend => trend.category === selectedCategory);
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams({
+          limit: '50',
+          ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        });
+        
+        const response = await fetch(`/api/ai-trends?${params.toString()}`);
+        const data = await response.json();
+        
+        if (data.trends && data.trends.length > 0) {
+          setTrends(data.trends);
+          setUseStaticData(false);
+        } else {
+          // Use static data as fallback
+          setTrends(staticTrends as any);
+          setUseStaticData(true);
+        }
+      } catch (error) {
+        console.error('Error fetching trends:', error);
+        // Use static data as fallback
+        setTrends(staticTrends as any);
+        setUseStaticData(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    void fetchTrends();
+  }, [selectedCategory]);
+  
+  const filteredTrends = useStaticData 
+    ? (selectedCategory === 'all' ? trends : trends.filter(trend => trend.category === selectedCategory))
+    : trends;
   
   const featuredTrends = filteredTrends.filter(trend => trend.is_featured);
   
@@ -258,7 +319,7 @@ export default function AITrendsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredTrends.map((trend, index) => {
-                  const IconComponent = trend.icon;
+                  const IconComponent = categoryIcons[trend.category] || Brain;
                   return (
                     <motion.div
                       key={trend.id}
@@ -304,9 +365,17 @@ export default function AITrendsPage() {
                             </p>
                             
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2 text-sm text-offWhite-600">
-                                <Eye className="w-4 h-4" />
-                                <span>{formatViewCount(trend.view_count)}</span>
+                              <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1 text-sm text-offWhite-600">
+                                  <Eye className="w-4 h-4" />
+                                  <span>{formatViewCount(trend.view_count)}</span>
+                                </div>
+                                {(trend.comment_count !== undefined && trend.comment_count > 0) && (
+                                  <div className="flex items-center gap-1 text-sm text-offWhite-600">
+                                    <MessageCircle className="w-4 h-4" />
+                                    <span>{trend.comment_count}</span>
+                                  </div>
+                                )}
                               </div>
                               <ChevronRight className="w-5 h-5 text-metallicGold-500 group-hover:translate-x-1 transition-transform" />
                             </div>
@@ -337,10 +406,22 @@ export default function AITrendsPage() {
               <div className="w-24 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900" />
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredTrends.map((trend, index) => {
-                const IconComponent = trend.icon;
-                return (
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-metallicGold-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-offWhite-400">AI 트렌드 로딩 중...</span>
+                </div>
+              </div>
+            ) : filteredTrends.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-offWhite-400">아직 등록된 트렌드가 없습니다.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredTrends.map((trend, index) => {
+                  const IconComponent = categoryIcons[trend.category] || Brain;
+                  return (
                   <motion.div
                     key={trend.id}
                     initial={{ y: 30, opacity: 0 }}
@@ -374,9 +455,17 @@ export default function AITrendsPage() {
                           </p>
                           
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-sm text-offWhite-600">
-                              <Eye className="w-4 h-4" />
-                              <span>{formatViewCount(trend.view_count)}</span>
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1 text-sm text-offWhite-600">
+                                <Eye className="w-4 h-4" />
+                                <span>{formatViewCount(trend.view_count)}</span>
+                              </div>
+                              {(trend.comment_count !== undefined && trend.comment_count > 0) && (
+                                <div className="flex items-center gap-1 text-sm text-offWhite-600">
+                                  <MessageCircle className="w-4 h-4" />
+                                  <span>{trend.comment_count}</span>
+                                </div>
+                              )}
                             </div>
                             <ChevronRight className="w-5 h-5 text-metallicGold-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                           </div>
@@ -384,9 +473,10 @@ export default function AITrendsPage() {
                       </article>
                     </Link>
                   </motion.div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
         
