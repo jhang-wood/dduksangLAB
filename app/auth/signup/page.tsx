@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Lock, Eye, EyeOff, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, Phone, AlertCircle, CheckCircle, Gift } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { motion } from 'framer-motion';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
@@ -22,14 +22,73 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralInfo, setReferralInfo] = useState<{
+    code: string;
+    referrer_name: string;
+    is_valid: boolean;
+  } | null>(null);
+  const [validatingRef, setValidatingRef] = useState(false);
+  
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signUp } = useAuth();
 
+  // URL에서 추천코드 파라미터 확인
+  useEffect(() => {
+    const refParam = searchParams.get('ref');
+    if (refParam) {
+      setReferralCode(refParam);
+      validateReferralCode(refParam);
+    }
+  }, [searchParams]);
+
+  // 추천코드 검증 함수
+  const validateReferralCode = async (code: string) => {
+    if (!code.trim()) {
+      setReferralInfo(null);
+      return;
+    }
+
+    setValidatingRef(true);
+    try {
+      const response = await fetch(`/api/referral/validate?code=${encodeURIComponent(code)}`);
+      const result = await response.json();
+      
+      if (result.success) {
+        setReferralInfo(result.data);
+      } else {
+        setReferralInfo(null);
+        // URL 파라미터가 아닌 수동 입력인 경우에만 에러 표시
+        if (!searchParams.get('ref')) {
+          setError(result.error);
+        }
+      }
+    } catch (err) {
+      console.error('추천코드 검증 오류:', err);
+      setReferralInfo(null);
+    } finally {
+      setValidatingRef(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    if (name === 'referralCode') {
+      setReferralCode(value);
+      // 실시간 검증 (디바운스 없이)
+      if (value.trim()) {
+        validateReferralCode(value);
+      } else {
+        setReferralInfo(null);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const validateForm = () => {
@@ -90,7 +149,7 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const { error } = await signUp(formData.email, formData.password, {
+      const { data: authData, error } = await signUp(formData.email, formData.password, {
         name: formData.name.trim(),
         phone: formData.phone?.trim() || undefined,
       });
@@ -111,9 +170,29 @@ export default function SignupPage() {
         
         setError(errorMessage);
       } else {
+        // 회원가입 성공 후 추천코드 처리
+        if (referralCode && referralInfo?.is_valid && authData?.user?.id) {
+          try {
+            await fetch('/api/referral/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                referral_code: referralCode,
+                referee_id: authData.user.id
+              })
+            });
+          } catch (refError) {
+            console.error('추천코드 처리 오류:', refError);
+            // 추천코드 처리 실패해도 회원가입은 성공이므로 계속 진행
+          }
+        }
+
         setSuccess(true);
         setTimeout(() => {
-          router.push('/auth/login?message=회원가입이 완료되었습니다. 로그인해주세요.');
+          const message = referralInfo 
+            ? `회원가입이 완료되었습니다! ${referralInfo.referrer_name}님의 추천으로 500P를 받았습니다. 로그인해주세요.`
+            : '회원가입이 완료되었습니다. 로그인해주세요.';
+          router.push(`/auth/login?message=${encodeURIComponent(message)}`);
         }, 2000);
       }
     } catch (err) {
@@ -175,7 +254,62 @@ export default function SignupPage() {
               </motion.div>
             )}
 
+            {/* 추천코드 정보 표시 */}
+            {referralInfo && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30 rounded-lg p-4 flex items-center gap-3"
+              >
+                <Gift className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-green-400 font-medium">
+                    🎉 {referralInfo.referrer_name}님의 추천코드가 적용되었습니다!
+                  </p>
+                  <p className="text-xs text-offWhite-500 mt-1">
+                    회원가입 완료 시 500P를 받게 됩니다.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             <div className="space-y-4">
+              {/* 추천코드 입력 필드 */}
+              <div>
+                <label htmlFor="referralCode" className="block text-sm font-medium text-offWhite-500 mb-2">
+                  추천코드 (선택사항)
+                </label>
+                <div className="relative">
+                  <input
+                    id="referralCode"
+                    name="referralCode"
+                    type="text"
+                    value={referralCode}
+                    onChange={handleChange}
+                    className={`appearance-none block w-full px-4 py-3 pl-12 bg-deepBlack-300 border rounded-lg text-offWhite-500 placeholder-offWhite-600 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+                      referralInfo ? 'border-green-500/50 focus:ring-green-500' : 'border-metallicGold-900/30 focus:ring-metallicGold-500'
+                    }`}
+                    placeholder="추천코드를 입력하세요 (예: JOHN2025)"
+                  />
+                  <Gift className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
+                    referralInfo ? 'text-green-500' : 'text-offWhite-600'
+                  }`} />
+                  {validatingRef && (
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <svg className="animate-spin h-4 w-4 text-metallicGold-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                {referralCode && !referralInfo && !validatingRef && (
+                  <p className="text-xs text-red-400 mt-1">
+                    유효하지 않은 추천코드입니다.
+                  </p>
+                )}
+              </div>
+
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-offWhite-500 mb-2">
                   이름 <span className="text-red-400">*</span>
