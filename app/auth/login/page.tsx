@@ -91,10 +91,10 @@ export default function LoginPage() {
           <div>
             <Link href="/" className="flex justify-center mb-8">
               <Image
-                src="/images/떡상연구소_로고-removebg-preview.png"
+                src="/images/떡상연구소_로고/누끼_떡상연구소.png"
                 alt="떡상연구소"
-                width={60}
-                height={60}
+                width={120}
+                height={120}
                 className="object-contain"
               />
             </Link>
