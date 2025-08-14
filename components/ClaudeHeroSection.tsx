@@ -92,7 +92,7 @@ export default function ClaudeHeroSection() {
               <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/20 to-purple-500/20 blur-3xl" />
               
               {/* Claude Terminal Illustration */}
-              <div className="relative bg-deepBlack-600/50 backdrop-blur-xl border border-metallicGold-500/30 rounded-2xl p-6 shadow-2xl">
+              <div className="relative bg-deepBlack-600/40 backdrop-blur-2xl rounded-2xl p-6 shadow-[0_20px_70px_-15px_rgba(255,215,0,0.25)] ring-1 ring-metallicGold-500/10">
                 {/* Terminal Header */}
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 bg-red-500 rounded-full" />

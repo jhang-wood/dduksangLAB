@@ -148,7 +148,7 @@ export default function LecturesPage() {
         
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column: Main Content */}
             <div className="flex-1 max-w-4xl">
               {/* Claude Hero Section */}
