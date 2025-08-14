@@ -13,8 +13,32 @@ export default function ClaudeHeroSection() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col gap-12">
-          {/* Top: Enhanced Terminal View - NOW FIRST! */}
+        <div className="flex flex-col gap-8">
+          {/* Top: Creative Hook Title */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center pt-8"
+          >
+            <h1 className="font-bold">
+              <span className="block text-base sm:text-lg md:text-xl text-offWhite-500 mb-2">
+                코딩 1도 몰라도
+              </span>
+              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
+                <span className="text-metallicGold-500">"그냥 만들어줘"</span>
+                <span className="text-offWhite-200"> 한 마디로</span>
+              </span>
+              <span className="block text-xl sm:text-2xl md:text-3xl text-offWhite-300 mt-3">
+                월 천만원 버는 자동화 시스템 완성
+              </span>
+            </h1>
+            <p className="text-sm sm:text-base text-offWhite-500 mt-4 max-w-2xl mx-auto">
+              대기업 개발자들도 몰래 쓰는 Claude Code CLI의 비밀
+            </p>
+          </motion.div>
+
+          {/* Second: Enhanced Terminal View */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -188,11 +212,11 @@ export default function ClaudeHeroSection() {
             </div>
           </motion.div>
 
-          {/* Middle: Compact Text Content */}
+          {/* Bottom: Supporting Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="text-center max-w-4xl mx-auto"
           >
             {/* Badge */}
@@ -206,18 +230,6 @@ export default function ClaudeHeroSection() {
                 🎉 첫 런칭 오픈 특가
               </span>
             </motion.div>
-
-            {/* Main Title - Reduced size */}
-            <h1 className="font-bold mb-6">
-              <span className="block text-offWhite-400 mb-2 text-xl sm:text-2xl md:text-3xl leading-tight">
-                비개발자도
-              </span>
-              <span className="block bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-900 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
-                Claude Code CLI 하나로
-                <br />
-                모든 것을 다한다!
-              </span>
-            </h1>
 
             {/* Description */}
             <p className="text-base sm:text-lg text-offWhite-400 mb-6 leading-relaxed max-w-2xl mx-auto">
