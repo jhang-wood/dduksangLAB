@@ -48,8 +48,8 @@ const gameJamStats = {
 
 export default function VibeCodingShowcase() {
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/50 to-deepBlack-900">
-      <div className="container mx-auto max-w-6xl">
+    <section className="py-24 px-6 bg-gradient-to-b from-deepBlack-900/90 via-deepBlack-800/30 to-deepBlack-900/90">
+      <div className="container mx-auto max-w-7xl">
         {/* Section Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
