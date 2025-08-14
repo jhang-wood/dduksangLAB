@@ -1,5 +1,5 @@
-import MyPageClient from './MyPageClient';
+import SimplifiedMyPage from './SimplifiedMyPage';
 
 export default function MyPage() {
-  return <MyPageClient />;
+  return <SimplifiedMyPage />;
 }
