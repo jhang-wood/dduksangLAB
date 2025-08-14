@@ -15,6 +15,7 @@ interface Profile {
   name: string | null;
   phone: string | null;
   role: string;
+  is_admin?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -50,13 +51,41 @@ export default function MyPage() {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
-
-      setProfile(data);
-      setFormData({
-        name: data.name || '',
-        phone: data.phone || '',
-      });
+      if (error) {
+        // 프로필이 없는 경우 생성
+        if (error.code === 'PGRST116') {
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user) {
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert({
+                id: userData.user.id,
+                email: userData.user.email || '',
+                name: userData.user.user_metadata?.name || '',
+                role: 'user',
+                is_admin: false
+              })
+              .select()
+              .single();
+            
+            if (!createError && newProfile) {
+              setProfile(newProfile);
+              setFormData({
+                name: newProfile.name || '',
+                phone: newProfile.phone || '',
+              });
+            }
+          }
+        } else {
+          console.error('Error fetching profile:', error);
+        }
+      } else {
+        setProfile(data);
+        setFormData({
+          name: data.name || '',
+          phone: data.phone || '',
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -243,7 +272,7 @@ export default function MyPage() {
                   권한
                 </label>
                 <p className="text-offWhite-200">
-                  {profile?.role === 'admin' ? '관리자' : '일반 사용자'}
+                  {profile?.is_admin ? '관리자' : '일반 사용자'}
                 </p>
               </div>
 
