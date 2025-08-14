@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertCircle, Clock, TrendingUp } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 const aiLeaders = [
   {

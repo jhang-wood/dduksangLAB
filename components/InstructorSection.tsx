@@ -5,10 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   User,
   Award,
-  Briefcase,
   BookOpen,
   Heart,
-  Lightbulb,
   Code2,
   Users
 } from 'lucide-react';

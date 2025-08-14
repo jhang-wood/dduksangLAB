@@ -319,7 +319,6 @@ export default function VibeCodingShowcase() {
                     })}
                   </div>
                 </div>
-              </div>
             </motion.div>
 
             <motion.div

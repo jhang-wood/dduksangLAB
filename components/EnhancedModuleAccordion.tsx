@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { 
-  ChevronDown, Clock, Lock, CheckCircle, PlayCircle, BookOpen, Star,
-  Trophy, Target, Sparkles, Code2, Rocket, Users, TrendingUp, Zap,
-  DollarSign, Award, Gift, Heart, MessageSquare, ArrowRight, AlertTriangle
+  ChevronDown, Clock, Lock, CheckCircle, Star,
+  Sparkles, Rocket, Zap,
+  Award, Gift, AlertTriangle
 } from 'lucide-react';
 
 interface Module {
@@ -523,17 +523,6 @@ const moduleDetails: {
   }
 };
 
-// 진행률 계산 함수
-const calculateProgress = (modules: Module[]) => {
-  const completed = modules.filter(m => m.completed).length;
-  return Math.round((completed / modules.length) * 100);
-};
-
-// 남은 시간 계산 함수
-const calculateRemainingTime = (modules: Module[]) => {
-  const remaining = modules.filter(m => !m.completed).length;
-  return remaining * 60; // 각 모듈 60분
-};
 
 export default function EnhancedModuleAccordion({ modules, className = '' }: ModuleAccordionProps) {
   const [expandedModules, setExpandedModules] = useState<number[]>([]);

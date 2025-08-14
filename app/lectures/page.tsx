@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   CheckCircle2,
-  AlertTriangle,
-  Timer,
-  Target,
-  MessageSquare,
-  Zap,
-  Brain,
-  Rocket,
 } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
