@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   try {
     // 사용자 게임 통계 조회
-    let { data: stats, error } = await supabase
+    let { data: stats } = await supabase
       .from('user_game_stats')
       .select('*')
       .eq('user_id', user.id)

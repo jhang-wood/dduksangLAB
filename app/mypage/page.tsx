@@ -1,5 +1,5 @@
-import SimplifiedMyPage from './SimplifiedMyPage';
+import ImprovedMyPage from './ImprovedMyPage';
 
 export default function MyPage() {
-  return <SimplifiedMyPage />;
+  return <ImprovedMyPage />;
 }
