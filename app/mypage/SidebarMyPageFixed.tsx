@@ -65,7 +65,7 @@ export default function SidebarMyPageFixed() {
     totalViews: 0,
     todayViews: 0,
     totalPoints: 0,
-    currentRank: 999,
+    currentRank: 0,
     totalSites: 0,
     totalPosts: 0,
     totalComments: 0,
@@ -104,27 +104,32 @@ export default function SidebarMyPageFixed() {
       }
 
       // 사용자 사이트 정보
-      const { data: sites } = await supabase
+      const { data: sites, error: sitesError } = await supabase
         .from('user_sites')
         .select('*')
         .eq('user_id', user.id)
         .order('views_today', { ascending: false });
       
-      if (sites) {
-        setUserSites(sites);
-        
-        // 통계 계산
-        const totalViews = sites.reduce((sum, site) => sum + (site.views_total || 0), 0);
-        const todayViews = sites.reduce((sum, site) => sum + (site.views_today || 0), 0);
-        const bestRank = sites.length > 0 ? Math.min(...sites.map(s => s.rank_today || 999)) : 999;
-        
-        setUserStats(prev => ({
-          ...prev,
-          totalViews,
-          todayViews,
-          totalSites: sites.length,
-          currentRank: bestRank
-        }));
+      // 사이트 데이터 처리 (에러가 있어도 빈 배열로 처리)
+      const userSitesData = sites || [];
+      setUserSites(userSitesData);
+      
+      // 통계 계산
+      const totalViews = userSitesData.reduce((sum, site) => sum + (site.views_total || 0), 0);
+      const todayViews = userSitesData.reduce((sum, site) => sum + (site.views_today || 0), 0);
+      const validRanks = userSitesData.filter(s => s.rank_today && s.rank_today > 0).map(s => s.rank_today!);
+      const bestRank = validRanks.length > 0 ? Math.min(...validRanks) : 0;
+      
+      setUserStats(prev => ({
+        ...prev,
+        totalViews,
+        todayViews,
+        totalSites: userSitesData.length,
+        currentRank: bestRank
+      }));
+
+      if (sitesError) {
+        console.log('사이트 데이터를 불러올 수 없습니다:', sitesError.message);
       }
 
       // 전체 사이트 순위 가져오기
@@ -421,7 +426,11 @@ export default function SidebarMyPageFixed() {
                 <div>
                   <h3 className="text-lg font-bold text-offWhite-200">{userName}</h3>
                   <p className="text-sm text-offWhite-500">
-                    <span className="text-metallicGold-500">#{userStats.currentRank}</span> 순위
+                    {userStats.currentRank > 0 ? (
+                      <span className="text-metallicGold-500">#{userStats.currentRank}</span>
+                    ) : (
+                      <span className="text-offWhite-500">순위 없음</span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -460,23 +469,6 @@ export default function SidebarMyPageFixed() {
               ))}
             </nav>
             
-            {/* 추천인 코드 */}
-            <div className="mt-8 p-4 bg-deepBlack-900/50 rounded-lg">
-              <p className="text-xs text-offWhite-500 mb-2">내 추천 코드</p>
-              <div className="flex items-center justify-between">
-                <code className="text-sm font-mono text-metallicGold-500">{userName.toUpperCase()}2025</code>
-                <button
-                  onClick={copyReferralCode}
-                  className="p-2 hover:bg-deepBlack-700 rounded transition-colors"
-                >
-                  {referralCodeCopied ? (
-                    <Check className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-offWhite-500" />
-                  )}
-                </button>
-              </div>
-            </div>
           </div>
         </aside>
         
@@ -492,11 +484,13 @@ export default function SidebarMyPageFixed() {
                 <div className="bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 border border-metallicGold-500/30 rounded-xl p-6 hover:scale-105 transition-transform">
                   <div className="flex items-center justify-between mb-4">
                     <Trophy className="w-8 h-8 text-metallicGold-500" />
-                    {userStats.currentRank <= 10 && (
+                    {userStats.currentRank > 0 && userStats.currentRank <= 10 && (
                       <span className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded-full">TOP 10</span>
                     )}
                   </div>
-                  <p className="text-2xl font-bold text-metallicGold-500">#{formatNumber(userStats.currentRank)}</p>
+                  <p className="text-2xl font-bold text-metallicGold-500">
+                    {userStats.currentRank > 0 ? `#${formatNumber(userStats.currentRank)}` : '순위 없음'}
+                  </p>
                   <p className="text-sm text-offWhite-500">현재 순위</p>
                 </div>
                 
@@ -560,7 +554,7 @@ export default function SidebarMyPageFixed() {
                   </div>
                 </div>
                 
-                {/* 추천인 제도 */}
+                {/* 친구 초대 */}
                 <div className="bg-deepBlack-300/50 border border-metallicGold-900/30 rounded-xl p-6">
                   <h2 className="text-lg font-bold text-offWhite-200 mb-4 flex items-center gap-2">
                     <UserPlus className="w-5 h-5 text-metallicGold-500" />
@@ -578,12 +572,27 @@ export default function SidebarMyPageFixed() {
                       <p className="text-xs text-offWhite-500">친구 활동 시</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => router.push('/sites/register')}
-                    className="w-full py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
-                  >
-                    사이트 등록하기
-                  </button>
+                  <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <p className="text-sm text-yellow-400 text-center">
+                      포인트로 곧 이용하실 수 있는 추가적인 서비스를 구축 중이니까 우선 포인트를 모아두시는 것을 추천드립니다.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-deepBlack-900/50 rounded-lg">
+                    <p className="text-xs text-offWhite-500 mb-2">내 추천 코드</p>
+                    <div className="flex items-center justify-between">
+                      <code className="text-sm font-mono text-metallicGold-500">{userName.toUpperCase()}2025</code>
+                      <button
+                        onClick={copyReferralCode}
+                        className="p-2 hover:bg-deepBlack-700 rounded transition-colors"
+                      >
+                        {referralCodeCopied ? (
+                          <Check className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <Copy className="w-4 h-4 text-offWhite-500" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -111,8 +111,26 @@ export default function RegisterSitePage() {
           comments: 0,
         });
       
-      if (insertError) throw insertError;
+      if (insertError) {
+        // 테이블이 없는 경우 특별 처리
+        if (insertError.message.includes('relation "user_sites" does not exist')) {
+          setError('사이트 등록 기능이 아직 설정되지 않았습니다. 관리자에게 문의해주세요.');
+        } else if (insertError.message.includes('violates row-level security policy')) {
+          setError('권한이 없습니다. 로그인 상태를 확인해주세요.');
+        } else {
+          setError(insertError.message || '사이트 등록 중 오류가 발생했습니다.');
+        }
+        return;
+      }
       
+      // 사이트 등록 후 순위 업데이트
+      try {
+        await fetch('/api/sites/rank', { method: 'POST' });
+        console.log('순위 업데이트 완료');
+      } catch (rankError) {
+        console.log('순위 업데이트 실패 (정상):', rankError);
+      }
+
       setSuccess(true);
       setTimeout(() => {
         router.push('/mypage?tab=sites');
