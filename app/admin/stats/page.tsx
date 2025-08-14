@@ -75,7 +75,7 @@ export default function AdminStatsPage() {
             .select('id, created_at')
             .order('created_at', { ascending: false }),
           supabase
-            .from('showcase_sites')
+            .from('user_sites')
             .select('id, created_at')
             .order('created_at', { ascending: false }),
           supabase

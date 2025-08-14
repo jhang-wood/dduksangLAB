@@ -26,18 +26,19 @@ import { useRouter } from 'next/navigation';
 
 interface Site {
   id: string;
+  user_id: string;
   name: string;
   description: string;
   url: string;
   thumbnail_url?: string;
   category: string;
-  tags: string[];
-  creator_id: string;
-  creator_name: string;
-  views: number;
+  tags?: string[];
+  views_today: number;
+  views_total: number;
   likes: number;
-  is_featured: boolean;
-  is_trending: boolean;
+  comments: number;
+  is_active: boolean;
+  is_hot?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -80,9 +81,9 @@ export default function SitesPage() {
   const fetchSites = useCallback(async () => {
     try {
       let query = supabase
-        .from('showcase_sites')
+        .from('user_sites')
         .select('*')
-        .eq('is_approved', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (selectedCategory !== '전체') {
@@ -91,7 +92,7 @@ export default function SitesPage() {
 
       if (searchTerm) {
         query = query.or(
-          `name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`
+          `name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`
         );
       }
 
@@ -99,6 +100,12 @@ export default function SitesPage() {
 
       if (error) {
         logger.error('Error fetching sites:', error);
+        console.error('Supabase error details:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
       } else {
         setSites(data ?? []);
       }
@@ -159,36 +166,47 @@ export default function SitesPage() {
         thumbnailUrl = await uploadThumbnail(thumbnailFile);
       }
 
-      const { data: profile } = await supabase
+      const { data: _profile } = await supabase
         .from('profiles')
         .select('name')
         .eq('id', user.id)
         .single();
 
+      // URL 자동 포맷팅
+      let formattedUrl = formData.url;
+      if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+        formattedUrl = `https://${formattedUrl}`;
+      }
+
       const { data, error } = await supabase
-        .from('showcase_sites')
+        .from('user_sites')
         .insert({
+          user_id: user.id,
           name: formData.name,
           description: formData.description,
-          url: formData.url,
+          url: formattedUrl,
           thumbnail_url: thumbnailUrl ?? null,
           category: formData.category,
           tags: formData.tags
             .split(',')
             .map(t => t.trim())
             .filter(t => t),
-          creator_id: user.id,
-          creator_name: profile?.name ?? user.email?.split('@')[0] ?? '익명',
-          views: 0,
+          views_today: 0,
+          views_total: 0,
           likes: 0,
-          is_featured: false,
-          is_trending: false,
-          is_approved: true, // Auto-approve for now
+          comments: 0,
+          is_active: true,
         })
         .select()
         .single();
 
       if (error) {
+        console.error('Detailed insert error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
         throw error;
       }
 
@@ -449,14 +467,9 @@ export default function SitesPage() {
 
                       {/* Tags */}
                       <div className="absolute top-4 left-4 flex gap-2">
-                        {site.is_featured && (
-                          <span className="px-2 py-1 bg-metallicGold-500 text-deepBlack-900 rounded text-xs font-bold">
-                            추천
-                          </span>
-                        )}
-                        {site.is_trending && (
+                        {site.is_hot && (
                           <span className="px-2 py-1 bg-red-500 text-white rounded text-xs font-bold">
-                            인기
+                            HOT
                           </span>
                         )}
                       </div>
@@ -481,7 +494,7 @@ export default function SitesPage() {
                         <span className="px-2 py-1 bg-metallicGold-500/10 text-metallicGold-500 rounded text-xs font-medium">
                           {site.category}
                         </span>
-                        {site.tags.slice(0, 2).map((tag, i) => (
+                        {site.tags && site.tags.slice(0, 2).map((tag, i) => (
                           <span
                             key={i}
                             className="px-2 py-1 bg-deepBlack-600 text-offWhite-600 rounded text-xs"
@@ -500,13 +513,10 @@ export default function SitesPage() {
                       </p>
 
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs sm:text-sm text-offWhite-500">
-                          by {site.creator_name}
-                        </span>
                         <div className="flex items-center gap-3 text-xs sm:text-sm text-offWhite-600">
                           <div className="flex items-center gap-1">
                             <Eye size={14} />
-                            <span>{site.views}</span>
+                            <span>{site.views_total}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Heart size={14} />

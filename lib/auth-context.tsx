@@ -6,7 +6,7 @@ import { createUserProfile, getUserProfile, validateSignupData } from '@/lib/aut
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js';
-import { supabase } from './supabase';
+import { supabase } from './supabase-client';
 import { useRouter } from 'next/navigation';
 import { UserProfile, SignUpMetadata } from '@/types';
 
