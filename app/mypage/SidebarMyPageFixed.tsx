@@ -401,7 +401,7 @@ export default function SidebarMyPageFixed() {
       {/* 공통 헤더 */}
       <Header currentPage="mypage" />
       
-      <div className="flex pt-20">
+      <div className="flex">
         {/* 모바일 메뉴 토글 */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -412,9 +412,9 @@ export default function SidebarMyPageFixed() {
         
         {/* 사이드바 */}
         <aside
-          className={`fixed lg:relative lg:translate-x-0 top-20 left-0 w-64 h-[calc(100vh-5rem)] bg-deepBlack-800 border-r border-metallicGold-900/30 z-40 ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } lg:block transition-transform duration-300`}
+          className={`w-64 bg-deepBlack-800 border-r border-metallicGold-900/30 ${
+            sidebarOpen ? 'block' : 'hidden'
+          } lg:block`}
         >
           <div className="p-6">
             {/* 사용자 정보 */}

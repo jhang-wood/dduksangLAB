@@ -19,25 +19,7 @@ export default function StickyPriceCard({
   onEnrollClick,
 }: StickyPriceCardProps) {
   const router = useRouter();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isSticky, setIsSticky] = useState(false);
-  
-  // 스크롤에 따른 부드러운 애니메이션
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [0.9, 1]);
-  const scale = useTransform(scrollYProgress, [0, 0.1], [0.98, 1]);
-  
-  // 스크롤 위치 감지하여 sticky 상태 관리
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      // Header 높이(64px) + 여백을 고려한 활성화 지점
-      setIsSticky(scrollPosition > 120);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // 모든 sticky 관련 기능 제거
 
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
 
@@ -78,23 +60,7 @@ export default function StickyPriceCard({
 
   return (
     <div className="w-full">
-      <motion.div
-        ref={cardRef}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ 
-          opacity: 1, 
-          x: 0,
-          boxShadow: isSticky 
-            ? '0 25px 50px -12px rgba(255, 215, 0, 0.35), 0 0 0 1px rgba(255, 215, 0, 0.1)' 
-            : '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-        }}
-        style={{ opacity, scale }}
-        transition={{ duration: 0.5 }}
-        className={`bg-gradient-to-b from-deepBlack-300/60 to-deepBlack-400/60 backdrop-blur-xl rounded-3xl p-6 border transition-all duration-300 ${
-          isSticky 
-            ? 'border-metallicGold-500/30 shadow-2xl' 
-            : 'border-metallicGold-900/20 shadow-xl'
-        }`}
+      <div className="bg-gradient-to-b from-deepBlack-300/60 to-deepBlack-400/60 backdrop-blur-xl rounded-3xl p-6 border border-metallicGold-900/20 shadow-xl"
       >
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -215,7 +181,7 @@ export default function StickyPriceCard({
           </button>
         )}
 
-      </motion.div>
+      </div>
     </div>
   );
 }

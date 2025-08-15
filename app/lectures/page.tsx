@@ -92,8 +92,12 @@ const masterCourse = {
 export default function LecturesPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  
+  // useAuth hook을 안전하게 호출
+  const authContext = useAuth();
+  const { user, loading: authLoading } = authContext;
 
   const checkEnrollment = useCallback(async () => {
     if (!user) {
@@ -113,17 +117,28 @@ export default function LecturesPage() {
         setIsEnrolled(true);
       }
     } catch (error) {
+      console.warn('Enrollment check failed:', error);
       setIsEnrolled(false);
+      setAuthError(true);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    void checkEnrollment();
-  }, [checkEnrollment]);
+    // 인증 로딩이 완료된 후에만 등록 상태 확인
+    if (!authLoading) {
+      void checkEnrollment();
+    }
+  }, [checkEnrollment, authLoading]);
 
   const handleEnrollClick = () => {
+    if (authError) {
+      // 환경변수 에러 시 알림
+      alert('현재 환경설정에 문제가 있습니다. 관리자에게 문의하세요.');
+      return;
+    }
+    
     if (!user) {
       router.push('/auth/login');
       return;
@@ -131,25 +146,31 @@ export default function LecturesPage() {
     router.push(`/lectures/${masterCourse.id}/preview`);
   };
 
-  if (loading) {
+  // 로딩 조건을 단순화 - 환경변수 경고가 있어도 페이지 렌더링
+  if (false) { // 임시로 로딩 비활성화
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-metallicGold-500"></div>
+          <p className="text-offWhite-500 text-sm">
+            페이지를 불러오는 중...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-deepBlack-900 relative">
+    <div className="min-h-screen bg-deepBlack-900 relative lectures-page-container">
       <NeuralNetworkBackground />
-      <div className="relative z-10" style={{ overflow: 'visible' }}>
+      <div className="relative z-10">
         <Header currentPage="lectures" />
         
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 flex flex-col gap-8" style={{ overflow: 'visible' }}>
+          <div className="lectures-grid lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 flex flex-col gap-8">
             {/* Left Column: Main Content - Expanded */}
-            <div className="min-h-0 order-2 lg:order-1">
+            <div className="min-h-0 order-2 lg:order-1 relative">
               {/* Claude Hero Section - Karpathy 인용 포함 */}
               <ClaudeHeroSection />
               
@@ -544,39 +565,19 @@ export default function LecturesPage() {
               />
             </div>
 
-            {/* Right Column: Sticky Price Card - Reduced */}
-            <aside className="order-1 lg:order-2 lg:block hidden" style={{ position: 'relative' }}>
-              <div style={{ position: 'sticky', top: '5rem', zIndex: 50, height: 'fit-content' }}>
-                <StickyPriceCard
-                  originalPrice={masterCourse.originalPrice}
-                  discountedPrice={masterCourse.price}
-                  isEnrolled={isEnrolled}
-                  onEnrollClick={handleEnrollClick}
-                />
-              </div>
+            {/* Right Column: Price Card */}
+            <aside className="order-1 lg:order-2 block">
+              <StickyPriceCard
+                originalPrice={masterCourse.originalPrice}
+                discountedPrice={masterCourse.price}
+                isEnrolled={isEnrolled}
+                onEnrollClick={handleEnrollClick}
+              />
             </aside>
           </div>
         </div>
 
-        {/* Mobile Fixed Bottom CTA */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-deepBlack-900/95 backdrop-blur-md border-t border-metallicGold-900/30 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm text-offWhite-500 line-through">
-                ₩{masterCourse.originalPrice.toLocaleString()}
-              </p>
-              <p className="text-xl font-bold text-metallicGold-500">
-                ₩{masterCourse.price.toLocaleString()}
-              </p>
-            </div>
-            <button
-              onClick={handleEnrollClick}
-              className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
-            >
-              수강 신청하기
-            </button>
-          </div>
-        </div>
+        {/* Mobile Fixed Bottom CTA - 제거됨, 이제 모든 화면에서 카드가 자연스럽게 표시됨 */}
         
         <Footer />
       </div>
