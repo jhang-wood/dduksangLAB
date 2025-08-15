@@ -16,40 +16,44 @@ import {
 export default function VibeCodingSuccessStoriesSection() {
   const successStories = [
     {
-      name: 'Andrej Karpathy',
-      role: 'OpenAI 공동창업자',
-      achievement: '바이브코딩 창시자',
-      quote: '바이브코딩으로 코드의 존재조차 잊게 된다',
-      icon: Zap,
+      name: 'Maor Shlomo',
+      role: '1인 개발자',
+      achievement: '$80M 매각',
+      quote: '6개월 만에 25만 사용자와 월 $189K 수익 달성',
+      icon: Rocket,
       color: 'from-purple-500 to-indigo-600',
-      highlight: '2025년 2월 바이브코딩 용어 창시'
+      highlight: 'Base44를 Wix에 8천만 달러에 매각',
+      source: 'TechCrunch, ZDNet 2025'
     },
     {
       name: 'Peter Levels',
       role: '인디 해커',
-      achievement: '$1M+ 수익',
-      quote: '바이브코딩으로 빠르게 만들고 수익화했다',
+      achievement: '월 $1M+ 수익',
+      quote: '3시간 바이브코딩으로 월 1.2억 버는 게임 제작',
       icon: DollarSign,
       color: 'from-green-500 to-emerald-600',
-      highlight: '비행 시뮬레이터 MMO로 백만 달러'
+      highlight: 'AI로 빠른 프로토타이핑 후 마케팅 없이 X만으로 수익화',
+      source: 'Josh Maily 2024'
     },
     {
-      name: 'Base44',
-      role: '스타트업',
-      achievement: '$80M 인수',
-      quote: '6개월 만에 25만 사용자 달성',
-      icon: Rocket,
-      color: 'from-orange-500 to-red-600',
-      highlight: 'Wix가 8천만 달러에 인수'
-    },
-    {
-      name: 'Replit',
-      role: 'AI 플랫폼',
-      achievement: '10배 성장',
-      quote: 'ARR $10M → $100M (9개월)',
+      name: '심리테스트 개발자',
+      role: '1인 SaaS',
+      achievement: '$18.5K 수익',
+      quote: '17개 프로젝트 중 3개만 성공, 1개가 수익의 50% 차지',
       icon: TrendingUp,
+      color: 'from-orange-500 to-red-600',
+      highlight: '기술보다 사용자 심리를 활용한 바이브코딩 전략',
+      source: 'GeekNews 2024'
+    },
+    {
+      name: '실리콘밸리 팀들',
+      role: '소규모 스타트업',
+      achievement: '$10M+ ARR',
+      quote: '10명 미만 팀으로 연 1000만달러 수익 창출',
+      icon: Users,
       color: 'from-blue-500 to-cyan-600',
-      highlight: 'Replit Agent 출시 후 폭발적 성장'
+      highlight: 'AI 코딩으로 대기업 대비 압도적 효율성 구현',
+      source: 'AI Times 2025'
     }
   ];
 
@@ -122,7 +126,7 @@ export default function VibeCodingSuccessStoriesSection() {
         </motion.div>
 
         {/* Success Stories Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-6 mb-12 items-stretch">
           {successStories.map((story, index) => {
             const Icon = story.icon;
             
@@ -133,10 +137,10 @@ export default function VibeCodingSuccessStoriesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="relative group"
+                className="relative group h-full"
               >
-                <div className={`bg-gradient-to-br ${story.color} p-[1px] rounded-2xl`}>
-                  <div className="bg-deepBlack-800 rounded-2xl p-6 h-full">
+                <div className={`bg-gradient-to-br ${story.color} p-[1px] rounded-2xl h-full`}>
+                  <div className="bg-deepBlack-800 rounded-2xl p-6 h-full flex flex-col">
                     {/* Header */}
                     <div className="flex items-start gap-4 mb-4">
                       <div className={`w-12 h-12 bg-gradient-to-br ${story.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -152,15 +156,20 @@ export default function VibeCodingSuccessStoriesSection() {
                     </div>
 
                     {/* Quote */}
-                    <div className="bg-deepBlack-900/50 rounded-xl p-4 mb-3">
+                    <div className="bg-deepBlack-900/50 rounded-xl p-4 mb-3 flex-grow">
                       <Quote className="w-4 h-4 text-offWhite-600 mb-2" />
                       <p className="text-offWhite-300 italic">&ldquo;{story.quote}&rdquo;</p>
                     </div>
 
                     {/* Highlight */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-2">
                       <div className="w-2 h-2 bg-metallicGold-500 rounded-full animate-pulse" />
                       <p className="text-sm text-metallicGold-400 font-medium">{story.highlight}</p>
+                    </div>
+
+                    {/* Source */}
+                    <div className="text-xs text-offWhite-500 mt-auto pt-2 border-t border-offWhite-700/20">
+                      출처: {story.source}
                     </div>
                   </div>
                 </div>
