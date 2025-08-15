@@ -5,11 +5,20 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "build:prod": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "performance:build": "npm run type-check && npm run lint && npm run build:prod",
+    "performance:audit": "npm run build:analyze",
     "git": "./scripts/git-automation.sh",
     "git:quick": "./scripts/git-automation.sh",
-    "deploy": "./scripts/git-automation.sh"
+    "deploy": "./scripts/git-automation.sh",
+    "claude:fix": "npm run lint:fix && npm run type-check",
+    "claude:commit": "git add . && git commit -m \"🚀 자동 커밋: 성능 최적화 완료\"",
+    "claude:deploy": "npm run claude:fix && npm run claude:commit && git push"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",

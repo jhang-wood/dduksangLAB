@@ -1,44 +1,66 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import { logger } from '@/lib/logger';
 
 interface HeaderProps {
   currentPage?: string;
 }
 
-export default function Header({ currentPage = 'home' }: HeaderProps) {
+const Header = React.memo(function Header({ currentPage = 'home' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
   const { user, userProfile, signOut, isAdmin } = useAuth();
 
-  logger.debug('[Header] Auth state:', {
-    user: user?.email,
-    userProfile: userProfile,
-    role: userProfile?.role,
-    isAdmin: isAdmin,
-  });
-
-  const navItems = [
+  // 네비게이션 아이템을 메모이제이션
+  const navItems = useMemo(() => [
     { id: 'ai-trends', label: 'AI 트렌드', href: '/ai-trends' },
     { id: 'sites', label: '사이트홍보관', href: '/sites' },
     { id: 'community', label: '커뮤니티', href: '/community' },
     { id: 'lectures', label: '강의', href: '/lectures' },
     ...(isAdmin ? [{ id: 'admin', label: '관리', href: '/admin' }] : []),
-  ];
+  ], [isAdmin]);
 
-  logger.debug('[Header] Nav items:', navItems);
+  // 사용자 표시명 메모이제이션
+  const userDisplayName = useMemo(() => 
+    userProfile?.name || user?.email?.split('@')[0] || '사용자',
+    [userProfile?.name, user?.email]
+  );
 
-  const handleSignOut = async () => {
+  // 콜백 함수들을 메모이제이션
+  const handleSignOut = useCallback(async () => {
     await signOut();
     setIsUserMenuOpen(false);
-  };
+  }, [signOut]);
+
+  const handleMenuToggle = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
+  }, []);
+
+  const handleUserMenuToggle = useCallback(() => {
+    setIsUserMenuOpen(prev => !prev);
+  }, []);
+
+  const handleMypageClick = useCallback(() => {
+    router.push('/mypage');
+    setIsUserMenuOpen(false);
+  }, [router]);
+
+  const handleMobileMypageClick = useCallback(() => {
+    router.push('/mypage');
+    setIsMenuOpen(false);
+  }, [router]);
+
+  const handleMobileSignOut = useCallback(async () => {
+    await signOut();
+    setIsMenuOpen(false);
+  }, [signOut]);
+
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-deepBlack-900/80 backdrop-blur-xl border-b border-metallicGold-900/20">
@@ -54,6 +76,9 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   fill
                   className="object-contain filter drop-shadow-[0_0_8px_rgba(255,215,0,0.3)]"
                   priority
+                  sizes="(max-width: 768px) 80px, 112px"
+                  placeholder="blur"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEyIiBoZWlnaHQ9IjY0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzMzMiLz48L3N2Zz4="
                 />
               </div>
             </Link>
@@ -81,11 +106,11 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
             {user ? (
               <div className="relative">
                 <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onClick={handleUserMenuToggle}
                   className="flex items-center gap-2 px-4 py-2 text-sm text-offWhite-500 hover:text-metallicGold-500 transition-colors"
                 >
                   <User size={18} />
-                  <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
+                  <span>{userDisplayName}</span>
                 </button>
 
                 {isUserMenuOpen && (
@@ -95,10 +120,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                         {userProfile?.role === 'admin' ? '관리자' : '일반회원'}
                       </div>
                       <button
-                        onClick={() => {
-                          router.push('/mypage');
-                          setIsUserMenuOpen(false);
-                        }}
+                        onClick={handleMypageClick}
                         className="w-full px-4 py-2 text-sm text-left text-offWhite-500 hover:bg-deepBlack-600/50 hover:text-metallicGold-500 transition-colors"
                       >
                         마이페이지
@@ -126,7 +148,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={handleMenuToggle}
             className="md:hidden text-offWhite-500 hover:text-metallicGold-500 transition-colors"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -157,22 +179,16 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                 {user ? (
                   <div className="space-y-2">
                     <div className="text-sm text-offWhite-600 mb-2">
-                      {userProfile?.name || user.email?.split('@')[0] || '사용자'}
+                      {userDisplayName}
                     </div>
                     <button
-                      onClick={() => {
-                        router.push('/mypage');
-                        setIsMenuOpen(false);
-                      }}
+                      onClick={handleMobileMypageClick}
                       className="block w-full py-2 text-sm text-left text-offWhite-500 hover:text-metallicGold-500"
                     >
                       마이페이지
                     </button>
                     <button
-                      onClick={() => {
-                        void handleSignOut();
-                        setIsMenuOpen(false);
-                      }}
+                      onClick={() => void handleMobileSignOut()}
                       className="block w-full py-2 text-sm text-left text-red-400 hover:text-red-300"
                     >
                       로그아웃
@@ -194,5 +210,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
       </div>
     </header>
   );
-}
+});
+
+export default Header;
 // Force cache invalidation: 1752976128

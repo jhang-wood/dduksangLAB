@@ -12,14 +12,25 @@ const nextConfig = {
     serverComponentsExternalPackages: [],
   },
   
-  // 이미지 최적화
+  // 이미지 최적화 (성능 개선)
   images: {
     domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co', 'placehold.co'],
     formats: ['image/webp', 'image/avif'],
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 3600, // 1시간으로 증가
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048], // 모바일 우선 반응형
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // 아이콘 및 썸네일
+    loader: 'default',
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'wpzvocfgfwvsxmpckdnu.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
   },
   
   // 컴파일 최적화
@@ -48,31 +59,78 @@ const nextConfig = {
       config.optimization.sideEffects = false;
     }
     
-    // 청크 분할 최적화
+    // 청크 분할 최적화 (성능 개선)
     if (!dev) {
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 20000,
+        minRemainingSize: 0,
+        minChunks: 1,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+        enforceSizeThreshold: 50000,
         cacheGroups: {
+          // React 코어 번들
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react-vendor',
+            chunks: 'all',
+            priority: 40,
+            enforce: true,
+          },
+          // Framer Motion 별도 번들
+          'framer-motion': {
+            test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+            name: 'framer-motion',
+            chunks: 'all',
+            priority: 35,
+            enforce: true,
+          },
+          // Lucide 아이콘 번들
+          lucide: {
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            name: 'lucide-icons',
+            chunks: 'all',
+            priority: 30,
+            enforce: true,
+          },
+          // Supabase 번들
+          supabase: {
+            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+            name: 'supabase',
+            chunks: 'all',
+            priority: 25,
+            enforce: true,
+          },
+          // 차트 라이브러리
+          charts: {
+            test: /[\\/]node_modules[\\/](recharts|d3-)[\\/]/,
+            name: 'charts',
+            chunks: 'all',
+            priority: 20,
+          },
+          // 공통 벤더 (나머지)
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
             priority: 10,
+            minChunks: 2,
           },
-          lucide: {
-            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
-            name: 'lucide',
-            chunks: 'all',
-            priority: 20,
-          },
-          supabase: {
-            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
-            name: 'supabase',
-            chunks: 'all',
-            priority: 20,
+          // 기본 청크
+          default: {
+            minChunks: 2,
+            priority: -10,
+            reuseExistingChunk: true,
           },
         },
       };
+    }
+    
+    // CSS 최적화
+    if (!dev) {
+      config.optimization.minimize = true;
+      config.optimization.minimizer = config.optimization.minimizer || [];
     }
     
     return config;

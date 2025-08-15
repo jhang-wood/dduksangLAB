@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
@@ -17,15 +17,23 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
-import CountdownTimer from '@/components/CountdownTimer';
-import LimitedTimer from '@/components/LimitedTimer';
-import Footer from '@/components/Footer';
+
+// Lazy loading으로 성능 최적화
+const NeuralNetworkBackground = lazy(() => import('@/components/NeuralNetworkBackground'));
+const CountdownTimer = lazy(() => import('@/components/CountdownTimer'));
+const LimitedTimer = lazy(() => import('@/components/LimitedTimer'));
+const Footer = lazy(() => import('@/components/Footer'));
+
+// Loading 컴포넌트들
+const TimerLoadingSkeleton = () => <div className="animate-pulse bg-deepBlack-600/30 rounded-lg h-32 w-full max-w-md mx-auto" />;
+const FooterLoadingSkeleton = () => <div className="animate-pulse bg-deepBlack-600/30 h-96 w-full" />;
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
-      <NeuralNetworkBackground />
+      <Suspense fallback={<div className="absolute inset-0 bg-deepBlack-900" />}>
+        <NeuralNetworkBackground />
+      </Suspense>
       <div className="relative z-10">
         <Header currentPage="home" />
 
@@ -52,6 +60,9 @@ export default function HomePage() {
                     fill
                     className="object-contain filter drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]"
                     priority
+                    sizes="(max-width: 768px) 192px, (max-width: 1024px) 256px, 320px"
+                    placeholder="blur"
+                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzMzMyIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2NjYiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+Cjwvc3ZnPg=="
                   />
                 </div>
               </motion.div>
@@ -103,7 +114,9 @@ export default function HomePage() {
                 <p className="text-lg text-offWhite-500 mb-8 tracking-[0.3em] uppercase">
                   Grand Open D-Day
                 </p>
-                <CountdownTimer />
+                <Suspense fallback={<TimerLoadingSkeleton />}>
+                  <CountdownTimer />
+                </Suspense>
                 <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">
                   2025년 8월 15일 (금) 오후 7시
                 </p>
@@ -763,7 +776,9 @@ export default function HomePage() {
               
               {/* Timer */}
               <div className="mb-12">
-                <LimitedTimer />
+                <Suspense fallback={<TimerLoadingSkeleton />}>
+                  <LimitedTimer />
+                </Suspense>
               </div>
               
 
@@ -819,7 +834,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <Footer />
+        <Suspense fallback={<FooterLoadingSkeleton />}>
+          <Footer />
+        </Suspense>
       </div>
     </div>
   );

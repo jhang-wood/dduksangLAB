@@ -4,7 +4,7 @@ import { logger } from '@/lib/logger';
 import { validateRequiredEnvVars } from '@/lib/env';
 import { createUserProfile, getUserProfile, validateSignupData } from '@/lib/auth-utils';
 
-import { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { supabase } from './supabase-client';
 import { useRouter } from 'next/navigation';
@@ -51,39 +51,87 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchUserProfile = async (userId: string) => {
-    logger.log('[Auth] Fetching profile for user:', userId);
-    
-    const result = await getUserProfile(userId);
-    
-    if (result.success && result.profile) {
-      logger.log('[Auth] Profile fetched:', result.profile);
-      setUserProfile(result.profile as UserProfile);
-    } else {
-      // 프로필이 없는 경우 생성 시도
-      logger.log('[Auth] Profile not found, creating new profile...');
-      const { data: userData } = await supabase.auth.getUser();
+  // 프로필 캐시를 위한 ref
+  const profileCacheRef = useRef<Map<string, { profile: UserProfile; timestamp: number }>>(new Map());
+  const fetchingProfileRef = useRef<Map<string, Promise<void>>>(new Map());
+  
+  // 캐시 유효기간 (5분)
+  const CACHE_DURATION = 5 * 60 * 1000;
 
-      if (userData?.user) {
-        const createResult = await createUserProfile({
-          id: userId,
-          email: userData.user.email!,
-          name: userData.user.email?.split('@')[0] ?? 'User',
-          role: 'user',
+  const fetchUserProfile = useCallback(async (userId: string) => {
+    // 캐시 확인
+    const cached = profileCacheRef.current.get(userId);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+      logger.log('[Auth] Using cached profile for user:', userId);
+      setUserProfile(cached.profile);
+      return;
+    }
+
+    // 중복 요청 방지
+    const existingFetch = fetchingProfileRef.current.get(userId);
+    if (existingFetch) {
+      logger.log('[Auth] Profile fetch already in progress for user:', userId);
+      await existingFetch;
+      return;
+    }
+
+    const fetchPromise = (async () => {
+      logger.log('[Auth] Fetching profile for user:', userId);
+      
+      const result = await getUserProfile(userId);
+    
+      if (result.success && result.profile) {
+        logger.log('[Auth] Profile fetched:', result.profile);
+        const profile = result.profile as UserProfile;
+        setUserProfile(profile);
+        
+        // 캐시에 저장
+        profileCacheRef.current.set(userId, {
+          profile,
+          timestamp: Date.now()
         });
+      } else {
+        // 프로필이 없는 경우 생성 시도
+        logger.log('[Auth] Profile not found, creating new profile...');
+        const { data: userData } = await supabase.auth.getUser();
 
-        if (createResult.success && createResult.profile) {
-          logger.log('[Auth] Profile created:', createResult.profile);
-          setUserProfile(createResult.profile as UserProfile);
+        if (userData?.user) {
+          const createResult = await createUserProfile({
+            id: userId,
+            email: userData.user.email!,
+            name: userData.user.email?.split('@')[0] ?? 'User',
+            role: 'user',
+          });
+
+          if (createResult.success && createResult.profile) {
+            logger.log('[Auth] Profile created:', createResult.profile);
+            const profile = createResult.profile as UserProfile;
+            setUserProfile(profile);
+            
+            // 캐시에 저장
+            profileCacheRef.current.set(userId, {
+              profile,
+              timestamp: Date.now()
+            });
+          } else {
+            logger.error('[Auth] Failed to create profile:', createResult.error);
+            setUserProfile(null);
+          }
         } else {
-          logger.error('[Auth] Failed to create profile:', createResult.error);
           setUserProfile(null);
         }
-      } else {
-        setUserProfile(null);
       }
+    })();
+
+    // 진행 중인 요청 추적
+    fetchingProfileRef.current.set(userId, fetchPromise);
+    
+    try {
+      await fetchPromise;
+    } finally {
+      fetchingProfileRef.current.delete(userId);
     }
-  };
+  }, [CACHE_DURATION]);
 
   useEffect(() => {
     
@@ -109,7 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchUserProfile]);
 
 
   const signIn = async (email: string, password: string) => {

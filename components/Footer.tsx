@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone } from 'lucide-react';
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+const Footer = React.memo(function Footer() {
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   return (
     <footer className="bg-deepBlack-900 border-t border-metallicGold-900/20">
@@ -21,6 +21,9 @@ export default function Footer() {
                 alt="떡상연구소"
                 fill
                 className="object-contain filter brightness-110"
+                sizes="96px"
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzMzMyIvPjwvc3ZnPg=="
               />
             </div>
             <div className="text-center md:text-left text-xs text-offWhite-500">
@@ -66,4 +69,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+});
+
+export default Footer;
