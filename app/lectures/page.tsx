@@ -140,9 +140,21 @@ export default function LecturesPage() {
         <Header currentPage="lectures" />
         
         {/* Hero Section - Single Column */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-32 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(255, 215, 0, 0.03) 100px,
+                rgba(255, 215, 0, 0.03) 200px
+              )`
+            }} />
+            <div className="absolute top-20 left-[10%] w-64 h-64 bg-metallicGold-500/10 rounded-full blur-3xl animate-pulse-soft" />
+            <div className="absolute bottom-20 right-[10%] w-64 h-64 bg-metallicGold-600/10 rounded-full blur-3xl animate-pulse-soft animation-delay-2000" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ClaudeHeroSection />
@@ -150,7 +162,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Success Stories Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -160,7 +172,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Comparison Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -170,7 +182,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Gallery Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -180,7 +192,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Calculator Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -190,7 +202,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Trial vs Shortcut Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -200,7 +212,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Learning Method Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -213,7 +225,7 @@ export default function LecturesPage() {
               {/* <VibeCodingShowcase /> */}
 
         {/* Solution Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -535,7 +547,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Curriculum Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -545,7 +557,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Recommended For Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -577,7 +589,7 @@ export default function LecturesPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 px-4 relative overflow-hidden">
+        <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
