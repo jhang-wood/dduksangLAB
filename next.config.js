@@ -10,6 +10,7 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
     serverComponentsExternalPackages: [],
+    esmExternals: 'loose',
   },
   
   // 이미지 최적화

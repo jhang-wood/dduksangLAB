@@ -20,7 +20,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 const ADMIN_EMAIL = 'admin@dduksang.com';
 const ADMIN_PASSWORD = 'dduksang2025!@#';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     console.log('🚀 관리자 계정 설정 API 시작');
 

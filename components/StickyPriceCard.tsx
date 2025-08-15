@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Users, Star, Shield, Check, ArrowRight, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth-context';
 
 interface StickyPriceCardProps {
   originalPrice: number;
@@ -20,7 +19,6 @@ export default function StickyPriceCard({
   onEnrollClick,
 }: StickyPriceCardProps) {
   const router = useRouter();
-  const { } = useAuth();
   
   // Removed parallax effect for better sticky behavior
 
