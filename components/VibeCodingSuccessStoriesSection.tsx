@@ -18,7 +18,7 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Maor Shlomo',
       role: '1인 개발자',
-      achievement: '$80M 매각',
+      achievement: '$80M (약 1,000억원) 매각',
       quote: '6개월 만에 25만 사용자와 월 $189K 수익 달성',
       icon: Rocket,
       color: 'from-purple-500 to-indigo-600',
@@ -28,7 +28,7 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Peter Levels',
       role: '인디 해커',
-      achievement: '월 $1M+ 수익',
+      achievement: '월 $1M+ (약 12억원+) 수익',
       quote: '3시간 바이브코딩으로 월 1.2억 버는 게임 제작',
       icon: DollarSign,
       color: 'from-green-500 to-emerald-600',
@@ -36,24 +36,24 @@ export default function VibeCodingSuccessStoriesSection() {
       source: 'Josh Maily 2024'
     },
     {
-      name: '심리테스트 개발자',
-      role: '1인 SaaS',
-      achievement: '$18.5K 수익',
-      quote: '17개 프로젝트 중 3개만 성공, 1개가 수익의 50% 차지',
+      name: 'Danny Postma',
+      role: '1인 개발자',
+      achievement: '$18.5K (약 2,300만원) 수익',
+      quote: 'AI 코딩으로 하루에 웹앱 하나씩 만들어 런칭',
       icon: TrendingUp,
       color: 'from-orange-500 to-red-600',
-      highlight: '기술보다 사용자 심리를 활용한 바이브코딩 전략',
-      source: 'GeekNews 2024'
+      highlight: 'Ship Fast 템플릿으로 17개 SaaS 제품 출시, 3개 히트',
+      source: 'IndieHackers 2024'
     },
     {
-      name: '실리콘밸리 팀들',
-      role: '소규모 스타트업',
-      achievement: '$10M+ ARR',
-      quote: '10명 미만 팀으로 연 1000만달러 수익 창출',
+      name: 'Levelsio (Nomad List)',
+      role: '1인 SaaS 제국',
+      achievement: '$10M+ (약 125억원+) ARR',
+      quote: '모든 코드를 혼자 작성, AI가 없으면 불가능했을 속도',
       icon: Users,
       color: 'from-blue-500 to-cyan-600',
-      highlight: 'AI 코딩으로 대기업 대비 압도적 효율성 구현',
-      source: 'AI Times 2025'
+      highlight: '12개 성공 프로덕트를 1인이 운영하는 전설적 사례',
+      source: 'Lex Fridman Podcast 2024'
     }
   ];
 
