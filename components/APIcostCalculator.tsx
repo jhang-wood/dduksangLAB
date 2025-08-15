@@ -74,12 +74,8 @@ export default function APIcostCalculator() {
   ];
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/50 to-deepBlack-900">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-metallicGold-500/5" />
-      </div>
-      
-      <div className="container mx-auto max-w-6xl relative z-10">
+    <div className="relative overflow-hidden">
+      <div className="container mx-auto max-w-6xl">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -395,6 +391,6 @@ export default function APIcostCalculator() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

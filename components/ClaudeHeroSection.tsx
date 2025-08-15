@@ -6,13 +6,8 @@ import { Sparkles, Terminal, Code, Cpu, Zap, Rocket, MessageSquare } from 'lucid
 
 export default function ClaudeHeroSection() {
   return (
-    <section className="relative w-full py-16 overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 via-deepBlack-900 to-purple-500/5" />
-      </div>
-
-      <div className="relative z-10 w-full px-6">
+    <div className="relative w-full">
+      <div className="w-full">
         <div className="flex flex-col gap-6">
           {/* Karpathy Quote Section */}
           <motion.div
@@ -398,6 +393,6 @@ export default function ClaudeHeroSection() {
 
         </div>
       </div>
-    </section>
+    </div>
   );
 }

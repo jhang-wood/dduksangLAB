@@ -78,12 +78,8 @@ export default function TrialErrorVsShortcutSection() {
   ];
 
   return (
-    <section className="py-6 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-green-500/5" />
-      </div>
-      
-      <div className="container mx-auto max-w-5xl relative z-10">
+    <div className="relative overflow-hidden">
+      <div className="container mx-auto max-w-5xl">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -267,6 +263,6 @@ export default function TrialErrorVsShortcutSection() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

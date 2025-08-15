@@ -19,7 +19,7 @@ export const FAQSection = ({ faqs, className = '' }: { faqs: FAQ[]; className?: 
   };
 
   return (
-    <section className={`py-16 ${className}`}>
+    <div className={className}>
       <div className="container mx-auto max-w-4xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -98,7 +98,7 @@ export const FAQSection = ({ faqs, className = '' }: { faqs: FAQ[]; className?: 
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 };
 

@@ -147,12 +147,8 @@ export default function ClaudeCodeVsOthersSection() {
   };
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/50 to-deepBlack-900">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-green-500/5" />
-      </div>
-      
-      <div className="container mx-auto max-w-7xl relative z-10">
+    <div className="relative">
+      <div className="container mx-auto max-w-7xl">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -591,6 +587,6 @@ export default function ClaudeCodeVsOthersSection() {
           </motion.div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }
