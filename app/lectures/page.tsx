@@ -139,67 +139,83 @@ export default function LecturesPage() {
       <div className="relative z-10">
         <Header currentPage="lectures" />
         
-        {/* Main Content Container with 2 Columns */}
-        <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Column: Main Content */}
-            <div className="flex-1 lg:flex-shrink-0 lg:w-0">
-              {/* Claude Hero Section - Karpathy 인용 포함 */}
-              <ClaudeHeroSection />
-            </div>
+        {/* Hero Section - First Background */}
+        <section className="w-full bg-deepBlack-900">
+          <div className="container mx-auto max-w-6xl px-4 py-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Left Column: Main Content */}
+              <div className="flex-1 lg:flex-shrink-0 lg:w-0">
+                {/* Claude Hero Section - Karpathy 인용 포함 */}
+                <ClaudeHeroSection />
+              </div>
 
-            {/* Right Column: Price Card - Hero 섹션 바로 옆에 배치 */}
-            <div className="lg:w-80 lg:flex-shrink-0">
-              <SimplePriceCard
-                originalPrice={masterCourse.originalPrice}
-                discountedPrice={masterCourse.price}
-                isEnrolled={isEnrolled}
-                onEnrollClick={handleEnrollClick}
-              />
+              {/* Right Column: Price Card - Hero 섹션 바로 옆에 배치 */}
+              <div className="lg:w-80 lg:flex-shrink-0">
+                <SimplePriceCard
+                  originalPrice={masterCourse.originalPrice}
+                  discountedPrice={masterCourse.price}
+                  isEnrolled={isEnrolled}
+                  onEnrollClick={handleEnrollClick}
+                />
+              </div>
             </div>
           </div>
+        </section>
 
-        </div>
-
-        {/* 이후 콘텐츠는 전체 폭으로 표시 */}
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="h-16" />
-          
-          {/* Vibe Coding Success Stories - 실제 성공 사례 */}
-          <VibeCodingSuccessStoriesSection />
+        {/* Success Stories Section - Second Background */}
+        <section className="w-full bg-gradient-to-b from-deepBlack-900 to-deepBlack-800">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* Vibe Coding Success Stories - 실제 성공 사례 */}
+            <VibeCodingSuccessStoriesSection />
+          </div>
+        </section>
               
-              <div className="h-16" />
+        {/* Comparison Section - Third Background */}
+        <section className="w-full bg-deepBlack-700">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* Claude Code vs Others - 정확한 도구 비교 */}
+            <ClaudeCodeVsOthersSection />
+          </div>
+        </section>
               
-              {/* Claude Code vs Others - 정확한 도구 비교 */}
-              <ClaudeCodeVsOthersSection />
+        {/* Gallery Section - Fourth Background */}
+        <section className="w-full bg-gradient-to-b from-deepBlack-700 to-deepBlack-800">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* Project Gallery - 실제로 만들 수 있는 것들 */}
+            <ProjectGallery />
+          </div>
+        </section>
               
-              <div className="h-16" />
+        {/* Calculator Section - Fifth Background */}
+        <section className="w-full bg-deepBlack-600">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* API Cost Calculator - ROI 계산기 */}
+            <APIcostCalculator />
+          </div>
+        </section>
               
-              {/* Project Gallery - 실제로 만들 수 있는 것들 */}
-              <ProjectGallery />
+        {/* Trial vs Shortcut Section - Sixth Background */}
+        <section className="w-full bg-gradient-to-b from-deepBlack-600 to-deepBlack-700">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* Trial Error vs Shortcut Section - 시행착오 vs 지름길 비교 */}
+            <TrialErrorVsShortcutSection />
+          </div>
+        </section>
               
-              <div className="h-16" />
-              
-              {/* API Cost Calculator - ROI 계산기 */}
-              <APIcostCalculator />
-              
-              <div className="h-16" />
-              
-              {/* Trial Error vs Shortcut Section - 시행착오 vs 지름길 비교 */}
-              <TrialErrorVsShortcutSection />
-              
-              <div className="h-16" />
-              
-              {/* Learning Method Section - 학습 방식 소개 */}
-              <LearningMethodSection />
-              
-              <div className="h-16" />
+        {/* Learning Method Section - Seventh Background */}
+        <section className="w-full bg-deepBlack-800">
+          <div className="container mx-auto max-w-6xl px-4 py-16">
+            {/* Learning Method Section - 학습 방식 소개 */}
+            <LearningMethodSection />
+          </div>
+        </section>
               
               {/* Vibe Coding Showcase */}
               {/* <VibeCodingShowcase /> */}
 
-              {/* Solution Section (앞으로 이동) */}
-              <section className="py-20">
+        {/* Solution Section - Eighth Background */}
+        <section className="w-full bg-gradient-to-b from-deepBlack-800 to-deepBlack-900">
+          <div className="container mx-auto max-w-6xl px-4 py-20">
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -513,46 +529,53 @@ export default function LecturesPage() {
                     </p>
                   </motion.div>
                 </motion.div>
-              </section>
+          </div>
+        </section>
 
-              {/* Curriculum Section - Simplified */}
-              <section className="py-20">
-                <EnhancedModuleAccordion modules={masterCourse.modules} />
-              </section>
+        {/* Curriculum Section - Ninth Background */}
+        <section className="w-full bg-deepBlack-600">
+          <div className="container mx-auto max-w-6xl px-4 py-20">
+            <EnhancedModuleAccordion modules={masterCourse.modules} />
+          </div>
+        </section>
 
-              {/* Recommended For Section */}
-              <section className="py-20">
-                <h2 className="text-3xl font-bold text-offWhite-200 mb-8">
-                  이런 분들께 추천합니다
-                </h2>
-                <div className="space-y-4">
-                  {[
-                    '비싼 강의료에 지친 직장인',
-                    'AI로 자동화 비즈니스를 시작하고 싶은 사업가',
-                    '코딩 없이 프로그램을 만들고 싶은 비개발자',
-                    '시간과 장소에 구애받지 않고 일하고 싶은 프리랜서',
-                  ].map((item, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ x: -20, opacity: 0 }}
-                      whileInView={{ x: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="flex items-start gap-3"
-                    >
-                      <CheckCircle2 className="text-green-500 mt-1 flex-shrink-0" size={20} />
-                      <span className="text-offWhite-300 text-lg">{item}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </section>
+        {/* Recommended For Section - Tenth Background */}
+        <section className="w-full bg-gradient-to-b from-deepBlack-600 to-deepBlack-700">
+          <div className="container mx-auto max-w-6xl px-4 py-20">
+            <h2 className="text-3xl font-bold text-offWhite-200 mb-8">
+              이런 분들께 추천합니다
+            </h2>
+            <div className="space-y-4">
+              {[
+                '비싼 강의료에 지친 직장인',
+                'AI로 자동화 비즈니스를 시작하고 싶은 사업가',
+                '코딩 없이 프로그램을 만들고 싶은 비개발자',
+                '시간과 장소에 구애받지 않고 일하고 싶은 프리랜서',
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ x: -20, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex items-start gap-3"
+                >
+                  <CheckCircle2 className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                  <span className="text-offWhite-300 text-lg">{item}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-          {/* FAQ Section */}
-          <FAQSection
-            faqs={sampleFAQs}
-            className="py-20"
-          />
-        </div>
+        {/* FAQ Section - Eleventh Background */}
+        <section className="w-full bg-deepBlack-800">
+          <div className="container mx-auto max-w-6xl px-4 py-20">
+            <FAQSection
+              faqs={sampleFAQs}
+            />
+          </div>
+        </section>
 
         {/* Mobile Fixed Bottom CTA - 제거됨, 이제 모든 화면에서 카드가 자연스럽게 표시됨 */}
         
