@@ -13,7 +13,7 @@ import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
-import StickyPriceCard from '@/components/StickyPriceCard';
+import SimplePriceCard from '@/components/SimplePriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 import ProjectGallery from '@/components/ProjectGallery';
 import LearningMethodSection from '@/components/LearningMethodSection';
@@ -91,7 +91,7 @@ const masterCourse = {
 
 export default function LecturesPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(false);
   const router = useRouter();
   
@@ -168,16 +168,32 @@ export default function LecturesPage() {
         
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="lectures-grid lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 flex flex-col gap-8">
-            {/* Left Column: Main Content - Expanded */}
-            <div className="min-h-0 order-2 lg:order-1 relative">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Column: Main Content */}
+            <div className="flex-1 lg:flex-shrink-0 lg:w-0">
               {/* Claude Hero Section - Karpathy 인용 포함 */}
               <ClaudeHeroSection />
-              
-              <div className="h-16" />
-              
-              {/* Vibe Coding Success Stories - 실제 성공 사례 */}
-              <VibeCodingSuccessStoriesSection />
+            </div>
+
+            {/* Right Column: Price Card - Hero 섹션 바로 옆에 배치 */}
+            <div className="lg:w-80 lg:flex-shrink-0">
+              <SimplePriceCard
+                originalPrice={masterCourse.originalPrice}
+                discountedPrice={masterCourse.price}
+                isEnrolled={isEnrolled}
+                onEnrollClick={handleEnrollClick}
+              />
+            </div>
+          </div>
+
+        </div>
+
+        {/* 이후 콘텐츠는 전체 폭으로 표시 */}
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="h-16" />
+          
+          {/* Vibe Coding Success Stories - 실제 성공 사례 */}
+          <VibeCodingSuccessStoriesSection />
               
               <div className="h-16" />
               
@@ -558,23 +574,11 @@ export default function LecturesPage() {
                 </div>
               </section>
 
-              {/* FAQ Section */}
-              <FAQSection
-                faqs={sampleFAQs}
-                className="py-20"
-              />
-            </div>
-
-            {/* Right Column: Price Card */}
-            <aside className="order-1 lg:order-2 block">
-              <StickyPriceCard
-                originalPrice={masterCourse.originalPrice}
-                discountedPrice={masterCourse.price}
-                isEnrolled={isEnrolled}
-                onEnrollClick={handleEnrollClick}
-              />
-            </aside>
-          </div>
+          {/* FAQ Section */}
+          <FAQSection
+            faqs={sampleFAQs}
+            className="py-20"
+          />
         </div>
 
         {/* Mobile Fixed Bottom CTA - 제거됨, 이제 모든 화면에서 카드가 자연스럽게 표시됨 */}

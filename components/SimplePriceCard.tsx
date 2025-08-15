@@ -1,66 +1,29 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { Clock, Users, Star, Shield, Check, ArrowRight, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-interface StickyPriceCardProps {
+interface SimplePriceCardProps {
   originalPrice: number;
   discountedPrice: number;
   isEnrolled: boolean;
   onEnrollClick: () => void;
 }
 
-export default function StickyPriceCard({
+export default function SimplePriceCard({
   originalPrice,
   discountedPrice,
   isEnrolled,
   onEnrollClick,
-}: StickyPriceCardProps) {
+}: SimplePriceCardProps) {
   const router = useRouter();
-
   const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
-
-  // 8월 17일까지 남은 시간 계산
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      // 8월 17일 자정으로 설정 (한국 시간 기준)
-      const targetDate = new Date('2025-08-17T00:00:00+09:00');
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-        const milliseconds = Math.floor((difference % 1000) / 10); // 10ms 단위로 표시
-        
-        return { days, hours, minutes, seconds, milliseconds };
-      } else {
-        // 마감일이 지났을 경우
-        return { days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
-      }
-    };
-
-    // 초기 설정
-    setTimeLeft(calculateTimeLeft());
-
-    // 10ms마다 업데이트
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 10);
-
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <div className="w-full">
-      <div className="bg-gradient-to-b from-deepBlack-300/60 to-deepBlack-400/60 backdrop-blur-xl rounded-3xl p-6 border border-metallicGold-900/20 shadow-xl relative"
-      >
+      <div className="bg-gradient-to-b from-deepBlack-300/60 to-deepBlack-400/60 backdrop-blur-xl rounded-3xl p-6 border border-metallicGold-900/20 shadow-xl relative">
+        
         {/* Special Badge */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold">
@@ -84,7 +47,7 @@ export default function StickyPriceCard({
             <span className="text-offWhite-400 line-through text-base">
               ₩{originalPrice.toLocaleString()}
             </span>
-            <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+            <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
               {discount}% OFF
             </span>
           </div>
@@ -141,26 +104,21 @@ export default function StickyPriceCard({
           </div>
         </div>
 
-        {/* Countdown Timer */}
-        <motion.div
-          animate={{ scale: [1, 1.02, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="mt-4 p-3 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-xl border border-orange-500/20"
-        >
+        {/* Static Timer Section - No JavaScript logic */}
+        <div className="mt-4 p-3 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-xl border border-orange-500/20">
           <div className="text-center">
             <p className="font-bold text-yellow-400 text-sm mb-1">사전예약 한정특가 마감까지</p>
             <div className="bg-deepBlack-800/80 rounded-lg px-3 py-2 inline-block">
               <p className="text-sm font-mono font-bold text-metallicGold-500">
-                {timeLeft.days > 0 ? `${timeLeft.days}일 ` : ''}
-                {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}.{String(timeLeft.milliseconds).padStart(2, '0')}
+                1일 23:59:59
               </p>
             </div>
             <p className="text-xs text-red-300 mt-2 font-semibold">⚠️ 1차 사전예약 마감일: 8월 17일</p>
             <p className="text-xs text-offWhite-300 mt-1">이 가격은 곧 종료됩니다</p>
           </div>
-        </motion.div>
+        </div>
 
-        {/* CTA Button - Moved to bottom */}
+        {/* CTA Button */}
         {isEnrolled ? (
           <button
             onClick={() => router.push('/lectures/claude-code-master')}
