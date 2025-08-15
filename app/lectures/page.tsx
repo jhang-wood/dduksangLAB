@@ -140,16 +140,16 @@ export default function LecturesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+    <div className="min-h-screen bg-deepBlack-900 relative">
       <NeuralNetworkBackground />
-      <div className="relative z-10">
+      <div className="relative z-10" style={{ overflow: 'visible' }}>
         <Header currentPage="lectures" />
         
         {/* Main Content Container with 2 Columns */}
         <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 flex flex-col gap-8" style={{ overflow: 'visible' }}>
             {/* Left Column: Main Content - Expanded */}
-            <div className="flex-1 lg:max-w-5xl">
+            <div className="min-h-0 order-2 lg:order-1">
               {/* Claude Hero Section - Karpathy 인용 포함 */}
               <ClaudeHeroSection />
               
@@ -545,14 +545,16 @@ export default function LecturesPage() {
             </div>
 
             {/* Right Column: Sticky Price Card - Reduced */}
-            <div className="lg:block hidden w-[320px] flex-shrink-0">
-              <StickyPriceCard
-                originalPrice={masterCourse.originalPrice}
-                discountedPrice={masterCourse.price}
-                isEnrolled={isEnrolled}
-                onEnrollClick={handleEnrollClick}
-              />
-            </div>
+            <aside className="order-1 lg:order-2 lg:block hidden" style={{ position: 'relative' }}>
+              <div style={{ position: 'sticky', top: '5rem', zIndex: 50, height: 'fit-content' }}>
+                <StickyPriceCard
+                  originalPrice={masterCourse.originalPrice}
+                  discountedPrice={masterCourse.price}
+                  isEnrolled={isEnrolled}
+                  onEnrollClick={handleEnrollClick}
+                />
+              </div>
+            </aside>
           </div>
         </div>
 
