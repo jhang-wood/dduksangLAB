@@ -18,7 +18,6 @@ import LearningMethodSection from '@/components/LearningMethodSection';
 import TrialErrorVsShortcutSection from '@/components/TrialErrorVsShortcutSection';
 import VibeCodingSuccessStoriesSection from '@/components/VibeCodingSuccessStoriesSection';
 import ClaudeCodeVsOthersSection from '@/components/ClaudeCodeVsOthersSection';
-import APIcostCalculator from '@/components/APIcostCalculator';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -188,20 +187,6 @@ export default function LecturesPage() {
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ProjectGallery />
-          </div>
-        </section>
-              
-        {/* Calculator Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-emerald-900/8 to-deepBlack-900" />
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 80% 40%, rgba(16, 185, 129, 0.03) 0%, transparent 50%)`
-            }} />
-            <div className="absolute bottom-24 right-[10%] w-52 h-52 bg-green-500/5 rounded-full blur-3xl" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <APIcostCalculator />
           </div>
         </section>
               
