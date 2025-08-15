@@ -574,7 +574,8 @@ export class AutomationScheduler {
 
     const analytics = await contentManager.getContentAnalytics(days);
 
-    // TODO: 실제 리포트 생성 및 발송 로직 구현
+    // TODO: PDF 리포트 생성 및 이메일/슬랙으로 발송
+    // 차트 생성(Chart.js), PDF 변환(Puppeteer), 이메일 발송(Nodemailer) 통합
 
     return {
       message: '주간 리포트 생성 완료',

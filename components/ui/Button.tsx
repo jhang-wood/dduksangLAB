@@ -26,7 +26,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const combinedClasses = `${baseClasses} ${widthClass} ${className}`;
 
     return (
-      <button ref={ref} className={combinedClasses} disabled={disabled ?? loading} {...props}>
+      <button ref={ref} className={combinedClasses} disabled={disabled || loading} {...props}>
         {loading ? (
           <div className="flex items-center justify-center">
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />

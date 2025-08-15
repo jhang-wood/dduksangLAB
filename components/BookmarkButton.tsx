@@ -80,8 +80,13 @@ export default function BookmarkButton({
         setIsBookmarked(true);
       }
 
-      // TODO: Supabase에 저장하는 로직 추가
-      // await supabase.from('bookmarks').upsert(...)
+      // TODO: 사용자 북마크를 Supabase에 영구 저장
+      // 현재는 localStorage 사용, 추후 다음 구조로 DB 저장 필요:
+      // await supabase.from('user_bookmarks').upsert({
+      //   user_id: user.id,
+      //   course_id: courseId,
+      //   created_at: new Date().toISOString()
+      // })
     } catch (error) {
       console.error('북마크 처리 중 오류:', error);
     }

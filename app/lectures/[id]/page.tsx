@@ -104,7 +104,10 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
         // 첫 번째 챕터 자동 선택
         const typedLectureData = lectureData as Lecture;
         if (typedLectureData.chapters && typedLectureData.chapters.length > 0) {
-          setCurrentChapter(typedLectureData.chapters[0] ?? null);
+          const firstChapter = typedLectureData.chapters[0];
+          if (firstChapter) {
+            setCurrentChapter(firstChapter);
+          }
         }
       }
 
@@ -184,7 +187,8 @@ export default function LectureDetailPage({ params }: { params: { id: string } }
   };
 
   const isChapterCompleted = (chapterId: string) => {
-    return progress.find(p => p.chapter_id === chapterId)?.completed ?? false;
+    const chapterProgress = progress.find(p => p.chapter_id === chapterId);
+    return chapterProgress ? chapterProgress.completed : false;
   };
 
   const getChapterProgress = (chapterId: string) => {

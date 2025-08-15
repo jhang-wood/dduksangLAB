@@ -7,7 +7,6 @@ import { logger } from '@/lib/logger';
 import { getCredentialManager } from './credential-manager';
 import { getAccessControlManager, getClientIP } from './access-control';
 import { getOrchestrator } from '@/lib/mcp/orchestrator';
-// import { getPlaywrightController } from '@/lib/mcp/playwright-controller'; // 사용하지 않음
 
 export interface AutoLoginOptions {
   maxRetries?: number;

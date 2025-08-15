@@ -368,7 +368,7 @@ export class SecureBlogAutomation {
   } {
     return {
       isRunning: this.isRunning,
-      systemHealth: 'healthy', // TODO: 실제 시스템 헬스 체크 구현
+      systemHealth: 'healthy', // TODO: CPU/메모리 사용률, DB 연결 상태, 외부 API 응답 등 실제 헬스 체크
     };
   }
 

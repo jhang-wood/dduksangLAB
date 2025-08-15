@@ -41,12 +41,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data for frontend
-    const transformedTrends = trends?.map((trend: any) => ({
+    const transformedTrends = trends ? trends.map((trend: any) => ({
       ...trend,
       published_at: trend.published_at || new Date().toISOString(),
       tags: trend.tags || [],
       seo_keywords: trend.seo_keywords || []
-    })) || [];
+    })) : [];
 
     return NextResponse.json({
       trends: transformedTrends,

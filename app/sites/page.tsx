@@ -100,12 +100,6 @@ export default function SitesPage() {
 
       if (error) {
         logger.error('Error fetching sites:', error);
-        console.error('Supabase error details:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
       } else {
         setSites(data ?? []);
       }
@@ -201,12 +195,6 @@ export default function SitesPage() {
         .single();
 
       if (error) {
-        console.error('Detailed insert error:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
         throw error;
       }
 

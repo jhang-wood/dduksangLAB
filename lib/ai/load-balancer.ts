@@ -10,7 +10,8 @@ export class AIServiceLoadBalancer {
       ...config,
     };
     // Configuration stored for potential future use
-    // TODO: Use _fullConfig for actual configuration implementation
+    // TODO: _fullConfig를 활용한 로드밸런싱 로직 구현
+    // API 키 순환, 요청 제한, 백오프 전략 등에 사용
     
     // Suppress unused variable warning by referencing it
     void _fullConfig;

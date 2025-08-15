@@ -43,21 +43,31 @@ export async function POST(request: NextRequest) {
       }
 
       // 결제 기록 저장
-      const { data: userData } = await supabase
+      const { data: userData, error: userFetchError } = await supabase
         .from('users')
         .select('id')
         .eq('email', data.user_email)
         .single();
 
-      if (userData) {
-        await supabase.from('payments').insert({
-          user_id: (userData as { id: string }).id,
+      if (userFetchError) {
+        logger.error('사용자 조회 실패:', userFetchError);
+        return NextResponse.json({ error: 'User fetch failed' }, { status: 500 });
+      }
+
+      if (userData && typeof userData === 'object' && 'id' in userData) {
+        const { error: paymentError } = await supabase.from('payments').insert({
+          user_id: userData.id as string,
           order_id: data.order_no,
           payapp_order_id: data.payapp_order_id,
           amount: data.amount,
           status: 'completed',
           created_at: new Date().toISOString(),
         });
+
+        if (paymentError) {
+          logger.error('결제 기록 저장 실패:', paymentError);
+          return NextResponse.json({ error: 'Payment record failed' }, { status: 500 });
+        }
       }
     }
 

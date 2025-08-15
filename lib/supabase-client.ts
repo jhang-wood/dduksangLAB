@@ -15,15 +15,7 @@ if (!isCIEnvironment && (!hasValidUrl || !hasValidKey)) {
   // Don't throw error to allow build to proceed
 }
 
-// Log environment variable status for debugging (development only)
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  console.log('🔧 Supabase Client Environment Check:', {
-    hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    urlPreview: `${supabaseUrl.substring(0, 30)}...`,
-    keyPreview: `${supabaseAnonKey.substring(0, 20)}...`,
-  });
-}
+// Environment variable status check moved to development logs only when needed
 
 // Singleton Supabase client instance to prevent multiple GoTrueClient instances
 let supabaseInstance: any = null;

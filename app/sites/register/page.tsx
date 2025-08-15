@@ -59,7 +59,6 @@ export default function RegisterSitePage() {
 
       return publicUrl;
     } catch (error) {
-      console.error('Error uploading thumbnail:', error);
       throw error;
     }
   };
@@ -126,9 +125,8 @@ export default function RegisterSitePage() {
       // 사이트 등록 후 순위 업데이트
       try {
         await fetch('/api/sites/rank', { method: 'POST' });
-        console.log('순위 업데이트 완료');
       } catch (rankError) {
-        console.log('순위 업데이트 실패 (정상):', rankError);
+        // 순위 업데이트 실패는 무시 (선택사항)
       }
 
       setSuccess(true);
@@ -137,7 +135,6 @@ export default function RegisterSitePage() {
       }, 2000);
       
     } catch (err: any) {
-      console.error('Error registering site:', err);
       setError(err.message || '사이트 등록 중 오류가 발생했습니다.');
     } finally {
       setUploading(false);

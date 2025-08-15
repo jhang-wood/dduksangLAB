@@ -3,7 +3,6 @@
  * IP 화이트리스트, 접근 로그, 보안 이벤트 모니터링
  */
 
-// import crypto from 'crypto'; // 사용하지 않음
 import { logger } from '@/lib/logger';
 import { serverEnv } from '@/lib/env';
 import { getSupabaseController } from '@/lib/mcp/supabase-controller';
@@ -235,7 +234,8 @@ export class AccessControlManager {
    */
   private async sendSecurityAlert(event: SecurityEvent): Promise<void> {
     try {
-      // TODO: 실제 알림 시스템 연동 (이메일, 슬랙, 텔레그램 등)
+      // TODO: 보안 알림 시스템 통합
+      // 추천: 이메일(Nodemailer), 슬랙 웹훅, 텔레그램 봇 API
       logger.warn('보안 알림 발송', {
         type: event.type,
         severity: event.severity,
@@ -245,7 +245,8 @@ export class AccessControlManager {
 
       // 심각한 경우 텔레그램 알림 (환경변수가 있는 경우)
       if (serverEnv.telegramBotToken() && serverEnv.telegramChatId() && event.severity === 'critical') {
-        // TODO: 텔레그램 알림 구현
+        // TODO: 텔레그램 보안 알림 발송 구현
+        // fetch()로 telegram bot API 호출
       }
     } catch (error) {
       logger.error('보안 알림 발송 실패', { error });
