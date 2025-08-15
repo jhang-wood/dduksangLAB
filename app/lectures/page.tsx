@@ -10,8 +10,7 @@ import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import Footer from '@/components/Footer';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/lib/auth-context';
+// import { useAuth } from '@/lib/auth-context';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
 import SimplePriceCard from '@/components/SimplePriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
@@ -92,38 +91,17 @@ const masterCourse = {
 export default function LecturesPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [_loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(false);
   const router = useRouter();
   
-  // useAuth hook을 안전하게 호출
-  const authContext = useAuth();
-  const { user, loading: authLoading } = authContext;
+  // 임시로 useAuth 비활성화
+  const user = null;
+  const authLoading = false;
 
   const checkEnrollment = useCallback(async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data } = await supabase
-        .from('lecture_enrollments')
-        .select('lecture_id')
-        .eq('user_id', user.id)
-        .eq('lecture_id', masterCourse.id)
-        .single();
-
-      if (data) {
-        setIsEnrolled(true);
-      }
-    } catch (error) {
-      console.warn('Enrollment check failed:', error);
-      setIsEnrolled(false);
-      setAuthError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+    // 임시로 user가 null이므로 체크 생략
+    setLoading(false);
+    setIsEnrolled(false);
+  }, []);
 
   useEffect(() => {
     // 인증 로딩이 완료된 후에만 등록 상태 확인
@@ -133,11 +111,6 @@ export default function LecturesPage() {
   }, [checkEnrollment, authLoading]);
 
   const handleEnrollClick = () => {
-    if (authError) {
-      // 환경변수 에러 시 알림
-      alert('현재 환경설정에 문제가 있습니다. 관리자에게 문의하세요.');
-      return;
-    }
     
     if (!user) {
       router.push('/auth/login');
@@ -147,7 +120,7 @@ export default function LecturesPage() {
   };
 
   // 로딩 조건을 단순화 - 환경변수 경고가 있어도 페이지 렌더링
-  if (false) { // 임시로 로딩 비활성화
+  if (_loading && authLoading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">

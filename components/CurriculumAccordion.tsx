@@ -4,12 +4,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
-  ChevronRight,
   Clock,
   Play,
   Lock,
   CheckCircle,
-  Award,
   BookOpen,
 } from 'lucide-react';
 
@@ -39,11 +37,6 @@ interface CurriculumAccordionProps {
   showPreviewOnly?: boolean;
 }
 
-const difficultyLabels = {
-  beginner: { label: '초급', color: 'text-green-400 bg-green-500/20 border-green-500/30' },
-  intermediate: { label: '중급', color: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30' },
-  advanced: { label: '고급', color: 'text-red-400 bg-red-500/20 border-red-500/30' },
-};
 
 export default function CurriculumAccordion({
   sections,
@@ -69,13 +62,6 @@ export default function CurriculumAccordion({
     return progress[chapterId]?.completed ?? false;
   };
 
-  const getChapterProgress = (chapterId: string, duration: number) => {
-    const chapterProgress = progress[chapterId];
-    if (!chapterProgress || !duration) {
-      return 0;
-    }
-    return Math.min(100, (chapterProgress.watch_time / duration) * 100);
-  };
 
   const getSectionProgress = (section: Section) => {
     const completedChapters = section.chapters.filter(ch => isChapterCompleted(ch.id)).length;
@@ -115,25 +101,23 @@ export default function CurriculumAccordion({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: sectionIndex * 0.1 }}
-            className="bg-deepBlack-300/50 backdrop-blur-sm rounded-2xl border border-metallicGold-900/30 hover:border-metallicGold-500/50 transition-all overflow-hidden"
+            className="bg-deepBlack-300 rounded-xl overflow-hidden"
           >
             {/* Section Header */}
             <button
               onClick={() => toggleSection(section.id)}
-              className="w-full p-6 text-left flex items-center justify-between hover:bg-deepBlack-600/30 transition-colors"
+              className="w-full p-4 text-left flex items-center justify-between hover:bg-deepBlack-600/50 transition-colors"
               aria-expanded={isExpanded}
               aria-controls={`curriculum-section-${section.id}`}
               aria-label={`${section.title} 섹션 ${isExpanded ? '접기' : '펼치기'}`}
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-12 h-12 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="text-deepBlack-900" size={20} />
-                </div>
+                <BookOpen className="text-metallicGold-500" size={20} />
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold text-offWhite-200 mb-2">{section.title}</h3>
+                  <h3 className="text-lg font-bold text-offWhite-200 mb-1">{section.title}</h3>
 
-                  <div className="flex items-center gap-4 text-sm text-offWhite-500 flex-wrap">
+                  <div className="flex items-center gap-3 text-sm text-offWhite-500">
                     <div className="flex items-center gap-2">
                       <Clock size={16} />
                       <span>{formatTime(section.total_duration)}</span>
@@ -158,38 +142,22 @@ export default function CurriculumAccordion({
 
                   {/* Progress Bar */}
                   {!showPreviewOnly && sectionProgress > 0 && (
-                    <div className="mt-3">
-                      <div className="h-2 bg-deepBlack-900 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${sectionProgress}%` }}
-                          transition={{ duration: 0.8, delay: 0.3 }}
+                    <div className="mt-2">
+                      <div className="h-1 bg-deepBlack-600 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-metallicGold-500 transition-all duration-500"
+                          style={{ width: `${sectionProgress}%` }}
                         />
-                      </div>
-                      <div className="flex justify-between text-xs text-offWhite-600 mt-1">
-                        <span>진도율</span>
-                        <span>{Math.round(sectionProgress)}%</span>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 flex-shrink-0">
-                {!showPreviewOnly && sectionProgress === 100 && (
-                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                    <CheckCircle className="text-green-500" size={18} />
-                  </div>
-                )}
-
-                <motion.div
-                  animate={{ rotate: isExpanded ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ChevronDown className="text-offWhite-400" size={24} />
-                </motion.div>
-              </div>
+              <ChevronDown 
+                className={`text-offWhite-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                size={20} 
+              />
             </button>
 
             {/* Section Content */}
@@ -200,14 +168,13 @@ export default function CurriculumAccordion({
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="border-t border-metallicGold-900/30 overflow-hidden"
+                  className="border-t border-deepBlack-600 overflow-hidden"
                   id={`curriculum-section-${section.id}`}
                   role="region"
                   aria-label={`${section.title} 섹션 내용`}
                 >
-                  <div className="divide-y divide-metallicGold-900/20">
+                  <div className="divide-y divide-deepBlack-600">
                     {section.chapters.map((chapter, chapterIndex) => {
-                      const chapterProgress = getChapterProgress(chapter.id, chapter.duration);
                       const isCompleted = isChapterCompleted(chapter.id);
 
                       return (
@@ -216,23 +183,17 @@ export default function CurriculumAccordion({
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: chapterIndex * 0.05 }}
-                          className={`p-6 ${chapter.is_preview ? 'hover:bg-metallicGold-500/5 cursor-pointer' : 'hover:bg-deepBlack-600/30'} transition-all group`}
+                          className={`p-4 ${chapter.is_preview ? 'hover:bg-deepBlack-600/50 cursor-pointer' : 'hover:bg-deepBlack-600/30'} transition-all group`}
                         >
                           <div className="flex items-start gap-4">
                             {/* Chapter Status Icon */}
                             <div className="flex-shrink-0 mt-1">
                               {chapter.is_preview ? (
-                                <div className="w-10 h-10 bg-metallicGold-500/20 rounded-full flex items-center justify-center">
-                                  <Play className="text-metallicGold-500" size={18} />
-                                </div>
+                                <Play className="text-metallicGold-500" size={16} />
                               ) : isCompleted ? (
-                                <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                                  <CheckCircle className="text-green-500" size={18} />
-                                </div>
+                                <CheckCircle className="text-green-500" size={16} />
                               ) : (
-                                <div className="w-10 h-10 bg-deepBlack-600 rounded-full flex items-center justify-center">
-                                  <Lock className="text-offWhite-600" size={18} />
-                                </div>
+                                <Lock className="text-offWhite-600" size={16} />
                               )}
                             </div>
 
@@ -242,17 +203,8 @@ export default function CurriculumAccordion({
                                 <h4 className="font-semibold text-offWhite-200 group-hover:text-offWhite-100 transition-colors leading-tight">
                                   {chapterIndex + 1}. {chapter.title}
                                 </h4>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <div className="text-sm text-offWhite-500 bg-deepBlack-600 px-3 py-1 rounded-full">
-                                    {formatTime(chapter.duration)}
-                                  </div>
-                                  {chapter.difficulty && (
-                                    <div
-                                      className={`text-xs px-2 py-1 rounded-full border ${difficultyLabels[chapter.difficulty].color}`}
-                                    >
-                                      {difficultyLabels[chapter.difficulty].label}
-                                    </div>
-                                  )}
+                                <div className="text-sm text-offWhite-500">
+                                  {formatTime(chapter.duration)}
                                 </div>
                               </div>
 
@@ -263,62 +215,19 @@ export default function CurriculumAccordion({
                                 </p>
                               )}
 
-                              {/* Chapter Objectives */}
-                              {chapter.objectives && chapter.objectives.length > 0 && (
-                                <div className="mb-3">
-                                  <h5 className="text-sm font-medium text-offWhite-300 mb-2 flex items-center gap-2">
-                                    <Award size={14} className="text-metallicGold-500" />
-                                    학습 목표
-                                  </h5>
-                                  <ul className="space-y-1">
-                                    {chapter.objectives.map((objective, idx) => (
-                                      <li
-                                        key={idx}
-                                        className="text-sm text-offWhite-500 flex items-start gap-2"
-                                      >
-                                        <ChevronRight
-                                          size={14}
-                                          className="text-metallicGold-400 mt-0.5 flex-shrink-0"
-                                        />
-                                        <span>{objective}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
 
-                              {/* Chapter Status & Progress */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 text-sm">
-                                  {chapter.is_preview && (
-                                    <span className="text-metallicGold-400 font-medium">
-                                      미리보기 가능
-                                    </span>
-                                  )}
-                                  {isCompleted && (
-                                    <span className="text-green-400 font-medium flex items-center gap-1">
-                                      <CheckCircle size={14} />
-                                      완료
-                                    </span>
-                                  )}
-                                </div>
-
-                                {/* Progress Bar */}
-                                {!showPreviewOnly &&
-                                  chapterProgress > 0 &&
-                                  chapterProgress < 100 && (
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-24 h-1 bg-deepBlack-900 rounded-full overflow-hidden">
-                                        <div
-                                          className="h-full bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 transition-all"
-                                          style={{ width: `${chapterProgress}%` }}
-                                        />
-                                      </div>
-                                      <span className="text-xs text-offWhite-500 w-10 text-right">
-                                        {Math.round(chapterProgress)}%
-                                      </span>
-                                    </div>
-                                  )}
+                              {/* Chapter Status */}
+                              <div className="flex items-center gap-3 text-sm">
+                                {chapter.is_preview && (
+                                  <span className="text-metallicGold-400">
+                                    미리보기
+                                  </span>
+                                )}
+                                {isCompleted && (
+                                  <span className="text-green-400">
+                                    완료
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
