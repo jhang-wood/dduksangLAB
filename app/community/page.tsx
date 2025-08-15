@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye } from 'lucide-react';
+import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye, Heart, Pin, Star, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
@@ -110,25 +109,18 @@ export default function CommunityPage() {
         <Header currentPage="community" />
 
         {/* Hero Section */}
-        <section className="pt-32 pb-16 px-4">
+        <section className="pt-32 pb-12 px-4">
           <div className="container mx-auto max-w-7xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center"
-            >
+            <div className="text-center">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-montserrat font-bold mb-6">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
                   커뮤니티
                 </span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto px-4 sm:px-0">
-                떡상연구소 수강생들과
-                <br className="sm:hidden" />
-                함께 성장하고 소통하세요
+                떡상연구소 수강생들과 함께 성장하고 소통하세요
               </p>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -166,38 +158,125 @@ export default function CommunityPage() {
         {/* Posts List */}
         <section className="px-4 pb-20">
           <div className="container mx-auto max-w-7xl">
-            <div className="bg-deepBlack-300/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-3xl overflow-hidden">
-              {loading ? (
-                <div className="p-20 text-center text-offWhite-600">로딩 중...</div>
-              ) : posts.length === 0 ? (
-                <div className="p-20 text-center text-offWhite-600">아직 작성된 글이 없습니다.</div>
-              ) : (
-                <div className="divide-y divide-metallicGold-900/20">
-                  {posts.map(post => (
-                    <Link
+            {loading ? (
+              <div className="grid gap-4">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className="bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-2xl p-6 animate-pulse">
+                    <div className="h-4 bg-deepBlack-300/50 rounded w-1/4 mb-3"></div>
+                    <div className="h-6 bg-deepBlack-300/50 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-deepBlack-300/50 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-20">
+                <MessageSquare className="w-16 h-16 text-offWhite-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-offWhite-300 mb-2">아직 작성된 글이 없습니다</h3>
+                <p className="text-offWhite-600 mb-6">첫 번째 글을 작성해보세요!</p>
+                <button
+                  onClick={handleWriteClick}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-medium hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                  글쓰기
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {posts.map(post => {
+                  const category = categories.find(c => c.id === post.category);
+                  return (
+                    <article
                       key={post.id}
-                      href={`/community/${post.category}/${post.id}`}
-                      className="block p-4 sm:p-6 hover:bg-deepBlack-300/30 transition-colors"
+                      className="bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-2xl p-6 hover:bg-deepBlack-300/50 hover:border-metallicGold-900/20 transition-all group"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2 text-xs sm:text-sm text-offWhite-600">
-                        <span className="px-2 sm:px-3 py-1 bg-metallicGold-900/20 rounded-full text-metallicGold-500 inline-block w-fit">
-                          {categories.find(c => c.id === post.category)?.label}
-                        </span>
-                        <span>{post.author_name}</span>
-                        <span>{formatDate(post.created_at)}</span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                          {post.views}
-                        </span>
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-semibold text-offWhite-200 hover:text-metallicGold-500 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <Link href={`/community/${post.category}/${post.id}`} className="block">
+                        {/* Post Header */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {post.is_pinned && (
+                              <span className="flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium">
+                                <Pin className="w-3 h-3" />
+                                고정글
+                              </span>
+                            )}
+                            {post.is_featured && (
+                              <span className="flex items-center gap-1 px-2 py-1 bg-metallicGold-500/20 text-metallicGold-400 rounded-full text-xs font-medium">
+                                <Star className="w-3 h-3" />
+                                추천
+                              </span>
+                            )}
+                            {category && (
+                              <span className="flex items-center gap-1 px-3 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded-full text-sm font-medium">
+                                <category.icon className="w-4 h-4" />
+                                {category.label}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-offWhite-600">
+                            <Clock className="w-4 h-4" />
+                            {formatDate(post.created_at)}
+                          </div>
+                        </div>
+
+                        {/* Post Title */}
+                        <h2 className="text-xl font-semibold text-offWhite-200 group-hover:text-metallicGold-500 transition-colors mb-3 line-clamp-2 leading-relaxed">
+                          {post.title}
+                        </h2>
+
+                        {/* Post Content Preview */}
+                        {post.content && (
+                          <p className="text-offWhite-500 text-sm line-clamp-2 mb-4 leading-relaxed">
+                            {post.content.replace(/[#*`]/g, '').substring(0, 120)}...
+                          </p>
+                        )}
+
+                        {/* Post Meta */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-sm text-offWhite-600">
+                            <span className="font-medium text-offWhite-500">{post.author_name}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm text-offWhite-600">
+                            <span className="flex items-center gap-1">
+                              <Eye className="w-4 h-4" />
+                              {post.views.toLocaleString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Heart className="w-4 h-4" />
+                              {post.likes.toLocaleString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageSquare className="w-4 h-4" />
+                              {post.comments_count.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Tags */}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex gap-2 mt-4 flex-wrap">
+                            {post.tags.slice(0, 3).map((tag, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-deepBlack-300/50 text-offWhite-600 rounded text-xs"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                            {post.tags.length > 3 && (
+                              <span className="px-2 py-1 text-offWhite-600 text-xs">
+                                +{post.tags.length - 3}개 더
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </Link>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
         <Footer />
