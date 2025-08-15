@@ -3,12 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles,
   Check,
-  Star,
-  Crown,
-  Zap,
-  DollarSign
+  Crown
 } from 'lucide-react';
 
 export default function PaidToolsSection() {
@@ -52,9 +48,9 @@ export default function PaidToolsSection() {
     {
       name: 'Gemini',
       logo: '✨',
-      description: 'Gemini 2.0 - Google의 멀티모달 AI',
+      description: 'Gemini 2.5 Pro - Google의 멀티모달 AI',
       features: [
-        '100만 토큰 컨텍스트',
+        '200만 토큰 컨텍스트',
         'Google 서비스 통합',
         '실시간 음성 대화',
         '코드 실행 환경'
@@ -97,8 +93,8 @@ export default function PaidToolsSection() {
           </p>
         </motion.div>
 
-        {/* AI Tools Grid - Horizontal Layout */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        {/* AI Tools Grid - Equal Height Cards */}
+        <div className="grid lg:grid-cols-3 gap-6">
           {aiTools.map((tool, index) => (
             <motion.div
               key={tool.name}
@@ -106,10 +102,10 @@ export default function PaidToolsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.3 }}
               viewport={{ once: true }}
-              className="relative"
+              className="relative flex"
             >
-              <div className={`bg-gradient-to-br ${tool.color} p-[1px] rounded-2xl`}>
-                <div className="bg-deepBlack-800 rounded-2xl p-6 h-full">
+              <div className={`bg-gradient-to-br ${tool.color} p-[1px] rounded-2xl w-full`}>
+                <div className="bg-deepBlack-800 rounded-2xl p-6 h-full flex flex-col">
                   {/* Badge */}
                   {tool.badge && (
                     <div className={`absolute -top-3 -right-3 px-3 py-1 rounded-full text-xs font-bold
@@ -129,8 +125,8 @@ export default function PaidToolsSection() {
                     </div>
                   </div>
 
-                  {/* Features */}
-                  <div className="space-y-2 mb-6">
+                  {/* Features - Fixed height */}
+                  <div className="space-y-2 mb-6 flex-grow">
                     {tool.features.map((feature, fIndex) => (
                       <div key={fIndex} className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -139,8 +135,8 @@ export default function PaidToolsSection() {
                     ))}
                   </div>
 
-                  {/* Pricing */}
-                  <div className="border-t border-offWhite-700/20 pt-4">
+                  {/* Pricing - Always at bottom */}
+                  <div className="border-t border-offWhite-700/20 pt-4 mt-auto">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-offWhite-500">무료:</span>
@@ -169,50 +165,6 @@ export default function PaidToolsSection() {
             </motion.div>
           ))}
         </div>
-
-        {/* Bottom Recommendation */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-          viewport={{ once: true }}
-          className="bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-2xl p-6 border border-metallicGold-500/20"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-metallicGold-500/20 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-metallicGold-500" />
-            </div>
-            <h3 className="text-lg font-bold text-metallicGold-500">떡상연구소 추천 조합</h3>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-4 text-center">
-            <div className="p-3 bg-deepBlack-800/50 rounded-lg">
-              <p className="font-bold text-purple-400 mb-1">Claude Max 5x</p>
-              <p className="text-xs text-offWhite-400">코딩 & 창의적 작업</p>
-              <p className="text-sm font-bold text-offWhite-200 mt-1">$100/월</p>
-            </div>
-            <div className="p-3 bg-deepBlack-800/50 rounded-lg">
-              <p className="font-bold text-green-400 mb-1">ChatGPT Pro</p>
-              <p className="text-xs text-offWhite-400">추론 & 분석 작업</p>
-              <p className="text-sm font-bold text-offWhite-200 mt-1">$20/월</p>
-            </div>
-            <div className="p-3 bg-deepBlack-800/50 rounded-lg">
-              <p className="font-bold text-blue-400 mb-1">Gemini 무료</p>
-              <p className="text-xs text-offWhite-400">보조 & 검색 작업</p>
-              <p className="text-sm font-bold text-offWhite-200 mt-1">$0/월</p>
-            </div>
-          </div>
-          
-          <div className="mt-4 text-center">
-            <p className="text-sm text-offWhite-300">
-              총 월 비용: <span className="text-metallicGold-500 font-bold text-lg">$120</span>
-              <span className="text-offWhite-500 ml-2">(약 16만원)</span>
-            </p>
-            <p className="text-xs text-offWhite-500 mt-2">
-              💡 이 조합으로 모든 AI 작업을 완벽하게 커버할 수 있습니다
-            </p>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
