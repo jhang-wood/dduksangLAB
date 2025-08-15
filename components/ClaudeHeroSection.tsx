@@ -9,29 +9,6 @@ export default function ClaudeHeroSection() {
     <div className="relative w-full">
       <div className="w-full">
         <div className="flex flex-col gap-6">
-          {/* Karpathy Quote Section */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-4"
-          >
-            <div className="max-w-3xl mx-auto bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-2xl p-6 border border-purple-500/20">
-              <p className="text-lg text-offWhite-300 mb-3">
-                <span className="text-purple-400 font-bold">"바이브코딩으로 코드의 존재조차 잊게 된다"</span>
-              </p>
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">AK</span>
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-offWhite-200">Andrej Karpathy</p>
-                  <p className="text-xs text-offWhite-500">OpenAI 공동창업자, 바이브코딩 창시자</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
           {/* Top: Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -68,7 +45,10 @@ export default function ClaudeHeroSection() {
                 <span className="text-metallicGold-500"> 런칭</span>
               </span>
               <span className="block text-lg sm:text-xl md:text-2xl text-offWhite-300 mt-3">
-                복사-붙여넣기로 시작하는 Claude Code CLI 실습
+                오직 비개발자분들의 눈높이에서 최소한의 학습으로 최대한의 아웃풋
+              </span>
+              <span className="block text-base sm:text-lg text-offWhite-400 mt-2">
+                실제로 코드를 단 한줄도 직접 작성하지 않고 자연어 명령만으로
               </span>
             </h1>
             
@@ -250,9 +230,32 @@ export default function ClaudeHeroSection() {
                   👆 최소한의 지식으로도 왕초보도 실제로 가능한 프로세스
                 </p>
                 <p className="text-offWhite-500 text-sm mt-2">
-                  코딩 경험 0, 개발 지식 0, 오직 한국어로 대화만 했습니다
+                  터미널 명령어도 영단어 10개 내외, 영단어를 외울 정도의 지식이면 충분
                 </p>
               </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Karpathy Quote Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 6.5 }}
+            className="text-center mt-8"
+          >
+            <div className="max-w-3xl mx-auto bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-2xl p-6 border border-purple-500/20">
+              <p className="text-lg text-offWhite-300 mb-3">
+                <span className="text-purple-400 font-bold">"바이브코딩으로 코드의 존재조차 잊게 된다"</span>
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">AK</span>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-offWhite-200">Andrej Karpathy</p>
+                  <p className="text-xs text-offWhite-500">OpenAI 공동창업자, 바이브코딩 창시자</p>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -271,11 +274,11 @@ export default function ClaudeHeroSection() {
               <div className="bg-deepBlack-600/30 rounded-2xl p-6">
                 <h4 className="font-bold text-offWhite-200 mb-3 flex items-center gap-2">
                   <Zap className="w-5 h-5 text-yellow-500" />
-                  이론 NO, 오직 실습
+                  이론보다 무조건 실습위주로 준비
                 </h4>
                 <p className="text-sm text-offWhite-400">
                   모든 모듈이 실제 프로젝트 기반. 
-                  배우자마자 바로 적용할 수 있는 살아있는 기술만 담았습니다.
+                  AI의 최전선에 직접 따라잡으실 수 있도록 살아있는 기술만 담았습니다.
                 </p>
               </div>
               
@@ -286,7 +289,7 @@ export default function ClaudeHeroSection() {
                 </h4>
                 <p className="text-sm text-offWhite-400">
                   SNS 마케팅, 업무 자동화, 온라인 비즈니스... 
-                  당신이 지금 필요한 모든 자동화 기술을 담았습니다.
+                  최소한의 지식으로도 왕초보도 실제로 가능한 모든 자동화 기술을 담았습니다.
                 </p>
               </div>
             </div>

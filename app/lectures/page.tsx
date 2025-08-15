@@ -143,17 +143,6 @@ export default function LecturesPage() {
         <section className="w-full py-32 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
-            <div className="absolute inset-0" style={{
-              backgroundImage: `repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 100px,
-                rgba(255, 215, 0, 0.03) 100px,
-                rgba(255, 215, 0, 0.03) 200px
-              )`
-            }} />
-            <div className="absolute top-20 left-[10%] w-64 h-64 bg-metallicGold-500/10 rounded-full blur-3xl animate-pulse-soft" />
-            <div className="absolute bottom-20 right-[10%] w-64 h-64 bg-metallicGold-600/10 rounded-full blur-3xl animate-pulse-soft animation-delay-2000" />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
@@ -164,7 +153,11 @@ export default function LecturesPage() {
         {/* Success Stories Section */}
         <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-purple-900/10 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 50%)`
+            }} />
+            <div className="absolute top-20 right-[20%] w-48 h-48 bg-purple-500/5 rounded-full blur-2xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <VibeCodingSuccessStoriesSection />
@@ -174,7 +167,11 @@ export default function LecturesPage() {
         {/* Comparison Section */}
         <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-blue-900/8 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%)`
+            }} />
+            <div className="absolute bottom-20 left-[15%] w-56 h-56 bg-indigo-500/5 rounded-full blur-3xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ClaudeCodeVsOthersSection />
@@ -184,7 +181,11 @@ export default function LecturesPage() {
         {/* Gallery Section */}
         <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-orange-900/8 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 20% 70%, rgba(251, 146, 60, 0.04) 0%, transparent 50%)`
+            }} />
+            <div className="absolute top-16 left-[25%] w-44 h-44 bg-amber-500/6 rounded-full blur-2xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ProjectGallery />
@@ -194,7 +195,11 @@ export default function LecturesPage() {
         {/* Calculator Section */}
         <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-emerald-900/8 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 80% 40%, rgba(16, 185, 129, 0.03) 0%, transparent 50%)`
+            }} />
+            <div className="absolute bottom-24 right-[10%] w-52 h-52 bg-green-500/5 rounded-full blur-3xl" />
           </div>
           <div className="max-w-4xl mx-auto px-6 relative z-10">
             <APIcostCalculator />
