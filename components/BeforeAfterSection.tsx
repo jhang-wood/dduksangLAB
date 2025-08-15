@@ -80,78 +80,78 @@ export default function BeforeAfterSection() {
   ];
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/50 to-deepBlack-900">
+    <section className="py-6 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/50 to-deepBlack-900">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-green-500/5" />
       </div>
       
-      <div className="container mx-auto max-w-7xl relative z-10">
+      <div className="container mx-auto max-w-6xl relative z-10">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-6"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-offWhite-200 mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-offWhite-200 mb-2">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-green-500">
               단 27시간의 변화
             </span>
           </h2>
-          <p className="text-lg sm:text-xl text-offWhite-400">
+          <p className="text-base sm:text-lg text-offWhite-400">
             이 강의를 듣기 전과 후, 당신의 삶이 어떻게 달라질까요?
           </p>
         </motion.div>
 
-        {/* Before/After Grid */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        {/* Before/After Grid - Changed to vertical layout */}
+        <div className="space-y-6">
           {/* Before Column */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.2 }}
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="bg-gradient-to-br from-red-500/10 to-red-900/5 rounded-3xl p-8 border border-red-500/20 h-full">
+            <div className="bg-gradient-to-br from-red-500/10 to-red-900/5 rounded-xl p-4 border border-red-500/20 max-w-3xl mx-auto shadow-lg">
               {/* Header */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center">
-                  <Frown className="w-8 h-8 text-red-500" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                  <Frown className="w-5 h-5 text-red-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-red-400">Before</h3>
-                  <p className="text-offWhite-500 text-sm">지금의 당신</p>
+                  <h3 className="text-lg font-bold text-red-400">Before</h3>
+                  <p className="text-offWhite-500 text-xs">지금의 당신</p>
                 </div>
               </div>
 
-              {/* Items */}
-              <div className="space-y-4">
+              {/* Items - Two column grid for better visibility */}
+              <div className="grid md:grid-cols-2 gap-2">
                 {beforeItems.map((item, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.02 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 p-4 bg-deepBlack-800/50 rounded-xl border border-red-500/10 hover:border-red-500/20 transition-colors"
+                    className="flex items-start gap-2 p-2 bg-deepBlack-800/50 rounded-lg border border-red-500/10 hover:border-red-500/20 transition-colors"
                   >
-                    <div className="text-2xl flex-shrink-0">{item.icon}</div>
+                    <div className="text-lg flex-shrink-0">{item.icon}</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-offWhite-200 mb-1">{item.title}</h4>
-                      <p className="text-sm text-offWhite-500">{item.description}</p>
+                      <h4 className="font-semibold text-offWhite-200 text-sm mb-1">{item.title}</h4>
+                      <p className="text-xs text-offWhite-500">{item.description}</p>
                     </div>
-                    <XCircle className="w-5 h-5 text-red-500/50 flex-shrink-0" />
+                    <XCircle className="w-4 h-4 text-red-500/50 flex-shrink-0" />
                   </motion.div>
                 ))}
               </div>
 
               {/* Bottom Status */}
-              <div className="mt-8 p-4 bg-red-500/10 rounded-xl border border-red-500/20">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-                  <p className="text-sm font-medium text-red-400">
+              <div className="mt-4 p-2 bg-red-500/10 rounded-lg border border-red-500/20">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-500" />
+                  <p className="text-xs font-medium text-red-400">
                     기회를 놓치고 있는 상태
                   </p>
                 </div>
@@ -159,14 +159,14 @@ export default function BeforeAfterSection() {
             </div>
           </motion.div>
 
-          {/* Arrow in the middle (desktop only) */}
-          <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          {/* Arrow in the middle - vertical orientation */}
+          <div className="flex justify-center my-3">
             <motion.div
-              animate={{ x: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 p-4 rounded-full shadow-2xl"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 p-3 rounded-full shadow-xl rotate-90"
             >
-              <ArrowRight className="w-8 h-8 text-deepBlack-900" />
+              <ArrowRight className="w-5 h-5 text-deepBlack-900" />
             </motion.div>
           </div>
 
@@ -174,48 +174,48 @@ export default function BeforeAfterSection() {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.2 }}
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="bg-gradient-to-br from-green-500/10 to-emerald-900/5 rounded-3xl p-8 border border-green-500/20 h-full">
+            <div className="bg-gradient-to-br from-green-500/10 to-emerald-900/5 rounded-xl p-4 border border-green-500/20 max-w-3xl mx-auto shadow-lg">
               {/* Header */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center">
-                  <Smile className="w-8 h-8 text-green-500" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <Smile className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-green-400">After</h3>
-                  <p className="text-offWhite-500 text-sm">27시간 후의 당신</p>
+                  <h3 className="text-lg font-bold text-green-400">After</h3>
+                  <p className="text-offWhite-500 text-xs">27시간 후의 당신</p>
                 </div>
               </div>
 
-              {/* Items */}
-              <div className="space-y-4">
+              {/* Items - Two column grid for better visibility */}
+              <div className="grid md:grid-cols-2 gap-2">
                 {afterItems.map((item, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.02 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 p-4 bg-deepBlack-800/50 rounded-xl border border-green-500/10 hover:border-green-500/20 transition-colors"
+                    className="flex items-start gap-2 p-2 bg-deepBlack-800/50 rounded-lg border border-green-500/10 hover:border-green-500/20 transition-colors"
                   >
-                    <div className="text-2xl flex-shrink-0">{item.icon}</div>
+                    <div className="text-lg flex-shrink-0">{item.icon}</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-offWhite-200 mb-1">{item.title}</h4>
-                      <p className="text-sm text-offWhite-500">{item.description}</p>
+                      <h4 className="font-semibold text-offWhite-200 text-sm mb-1">{item.title}</h4>
+                      <p className="text-xs text-offWhite-500">{item.description}</p>
                     </div>
-                    <CheckCircle className="w-5 h-5 text-green-500/50 flex-shrink-0" />
+                    <CheckCircle className="w-4 h-4 text-green-500/50 flex-shrink-0" />
                   </motion.div>
                 ))}
               </div>
 
               {/* Bottom Status */}
-              <div className="mt-8 p-4 bg-green-500/10 rounded-xl border border-green-500/20">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                  <p className="text-sm font-medium text-green-400">
+              <div className="mt-4 p-2 bg-green-500/10 rounded-lg border border-green-500/20">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <p className="text-xs font-medium text-green-400">
                     AI 시대의 승자가 된 상태
                   </p>
                 </div>
@@ -228,15 +228,15 @@ export default function BeforeAfterSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
           viewport={{ once: true }}
-          className="mt-12 text-center"
+          className="mt-6 text-center"
         >
-          <div className="inline-block bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-2xl px-8 py-6 backdrop-blur-sm border border-metallicGold-500/20">
-            <p className="text-2xl font-bold text-offWhite-200 mb-2">
+          <div className="inline-block bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-lg px-4 py-3 backdrop-blur-sm border border-metallicGold-500/20">
+            <p className="text-lg font-bold text-offWhite-200 mb-1">
               <span className="text-metallicGold-500">27시간</span>이면 충분합니다
             </p>
-            <p className="text-offWhite-400">
+            <p className="text-sm text-offWhite-400">
               더 이상 망설이지 마세요. 지금이 시작할 최적의 타이밍입니다.
             </p>
           </div>
