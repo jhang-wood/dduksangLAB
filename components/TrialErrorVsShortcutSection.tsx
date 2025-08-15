@@ -25,9 +25,9 @@ export default function TrialErrorVsShortcutSection() {
     },
     {
       icon: DollarSign,
-      title: 'AI 사용료 폭탄',
-      description: 'Claude Max, ChatGPT Plus 등',
-      value: '월 30만원+',
+      title: 'API 비용 폭탄',
+      description: 'Claude API 직접 사용',
+      value: '월 $300-500+',
       color: 'text-red-500'
     },
     {
@@ -56,9 +56,9 @@ export default function TrialErrorVsShortcutSection() {
     },
     {
       icon: CheckCircle,
-      title: '강의료만 149,000원',
-      description: '몇 달치 AI 사용료보다 저렴',
-      value: '149,000원',
+      title: '강의 + Max $100',
+      description: '예측 가능한 고정 비용',
+      value: '총 $249,000원',
       color: 'text-green-500'
     },
     {
@@ -156,8 +156,8 @@ export default function TrialErrorVsShortcutSection() {
               <div className="mt-4 p-4 bg-red-500/20 rounded-lg border border-red-500/30">
                 <div className="text-center">
                   <p className="text-xs text-red-400 mb-1">예상 총 비용</p>
-                  <p className="text-2xl font-bold text-red-500 mb-1">900만원+</p>
-                  <p className="text-xs text-offWhite-500">시간 비용 + AI 사용료 + 기회비용</p>
+                  <p className="text-2xl font-bold text-red-500 mb-1">$1,800+/6개월</p>
+                  <p className="text-xs text-offWhite-500">API 비용 + 시간 비용 + 기회비용</p>
                 </div>
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function TrialErrorVsShortcutSection() {
                 <div className="text-center">
                   <p className="text-xs text-green-400 mb-1">실제 총 비용</p>
                   <p className="text-2xl font-bold text-green-500 mb-1">149,000원</p>
-                  <p className="text-xs text-offWhite-500">강의료 + 1년 수강 기간</p>
+                  <p className="text-xs text-offWhite-500">강의료 + Claude Max $100 추천</p>
                 </div>
               </div>
             </div>
@@ -244,20 +244,20 @@ export default function TrialErrorVsShortcutSection() {
         >
           <div className="bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-900/20 rounded-xl p-5 border border-metallicGold-500/30">
             <h3 className="text-lg font-bold text-metallicGold-500 mb-3">
-              강사의 1500만원 상당 연구가 여러분의 149,000원
+              3-6개월 시행착오 vs 13시간 지름길
             </h3>
             <div className="grid md:grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-2xl font-bold text-metallicGold-500">60배</p>
+                <p className="text-2xl font-bold text-metallicGold-500">7배</p>
                 <p className="text-xs text-offWhite-500">비용 절감 효과</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-metallicGold-500">240배</p>
+                <p className="text-2xl font-bold text-metallicGold-500">30배</p>
                 <p className="text-xs text-offWhite-500">시간 단축 효과</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-metallicGold-500">∞</p>
-                <p className="text-xs text-offWhite-500">스트레스 해결 가치</p>
+                <p className="text-2xl font-bold text-metallicGold-500">100%</p>
+                <p className="text-xs text-offWhite-500">명확한 방향성</p>
               </div>
             </div>
             <p className="text-offWhite-300 text-sm mt-4">

@@ -12,18 +12,15 @@ import Footer from '@/components/Footer';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
-import AILeadersCards from '@/components/AILeadersCards';
-// import VibeCodingShowcase from '@/components/VibeCodingShowcase';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
 import StickyPriceCard from '@/components/StickyPriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 import ProjectGallery from '@/components/ProjectGallery';
 import LearningMethodSection from '@/components/LearningMethodSection';
-import BeforeAfterSection from '@/components/BeforeAfterSection';
-import PaidToolsSection from '@/components/PaidToolsSection';
 import TrialErrorVsShortcutSection from '@/components/TrialErrorVsShortcutSection';
-import RealInstructorStorySection from '@/components/RealInstructorStorySection';
-import RealProjectsSection from '@/components/RealProjectsSection';
+import VibeCodingSuccessStoriesSection from '@/components/VibeCodingSuccessStoriesSection';
+import ClaudeCodeVsOthersSection from '@/components/ClaudeCodeVsOthersSection';
+import APIcostCalculator from '@/components/APIcostCalculator';
 
 // Claude Code CLI 마스터과정 데이터
 const masterCourse = {
@@ -153,8 +150,18 @@ export default function LecturesPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column: Main Content - Expanded */}
             <div className="flex-1 lg:max-w-5xl">
-              {/* Claude Hero Section */}
+              {/* Claude Hero Section - Karpathy 인용 포함 */}
               <ClaudeHeroSection />
+              
+              <div className="h-16" />
+              
+              {/* Vibe Coding Success Stories - 실제 성공 사례 */}
+              <VibeCodingSuccessStoriesSection />
+              
+              <div className="h-16" />
+              
+              {/* Claude Code vs Others - 정확한 도구 비교 */}
+              <ClaudeCodeVsOthersSection />
               
               <div className="h-16" />
               
@@ -163,13 +170,8 @@ export default function LecturesPage() {
               
               <div className="h-16" />
               
-              {/* Before/After Section - 학습 전후 비교 (앞으로 이동) */}
-              <BeforeAfterSection />
-              
-              <div className="h-16" />
-              
-              {/* Learning Method Section - 학습 방식 소개 */}
-              <LearningMethodSection />
+              {/* API Cost Calculator - ROI 계산기 */}
+              <APIcostCalculator />
               
               <div className="h-16" />
               
@@ -178,18 +180,8 @@ export default function LecturesPage() {
               
               <div className="h-16" />
               
-              {/* Real Instructor Story - 강사의 진짜 스토리 */}
-              <RealInstructorStorySection />
-              
-              <div className="h-16" />
-              
-              {/* Real Projects Section - 실제로 만들 수 있는 프로젝트들 */}
-              <RealProjectsSection />
-              
-              <div className="h-16" />
-              
-              {/* 3. Paid Tools Section - 유료툴 상세 설명 */}
-              <PaidToolsSection />
+              {/* Learning Method Section - 학습 방식 소개 */}
+              <LearningMethodSection />
               
               <div className="h-16" />
               
@@ -513,10 +505,6 @@ export default function LecturesPage() {
                 </motion.div>
               </section>
 
-              {/* AI Leaders Cards - 왜 지금 시작해야 하는가 */}
-              <AILeadersCards />
-              
-              {/* Instructor Story Section - 강사의 진솔한 이야기 (실습 모듈 위) */}
               {/* Curriculum Section - Simplified */}
               <section className="py-20">
                 <EnhancedModuleAccordion modules={masterCourse.modules} />

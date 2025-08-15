@@ -14,12 +14,35 @@ export default function ClaudeHeroSection() {
 
       <div className="relative z-10 container mx-auto px-4">
         <div className="flex flex-col gap-6">
+          {/* Karpathy Quote Section */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-4"
+          >
+            <div className="max-w-3xl mx-auto bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-2xl p-6 border border-purple-500/20">
+              <p className="text-lg text-offWhite-300 mb-3">
+                <span className="text-purple-400 font-bold">"바이브코딩으로 코드의 존재조차 잊게 된다"</span>
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">AK</span>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-offWhite-200">Andrej Karpathy</p>
+                  <p className="text-xs text-offWhite-500">OpenAI 공동창업자, 바이브코딩 창시자</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Top: Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center pt-6"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-center"
           >
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
@@ -287,6 +310,15 @@ export default function ClaudeHeroSection() {
                 <Rocket className="w-4 h-4 text-metallicGold-500" />
                 <span className="text-offWhite-400">실전 프로젝트</span>
               </div>
+            </div>
+            
+            {/* Claude Max Plan Info */}
+            <div className="mt-8 p-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-xl border border-purple-500/20">
+              <p className="text-center text-sm text-offWhite-300">
+                <span className="font-bold text-purple-400">Claude Max $100</span>으로 
+                <span className="text-metallicGold-400 font-bold"> 주 140-280시간</span> 사용 - 
+                예측 가능한 월정액으로 안정적 학습
+              </p>
             </div>
           </motion.div>
 
