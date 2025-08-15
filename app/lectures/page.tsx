@@ -140,7 +140,7 @@ export default function LecturesPage() {
         <Header currentPage="lectures" />
         
         {/* Hero Section - Single Column */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="w-full py-32 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
             <div className="absolute inset-0" style={{
@@ -162,7 +162,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Success Stories Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -172,7 +172,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Comparison Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -182,7 +182,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Gallery Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -192,7 +192,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Calculator Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -202,7 +202,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Trial vs Shortcut Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -212,7 +212,7 @@ export default function LecturesPage() {
         </section>
               
         {/* Learning Method Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -225,7 +225,7 @@ export default function LecturesPage() {
               {/* <VibeCodingShowcase /> */}
 
         {/* Solution Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -547,7 +547,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Curriculum Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
@@ -557,7 +557,7 @@ export default function LecturesPage() {
         </section>
 
         {/* Recommended For Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
           </div>
@@ -589,7 +589,7 @@ export default function LecturesPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 relative overflow-hidden">
+        <section className="w-full py-16 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
           </div>
