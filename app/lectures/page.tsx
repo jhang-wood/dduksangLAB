@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   CheckCircle2,
@@ -89,10 +88,8 @@ const masterCourse = {
 export default function LecturesPage() {
   const [_isEnrolled, setIsEnrolled] = useState(false);
   const [_loading, setLoading] = useState(true);
-  const router = useRouter();
   
   // 임시로 useAuth 비활성화
-  const user = null;
   const authLoading = false;
 
   const checkEnrollment = useCallback(async () => {
@@ -107,15 +104,6 @@ export default function LecturesPage() {
       void checkEnrollment();
     }
   }, [checkEnrollment, authLoading]);
-
-  const handleEnrollClick = () => {
-    
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-    router.push(`/lectures/${masterCourse.id}/preview`);
-  };
 
   // 로딩 조건을 단순화 - 환경변수 경고가 있어도 페이지 렌더링
   if (_loading && authLoading) {
@@ -242,14 +230,74 @@ export default function LecturesPage() {
                       🎁 STEP 0: 무료 체험 (모듈 1-3)
                     </h3>
                     
-                    {/* GIF placeholder for setup */}
-                    <div className="mb-8 p-8 bg-deepBlack-600/50 rounded-2xl border-2 border-dashed border-metallicGold-500/30">
-                      <p className="text-center text-metallicGold-500 font-bold mb-2">
-                        [GIF 추천: 강의 맛보기]
-                      </p>
-                      <p className="text-center text-sm text-offWhite-500">
-                        자동화 프로그램과 MVP 만들기 실습 예시
-                      </p>
+                    {/* Learning Mindmap for STEP 0 */}
+                    <div className="mb-8 p-8 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/30">
+                      <div className="relative">
+                        {/* Central Node */}
+                        <div className="flex justify-center mb-6">
+                          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full font-bold shadow-lg">
+                            🎁 무료 체험 (모듈 1-3)
+                          </div>
+                        </div>
+                        
+                        {/* Connected Learning Nodes */}
+                        <div className="grid md:grid-cols-3 gap-4 relative">
+                          {/* Lines connecting to center */}
+                          <div className="hidden md:block absolute inset-0">
+                            <svg className="w-full h-full">
+                              <line x1="50%" y1="0%" x2="16.66%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+                              <line x1="50%" y1="0%" x2="50%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+                              <line x1="50%" y1="0%" x2="83.33%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+                            </svg>
+                          </div>
+                          
+                          {/* Learning Node 1 */}
+                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
+                              <span className="text-white text-sm font-bold">1</span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-green-400 text-center mb-2">강의 소개</h4>
+                            <ul className="text-xs text-offWhite-400 space-y-1">
+                              <li>• 커리큘럼 소개</li>
+                              <li>• 자동화 체험</li>
+                              <li>• 미리보기</li>
+                            </ul>
+                          </div>
+                          
+                          {/* Learning Node 2 */}
+                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
+                              <span className="text-white text-sm font-bold">2</span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-green-400 text-center mb-2">환경 설정</h4>
+                            <ul className="text-xs text-offWhite-400 space-y-1">
+                              <li>• WSL 설치법</li>
+                              <li>• Claude Code 설정</li>
+                              <li>• 첫 명령어</li>
+                            </ul>
+                          </div>
+                          
+                          {/* Learning Node 3 */}
+                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
+                              <span className="text-white text-sm font-bold">3</span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-green-400 text-center mb-2">기초 실습</h4>
+                            <ul className="text-xs text-offWhite-400 space-y-1">
+                              <li>• 자동화 exe</li>
+                              <li>• 폴더 정리</li>
+                              <li>• 결과 확인</li>
+                            </ul>
+                          </div>
+                        </div>
+                        
+                        {/* Bottom Summary */}
+                        <div className="mt-6 text-center">
+                          <p className="text-sm text-green-400 font-medium">
+                            💡 <strong>학습 결과:</strong> 자동화 프로그램 exe 파일을 직접 만들어 보고, Claude Code CLI 기본 사용법 마스터
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -482,7 +530,7 @@ export default function LecturesPage() {
 
                     <div className="bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-2xl p-8 border border-metallicGold-500/30">
                       <h4 className="text-2xl font-bold text-metallicGold-500 mb-4">
-                        당신도 AI 개발의 정점에 서게 됩니다
+                        AI 시대를 활용할 수 있게 됩니다
                       </h4>
                       <p className="text-lg text-offWhite-300 mb-6">
                         모듈 21-30: CLAUDE.md 작성법, 컨텍스트 한계 뚫기, 프레임워크 활용,
@@ -589,23 +637,57 @@ export default function LecturesPage() {
           </div>
         </section>
 
-        {/* Fixed Bottom Navigation Bar */}
+        {/* Fixed Bottom Navigation Bar with Timer */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-deepBlack-900/95 backdrop-blur-md border-t border-metallicGold-900/30 p-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <div>
-              <p className="text-sm text-offWhite-500 line-through">
-                ₩{masterCourse.originalPrice.toLocaleString()}
-              </p>
-              <p className="text-xl font-bold text-metallicGold-500">
-                ₩{masterCourse.price.toLocaleString()}
-              </p>
+          <div className="max-w-4xl mx-auto">
+            {/* Pre-order Timer */}
+            <div className="text-center mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full border border-red-500/30 mb-2">
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <span className="text-xs font-bold text-red-400">🔥 사전예약 마감임박</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-sm font-mono">
+                <div className="bg-metallicGold-500/20 px-2 py-1 rounded border border-metallicGold-500/50">
+                  <span className="text-metallicGold-400 font-bold">23</span>
+                  <span className="text-offWhite-500 text-xs ml-1">시간</span>
+                </div>
+                <span className="text-offWhite-500">:</span>
+                <div className="bg-metallicGold-500/20 px-2 py-1 rounded border border-metallicGold-500/50">
+                  <span className="text-metallicGold-400 font-bold">59</span>
+                  <span className="text-offWhite-500 text-xs ml-1">분</span>
+                </div>
+                <span className="text-offWhite-500">:</span>
+                <div className="bg-metallicGold-500/20 px-2 py-1 rounded border border-metallicGold-500/50">
+                  <span className="text-metallicGold-400 font-bold">42</span>
+                  <span className="text-offWhite-500 text-xs ml-1">초</span>
+                </div>
+              </div>
             </div>
-            <button
-              onClick={handleEnrollClick}
-              className="px-8 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
-            >
-              수강 신청하기
-            </button>
+            
+            {/* Price and Button */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-offWhite-500 line-through">
+                  ₩{masterCourse.originalPrice.toLocaleString()}
+                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xl font-bold text-metallicGold-500">
+                    ₩{masterCourse.price.toLocaleString()}
+                  </p>
+                  <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-bold">
+                    {masterCourse.discount}% OFF
+                  </span>
+                </div>
+              </div>
+              <a
+                href="https://forms.gle/YSDJAUKC4kbovysTA"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all shadow-lg hover:shadow-metallicGold-500/25"
+              >
+                🚀 사전예약 신청하기
+              </a>
+            </div>
           </div>
         </div>
         

@@ -320,14 +320,15 @@ export default function ClaudeHeroSection() {
             </div>
           </motion.div>
 
-          {/* Middle: Feature Cards Grid - 4 cards in a row */}
+          {/* Middle: Feature Cards Grid - 3 cols, 2 rows */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full"
           >
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4 items-start">
+              {/* First row: 3 cards */}
               {/* AI 자동화 카드 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -376,12 +377,13 @@ export default function ClaudeHeroSection() {
                 </div>
               </motion.div>
 
+              {/* Second row: 1 card centered */}
               {/* AI 에이전트 협업 카드 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="relative group"
+                className="relative group col-start-2"
               >
                 <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full">
                   <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center mb-4">

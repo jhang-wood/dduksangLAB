@@ -18,7 +18,8 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Maor Shlomo',
       role: '1인 개발자',
-      achievement: '$80M (약 1,000억원) 매각',
+      achievement: '$80M 매각',
+      koreanAmount: '약 1,000억원',
       quote: '6개월 만에 25만 사용자와 월 $189K 수익 달성',
       icon: Rocket,
       color: 'from-purple-500 to-indigo-600',
@@ -28,7 +29,8 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Peter Levels',
       role: '인디 해커',
-      achievement: '월 $1M+ (약 12억원+) 수익',
+      achievement: '월 $1M+ 수익',
+      koreanAmount: '약 12억원+',
       quote: '3시간 바이브코딩으로 월 1.2억 버는 게임 제작',
       icon: DollarSign,
       color: 'from-green-500 to-emerald-600',
@@ -38,7 +40,8 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Danny Postma',
       role: '1인 개발자',
-      achievement: '$18.5K (약 2,300만원) 수익',
+      achievement: '$18.5K 수익',
+      koreanAmount: '약 2,300만원',
       quote: 'AI 코딩으로 하루에 웹앱 하나씩 만들어 런칭',
       icon: TrendingUp,
       color: 'from-orange-500 to-red-600',
@@ -48,7 +51,8 @@ export default function VibeCodingSuccessStoriesSection() {
     {
       name: 'Levelsio (Nomad List)',
       role: '1인 SaaS 제국',
-      achievement: '$10M+ (약 125억원+) ARR',
+      achievement: '$10M+ ARR',
+      koreanAmount: '약 125억원+',
       quote: '모든 코드를 혼자 작성, AI가 없으면 불가능했을 속도',
       icon: Users,
       color: 'from-blue-500 to-cyan-600',
@@ -142,16 +146,25 @@ export default function VibeCodingSuccessStoriesSection() {
                 <div className={`bg-gradient-to-br ${story.color} p-[1px] rounded-2xl h-full`}>
                   <div className="bg-deepBlack-800 rounded-2xl p-6 h-full flex flex-col">
                     {/* Header */}
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${story.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                        <Icon className="w-6 h-6 text-white" />
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className={`w-14 h-14 bg-gradient-to-br ${story.color} rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                        <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-offWhite-200">{story.name}</h3>
-                        <p className="text-sm text-offWhite-400">{story.role}</p>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-xl font-bold text-offWhite-100 mb-1">{story.name}</h3>
+                        <p className="text-sm text-offWhite-400 font-medium">{story.role}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-metallicGold-500">{story.achievement}</p>
+                    </div>
+
+                    {/* Achievement Section */}
+                    <div className="bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-xl p-4 mb-4 border border-metallicGold-500/20">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-400 to-metallicGold-600 mb-1">
+                          {story.achievement}
+                        </p>
+                        <p className="text-sm text-metallicGold-300/70 font-medium">
+                          {story.koreanAmount}
+                        </p>
                       </div>
                     </div>
 
