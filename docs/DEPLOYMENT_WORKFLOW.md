@@ -351,7 +351,7 @@ Error: Bad Request: chat not found
 ### 계획된 기능
 
 - [ ] Lighthouse CI 통합으로 성능 측정
-- [ ] Slack 알림 지원 추가
+- [ ] Telegram 비즈니스 알림 지원 추가
 - [ ] Staging 환경 배포 지원
 - [ ] 자동화된 보안 스캔 (Snyk, CodeQL)
 - [ ] Docker 컨테이너 기반 빌드

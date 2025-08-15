@@ -494,7 +494,7 @@ export default function SitesPage() {
                         <span className="px-2 py-1 bg-metallicGold-500/10 text-metallicGold-500 rounded text-xs font-medium">
                           {site.category}
                         </span>
-                        {site.tags && site.tags.slice(0, 2).map((tag, i) => (
+                        {site.tags?.slice(0, 2).map((tag, i) => (
                           <span
                             key={i}
                             className="px-2 py-1 bg-deepBlack-600 text-offWhite-600 rounded text-xs"

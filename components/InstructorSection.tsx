@@ -25,7 +25,7 @@ export default function InstructorSection() {
     },
     {
       icon: '🛠️',
-      title: '27개 프로젝트',
+      title: '13개 프로젝트',
       description: '실제 작동하는 서비스 구축'
     },
     {
@@ -54,12 +54,14 @@ export default function InstructorSection() {
   ];
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900">
+    <section className="py-16 relative overflow-hidden">
+      {/* Full-width background */}
       <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
         <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/5 via-transparent to-metallicGold-500/5" />
       </div>
       
-      <div className="container mx-auto max-w-7xl relative z-10">
+      <div className="container mx-auto max-w-7xl relative z-10 px-4">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -104,7 +106,7 @@ export default function InstructorSection() {
               <div className="space-y-4 mb-8">
                 <p className="text-offWhite-400 leading-relaxed">
                   "저도 처음엔 코딩을 전혀 몰랐습니다. 
-                  하지만 AI 도구를 제대로 활용하니 3개월 만에 27개의 프로젝트를 완성할 수 있었죠."
+                  하지만 AI 도구를 제대로 활용하니 3개월 만에 13개의 프로젝트를 완성할 수 있었죠."
                 </p>
                 <p className="text-offWhite-400 leading-relaxed">
                   "복잡한 이론보다 <span className="text-metallicGold-500 font-semibold">실제로 작동하는 것</span>을 만드는 게 중요합니다. 
@@ -213,7 +215,7 @@ export default function InstructorSection() {
           className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6"
         >
           {[
-            { icon: BookOpen, value: '27개', label: '실습 프로젝트' },
+            { icon: BookOpen, value: '13개', label: '실습 프로젝트' },
             { icon: Code2, value: '0줄', label: '직접 코딩 필요' },
             { icon: Users, value: '100%', label: '초보자 친화적' },
             { icon: Award, value: '1년', label: '수강 기간' }

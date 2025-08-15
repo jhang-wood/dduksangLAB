@@ -65,7 +65,7 @@ CRON_SECRET=your-cron-secret-for-api-access
 # 선택사항: 알림 시스템
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 TELEGRAM_CHAT_ID=your-telegram-chat-id
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your-webhook
+TELEGRAM_BUSINESS_TOKEN=your-telegram-business-bot-token
 ```
 
 ### 2. 보안 검증
