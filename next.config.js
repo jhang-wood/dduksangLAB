@@ -14,7 +14,7 @@ const nextConfig = {
   
   // 이미지 최적화
   images: {
-    domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co'],
+    domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co', 'placehold.co'],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,

@@ -133,7 +133,7 @@ export interface ServerEnvVars {
   ADMIN_PASSWORD?: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
-  SLACK_WEBHOOK_URL?: string;
+  TELEGRAM_BUSINESS_TOKEN?: string;
 }
 
 // MCP Automation Types
@@ -193,7 +193,7 @@ export interface NotificationMessage {
 }
 
 export interface NotificationChannel {
-  type: 'email' | 'slack' | 'telegram' | 'webhook' | 'sms';
+  type: 'email' | 'telegram' | 'telegram_business' | 'webhook' | 'sms';
   config: {
     recipient?: string;
     webhook_url?: string;

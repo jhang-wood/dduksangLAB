@@ -80,7 +80,7 @@ export interface HealthCheck {
 export enum NotificationChannel {
   TELEGRAM = 'telegram',
   EMAIL = 'email',
-  SLACK = 'slack',
+  TELEGRAM_ALTERNATIVE = 'telegram_alternative',
   WEBHOOK = 'webhook',
   DASHBOARD = 'dashboard',
 }

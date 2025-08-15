@@ -90,7 +90,7 @@ ADMIN_EMAIL=admin@your-domain.com
 ADMIN_PASSWORD=your-admin-password
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 TELEGRAM_CHAT_ID=your-telegram-chat-id
-SLACK_WEBHOOK_URL=your-slack-webhook-url
+TELEGRAM_BUSINESS_TOKEN=your-telegram-business-token
 CRON_SECRET=your-cron-secret
 ```
 

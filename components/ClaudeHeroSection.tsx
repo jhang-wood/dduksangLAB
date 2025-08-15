@@ -8,7 +8,7 @@ export default function ClaudeHeroSection() {
   return (
     <div className="relative w-full">
       <div className="w-full">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {/* Top: Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -327,7 +327,7 @@ export default function ClaudeHeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full"
           >
-            <div className="grid grid-cols-3 gap-4 items-start">
+            <div className="grid grid-cols-3 gap-6 items-stretch">
               {/* First row: 3 cards */}
               {/* AI 자동화 카드 */}
               <motion.div
@@ -336,12 +336,12 @@ export default function ClaudeHeroSection() {
                 transition={{ delay: 0.1 }}
                 className="relative group"
               >
-                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full">
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
                   <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-xl flex items-center justify-center mb-4">
                     <Terminal className="w-6 h-6 text-metallicGold-500" />
                   </div>
                   <h3 className="text-lg font-bold text-offWhite-200 mb-2">AI 자동화</h3>
-                  <p className="text-sm text-offWhite-500">명령어 하나로 복잡한 프로그램 생성</p>
+                  <p className="text-sm text-offWhite-500 flex-grow">명령어 하나로 복잡한 프로그램 생성</p>
                 </div>
               </motion.div>
 
@@ -352,12 +352,12 @@ export default function ClaudeHeroSection() {
                 transition={{ delay: 0.2 }}
                 className="relative group"
               >
-                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full">
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4">
                     <MessageSquare className="w-6 h-6 text-cyan-500" />
                   </div>
                   <h3 className="text-lg font-bold text-offWhite-200 mb-2">텔레그램 코딩</h3>
-                  <p className="text-sm text-offWhite-500">휴대폰으로 어디서든 AI와 대화하며 개발</p>
+                  <p className="text-sm text-offWhite-500 flex-grow">휴대폰으로 어디서든 AI와 대화하며 개발</p>
                 </div>
               </motion.div>
 
@@ -368,29 +368,61 @@ export default function ClaudeHeroSection() {
                 transition={{ delay: 0.3 }}
                 className="relative group"
               >
-                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full">
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center mb-4">
                     <Rocket className="w-6 h-6 text-purple-500" />
                   </div>
                   <h3 className="text-lg font-bold text-offWhite-200 mb-2">메타 자동화</h3>
-                  <p className="text-sm text-offWhite-500">자동화를 자동화하는 혁신적 기술</p>
+                  <p className="text-sm text-offWhite-500 flex-grow">자동화를 자동화하는 혁신적 기술</p>
                 </div>
               </motion.div>
 
-              {/* Second row: 1 card centered */}
-              {/* AI 에이전트 협업 카드 */}
+              {/* Second row: 3 cards */}
+              {/* 실시간 웹 배포 카드 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="relative group col-start-2"
+                className="relative group"
               >
-                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full">
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <Zap className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-offWhite-200 mb-2">실시간 웹 배포</h3>
+                  <p className="text-sm text-offWhite-500 flex-grow">만든 즉시 전 세계에 바로 공개</p>
+                </div>
+              </motion.div>
+
+              {/* AI 에이전트 협업 카드 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="relative group"
+              >
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
                   <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center mb-4">
                     <Cpu className="w-6 h-6 text-green-500" />
                   </div>
                   <h3 className="text-lg font-bold text-offWhite-200 mb-2">AI 에이전트 협업</h3>
-                  <p className="text-sm text-offWhite-500">24시간 일하는 AI 팀 구축</p>
+                  <p className="text-sm text-offWhite-500 flex-grow">24시간 일하는 AI 팀 구축</p>
+                </div>
+              </motion.div>
+
+              {/* MVP 초고속 런칭 카드 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="relative group"
+              >
+                <div className="bg-deepBlack-600/30 backdrop-blur-xl rounded-2xl p-6 hover:bg-deepBlack-600/40 transition-all duration-300 shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(255,215,0,0.15)] h-full flex flex-col">
+                  <div className="w-12 h-12 bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-xl flex items-center justify-center mb-4">
+                    <Rocket className="w-6 h-6 text-pink-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-offWhite-200 mb-2">MVP 초고속 런칭</h3>
+                  <p className="text-sm text-offWhite-500 flex-grow">아이디어를 3시간 내 서비스로 완성</p>
                 </div>
               </motion.div>
             </div>

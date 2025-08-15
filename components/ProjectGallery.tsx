@@ -29,6 +29,13 @@ const projects = [
     icon: ShoppingCart,
     features: ['상품 관리', '장바구니', '결제 연동', '주문 관리'],
     gradient: 'from-purple-500 to-pink-500',
+    category: '이커머스',
+    preview: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nextdotjs.svg', bgColor: 'bg-black' },
+      { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/supabase.svg', bgColor: 'bg-green-500' }
+    ],
     workflow: {
       steps: [
         { icon: Database, label: 'DB 설계' },
@@ -47,6 +54,13 @@ const projects = [
     icon: BarChart3,
     features: ['사용자 관리', '구독 결제', '데이터 분석', '실시간 차트'],
     gradient: 'from-blue-500 to-cyan-500',
+    category: '대시보드',
+    preview: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'React', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/react.svg', bgColor: 'bg-blue-500' },
+      { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/supabase.svg', bgColor: 'bg-green-500' }
+    ],
     workflow: {
       steps: [
         { icon: Layers, label: '인증 시스템' },
@@ -65,6 +79,13 @@ const projects = [
     icon: Bot,
     features: ['스케줄링', '자동 응답', '데이터 수집', 'API 연동'],
     gradient: 'from-green-500 to-emerald-500',
+    category: '자동화',
+    preview: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'Node.js', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nodedotjs.svg', bgColor: 'bg-green-600' },
+      { name: 'Telegram', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg', bgColor: 'bg-blue-500' }
+    ],
     workflow: {
       steps: [
         { icon: Bot, label: '봇 설정' },
@@ -83,6 +104,13 @@ const projects = [
     icon: FileText,
     features: ['글 작성/편집', '카테고리', '댓글 시스템', 'SEO 최적화'],
     gradient: 'from-orange-500 to-amber-500',
+    category: 'CMS',
+    preview: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nextdotjs.svg', bgColor: 'bg-black' },
+      { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/supabase.svg', bgColor: 'bg-green-500' }
+    ],
     workflow: {
       steps: [
         { icon: FileText, label: 'CMS 구축' },
@@ -101,6 +129,13 @@ const projects = [
     icon: MessageSquare,
     features: ['실시간 채팅', '파일 공유', '알림 기능', '그룹 채팅'],
     gradient: 'from-indigo-500 to-purple-500',
+    category: '실시간 앱',
+    preview: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'Socket.io', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/socketdotio.svg', bgColor: 'bg-black' },
+      { name: 'Supabase', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/supabase.svg', bgColor: 'bg-green-500' }
+    ],
     workflow: {
       steps: [
         { icon: Server, label: '웹소켓' },
@@ -112,19 +147,26 @@ const projects = [
   },
   {
     id: 6,
-    title: '포트폴리오 사이트',
-    description: '개인 브랜딩을 위한 포트폴리오',
+    title: '웹사이트 제작사업 시작',
+    description: '고객 홈페이지 제작으로 수익 창출하기',
     difficulty: 1,
     duration: '1시간',
     icon: Briefcase,
-    features: ['반응형 디자인', '프로젝트 갤러리', '연락처 폼', '애니메이션'],
+    features: ['클라이언트 관리', '견적서 시스템', '포트폴리오 갤러리', '수익 계산기'],
     gradient: 'from-red-500 to-rose-500',
+    category: '비즈니스',
+    preview: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop&auto=format',
+    techStack: [
+      { name: 'Claude', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg', bgColor: 'bg-orange-500' },
+      { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nextdotjs.svg', bgColor: 'bg-black' },
+      { name: 'Vercel', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/vercel.svg', bgColor: 'bg-black' }
+    ],
     workflow: {
       steps: [
-        { icon: Layers, label: '레이아웃' },
-        { icon: Globe, label: '반응형 UI' },
-        { icon: Briefcase, label: '갤러리' },
-        { icon: MessageSquare, label: '연락 폼' }
+        { icon: Layers, label: '비즈니스 설정' },
+        { icon: Globe, label: '포트폴리오 구축' },
+        { icon: Briefcase, label: '클라이언트 확보' },
+        { icon: MessageSquare, label: '수익 창출' }
       ]
     }
   },
@@ -158,113 +200,91 @@ export default function ProjectGallery() {
             </span>
           </h2>
           <p className="text-base sm:text-lg text-offWhite-400">
-            13개 프로젝트 중 대표 6개 - 복사/붙여넣기로 시작해서 완성까지
+            바이브코딩으로 배우는 서비스 구축과 비즈니스 성장 전략
           </p>
         </motion.div>
 
-        {/* Horizontal Card List */}
-        <div className="space-y-6">
+        {/* Clean & Simple Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => {
             const Icon = project.icon;
             
             return (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.08, duration: 0.3 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
                 viewport={{ once: true }}
-                whileHover={{ x: 5, transition: { duration: 0.2 } }}
-                className="relative group"
+                className="group"
               >
-                <div className={`
-                  flex flex-col lg:flex-row gap-6 p-6 rounded-2xl border border-offWhite-700/20
-                  bg-gradient-to-r from-deepBlack-800/90 to-deepBlack-800/70
-                  backdrop-blur-sm transition-all duration-300
-                  hover:shadow-2xl hover:shadow-metallicGold-500/10
-                  hover:border-metallicGold-500/30
-                `}>
-                  {/* Left: Content */}
-                  <div className="flex-1">
-                    {/* Header */}
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className={`
-                        w-12 h-12 rounded-xl bg-gradient-to-br ${project.gradient}
-                        flex items-center justify-center shadow-lg flex-shrink-0
-                      `}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-xl font-bold text-offWhite-200">
-                            {project.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm">
-                            <Clock className="w-4 h-4 text-offWhite-500" />
-                            <span className="text-offWhite-400 font-medium">{project.duration}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-offWhite-400 mb-3">
-                          {project.description}
-                        </p>
-                        
-                        {/* Difficulty */}
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-xs text-offWhite-500">난이도:</span>
-                          <div className="flex gap-0.5">
-                            {getDifficultyStars(project.difficulty)}
-                          </div>
-                        </div>
-
-                        {/* Features */}
-                        <div className="flex flex-wrap gap-2">
-                          {project.features.map((feature, idx) => (
-                            <span 
-                              key={idx} 
-                              className="px-2 py-1 bg-deepBlack-900/50 rounded-lg text-xs text-offWhite-400 border border-offWhite-700/20"
-                            >
-                              {feature}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                {/* Simple Clean Card */}
+                <div className="bg-deepBlack-800/40 backdrop-blur-sm rounded-2xl p-6 border border-offWhite-700/20 hover:border-metallicGold-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-metallicGold-500/5 h-full flex flex-col">
+                  
+                  {/* Header: Project # + Level */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-sm font-bold text-offWhite-300">Project {project.id}</span>
+                    <div className="px-2 py-1 bg-metallicGold-500/20 rounded text-xs font-bold text-metallicGold-400">
+                      Lv.{project.difficulty}
                     </div>
                   </div>
 
-                  {/* Right: Workflow Visualization */}
-                  <div className="lg:w-80 flex items-center justify-center">
-                    <div className="bg-deepBlack-900/50 rounded-xl p-4 border border-offWhite-700/10 w-full">
-                      <p className="text-xs text-offWhite-500 mb-3 text-center">워크플로우</p>
-                      <div className="flex items-center justify-between">
-                        {project.workflow.steps.map((step, idx) => {
-                          const StepIcon = step.icon;
-                          return (
-                            <React.Fragment key={idx}>
-                              <div className="flex flex-col items-center gap-1">
-                                <div className={`
-                                  w-10 h-10 rounded-lg bg-gradient-to-br ${project.gradient}
-                                  flex items-center justify-center opacity-80
-                                `}>
-                                  <StepIcon className="w-5 h-5 text-white" />
-                                </div>
-                                <span className="text-xs text-offWhite-500 text-center max-w-[50px]">
-                                  {step.label}
-                                </span>
-                              </div>
-                              {idx < project.workflow.steps.length - 1 && (
-                                <ArrowRight className="w-4 h-4 text-offWhite-600 flex-shrink-0" />
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-offWhite-200 mb-2">
+                    {project.title}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-sm text-offWhite-400 mb-4 flex-grow">
+                    {project.description}
+                  </p>
+
+                  {/* Real Preview Image */}
+                  <div className="w-full h-32 rounded-lg overflow-hidden mb-4 border border-offWhite-700/10">
+                    <img 
+                      src={project.preview} 
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+
+                  {/* Category Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-medium">
+                      자동화 업무
+                    </span>
+                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs font-medium">
+                      {project.duration}
+                    </span>
+                  </div>
+
+                  {/* Main Features */}
+                  <div className="mb-4">
+                    <h4 className="text-xs font-semibold text-offWhite-500 mb-2">주요 내용</h4>
+                    <p className="text-xs text-offWhite-400 leading-relaxed">
+                      {project.features.slice(0, 2).join(', ')}부터 {project.features.slice(2).join(', ')}까지 실습
+                    </p>
+                  </div>
+
+                  {/* Tech Stack Icons */}
+                  <div className="mt-auto">
+                    <h4 className="text-xs font-semibold text-offWhite-500 mb-2">사용하는 툴</h4>
+                    <div className="flex gap-2">
+                      {project.techStack.map((tech, techIndex) => (
+                        <div 
+                          key={techIndex}
+                          className={`w-8 h-8 ${tech.bgColor} rounded flex items-center justify-center p-1`}
+                          title={tech.name}
+                        >
+                          <img 
+                            src={tech.logo} 
+                            alt={tech.name}
+                            className="w-full h-full object-contain filter brightness-0 invert"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-
-                {/* Project Number Badge */}
-                <div className="absolute -left-3 top-6 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 text-xs font-bold px-2 py-1 rounded">
-                  #{project.id}
                 </div>
               </motion.div>
             );
@@ -282,11 +302,11 @@ export default function ProjectGallery() {
           <div className="inline-block bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-xl px-6 py-3 backdrop-blur-sm border border-metallicGold-500/20">
             <p className="text-base font-bold text-offWhite-200">
               🎯 <span className="text-metallicGold-500">100% 실습</span> · 
-              <span className="text-metallicGold-500"> 0% 이론</span> · 
-              <span className="text-metallicGold-500"> 즉시 적용 가능</span>
+              <span className="text-metallicGold-500"> 실제 서비스</span> · 
+              <span className="text-metallicGold-500"> 비즈니스 관점</span>
             </p>
             <p className="text-xs text-offWhite-400 mt-1">
-              모든 프로젝트는 실제 배포까지 완료합니다
+              실제 배포부터 효과적인 성장, 지속 가능한 마케팅까지 함께 배웁니다
             </p>
           </div>
         </motion.div>
