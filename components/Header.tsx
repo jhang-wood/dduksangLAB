@@ -85,7 +85,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                   className="flex items-center gap-2 px-4 py-2 text-sm text-offWhite-500 hover:text-metallicGold-500 transition-colors"
                 >
                   <User size={18} />
-                  <span>{userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}</span>
+                  <span>{userProfile?.name || user.email?.split('@')[0] || '사용자'}</span>
                 </button>
 
                 {isUserMenuOpen && (
@@ -157,7 +157,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
                 {user ? (
                   <div className="space-y-2">
                     <div className="text-sm text-offWhite-600 mb-2">
-                      {userProfile?.name ?? user.email?.split('@')[0] ?? '사용자'}
+                      {userProfile?.name || user.email?.split('@')[0] || '사용자'}
                     </div>
                     <button
                       onClick={() => {

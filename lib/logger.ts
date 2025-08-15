@@ -74,7 +74,8 @@ const createLogger = () => {
       
       if (isProduction && typeof window !== 'undefined') {
         // 프로덕션 브라우저 환경에서 에러 수집
-        // TODO: Sentry.captureException() 등으로 교체
+        // TODO: 프로덕션 에러 모니터링 도구 통합
+        // 추천: Sentry, LogRocket, 또는 Vercel Analytics 사용
       }
     },
     
@@ -124,7 +125,8 @@ export const userNotification = {
       alert(message);
     } else {
       // 프로덕션에서는 Toast 알림이나 모달 사용 권장
-      // TODO: Toast 알림 라이브러리 통합 (예: react-toastify)
+      // TODO: 사용자 알림 UI 시스템 통합
+      // 추천: react-toastify, Sonner, 또는 커스텀 Toast 컴포넌트
       if (typeof window !== 'undefined') {
         // 임시: localStorage에 알림 저장
         const notifications = JSON.parse(localStorage.getItem('notifications') ?? '[]');
@@ -138,7 +140,8 @@ export const userNotification = {
       return confirm(message);
     } else {
       // 프로덕션에서는 커스텀 모달 사용 권장
-      // TODO: 확인 모달 컴포넌트 통합
+      // TODO: 커스텀 확인 모달 컴포넌트 통합
+      // 현재 안전을 위해 false 반환
       // 현재는 사용자 안전을 위해 기본값 false 반환
       return false;
     }

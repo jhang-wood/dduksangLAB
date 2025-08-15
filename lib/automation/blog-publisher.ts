@@ -433,7 +433,8 @@ export class BlogPublisher {
     result: PublishResult
   ): Promise<void> {
     try {
-      // TODO: 실제 알림 시스템 연동 (이메일, 슬랙, 텔레그램 등)
+      // TODO: 게시 완료 알림 시스템 통합
+      // 이메일 알림, 슬랙/디스코드 웹훅, 텔레그램 봇 등으로 성공 알림
       logger.info('게시 완료 알림 발송', {
         title: postData.title,
         publishedUrl: result.publishedUrl,

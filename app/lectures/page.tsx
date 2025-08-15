@@ -2,14 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import {
-  CheckCircle2,
-} from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import Footer from '@/components/Footer';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
-// import { useAuth } from '@/lib/auth-context';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 import ProjectGallery from '@/components/ProjectGallery';
@@ -85,25 +81,120 @@ const masterCourse = {
   ],
 };
 
+// 재사용 가능한 컴포넌트들
+interface SectionWrapperProps {
+  children: React.ReactNode;
+  className?: string;
+  backgroundType?: 'hero' | 'purple' | 'blue' | 'orange' | 'default';
+}
+
+const SectionWrapper: React.FC<SectionWrapperProps> = ({ 
+  children, 
+  className = '', 
+  backgroundType = 'default' 
+}) => {
+  const getBackgroundStyles = () => {
+    switch (backgroundType) {
+      case 'hero':
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
+          </>
+        );
+      case 'purple':
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-purple-900/10 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 50%)`
+            }} />
+            <div className="absolute top-20 right-[20%] w-48 h-48 bg-purple-500/5 rounded-full blur-2xl" />
+          </>
+        );
+      case 'blue':
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-blue-900/8 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%)`
+            }} />
+            <div className="absolute bottom-20 left-[15%] w-56 h-56 bg-indigo-500/5 rounded-full blur-3xl" />
+          </>
+        );
+      case 'orange':
+        return (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-orange-900/8 to-deepBlack-900" />
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 20% 70%, rgba(251, 146, 60, 0.04) 0%, transparent 50%)`
+            }} />
+            <div className="absolute top-16 left-[25%] w-44 h-44 bg-amber-500/6 rounded-full blur-2xl" />
+          </>
+        );
+      default:
+        return (
+          <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+        );
+    }
+  };
+
+  return (
+    <section className={`w-full py-24 relative overflow-hidden ${className}`}>
+      <div className="absolute inset-0">
+        {getBackgroundStyles()}
+      </div>
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
+        {children}
+      </div>
+    </section>
+  );
+};
+
+interface ContentCardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const ContentCard: React.FC<ContentCardProps> = ({ children, className = '' }) => {
+  return (
+    <div className={`bg-deepBlack-600/30 rounded-2xl p-6 ${className}`}>
+      {children}
+    </div>
+  );
+};
+
+interface StepHeaderProps {
+  stepNumber: string;
+  title: string;
+  className?: string;
+}
+
+const StepHeader: React.FC<StepHeaderProps> = ({ stepNumber, title, className = '' }) => {
+  return (
+    <h3 className={`text-2xl font-bold text-metallicGold-500 mb-6 ${className}`}>
+      {stepNumber} {title}
+    </h3>
+  );
+};
+
 export default function LecturesPage() {
-  const [_isEnrolled, setIsEnrolled] = useState(false);
-  const [_loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [loading, setLoading] = useState(true);
   
-  // 실시간 타이머 상태 (8월 18일 23:59:59까지)
+  // 최적화된 타이머 상태 (milliseconds 제거)
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0,
-    milliseconds: 0
+    seconds: 0
   });
   
-  // 임시로 useAuth 비활성화
   const authLoading = false;
 
-  // 타이머 계산 함수
+  // 최적화된 타이머 계산 함수
   const calculateTimeLeft = useCallback(() => {
-    const targetDate = new Date('2025-08-18T23:59:59+09:00'); // 8월 18일 23:59:59 (한국시간)
+    const targetDate = new Date('2025-08-18T23:59:59+09:00');
     const now = new Date();
     const difference = targetDate.getTime() - now.getTime();
 
@@ -112,29 +203,14 @@ export default function LecturesPage() {
       const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      const milliseconds = Math.floor((difference % 1000) / 10); // 10ms 단위로 표시
 
-      setTimeLeft({
-        days,
-        hours,
-        minutes,
-        seconds,
-        milliseconds
-      });
+      setTimeLeft({ days, hours, minutes, seconds });
     } else {
-      // 타이머 종료
-      setTimeLeft({
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0
-      });
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     }
   }, []);
 
   const checkEnrollment = useCallback(async () => {
-    // 임시로 user가 null이므로 체크 생략
     setLoading(false);
     setIsEnrolled(false);
   }, []);
@@ -146,19 +222,14 @@ export default function LecturesPage() {
     }
   }, [checkEnrollment, authLoading]);
 
-  // 타이머 useEffect
+  // 최적화된 타이머 useEffect (1초마다 업데이트)
   useEffect(() => {
-    // 초기 계산
     calculateTimeLeft();
-    
-    // 100ms마다 업데이트
-    const timer = setInterval(calculateTimeLeft, 100);
-    
+    const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
   }, [calculateTimeLeft]);
 
-  // 로딩 조건을 단순화 - 환경변수 경고가 있어도 페이지 렌더링
-  if (_loading && authLoading) {
+  if (loading && authLoading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -177,88 +248,38 @@ export default function LecturesPage() {
       <div className="relative z-10">
         <Header currentPage="lectures" />
         
-        {/* Hero Section - Single Column */}
-        <section className="w-full py-32 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-deepBlack-800 to-deepBlack-900" />
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <ClaudeHeroSection />
-          </div>
-        </section>
+        {/* Hero Section */}
+        <SectionWrapper backgroundType="hero" className="py-32">
+          <ClaudeHeroSection />
+        </SectionWrapper>
 
         {/* Success Stories Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-purple-900/10 to-deepBlack-900" />
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 50%)`
-            }} />
-            <div className="absolute top-20 right-[20%] w-48 h-48 bg-purple-500/5 rounded-full blur-2xl" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <VibeCodingSuccessStoriesSection />
-          </div>
-        </section>
+        <SectionWrapper backgroundType="purple">
+          <VibeCodingSuccessStoriesSection />
+        </SectionWrapper>
               
         {/* Comparison Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-blue-900/8 to-deepBlack-900" />
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.03) 0%, transparent 50%)`
-            }} />
-            <div className="absolute bottom-20 left-[15%] w-56 h-56 bg-indigo-500/5 rounded-full blur-3xl" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <ClaudeCodeVsOthersSection />
-          </div>
-        </section>
+        <SectionWrapper backgroundType="blue">
+          <ClaudeCodeVsOthersSection />
+        </SectionWrapper>
               
         {/* Gallery Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-deepBlack-900 via-orange-900/8 to-deepBlack-900" />
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 20% 70%, rgba(251, 146, 60, 0.04) 0%, transparent 50%)`
-            }} />
-            <div className="absolute top-16 left-[25%] w-44 h-44 bg-amber-500/6 rounded-full blur-2xl" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <ProjectGallery />
-          </div>
-        </section>
+        <SectionWrapper backgroundType="orange">
+          <ProjectGallery />
+        </SectionWrapper>
               
         {/* Trial vs Shortcut Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <TrialErrorVsShortcutSection />
-          </div>
-        </section>
+        <SectionWrapper>
+          <TrialErrorVsShortcutSection />
+        </SectionWrapper>
               
         {/* Learning Method Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <LearningMethodSection />
-          </div>
-        </section>
+        <SectionWrapper>
+          <LearningMethodSection />
+        </SectionWrapper>
               
-              {/* Vibe Coding Showcase */}
-              {/* <VibeCodingShowcase /> */}
-
         {/* Solution Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
+        <SectionWrapper>
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -294,17 +315,17 @@ export default function LecturesPage() {
                         
                         {/* Connected Learning Nodes */}
                         <div className="grid md:grid-cols-3 gap-4 relative">
-                          {/* Lines connecting to center */}
-                          <div className="hidden md:block absolute inset-0">
+                          {/* Lines connecting to center - Behind cards but above background */}
+                          <div className="hidden md:block absolute inset-0 z-10">
                             <svg className="w-full h-full">
-                              <line x1="50%" y1="0%" x2="16.66%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
-                              <line x1="50%" y1="0%" x2="50%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
-                              <line x1="50%" y1="0%" x2="83.33%" y2="50%" stroke="#10b981" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+                              <line x1="50%" y1="-20%" x2="10%" y2="30%" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,5" opacity="0.8"/>
+                              <line x1="50%" y1="-20%" x2="50%" y2="30%" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,5" opacity="0.8"/>
+                              <line x1="50%" y1="-20%" x2="90%" y2="30%" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,5" opacity="0.8"/>
                             </svg>
                           </div>
                           
                           {/* Learning Node 1 */}
-                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                          <div className="relative z-20 bg-deepBlack-700/90 rounded-xl p-4 border border-green-500/20">
                             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
                               <span className="text-white text-sm font-bold">1</span>
                             </div>
@@ -317,7 +338,7 @@ export default function LecturesPage() {
                           </div>
                           
                           {/* Learning Node 2 */}
-                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                          <div className="relative z-20 bg-deepBlack-700/90 rounded-xl p-4 border border-green-500/20">
                             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
                               <span className="text-white text-sm font-bold">2</span>
                             </div>
@@ -330,7 +351,7 @@ export default function LecturesPage() {
                           </div>
                           
                           {/* Learning Node 3 */}
-                          <div className="relative bg-deepBlack-700/50 rounded-xl p-4 border border-green-500/20">
+                          <div className="relative z-20 bg-deepBlack-700/90 rounded-xl p-4 border border-green-500/20">
                             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mb-2 mx-auto">
                               <span className="text-white text-sm font-bold">3</span>
                             </div>
@@ -352,8 +373,8 @@ export default function LecturesPage() {
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6 mb-8">
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                    <div className="grid md:grid-cols-2 gap-8 mb-10">
+                      <ContentCard>
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
                           강의 소개 & 자동화 체험
                         </h4>
@@ -366,9 +387,9 @@ export default function LecturesPage() {
                           <li>• 자동화 프로그램 체험</li>
                           <li>• 실전 프로젝트 미리보기</li>
                         </ul>
-                      </div>
+                      </ContentCard>
                       
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                      <ContentCard>
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
                           MVP 1시간안에 만들기
                         </h4>
@@ -381,18 +402,16 @@ export default function LecturesPage() {
                           <li>• Vercel로 즉시 배포</li>
                           <li>• 도메인 연결 팝</li>
                         </ul>
-                      </div>
+                      </ContentCard>
                     </div>
                   </div>
 
                   {/* Module 4-9: Getting Started & Foundation */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🚀 STEP 1: 기초 세팅 & 핵심 개념 (모듈 4-9)
-                    </h3>
+                    <StepHeader stepNumber="🚀 STEP 1:" title="기초 세팅 & 핵심 개념 (모듈 4-9)" />
                     
-                    <div className="grid md:grid-cols-2 gap-6 mb-8">
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                    <div className="grid md:grid-cols-2 gap-8 mb-10">
+                      <ContentCard>
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
                           기초 개발환경 & MCP 세팅
                         </h4>
@@ -405,8 +424,8 @@ export default function LecturesPage() {
                           <li>• 20개 MCP 서버 한번에 세팅</li>
                           <li>• 환경변수 자동 구성</li>
                         </ul>
-                      </div>
-                      <div className="bg-deepBlack-600/30 rounded-2xl p-6">
+                      </ContentCard>
+                      <ContentCard>
                         <h4 className="text-xl font-bold text-offWhite-200 mb-3">
                           핵심 개념 이해
                         </h4>
@@ -419,7 +438,7 @@ export default function LecturesPage() {
                           <li>• Docker 컨테이너 활용법</li>
                           <li>• AI 에이전트 협업 시스템</li>
                         </ul>
-                      </div>
+                      </ContentCard>
                     </div>
 
                     {/* GitHub Actions 자동 배포 시각화 */}
@@ -433,7 +452,7 @@ export default function LecturesPage() {
                       </div>
                       
                       {/* 3단계 프로세스 시각화 */}
-                      <div className="p-6 space-y-4">
+                      <div className="p-6 space-y-6">
                         {/* STEP 1: Git Push */}
                         <div className="flex items-center gap-4 p-4 bg-deepBlack-700/50 rounded-lg border border-green-500/20">
                           <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -508,9 +527,7 @@ export default function LecturesPage() {
 
                   {/* Module 10-13: Automation */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      ⚡ STEP 2: 자동화 봇 만들기 (모듈 10-13)
-                    </h3>
+                    <StepHeader stepNumber="⚡ STEP 2:" title="자동화 봇 만들기 (모듈 10-13)" />
                     
                     {/* 멀티플랫폼 자동화 시각화 */}
                     <div className="mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20">
@@ -650,7 +667,7 @@ export default function LecturesPage() {
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8 mt-6">
+                    <div className="grid md:grid-cols-2 gap-10 mt-8">
                       <div className="bg-gradient-to-br from-green-500/15 to-green-600/15 rounded-2xl p-6 border border-green-500/40 backdrop-blur-sm hover:border-green-500/60 transition-all duration-300">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
@@ -693,9 +710,7 @@ export default function LecturesPage() {
 
                   {/* Module 14-16: Real Projects */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      💎 STEP 3: 실전 프로젝트 (모듈 14-16)
-                    </h3>
+                    <StepHeader stepNumber="💎 STEP 3:" title="실전 프로젝트 (모듈 14-16)" />
                     
                     {/* SaaS 구축 과정 3시간 타임라인 시각화 */}
                     <div className="mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border border-purple-500/20">
@@ -707,7 +722,7 @@ export default function LecturesPage() {
                         </div>
                         
                         {/* 3단계 개발 프로세스 */}
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                           {/* 1단계: 프로젝트 세팅 */}
                           <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg border border-purple-500/30">
                             <div className="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -772,7 +787,7 @@ export default function LecturesPage() {
                         {/* 기능 모듈 조립식 표현 */}
                         <div className="mt-8">
                           <h5 className="text-sm font-bold text-purple-400 mb-4 text-center">🧩 조립식 SaaS 모듈</h5>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {/* 인증 모듈 */}
                             <div className="bg-deepBlack-700/50 rounded-lg p-3 border border-purple-500/30 text-center">
                               <div className="text-lg mb-1">🔐</div>
@@ -868,9 +883,7 @@ export default function LecturesPage() {
 
                   {/* Module 17-20: Advanced */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🧠 STEP 4: 고급 기술 (모듈 17-20)
-                    </h3>
+                    <StepHeader stepNumber="🧠 STEP 4:" title="고급 기술 (모듈 17-20)" />
                     
                     {/* JARVIS급 AI 비서 대화 인터페이스 시각화 */}
                     <div className="mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20">
@@ -892,7 +905,7 @@ export default function LecturesPage() {
                         </div>
 
                         {/* 실제 대화 시연 */}
-                        <div className="bg-deepBlack-800/50 rounded-xl p-4 space-y-4 max-h-80 overflow-y-auto">
+                        <div className="bg-deepBlack-800/50 rounded-xl p-4 space-y-5 max-h-80 overflow-y-auto">
                           {/* 사용자 메시지 1 */}
                           <div className="flex justify-end">
                             <div className="bg-blue-500 text-white rounded-xl px-4 py-2 max-w-xs">
@@ -1022,7 +1035,7 @@ export default function LecturesPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                       <div className="flex items-start gap-4 p-6 bg-deepBlack-600/30 rounded-2xl hover:bg-deepBlack-600/50 transition-all">
                         <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
                           <span className="text-2xl">🤖</span>
@@ -1057,9 +1070,7 @@ export default function LecturesPage() {
 
                   {/* Module 21-30: Mastery */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
-                      🏆 STEP 5: 마스터 되기 (모듈 21-30)
-                    </h3>
+                    <StepHeader stepNumber="🏆 STEP 5:" title="마스터 되기 (모듈 21-30)" />
                     
                     {/* MVP 7일 런칭 프로세스 시각화 */}
                     <div className="mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20">
@@ -1073,7 +1084,7 @@ export default function LecturesPage() {
                         {/* 7일 일정표 */}
                         <div className="space-y-3">
                           {/* DAY 1-2: 아이디어 검증 */}
-                          <div className="grid md:grid-cols-2 gap-3">
+                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 rounded-lg p-4 border border-emerald-500/30">
                               <div className="flex items-center gap-3 mb-2">
                                 <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
@@ -1104,7 +1115,7 @@ export default function LecturesPage() {
                           </div>
 
                           {/* DAY 3-4: 개발 */}
-                          <div className="grid md:grid-cols-2 gap-3">
+                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 border border-green-500/30">
                               <div className="flex items-center gap-3 mb-2">
                                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -1135,7 +1146,7 @@ export default function LecturesPage() {
                           </div>
 
                           {/* DAY 5-6: 배포 및 테스트 */}
-                          <div className="grid md:grid-cols-2 gap-3">
+                          <div className="grid md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg p-4 border border-blue-500/30">
                               <div className="flex items-center gap-3 mb-2">
                                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -1310,80 +1321,55 @@ export default function LecturesPage() {
                     </p>
                   </motion.div>
                 </motion.div>
-          </div>
-        </section>
+        </SectionWrapper>
 
         {/* Curriculum Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <EnhancedModuleAccordion modules={masterCourse.modules} />
-          </div>
-        </section>
+        <SectionWrapper>
+          <EnhancedModuleAccordion modules={masterCourse.modules} />
+        </SectionWrapper>
 
         {/* Recommended For Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+        <SectionWrapper>
+          <h2 className="text-2xl font-bold text-offWhite-200 mb-6">
+            이런 분들께 추천합니다
+          </h2>
+          <div className="space-y-6">
+            {[
+              '비싼 강의료에 지친 직장인',
+              'AI로 자동화 비즈니스를 시작하고 싶은 사업가',
+              '코딩 없이 프로그램을 만들고 싶은 비개발자',
+              '시간과 장소에 구애받지 않고 일하고 싶은 프리랜서',
+            ].map((item, index) => (
+              <div key={index} className="flex items-start gap-3">
+                <span className="text-green-500 mt-1 flex-shrink-0">✓</span>
+                <span className="text-offWhite-300 text-base">{item}</span>
+              </div>
+            ))}
           </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <h2 className="text-2xl font-bold text-offWhite-200 mb-6">
-              이런 분들께 추천합니다
-            </h2>
-            <div className="space-y-4">
-              {[
-                '비싼 강의료에 지친 직장인',
-                'AI로 자동화 비즈니스를 시작하고 싶은 사업가',
-                '코딩 없이 프로그램을 만들고 싶은 비개발자',
-                '시간과 장소에 구애받지 않고 일하고 싶은 프리랜서',
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-start gap-3"
-                >
-                  <CheckCircle2 className="text-green-500 mt-1 flex-shrink-0" size={20} />
-                  <span className="text-offWhite-300 text-base">{item}</span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        </SectionWrapper>
 
         {/* FAQ Section */}
-        <section className="w-full py-16 relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
-          </div>
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <FAQSection
-              faqs={sampleFAQs}
-            />
-          </div>
-        </section>
+        <SectionWrapper>
+          <FAQSection faqs={sampleFAQs} />
+        </SectionWrapper>
 
         {/* Floating Bottom Card Navigation */}
-        <div className="fixed bottom-4 left-4 right-4 z-50">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-4/5 max-w-5xl">
           <div className="bg-deepBlack-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-metallicGold-500/30 overflow-hidden">
-            <div className="px-6 py-4">
+            <div className="px-5 py-3">
               <div className="flex items-center justify-between">
-                {/* Left: Heart + Course Info */}
+                {/* Left: Logo + Course Info */}
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-lg flex items-center justify-center border border-metallicGold-500/30">
+                  <div className="w-12 h-12 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-900/20 rounded-lg flex items-center justify-center border border-metallicGold-500/30">
                     <img 
                       src="/images/떡상연구소_로고/누끼_떡상연구소.png" 
                       alt="떡상연구소" 
-                      className="w-12 h-12 object-cover"
+                      className="w-10 h-10 object-cover"
                     />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-offWhite-200">
-                      Claude Code CLI 사전예약 3일 특가 → {masterCourse.discount}% OFF
+                      떡상연구소 클로드코드 사전예약 특가 → {masterCourse.discount}% OFF
                     </p>
                     <p className="text-xs text-offWhite-500">
                       <span className="line-through">₩{masterCourse.originalPrice.toLocaleString()}</span>
@@ -1392,9 +1378,26 @@ export default function LecturesPage() {
                   </div>
                 </div>
                 
-                {/* Center: Timer */}
-                <div className="text-center mt-2">
-                  <div className="flex items-center gap-1 text-sm font-mono text-offWhite-200">
+                {/* Center: Course Stats + Timer */}
+                <div className="flex flex-col items-center gap-1">
+                  {/* Course Stats - Top row */}
+                  <div className="flex items-center gap-4 text-xs text-offWhite-400">
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-metallicGold-500 rounded-full"></span>
+                      <span>30개 프로젝트</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                      <span>13시간 실습</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                      <span>1년 수강</span>
+                    </div>
+                  </div>
+                  
+                  {/* Timer - Bottom row */}
+                  <div className="flex items-center gap-1 text-xs font-mono text-offWhite-200">
                     <span className="text-xs text-offWhite-500 mr-1">마감까지</span>
                     <span className="font-bold text-metallicGold-400">{timeLeft.days}</span>
                     <span className="text-xs text-offWhite-500">일</span>
@@ -1404,8 +1407,6 @@ export default function LecturesPage() {
                     <span className="text-xs text-offWhite-500">분</span>
                     <span className="font-bold text-metallicGold-400 mx-1">{timeLeft.seconds}</span>
                     <span className="text-xs text-offWhite-500">초</span>
-                    <span className="font-bold text-metallicGold-400 mx-1">{String(timeLeft.milliseconds).padStart(2, '0')}</span>
-                    <span className="text-xs text-offWhite-500">ms</span>
                   </div>
                 </div>
                 

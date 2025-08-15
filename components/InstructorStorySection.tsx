@@ -2,20 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-// import { 
-//   Code2,
-//   Target,
-//   Clock,
-//   Zap,
-//   Brain,
-//   ArrowRight,
-//   CheckCircle,
-//   AlertCircle,
-//   Sparkles,
-//   TrendingUp,
-//   MessageSquare,
-//   DollarSign
-// } from 'lucide-react';
 
 export default function InstructorStorySection() {
   return (

@@ -119,7 +119,7 @@ export class ErrorHandler {
         await this.handleCriticalError(error);
         break;
       case ErrorSeverity.ERROR:
-        await this.handleError('system' as ServiceType, new Error(error.message));
+        console.error('[Error]', error.message, error);
         break;
       case ErrorSeverity.WARN:
         console.warn('[Warning]', error.message, error);
@@ -149,10 +149,15 @@ export class ErrorHandler {
    */
   private async attemptRecovery(error: SystemError): Promise<boolean> {
     const strategyKey = `${error.service}:${error.severity}`;
-    const strategy =
-      this.recoveryStrategies.get(strategyKey) ||
-      this.recoveryStrategies.get(error.service) ||
-      this.recoveryStrategies.get('default');
+    let strategy = this.recoveryStrategies.get(strategyKey);
+    
+    if (!strategy) {
+      strategy = this.recoveryStrategies.get(error.service);
+    }
+    
+    if (!strategy) {
+      strategy = this.recoveryStrategies.get('default');
+    }
 
     if (!strategy) {
       return false;
@@ -231,8 +236,10 @@ export class ErrorHandler {
   }
 
   private shouldAttemptRecovery(error: SystemError): boolean {
+    const breaker = this.circuitBreakers.get(error.service);
     return (
-      error.severity !== ErrorSeverity.INFO && !this.circuitBreakers.get(error.service)?.isOpen()
+      error.severity !== ErrorSeverity.INFO && 
+      (!breaker || !breaker.isOpen())
     );
   }
 

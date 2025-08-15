@@ -260,17 +260,11 @@ AI 도구를 활용한 효율적인 워크플로우 구축 방법을 알아보�
   }
 ];
 
-// Generate static params for all known slugs - commented out for dynamic rendering
+// NOTE: generateStaticParams 함수는 동적 렌더링을 위해 비활성화됨
+// 필요시 정적 생성으로 전환하려면 아래 함수의 주석을 해제
 // export async function generateStaticParams() {
-//   return [
-//     { slug: '2025년-ai-자동화-혁명-테스트-게시글' },
-//     { slug: 'chatgpt-4-multimodal-features' }, 
-//     { slug: 'github-copilot-chat-update' },
-//     { slug: 'claude-35-sonnet-coding-abilities' },
-//     { slug: 'ai-design-tools-evolution' },
-//     { slug: 'smart-workflow-with-ai' },
-//     { slug: 'fintech-ai-innovations' }
-//   ];
+//   // Supabase에서 동적으로 slug 목록을 가져오는 방식 권장
+//   return await getAiTrendsSlugs();
 // }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

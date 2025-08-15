@@ -496,7 +496,7 @@ export class ContentManager {
       const totalPublishes = publishLogs.length;
 
       const performanceMetrics = {
-        avgPublishTime: 0, // TODO: 실제 게시 시간 계산
+        avgPublishTime: 0, // TODO: 게시 로그에서 created_at과 published_at 차이로 평균 시간 계산
         successRate: totalPublishes > 0 ? (successfulPublishes / totalPublishes) * 100 : 0,
         errorRate: totalPublishes > 0 ? (failedPublishes / totalPublishes) * 100 : 0,
       };
@@ -681,7 +681,9 @@ export class ContentManager {
         return content.status === 'draft' && createdAt < cutoffDate;
       });
 
-      // TODO: 실제 삭제 로직 구현 (안전을 위해 현재는 로그만)
+      // TODO: 안전한 임시저장 콘텐츠 정리 로직 구현
+      // 1. 사용자 확인 후 삭제 또는 2. 휴지통으로 이동하는 방식 권장
+      // 현재는 데이터 보호를 위해 로그만 출력
       logger.info(`정리 대상 임시저장 콘텐츠: ${oldDrafts.length}개`);
 
       // 정리 작업 로그 기록

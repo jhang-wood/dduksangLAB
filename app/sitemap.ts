@@ -37,8 +37,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // TODO: Re-enable dynamic AI trends pages after resolving Supabase SSR issues
-  // For now, return only static pages to ensure build success
+  // TODO: AI 트렌드 페이지 동적 생성 재활성화 필요
+  // Supabase SSR 이슈 해결 후 다음과 같이 추가:
+  // const aiTrends = await supabase.from('ai_trends').select('slug').data
+  // aiTrends?.forEach(trend => staticPages.push({...}))
+  // 현재는 빌드 성공을 위해 정적 페이지만 반환
   
   return staticPages;
 }

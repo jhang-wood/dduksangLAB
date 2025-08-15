@@ -129,7 +129,7 @@ export default function SidebarMyPageFixed() {
       }));
 
       if (sitesError) {
-        console.log('사이트 데이터를 불러올 수 없습니다:', sitesError.message);
+        // 사이트 데이터 로드 실패 시 무시 (선택사항: 사용자에게 표시하는 로직 추가 가능)
       }
 
       // 전체 사이트 순위 가져오기
