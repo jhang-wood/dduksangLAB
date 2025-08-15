@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "git": "./scripts/git-automation.sh",
+    "git:quick": "./scripts/git-automation.sh",
+    "deploy": "./scripts/git-automation.sh"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
