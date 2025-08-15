@@ -139,73 +139,51 @@ export default function LecturesPage() {
       <div className="relative z-10">
         <Header currentPage="lectures" />
         
-        {/* Hero Section - First Background */}
-        <section className="w-full bg-deepBlack-900">
-          <div className="container mx-auto max-w-6xl px-4 py-8">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left Column: Main Content */}
-              <div className="flex-1 lg:flex-shrink-0 lg:w-0">
-                {/* Claude Hero Section - Karpathy 인용 포함 */}
-                <ClaudeHeroSection />
-              </div>
-
-              {/* Right Column: Price Card - Hero 섹션 바로 옆에 배치 */}
-              <div className="lg:w-80 lg:flex-shrink-0">
-                <SimplePriceCard
-                  originalPrice={masterCourse.originalPrice}
-                  discountedPrice={masterCourse.price}
-                  isEnrolled={isEnrolled}
-                  onEnrollClick={handleEnrollClick}
-                />
-              </div>
-            </div>
+        {/* Hero Section - Single Column */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
+            <ClaudeHeroSection />
           </div>
         </section>
 
-        {/* Success Stories Section - Second Background */}
-        <section className="w-full bg-gradient-to-b from-deepBlack-900 to-deepBlack-800">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* Vibe Coding Success Stories - 실제 성공 사례 */}
+        {/* Success Stories Section */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <VibeCodingSuccessStoriesSection />
           </div>
         </section>
               
-        {/* Comparison Section - Third Background */}
-        <section className="w-full bg-deepBlack-700">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* Claude Code vs Others - 정확한 도구 비교 */}
+        {/* Comparison Section */}
+        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <ClaudeCodeVsOthersSection />
           </div>
         </section>
               
-        {/* Gallery Section - Fourth Background */}
-        <section className="w-full bg-gradient-to-b from-deepBlack-700 to-deepBlack-800">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* Project Gallery - 실제로 만들 수 있는 것들 */}
+        {/* Gallery Section */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <ProjectGallery />
           </div>
         </section>
               
-        {/* Calculator Section - Fifth Background */}
-        <section className="w-full bg-deepBlack-600">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* API Cost Calculator - ROI 계산기 */}
+        {/* Calculator Section */}
+        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <APIcostCalculator />
           </div>
         </section>
               
-        {/* Trial vs Shortcut Section - Sixth Background */}
-        <section className="w-full bg-gradient-to-b from-deepBlack-600 to-deepBlack-700">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* Trial Error vs Shortcut Section - 시행착오 vs 지름길 비교 */}
+        {/* Trial vs Shortcut Section */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <TrialErrorVsShortcutSection />
           </div>
         </section>
               
-        {/* Learning Method Section - Seventh Background */}
-        <section className="w-full bg-deepBlack-800">
-          <div className="container mx-auto max-w-6xl px-4 py-16">
-            {/* Learning Method Section - 학습 방식 소개 */}
+        {/* Learning Method Section */}
+        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <LearningMethodSection />
           </div>
         </section>
@@ -213,29 +191,29 @@ export default function LecturesPage() {
               {/* Vibe Coding Showcase */}
               {/* <VibeCodingShowcase /> */}
 
-        {/* Solution Section - Eighth Background */}
-        <section className="w-full bg-gradient-to-b from-deepBlack-800 to-deepBlack-900">
-          <div className="container mx-auto max-w-6xl px-4 py-20">
+        {/* Solution Section */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ duration: 0.8 }}
                   viewport={{ once: true }}
                 >
-                  <div className="text-center mb-12">
-                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                  <div className="text-center mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-3">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
                         30개 실습 프로젝트로 완성하는 포트폴리오
                       </span>
                     </h2>
-                    <p className="text-lg text-offWhite-500">
+                    <p className="text-base text-offWhite-500">
                       매 프로젝트마다 실제 배포까지 - 이론 없이 바로 만들기
                     </p>
                   </div>
 
                   {/* Module 1-3: Free Lessons */}
-                  <div className="mb-16">
-                    <h3 className="text-2xl font-bold text-metallicGold-500 mb-6">
+                  <div className="mb-12">
+                    <h3 className="text-xl font-bold text-metallicGold-500 mb-4">
                       🎁 STEP 0: 무료 체험 (모듈 1-3)
                     </h3>
                     
@@ -532,17 +510,17 @@ export default function LecturesPage() {
           </div>
         </section>
 
-        {/* Curriculum Section - Ninth Background */}
-        <section className="w-full bg-deepBlack-600">
-          <div className="container mx-auto max-w-6xl px-4 py-20">
+        {/* Curriculum Section */}
+        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <EnhancedModuleAccordion modules={masterCourse.modules} />
           </div>
         </section>
 
-        {/* Recommended For Section - Tenth Background */}
-        <section className="w-full bg-gradient-to-b from-deepBlack-600 to-deepBlack-700">
-          <div className="container mx-auto max-w-6xl px-4 py-20">
-            <h2 className="text-3xl font-bold text-offWhite-200 mb-8">
+        {/* Recommended For Section */}
+        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
+            <h2 className="text-2xl font-bold text-offWhite-200 mb-6">
               이런 분들께 추천합니다
             </h2>
             <div className="space-y-4">
@@ -561,25 +539,45 @@ export default function LecturesPage() {
                   className="flex items-start gap-3"
                 >
                   <CheckCircle2 className="text-green-500 mt-1 flex-shrink-0" size={20} />
-                  <span className="text-offWhite-300 text-lg">{item}</span>
+                  <span className="text-offWhite-300 text-base">{item}</span>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* FAQ Section - Eleventh Background */}
-        <section className="w-full bg-deepBlack-800">
-          <div className="container mx-auto max-w-6xl px-4 py-20">
+        {/* FAQ Section */}
+        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <FAQSection
               faqs={sampleFAQs}
             />
           </div>
         </section>
 
-        {/* Mobile Fixed Bottom CTA - 제거됨, 이제 모든 화면에서 카드가 자연스럽게 표시됨 */}
+        {/* Fixed Bottom Navigation Bar */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-deepBlack-900/95 backdrop-blur-md border-t border-metallicGold-900/30 p-4">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div>
+              <p className="text-sm text-offWhite-500 line-through">
+                ₩{masterCourse.originalPrice.toLocaleString()}
+              </p>
+              <p className="text-xl font-bold text-metallicGold-500">
+                ₩{masterCourse.price.toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={handleEnrollClick}
+              className="px-8 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-bold hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all"
+            >
+              수강 신청하기
+            </button>
+          </div>
+        </div>
         
-        <Footer />
+        <div className="pb-20">
+          <Footer />
+        </div>
       </div>
     </div>
   );
