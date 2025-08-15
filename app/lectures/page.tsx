@@ -140,50 +140,71 @@ export default function LecturesPage() {
         <Header currentPage="lectures" />
         
         {/* Hero Section - Single Column */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ClaudeHeroSection />
           </div>
         </section>
 
         {/* Success Stories Section */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <VibeCodingSuccessStoriesSection />
           </div>
         </section>
               
         {/* Comparison Section */}
-        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ClaudeCodeVsOthersSection />
           </div>
         </section>
               
         {/* Gallery Section */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <ProjectGallery />
           </div>
         </section>
               
         {/* Calculator Section */}
-        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <APIcostCalculator />
           </div>
         </section>
               
         {/* Trial vs Shortcut Section */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <TrialErrorVsShortcutSection />
           </div>
         </section>
               
         {/* Learning Method Section */}
-        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <LearningMethodSection />
           </div>
         </section>
@@ -192,8 +213,11 @@ export default function LecturesPage() {
               {/* <VibeCodingShowcase /> */}
 
         {/* Solution Section */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -511,15 +535,21 @@ export default function LecturesPage() {
         </section>
 
         {/* Curriculum Section */}
-        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <EnhancedModuleAccordion modules={masterCourse.modules} />
           </div>
         </section>
 
         {/* Recommended For Section */}
-        <section className="w-full bg-deepBlack-900/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <h2 className="text-2xl font-bold text-offWhite-200 mb-6">
               이런 분들께 추천합니다
             </h2>
@@ -547,8 +577,11 @@ export default function LecturesPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="w-full bg-deepBlack-900/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-6 py-16">
+        <section className="py-16 px-4 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/40 to-deepBlack-900" />
+          </div>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
             <FAQSection
               faqs={sampleFAQs}
             />
