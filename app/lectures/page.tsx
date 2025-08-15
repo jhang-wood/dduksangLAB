@@ -12,7 +12,6 @@ import Footer from '@/components/Footer';
 import { FAQSection, sampleFAQs } from '@/components/FAQSection';
 // import { useAuth } from '@/lib/auth-context';
 import EnhancedModuleAccordion from '@/components/EnhancedModuleAccordion';
-import SimplePriceCard from '@/components/SimplePriceCard';
 import ClaudeHeroSection from '@/components/ClaudeHeroSection';
 import ProjectGallery from '@/components/ProjectGallery';
 import LearningMethodSection from '@/components/LearningMethodSection';
@@ -89,7 +88,7 @@ const masterCourse = {
 };
 
 export default function LecturesPage() {
-  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [_isEnrolled, setIsEnrolled] = useState(false);
   const [_loading, setLoading] = useState(true);
   const router = useRouter();
   
