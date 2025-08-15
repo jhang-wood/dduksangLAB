@@ -179,8 +179,8 @@ const StepHeader: React.FC<StepHeaderProps> = ({ stepNumber, title, className = 
 };
 
 export default function LecturesPage() {
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [_isEnrolled, setIsEnrolled] = useState(false);
+  const [_loading, setLoading] = useState(true);
   
   // 최적화된 타이머 상태 (milliseconds 제거)
   const [timeLeft, setTimeLeft] = useState({
@@ -229,7 +229,7 @@ export default function LecturesPage() {
     return () => clearInterval(timer);
   }, [calculateTimeLeft]);
 
-  if (loading && authLoading) {
+  if (_loading && authLoading) {
     return (
       <div className="min-h-screen bg-deepBlack-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
