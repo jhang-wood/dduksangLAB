@@ -54,12 +54,14 @@ export default function InstructorSection() {
   ];
 
   return (
-    <section className="py-16 px-4 relative overflow-hidden bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900">
+    <section className="py-16 relative overflow-hidden">
+      {/* Full-width background */}
       <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-deepBlack-900 via-deepBlack-800/30 to-deepBlack-900" />
         <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500/5 via-transparent to-metallicGold-500/5" />
       </div>
       
-      <div className="container mx-auto max-w-7xl relative z-10">
+      <div className="container mx-auto max-w-7xl relative z-10 px-4">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
