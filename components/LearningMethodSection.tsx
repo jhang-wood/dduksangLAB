@@ -121,8 +121,8 @@ export default function LearningMethodSection() {
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
                   <div>
-                    <p className="text-offWhite-300 font-semibold">27개 실제 프로젝트</p>
-                    <p className="text-offWhite-500 text-sm">강의 끝 = 포트폴리오 27개 완성</p>
+                    <p className="text-offWhite-300 font-semibold">13개 실제 프로젝트</p>
+                    <p className="text-offWhite-500 text-sm">강의 끝 = 포트폴리오 13개 완성</p>
                   </div>
                 </div>
                 

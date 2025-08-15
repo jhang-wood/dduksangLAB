@@ -49,9 +49,9 @@ export default function TrialErrorVsShortcutSection() {
   const shortcutItems = [
     {
       icon: Target,
-      title: '검증된 27시간 커리큘럼',
+      title: '검증된 13시간 커리큘럼',
       description: '최소 지식으로 최대 효과',
-      value: '27시간',
+      value: '13시간',
       color: 'text-green-500'
     },
     {
@@ -71,7 +71,7 @@ export default function TrialErrorVsShortcutSection() {
     {
       icon: Zap,
       title: '바로 적용 가능한 실전',
-      description: '27개 프로젝트 완성 보장',
+      description: '13개 프로젝트 완성 보장',
       value: '무제한',
       color: 'text-green-500'
     }

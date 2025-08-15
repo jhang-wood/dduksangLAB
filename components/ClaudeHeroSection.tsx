@@ -277,7 +277,7 @@ export default function ClaudeHeroSection() {
             <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
               <div className="flex items-center gap-2 px-4 py-2 bg-deepBlack-600/30 rounded-full">
                 <Terminal className="w-4 h-4 text-metallicGold-500" />
-                <span className="text-offWhite-400">27개 실습 모듈</span>
+                <span className="text-offWhite-400">13개 실습 모듈</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-deepBlack-600/30 rounded-full">
                 <Code className="w-4 h-4 text-metallicGold-500" />

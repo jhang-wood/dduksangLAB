@@ -74,8 +74,8 @@ export default function BeforeAfterSection() {
     },
     {
       icon: '🏆',
-      title: '27개 포트폴리오 보유',
-      description: '실제 작동하는 서비스 27개 완성'
+      title: '13개 포트폴리오 보유',
+      description: '실제 작동하는 서비스 13개 완성'
     }
   ];
 
@@ -96,7 +96,7 @@ export default function BeforeAfterSection() {
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-offWhite-200 mb-2">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-green-500">
-              단 27시간의 변화
+              단 13시간의 변화
             </span>
           </h2>
           <p className="text-base sm:text-lg text-offWhite-400">
@@ -186,7 +186,7 @@ export default function BeforeAfterSection() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-green-400">After</h3>
-                  <p className="text-offWhite-500 text-xs">27시간 후의 당신</p>
+                  <p className="text-offWhite-500 text-xs">13시간 후의 당신</p>
                 </div>
               </div>
 
@@ -234,7 +234,7 @@ export default function BeforeAfterSection() {
         >
           <div className="inline-block bg-gradient-to-r from-metallicGold-500/10 to-metallicGold-900/10 rounded-lg px-4 py-3 backdrop-blur-sm border border-metallicGold-500/20">
             <p className="text-lg font-bold text-offWhite-200 mb-1">
-              <span className="text-metallicGold-500">27시간</span>이면 충분합니다
+              <span className="text-metallicGold-500">13시간</span>이면 충분합니다
             </p>
             <p className="text-sm text-offWhite-400">
               더 이상 망설이지 마세요. 지금이 시작할 최적의 타이밍입니다.

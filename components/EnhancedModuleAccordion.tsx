@@ -588,7 +588,7 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
     <div className={`space-y-4 ${className}`}>
       {/* Simple Title */}
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-offWhite-200 mb-2">27개 실습 모듈</h3>
+        <h3 className="text-2xl font-bold text-offWhite-200 mb-2">13개 실습 모듈</h3>
         <p className="text-sm text-offWhite-500">클릭하여 상세 내용을 확인하세요</p>
       </div>
 
@@ -826,7 +826,7 @@ export default function EnhancedModuleAccordion({ modules, className = '' }: Mod
           준비되셨나요? 지금 시작하세요!
         </h3>
         <p className="text-offWhite-400 mb-6">
-          27개 모듈, 27시간의 압축된 지식으로 당신을 AI 마스터로 만들어드립니다
+          13개 모듈, 13시간의 압축된 지식으로 당신을 AI 마스터로 만들어드립니다
         </p>
         <motion.button
           whileHover={{ scale: 1.05 }}

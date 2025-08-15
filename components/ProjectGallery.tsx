@@ -113,7 +113,7 @@ export default function ProjectGallery() {
             </span>
           </h2>
           <p className="text-lg sm:text-xl text-offWhite-400">
-            27개 프로젝트 중 대표 6개 - 복사/붙여넣기로 시작해서 완성까지
+            13개 프로젝트 중 대표 6개 - 복사/붙여넣기로 시작해서 완성까지
           </p>
         </motion.div>
 

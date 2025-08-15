@@ -111,8 +111,8 @@ export default function StickyPriceCard({
               <Clock className="w-4 h-4 text-metallicGold-500" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-offWhite-200">27개 실습 모듈</p>
-              <p className="text-xs text-offWhite-500">총 27시간 분량</p>
+              <p className="text-sm font-semibold text-offWhite-200">13개 실습 모듈</p>
+              <p className="text-xs text-offWhite-500">총 13시간 분량</p>
             </div>
           </div>
 
