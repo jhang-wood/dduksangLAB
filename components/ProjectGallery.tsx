@@ -10,8 +10,6 @@ import {
   Bot, 
   Briefcase,
   Clock,
-  Star,
-  ArrowRight,
   Database,
   Server,
   Globe,
@@ -173,15 +171,6 @@ const projects = [
 ];
 
 export default function ProjectGallery() {
-  const getDifficultyStars = (level: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        size={14} 
-        className={i < level ? 'fill-metallicGold-500 text-metallicGold-500' : 'text-offWhite-600'} 
-      />
-    ));
-  };
 
   return (
     <div className="relative">
@@ -207,7 +196,6 @@ export default function ProjectGallery() {
         {/* Clean & Simple Card Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => {
-            const Icon = project.icon;
             
             return (
               <motion.div
