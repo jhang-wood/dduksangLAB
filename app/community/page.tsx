@@ -16,8 +16,8 @@ interface Post {
   title: string;
   content: string;
   category: string;
-  author_id: string;
-  author_name: string;
+  user_id: string; // This is the actual database column name
+  author_name: string; // This comes from joined profiles table
   tags: string[];
   view_count: number;
   likes: number;
@@ -29,7 +29,7 @@ interface Post {
 }
 
 const categories = [
-  { id: 'general', label: 'AI 부업정보', icon: TrendingUp, color: 'purple' },
+  { id: 'free', label: 'AI 부업정보', icon: TrendingUp, color: 'purple' },
   { id: 'qna', label: 'Q&A', icon: HelpCircle, color: 'blue' },
   { id: 'study', label: '스터디모집', icon: Users, color: 'emerald' },
   { id: 'career', label: '취업·이직', icon: Briefcase, color: 'orange' },
@@ -50,7 +50,10 @@ export default function CommunityPage() {
     try {
       let query = supabase
         .from('community_posts')
-        .select('*')
+        .select(`
+          *,
+          profiles(name)
+        `)
         .order('created_at', { ascending: false });
 
       if (selectedCategory !== 'all') {
@@ -58,7 +61,7 @@ export default function CommunityPage() {
       }
 
       if (searchTerm.trim()) {
-        query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%,author_name.ilike.%${searchTerm}%`);
+        query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
       }
 
       const { data, error } = await query;
@@ -66,7 +69,18 @@ export default function CommunityPage() {
       if (error) {
         throw error;
       }
-      setPosts(data ?? []);
+      
+      // Transform the data to match Post interface
+      const transformedData = (data ?? []).map((post: any) => ({
+        ...post,
+        author_name: post.profiles?.name || 'Unknown',
+        view_count: post.view_count || 0,
+        likes: post.likes || 0,
+        comments_count: 0, // This needs to be calculated separately
+        is_featured: false // Not in current schema
+      }));
+      
+      setPosts(transformedData);
     } catch (error) {
       logger.error('Error fetching posts:', error);
     } finally {
@@ -78,12 +92,26 @@ export default function CommunityPage() {
     try {
       const { data, error } = await supabase
         .from('community_posts')
-        .select('*')
+        .select(`
+          *,
+          profiles(name)
+        `)
         .order('view_count', { ascending: false })
         .limit(4);
 
       if (error) throw error;
-      setHotPosts(data ?? []);
+      
+      // Transform the data to match Post interface
+      const transformedData = (data ?? []).map((post: any) => ({
+        ...post,
+        author_name: post.profiles?.name || 'Unknown',
+        view_count: post.view_count || 0,
+        likes: post.likes || 0,
+        comments_count: 0, // This needs to be calculated separately
+        is_featured: false // Not in current schema
+      }));
+      
+      setHotPosts(transformedData);
     } catch (error) {
       logger.error('Error fetching hot posts:', error);
     }
@@ -116,7 +144,9 @@ export default function CommunityPage() {
     router.push('/community/write');
   };
 
-  const handleDeletePost = async (postId: string, authorId: string) => {
+  const handleDeletePost = async (postId: string, userId: string) => {
+    console.log('🔥 삭제 시도:', { postId, userId, user: user?.id, userRole: user?.role });
+    
     if (!user) {
       userNotification.alert('로그인이 필요합니다.');
       return;
@@ -124,7 +154,9 @@ export default function CommunityPage() {
 
     // 관리자이거나 작성자인지 확인
     const isAdmin = user.role === 'admin';
-    const isAuthor = user.id === authorId;
+    const isAuthor = user.id === userId;
+    
+    console.log('🔒 권한 체크:', { isAdmin, isAuthor, currentUserId: user.id, postUserId: userId });
     
     if (!isAdmin && !isAuthor) {
       userNotification.alert('자신의 게시글만 삭제할 수 있습니다.');
@@ -135,19 +167,69 @@ export default function CommunityPage() {
       return;
     }
 
+    console.log('🗑️ 삭제 실행 중...');
     try {
+      // 먼저 현재 사용자의 세션 확인
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('📍 현재 세션:', { session: !!session, userId: session?.user?.id, error: sessionError });
+      
+      if (!session) {
+        userNotification.alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+        return;
+      }
+
+      // 삭제 전 게시글 정보 확인
+      const { data: postData, error: fetchError } = await supabase
+        .from('community_posts')
+        .select('id, user_id, title')
+        .eq('id', postId)
+        .single();
+      
+      console.log('📝 게시글 정보:', { postData, fetchError });
+      
+      if (fetchError) {
+        console.error('❌ 게시글 조회 실패:', fetchError);
+        userNotification.alert('게시글을 찾을 수 없습니다.');
+        return;
+      }
+
+      // 관리자가 아닌 경우 작성자 확인
+      if (isAdmin) {
+        console.log('🔑 관리자 권한으로 삭제 시도');
+      } else if (postData.user_id !== user.id) {
+        console.error('❌ 권한 불일치:', { postAuthor: postData.user_id, currentUser: user.id });
+        userNotification.alert('삭제 권한이 없습니다.');
+        return;
+      }
+
       const { error } = await supabase
         .from('community_posts')
         .delete()
         .eq('id', postId);
 
       if (error) {
-        throw error;
+        console.error('❌ Supabase 삭제 오류:', error);
+        
+        // 구체적인 에러 메시지 제공
+        if (error.message.includes('policy')) {
+          userNotification.alert('삭제 권한이 없습니다. 관리자에게 문의하세요.');
+        } else if (error.message.includes('not found')) {
+          userNotification.alert('이미 삭제된 게시글입니다.');
+        } else {
+          userNotification.alert(`삭제 실패: ${error.message}`);
+        }
+        return;
       }
 
+      console.log('✅ 삭제 성공');
       userNotification.alert('게시글이 삭제되었습니다.');
-      void fetchPosts(); // 목록 새로고침
+      
+      // 목록 새로고침
+      await fetchPosts();
+      await fetchHotPosts();
+      
     } catch (error) {
+      console.error('❌ 삭제 실패:', error);
       logger.error('Error deleting post:', error);
       userNotification.alert('게시글 삭제에 실패했습니다.');
     }
@@ -231,87 +313,136 @@ export default function CommunityPage() {
             
             {/* Horizontal Scrolling Hot Posts */}
             <div className="relative overflow-hidden bg-deepBlack-300/10 rounded-xl border border-metallicGold-900/10">
-              <div className="flex animate-scroll-left gap-4 py-4">
-                {/* 첫 번째 세트 */}
-                {hotPosts.slice(0, 6).map((post, index) => {
-                  const category = categories.find(c => c.id === post.category);
-                  return (
-                    <Link
-                      key={`first-${post.id}`}
-                      href={`/community/${post.category}/${post.id}`}
-                      className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
-                            HOT {index + 1}
-                          </span>
-                          <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+              {hotPosts.length === 0 ? (
+                <div className="py-8 text-center text-offWhite-600">
+                  <p className="text-sm">아직 인기글이 없습니다</p>
+                </div>
+              ) : hotPosts.length < 3 ? (
+                // 적은 수의 포스트일 때는 반복하지 않고 가운데 정렬
+                <div className="flex justify-center gap-4 py-4">
+                  {hotPosts.map((post, index) => {
+                    const category = categories.find(c => c.id === post.category);
+                    return (
+                      <Link
+                        key={post.id}
+                        href={`/community/${post.category}/${post.id}`}
+                        className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                              HOT {index + 1}
+                            </span>
+                            <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                          </div>
+                          {category && (
+                            <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
+                              {category.label}
+                            </span>
+                          )}
                         </div>
-                        {category && (
-                          <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
-                            {category.label}
+                        <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-offWhite-600">
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {(post.view_count || 0).toLocaleString()}
                           </span>
-                        )}
-                      </div>
-                      <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
-                        {post.title}
-                      </h3>
-                      <div className="flex items-center gap-3 text-xs text-offWhite-600">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          {(post.view_count || 0).toLocaleString()}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3 text-red-400" />
-                          {(post.likes || 0).toLocaleString()}
-                        </span>
-                        <span className="text-green-400 text-xs">실시간</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-                
-                {/* 두 번째 세트 (무한 스크롤을 위한 복제) */}
-                {hotPosts.slice(0, 6).map((post, index) => {
-                  const category = categories.find(c => c.id === post.category);
-                  return (
-                    <Link
-                      key={`second-${post.id}`}
-                      href={`/community/${post.category}/${post.id}`}
-                      className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
-                            HOT {index + 1}
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3 text-red-400" />
+                            {(post.likes || 0).toLocaleString()}
                           </span>
-                          <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                          <span className="text-green-400 text-xs">실시간</span>
                         </div>
-                        {category && (
-                          <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
-                            {category.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                // 충분한 포스트가 있을 때만 무한 스크롤 적용
+                <div className="flex animate-scroll-left gap-4 py-4">
+                  {/* 첫 번째 세트 */}
+                  {hotPosts.slice(0, 6).map((post, index) => {
+                    const category = categories.find(c => c.id === post.category);
+                    return (
+                      <Link
+                        key={`first-${post.id}`}
+                        href={`/community/${post.category}/${post.id}`}
+                        className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                              HOT {index + 1}
+                            </span>
+                            <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                          </div>
+                          {category && (
+                            <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
+                              {category.label}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-offWhite-600">
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {(post.view_count || 0).toLocaleString()}
                           </span>
-                        )}
-                      </div>
-                      <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
-                        {post.title}
-                      </h3>
-                      <div className="flex items-center gap-3 text-xs text-offWhite-600">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          {(post.view_count || 0).toLocaleString()}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3 text-red-400" />
-                          {(post.likes || 0).toLocaleString()}
-                        </span>
-                        <span className="text-green-400 text-xs">실시간</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3 text-red-400" />
+                            {(post.likes || 0).toLocaleString()}
+                          </span>
+                          <span className="text-green-400 text-xs">실시간</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                  
+                  {/* 두 번째 세트 (무한 스크롤을 위한 복제) */}
+                  {hotPosts.slice(0, 6).map((post, index) => {
+                    const category = categories.find(c => c.id === post.category);
+                    return (
+                      <Link
+                        key={`second-${post.id}`}
+                        href={`/community/${post.category}/${post.id}`}
+                        className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                              HOT {index + 1}
+                            </span>
+                            <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                          </div>
+                          {category && (
+                            <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
+                              {category.label}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-offWhite-600">
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {(post.view_count || 0).toLocaleString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3 text-red-400" />
+                            {(post.likes || 0).toLocaleString()}
+                          </span>
+                          <span className="text-green-400 text-xs">실시간</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -494,12 +625,12 @@ export default function CommunityPage() {
                             </div>
                             
                             {/* Delete Button - Mobile */}
-                            {user && (user.role === 'admin' || user.id === post.author_id) && (
+                            {user && (user.role === 'admin' || user.id === post.user_id) && (
                               <button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  handleDeletePost(post.id, post.author_id);
+                                  void handleDeletePost(post.id, post.user_id);
                                 }}
                                 className="p-1 text-offWhite-600 hover:text-red-400 transition-colors"
                                 title="게시글 삭제"
@@ -529,13 +660,13 @@ export default function CommunityPage() {
                         </div>
                         
                         {/* Delete Button - Desktop */}
-                        {user && (user.role === 'admin' || user.id === post.author_id) && (
+                        {user && (user.role === 'admin' || user.id === post.user_id) && (
                           <div className="w-8 hidden sm:flex items-center justify-center">
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleDeletePost(post.id, post.author_id);
+                                void handleDeletePost(post.id, post.user_id);
                               }}
                               className="p-1 text-offWhite-600 hover:text-red-400 transition-colors"
                               title="게시글 삭제"
