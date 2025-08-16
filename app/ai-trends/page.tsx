@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Eye, Brain, Sparkles, TrendingUp, MessageSquare, Zap, MessageCircle, BookOpen } from 'lucide-react';
+import { Clock, Eye, Brain, Zap, MessageCircle, BookOpen, DollarSign, Trophy, Server } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -27,23 +27,20 @@ interface AITrend {
   updated_at: string;
 }
 
-// Category colors for badges - Dark theme consistent
+// Category colors for badges - New categories
 const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
-  'AI 기술': { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/30' },
-  'AI 도구': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-  'AI 활용': { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/30' },
-  'AI 비즈니스': { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/30' },
-  'AI 교육': { bg: 'bg-pink-500/10', text: 'text-pink-400', border: 'border-pink-500/30' },
+  'AI 부업정보': { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  '바이브코딩 성공사례': { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/30' },
+  'MCP 추천': { bg: 'bg-teal-500/10', text: 'text-teal-400', border: 'border-teal-500/30' },
+  '클로드코드 Level UP': { bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/30' },
 };
-
 
 const categories = [
   { id: 'all', label: '전체', icon: Brain },
-  { id: 'AI 기술', label: 'AI 기술', icon: Brain },
-  { id: 'AI 도구', label: 'AI 도구', icon: Zap },
-  { id: 'AI 활용', label: 'AI 활용', icon: MessageSquare },
-  { id: 'AI 비즈니스', label: 'AI 비즈니스', icon: TrendingUp },
-  { id: 'AI 교육', label: 'AI 교육', icon: Sparkles },
+  { id: 'AI 부업정보', label: 'AI 부업정보', icon: DollarSign },
+  { id: '바이브코딩 성공사례', label: '바이브코딩', icon: Trophy },
+  { id: 'MCP 추천', label: 'MCP 추천', icon: Server },
+  { id: '클로드코드 Level UP', label: '클로드코드', icon: Zap },
 ];
 
 export default function AITrendsPage() {

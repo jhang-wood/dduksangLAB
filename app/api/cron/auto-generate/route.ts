@@ -26,18 +26,17 @@ export async function GET(request: NextRequest) {
     const koreaTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
     const hour = koreaTime.getHours();
     
-    // 시간대별 다른 개수 생성
-    let postCount = 3; // 기본값
-    
-    if (hour === 9) {
-      postCount = 3; // 아침: 3개
-    } else if (hour === 14) {
-      postCount = 2; // 오후: 2개
-    } else if (hour === 19) {
-      postCount = 2; // 저녁: 2개
+    // 오전 8시에만 실행 (매일 1회)
+    if (hour !== 8) {
+      logger.info(`Skipping generation - not scheduled time (current: ${hour}시)`);
+      return NextResponse.json({
+        success: true,
+        message: 'Not scheduled time',
+        currentHour: hour
+      });
     }
 
-    // Auto-post API 호출
+    // Auto-post API 호출 (카테고리별 주기 체크 포함)
     const autoPostUrl = new URL('/api/ai-trends/auto-post', request.url);
     const response = await fetch(autoPostUrl.toString(), {
       method: 'POST',
@@ -46,7 +45,7 @@ export async function GET(request: NextRequest) {
         'Authorization': `Bearer ${cronSecret}`
       },
       body: JSON.stringify({
-        count: postCount,
+        checkEligibility: true, // 카테고리별 게시 가능 여부 체크
         autoPublish: true
       })
     });
@@ -67,10 +66,16 @@ export async function GET(request: NextRequest) {
 
     // Slack 또는 Discord 웹훅으로 알림 (옵션)
     if (process.env.SLACK_WEBHOOK_URL) {
+      const categories = result.generatedByCategory || {};
+      const categoryDetails = Object.entries(categories)
+        .map(([cat, count]) => `- ${cat}: ${count}개`)
+        .join('\n');
+      
       await sendNotification({
         text: `🤖 AI 트렌드 자동 생성 완료\n` +
-              `⏰ 시간: ${hour}시\n` +
-              `✅ 생성: ${result.stats?.generated || 0}개\n` +
+              `⏰ 시간: 오전 8시\n` +
+              `📊 카테고리별 생성:\n${categoryDetails}\n` +
+              `✅ 총 생성: ${result.stats?.generated || 0}개\n` +
               `💾 저장: ${result.stats?.saved || 0}개\n` +
               `❌ 실패: ${result.stats?.failed || 0}개`
       });

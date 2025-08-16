@@ -1,26 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { logger } from '@/lib/logger';
+import { generateSVGThumbnail } from '@/lib/svg-generator';
+import { getCategoryPrompt } from '@/lib/category-prompts';
 
 // Gemini API 설정
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-// AI 트렌드 카테고리
-const CATEGORIES = ['AI 기술', 'AI 도구', 'AI 활용', 'AI 비즈니스', 'AI 교육'];
-
-// 트렌드 키워드 풀
-const TREND_KEYWORDS = [
-  'GPT-4', 'Claude 3', 'Gemini', 'Llama 3', 'Mistral',
-  'AI 에이전트', '멀티모달 AI', 'RAG 시스템', '로컬 LLM',
-  'AI 코딩 어시스턴트', 'Cursor', 'V0', 'Claude Artifacts',
-  'AI 이미지 생성', 'Midjourney', 'DALL-E 3', 'Stable Diffusion',
-  'AI 비디오 생성', 'Sora', 'Runway', 'Pika Labs',
-  'AI 음성 합성', 'ElevenLabs', 'AI 번역', 'AI 요약',
-  'AutoGPT', 'LangChain', 'Vector DB', 'AI 파인튜닝',
-  'AI 윤리', 'AI 규제', 'AI 보안', 'Prompt Engineering',
-  'AI 스타트업', 'AI 투자', 'AI 교육 플랫폼', 'AI 자격증'
+// 새로운 카테고리 정의
+const CATEGORIES = [
+  { name: 'AI 부업정보', slug: 'ai-side-income', interval: 3 },
+  { name: '바이브코딩 성공사례', slug: 'vibecoding-success', interval: 7 },
+  { name: 'MCP 추천', slug: 'mcp-recommendation', interval: 3 },
+  { name: '클로드코드 Level UP', slug: 'claude-levelup', interval: 1 }
 ];
+
+// 카테고리별 키워드 풀
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  'AI 부업정보': [
+    '네이버 블로그 수익화', '쿠팡 파트너스', '인스타그램 마케팅',
+    'AI 콘텐츠 제작', '유튜브 쇼츠', '틱톡 크리에이터',
+    '스마트스토어', '아마존 KDP', '디지털 상품 판매',
+    '온라인 강의 제작', '프리랜서 플랫폼', 'AI 자동화 도구'
+  ],
+  '바이브코딩 성공사례': [
+    'SaaS 스타트업', '인디 해커', 'Product Hunt',
+    '부트스트랩 창업', 'MRR 성장', '해외 진출',
+    '원맨 스타트업', 'AI 서비스 개발', 'API 비즈니스',
+    '구독 모델', '마이크로 SaaS', 'No-code 툴'
+  ],
+  'MCP 추천': [
+    'GitHub MCP', 'Slack MCP', 'Google Drive MCP',
+    'Notion MCP', 'Linear MCP', 'Jira MCP',
+    'Postgres MCP', 'Redis MCP', 'AWS MCP',
+    'Stripe MCP', 'SendGrid MCP', 'Twilio MCP'
+  ],
+  '클로드코드 Level UP': [
+    'Claude Squad', 'SuperClaude', '서브에이전트',
+    'git worktree', 'Claude Hooks', 'MCP 서버',
+    'Claude API', 'Anthropic SDK', 'Claude Projects',
+    'Claude Artifacts', 'Claude Constitution', 'Prompt Engineering'
+  ]
+};
 
 interface GeneratedContent {
   title: string;
@@ -66,70 +88,46 @@ async function generateWithGemini(prompt: string): Promise<string> {
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-function selectRandomKeywords(count: number = 3): string[] {
-  const shuffled = [...TREND_KEYWORDS].sort(() => Math.random() - 0.5);
+function selectRandomKeywords(category: string, count: number = 3): string[] {
+  const keywords = CATEGORY_KEYWORDS[category] || [];
+  const shuffled = [...keywords].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
 
-function selectRandomCategory(): string {
-  return CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+async function selectEligibleCategory(supabase: any): Promise<string | null> {
+  // 각 카테고리의 게시 가능 여부 확인
+  for (const category of CATEGORIES) {
+    // 먼저 카테고리 정보 가져오기
+    const { data: categoryData } = await supabase
+      .from('ai_trend_categories')
+      .select('id, last_posted_at, posting_interval_days')
+      .eq('name', category.name)
+      .single();
+    
+    if (!categoryData) continue;
+    
+    // 마지막 게시 시간 확인
+    if (!categoryData.last_posted_at) {
+      return category.name; // 한 번도 게시 안 함
+    }
+    
+    const lastPosted = new Date(categoryData.last_posted_at);
+    const now = new Date();
+    const daysSinceLastPost = (now.getTime() - lastPosted.getTime()) / (1000 * 60 * 60 * 24);
+    
+    if (daysSinceLastPost >= categoryData.posting_interval_days) {
+      return category.name;
+    }
+  }
+  return null;
 }
 
-async function generateSingleContent(): Promise<GeneratedContent> {
-  const keywords = selectRandomKeywords(3);
-  const category = selectRandomCategory();
+async function generateSingleContent(category: string): Promise<GeneratedContent> {
+  const keywords = selectRandomKeywords(category, 3);
   const mainKeyword = keywords[0];
   
-  const prompt = `
-당신은 SEO 최적화 AI 트렌드 전문 블로거입니다. 다음 주제로 구글 상위노출에 최적화된 고품질 블로그 포스트를 작성해주세요.
-
-주제: ${mainKeyword}
-카테고리: ${category}
-관련 키워드: ${keywords.join(', ')}
-
-다음 JSON 형식으로 정확히 응답해주세요:
-{
-  "title": "📚 이모지 포함 매력적인 제목 (60자 이내, 숫자 포함 권장 예: 2025년 필수 AI 도구 TOP 7)",
-  "summary": "🎯 핵심 내용 한줄 요약 (200자 이내, 독자가 얻을 수 있는 가치 명시)",
-  "thumbnail_keyword": "영문 키워드 (예: artificial intelligence technology)",
-  "sections": [
-    {
-      "heading": "섹션 제목",
-      "content": "HTML 형식 섹션 내용 (이모지 활용, 500자 이상)",
-      "needs_image": true 또는 false,
-      "image_keyword": "영문 이미지 검색 키워드 (예: machine learning visualization)"
-    }
-  ],
-  "tags": ["실용적태그1", "트렌드태그2", "기술태그3", "활용태그4", "2025태그5"],
-  "seo": {
-    "meta_description": "검색 결과에 표시될 설명 (160자, 행동 유도)",
-    "keywords": ["SEO키워드1", "검색키워드2", "관련키워드3"],
-    "related_searches": ["사용자가 추가로 검색할 만한 질문 5개"]
-  },
-  "one_line_summary": "⚡ 이 글의 핵심을 한 문장으로 (강력한 이모지 사용)",
-  "reading_time": 예상 읽기 시간(분)
-}
-
-콘텐츠 작성 가이드:
-1. 섹션 제목은 일반 텍스트로만 (HTML 태그 없이)
-2. content 필드에만 HTML 태그 사용:
-   - <p>문단</p>
-   - <ul><li>목록</li></ul>
-   - <strong>강조</strong>
-   - <em>이탤릭</em>
-3. 첫 문단에서 독자의 문제점/니즈 언급
-4. 📌 중요 포인트는 이모지로 강조
-5. 실제 사례와 2025년 최신 트렌드 포함
-6. 각 섹션은 500-800자 (전체 2000자 이상)
-7. 신뢰할 수 있는 통계나 출처 언급
-8. 마지막에 실행 가능한 액션 아이템 제시
-
-이미지 전략:
-- 콘텐츠 500자당 1개 이미지 (최소 2개, 최대 8개)
-- 각 주요 섹션마다 관련 이미지 필요 여부 판단
-- 이미지 키워드는 구체적이고 전문적인 영문 용어 사용
-
-JSON 형식으로만 응답하세요.`;
+  // 카테고리별 전용 프롬프트 사용
+  const prompt = getCategoryPrompt(category, keywords);
 
   try {
     const response = await generateWithGemini(prompt);
@@ -142,29 +140,12 @@ JSON 형식으로만 응답하세요.`;
     
     const parsed = JSON.parse(jsonMatch[0]);
     
-    // 안정적인 이미지 URL 생성 함수 (여러 소스 폴백)
-    const getImageUrl = (keyword: string, width: number, height: number, index: number = 0) => {
-      // 키워드 정리 (영문만)
-      const cleanKeyword = keyword.replace(/[가-힣ㄱ-ㅎㅏ-ㅣ]/g, '').trim() || 'technology';
-      
-      // 여러 이미지 소스 중 선택
-      const sources = [
-        `https://images.unsplash.com/photo-${1677000000000 + (index * 1000000)}?w=${width}&h=${height}&q=80&fit=crop&auto=format`, // Unsplash 직접 링크
-        `https://placehold.co/${width}x${height}/1a1a2e/ffffff?text=${encodeURIComponent(cleanKeyword)}`, // Placeholder
-        `https://via.placeholder.com/${width}x${height}/1a1a2e/ffd700?text=${encodeURIComponent(cleanKeyword)}`, // Via.placeholder
-        `https://dummyimage.com/${width}x${height}/1a1a2e/ffd700&text=${encodeURIComponent(cleanKeyword)}` // DummyImage
-      ];
-      
-      // 인덱스에 따라 다른 소스 사용
-      return sources[index % sources.length];
-    };
-    
-    // 썸네일 URL 생성 (항상 안정적인 이미지)
-    const thumbnailUrl = getImageUrl(
-      parsed.thumbnail_keyword || mainKeyword || 'AI', 
-      1200, 
-      630,
-      0
+    // SVG 기반 안정적인 썸네일 생성
+    const thumbnailUrl = generateSVGThumbnail(
+      category,
+      parsed.title || mainKeyword,
+      1200,
+      630
     );
     
     // 섹션별 콘텐츠와 이미지 처리
@@ -194,36 +175,15 @@ JSON 형식으로만 응답하세요.`;
         // 섹션 내용 추가
         fullContent += section.content + '\n';
         
-        // 이미지가 필요한 섹션에 이미지 추가
-        if (section.needs_image && contentImages.length < 8) {
-          const imageKeyword = section.image_keyword || section.heading || `AI ${index}`;
-          const imageUrl = getImageUrl(imageKeyword, 1200, 800, index + 1);
-          contentImages.push(imageUrl);
-          // SEO 최적화된 이미지 태그 (폴백 이미지 포함)
-          fullContent += `<figure class="my-8">
-            <img src="${imageUrl}" 
-                 alt="${section.heading}" 
-                 class="w-full rounded-lg shadow-lg" 
-                 loading="lazy"
-                 width="1200"
-                 height="800"
-                 onerror="this.onerror=null; this.src='https://placehold.co/1200x800/1a1a2e/ffffff?text=AI+Technology';">
-            <figcaption class="text-center text-sm text-gray-600 mt-2">${section.heading}</figcaption>
-          </figure>\n`;
-        }
+        // SVG 기반 이미지로 대체 (필요 시)
+        // 현재는 이미지 없이 콘텐츠만 표시
       });
     } else if (parsed.content) {
       // 기존 형식 폴백
       fullContent = parsed.content;
     }
     
-    // 최소 2개 이미지 보장
-    if (contentImages.length < 2) {
-      contentImages.push(getImageUrl('artificial intelligence', 1200, 800, 10));
-      if (contentImages.length < 2) {
-        contentImages.push(getImageUrl('machine learning', 1200, 800, 11));
-      }
-    }
+    // 콘텐츠 이미지는 SVG로 대체
     
     return {
       title: parsed.title || `${mainKeyword} 완벽 가이드`,
@@ -292,6 +252,7 @@ export async function POST(request: NextRequest) {
     // 요청 바디 파싱
     const body = await request.json().catch(() => ({}));
     const count = body.count || 1;
+    const specificCategory = body.category; // 특정 카테고리 지정 가능
     
     logger.info(`Generating ${count} AI trend posts with Gemini`);
     
@@ -300,7 +261,9 @@ export async function POST(request: NextRequest) {
     
     for (let i = 0; i < count; i++) {
       try {
-        const content = await generateSingleContent();
+        // 카테고리 선택 (지정되면 해당 카테고리, 아니면 게시 가능한 카테고리)
+        const category = specificCategory || await selectEligibleCategory(supabase) || CATEGORIES[0].name;
+        const content = await generateSingleContent(category);
         contents.push(content);
         
         // API 레이트 리밋 방지

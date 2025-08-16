@@ -37,9 +37,54 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { count = 3, autoPublish = true } = body;
+    const { count, autoPublish = true, checkEligibility = false } = body;
 
-    logger.info('Starting auto-post process', { count, autoPublish });
+    logger.info('Starting auto-post process', { count, autoPublish, checkEligibility });
+
+    // 카테고리별 게시 가능 여부 확인
+    let generateCount = count;
+    const eligibleCategories: string[] = [];
+    
+    if (checkEligibility) {
+      // 각 카테고리의 마지막 게시 시간 확인
+      const categories = [
+        { name: 'AI 부업정보', interval: 3 },
+        { name: '바이브코딩 성공사례', interval: 7 },
+        { name: 'MCP 추천', interval: 3 },
+        { name: '클로드코드 Level UP', interval: 1 }
+      ];
+      
+      for (const cat of categories) {
+        const { data: categoryData } = await supabase
+          .from('ai_trend_categories')
+          .select('last_posted_at')
+          .eq('name', cat.name)
+          .single();
+        
+        if (!categoryData?.last_posted_at) {
+          eligibleCategories.push(cat.name);
+        } else {
+          const lastPosted = new Date(categoryData.last_posted_at);
+          const now = new Date();
+          const daysSince = (now.getTime() - lastPosted.getTime()) / (1000 * 60 * 60 * 24);
+          
+          if (daysSince >= cat.interval) {
+            eligibleCategories.push(cat.name);
+          }
+        }
+      }
+      
+      generateCount = eligibleCategories.length;
+      logger.info('Eligible categories:', eligibleCategories);
+      
+      if (generateCount === 0) {
+        return NextResponse.json({
+          success: true,
+          message: 'No categories eligible for posting today',
+          stats: { generated: 0, saved: 0, failed: 0 }
+        });
+      }
+    }
 
     // 1. Gemini API로 콘텐츠 생성
     const generateResponse = await fetch(
