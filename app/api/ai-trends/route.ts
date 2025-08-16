@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
     const supabase = createAdminClient();
     const { searchParams } = new URL(request.url);
     
+    // Check if this is an admin request
+    const isAdminRequest = request.headers.get('X-Admin-Request') === 'true';
+    
     // Query parameters
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
@@ -18,9 +21,14 @@ export async function GET(request: NextRequest) {
     // Build query
     let query = supabase
       .from('ai_trends')
-      .select('*')
-      .eq('is_published', true)
-      .order('published_at', { ascending: false });
+      .select('*');
+
+    // For non-admin requests, only show published trends
+    if (!isAdminRequest) {
+      query = query.eq('is_published', true);
+    }
+    
+    query = query.order('created_at', { ascending: false });
 
     // Apply filters
     if (category && category !== 'all') {
@@ -51,6 +59,7 @@ export async function GET(request: NextRequest) {
     })) : [];
 
     return NextResponse.json({
+      data: transformedTrends, // 관리자 페이지에서 사용하는 필드명
       trends: transformedTrends,
       count: transformedTrends.length,
       hasMore: transformedTrends.length === limit

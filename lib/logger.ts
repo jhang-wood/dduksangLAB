@@ -121,29 +121,17 @@ export const logger = createLogger();
  */
 export const userNotification = {
   alert: (message: string): void => {
-    if (process.env.NODE_ENV === 'development') {
+    // 브라우저 환경에서는 기본 alert 사용
+    if (typeof window !== 'undefined') {
       alert(message);
-    } else {
-      // 프로덕션에서는 Toast 알림이나 모달 사용 권장
-      // TODO: 사용자 알림 UI 시스템 통합
-      // 추천: react-toastify, Sonner, 또는 커스텀 Toast 컴포넌트
-      if (typeof window !== 'undefined') {
-        // 임시: localStorage에 알림 저장
-        const notifications = JSON.parse(localStorage.getItem('notifications') ?? '[]');
-        notifications.push({ message, timestamp: Date.now(), type: 'alert' });
-        localStorage.setItem('notifications', JSON.stringify(notifications));
-      }
     }
   },
   confirm: (message: string): boolean => {
-    if (process.env.NODE_ENV === 'development') {
+    // 브라우저 환경에서는 기본 confirm 사용
+    if (typeof window !== 'undefined') {
       return confirm(message);
-    } else {
-      // 프로덕션에서는 커스텀 모달 사용 권장
-      // TODO: 커스텀 확인 모달 컴포넌트 통합
-      // 현재 안전을 위해 false 반환
-      // 현재는 사용자 안전을 위해 기본값 false 반환
-      return false;
     }
+    // 서버 사이드에서는 false 반환
+    return false;
   },
 };

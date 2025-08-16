@@ -152,9 +152,9 @@ export function generateSVGThumbnail(
     </svg>
   `;
   
-  // Base64로 인코딩하여 데이터 URI 생성
-  const base64 = Buffer.from(svg).toString('base64');
-  return `data:image/svg+xml;base64,${base64}`;
+  // URL 인코딩 사용 (Base64보다 훨씬 짧음)
+  const encoded = encodeURIComponent(svg.trim());
+  return `data:image/svg+xml,${encoded}`;
 }
 
 /**

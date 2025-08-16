@@ -122,12 +122,12 @@ async function selectEligibleCategory(supabase: any): Promise<string | null> {
   return null;
 }
 
-async function generateSingleContent(category: string): Promise<GeneratedContent> {
+async function generateSingleContent(category: string, topic?: string): Promise<GeneratedContent> {
   const keywords = selectRandomKeywords(category, 3);
-  const mainKeyword = keywords[0];
+  const mainKeyword = topic || keywords[0];
   
-  // 카테고리별 전용 프롬프트 사용
-  const prompt = getCategoryPrompt(category, keywords);
+  // 카테고리별 전용 프롬프트 사용 (특정 주제가 있으면 그것을 사용)
+  const prompt = topic ? getCategoryPrompt(category, [topic, ...keywords.slice(0, 2)]) : getCategoryPrompt(category, keywords);
 
   try {
     const response = await generateWithGemini(prompt);
@@ -233,6 +233,18 @@ async function generateSingleContent(category: string): Promise<GeneratedContent
 }
 
 export async function POST(request: NextRequest) {
+  // ⚠️ 이 API는 비활성화되었습니다.
+  // 새로운 Claude CLI + PlaywrightMCP 시스템을 사용하세요.
+  return NextResponse.json(
+    { 
+      error: 'API 비활성화됨', 
+      message: 'Claude CLI + PlaywrightMCP 시스템으로 대체되었습니다.',
+      newSystem: '/home/qwg18/workflow/agents_team/dduksang_trend_agent/'
+    },
+    { status: 410 }
+  );
+  
+  /*
   try {
     // 인증 확인 (옵션)
     const authHeader = request.headers.get('authorization');
@@ -253,6 +265,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const count = body.count || 1;
     const specificCategory = body.category; // 특정 카테고리 지정 가능
+    const specificTopic = body.specificTopic; // 특정 주제 지정 가능
     
     logger.info(`Generating ${count} AI trend posts with Gemini`);
     
@@ -263,7 +276,7 @@ export async function POST(request: NextRequest) {
       try {
         // 카테고리 선택 (지정되면 해당 카테고리, 아니면 게시 가능한 카테고리)
         const category = specificCategory || await selectEligibleCategory(supabase) || CATEGORIES[0].name;
-        const content = await generateSingleContent(category);
+        const content = await generateSingleContent(category, specificTopic);
         contents.push(content);
         
         // API 레이트 리밋 방지
@@ -288,6 +301,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+  */
 }
 
 export async function GET() {

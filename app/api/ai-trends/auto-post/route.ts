@@ -4,6 +4,19 @@ import { createClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
+  // ⚠️ 이 API는 비활성화되었습니다.
+  // 새로운 Claude CLI + PlaywrightMCP 시스템을 사용하세요.
+  return NextResponse.json(
+    { 
+      error: 'API 비활성화됨', 
+      message: 'Claude CLI + PlaywrightMCP 시스템으로 대체되었습니다.',
+      newSystem: '/home/qwg18/workflow/agents_team/dduksang_trend_agent/',
+      usage: 'cd /home/qwg18/workflow/agents_team/dduksang_trend_agent && ./scripts/run.sh'
+    },
+    { status: 410 }
+  );
+  
+  /*
   try {
     // 인증 확인
     const authHeader = request.headers.get('authorization');
@@ -15,25 +28,30 @@ export async function POST(request: NextRequest) {
     
     const isAuthorized = authHeader === `Bearer ${cronSecret}`;
     
-    if (!isAuthorized && user) {
-      // 관리자 권한 확인
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-      
-      if (profile?.role !== 'admin') {
+    // 개발 환경에서는 인증 우회 (로컬호스트일 경부만)
+    const isDevelopment = request.headers.get('host')?.includes('localhost');
+    
+    if (!isDevelopment && !isAuthorized) {
+      if (user) {
+        // 관리자 권한 확인
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile?.role !== 'admin') {
+          return NextResponse.json(
+            { error: 'Admin access required' },
+            { status: 403 }
+          );
+        }
+      } else {
         return NextResponse.json(
-          { error: 'Admin access required' },
-          { status: 403 }
+          { error: 'Unauthorized' },
+          { status: 401 }
         );
       }
-    } else if (!isAuthorized && !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
     }
 
     const body = await request.json().catch(() => ({}));
@@ -95,7 +113,11 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${cronSecret}`
         },
-        body: JSON.stringify({ count })
+        body: JSON.stringify({ 
+          count,
+          category: body.category,
+          specificTopic: body.specificTopic
+        })
       }
     );
 
@@ -223,6 +245,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+  */
 }
 
 export async function GET() {

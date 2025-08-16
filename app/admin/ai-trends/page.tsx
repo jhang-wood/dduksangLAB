@@ -34,14 +34,16 @@ export default function AdminAITrendsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showUnpublished, setShowUnpublished] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedTrends, setSelectedTrends] = useState<Set<string>>(new Set());
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = [
     { id: 'all', label: '전체' },
-    { id: 'AI 기술', label: 'AI 기술' },
-    { id: 'AI 도구', label: 'AI 도구' },
-    { id: 'AI 활용', label: 'AI 활용' },
-    { id: 'AI 비즈니스', label: 'AI 비즈니스' },
-    { id: 'AI 교육', label: 'AI 교육' },
+    { id: 'AI 부업정보', label: 'AI 부업정보' },
+    { id: '바이브코딩 성공사례', label: '바이브코딩 성공사례' },
+    { id: 'MCP 추천', label: 'MCP 추천' },
+    { id: '클로드코드 Level UP', label: '클로드코드 Level UP' },
   ];
 
   useEffect(() => {
@@ -181,6 +183,85 @@ export default function AdminAITrendsPage() {
     }
   };
 
+  // 체크박스 관련 함수들
+  const handleToggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedTrends(new Set());
+      setIsAllSelected(false);
+    } else {
+      const allTrendIds = new Set(trends.map(trend => trend.id));
+      setSelectedTrends(allTrendIds);
+      setIsAllSelected(true);
+    }
+  };
+
+  const handleSelectTrend = (trendId: string) => {
+    const newSelected = new Set(selectedTrends);
+    if (newSelected.has(trendId)) {
+      newSelected.delete(trendId);
+    } else {
+      newSelected.add(trendId);
+    }
+    setSelectedTrends(newSelected);
+    setIsAllSelected(newSelected.size === trends.length && trends.length > 0);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTrends.size === 0) {
+      userNotification.alert('삭제할 항목을 선택해주세요.');
+      return;
+    }
+
+    if (!userNotification.confirm(`선택한 ${selectedTrends.size}개의 트렌드를 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      
+      // 각 선택된 트렌드를 개별적으로 삭제
+      const selectedArray = Array.from(selectedTrends);
+      let deletedCount = 0;
+      let errorCount = 0;
+
+      for (const trendId of selectedArray) {
+        try {
+          // 해당 트렌드의 slug를 찾아서 API 호출
+          const trend = trends.find(t => t.id === trendId);
+          if (trend) {
+            const response = await fetch(`/api/ai-trends/${trend.slug}`, {
+              method: 'DELETE',
+            });
+            
+            if (response.ok) {
+              deletedCount++;
+            } else {
+              errorCount++;
+              console.error(`Failed to delete trend ${trend.title}`);
+            }
+          }
+        } catch (error) {
+          errorCount++;
+          console.error(`Error deleting trend ${trendId}:`, error);
+        }
+      }
+
+      if (deletedCount > 0) {
+        userNotification.alert(`${deletedCount}개의 트렌드가 삭제되었습니다.${errorCount > 0 ? ` (${errorCount}개 실패)` : ''}`);
+        setSelectedTrends(new Set());
+        setIsAllSelected(false);
+        await fetchTrends();
+      } else {
+        userNotification.alert('트렌드 삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      logger.error('Error during bulk delete:', error);
+      userNotification.alert('일괄 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
       year: 'numeric',
@@ -203,6 +284,16 @@ export default function AdminAITrendsPage() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-offWhite-200">AI 트렌드 관리</h1>
           <div className="flex gap-3">
+            {selectedTrends.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="w-5 h-5" />
+                {isDeleting ? '삭제 중...' : `선택된 ${selectedTrends.size}개 삭제`}
+              </button>
+            )}
             <button
               onClick={() => {
                 void handleCollectTrends();
@@ -264,6 +355,14 @@ export default function AdminAITrendsPage() {
               <table className="w-full">
                 <thead className="bg-deepBlack-600/50 border-b border-metallicGold-900/20">
                   <tr>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-offWhite-500 uppercase tracking-wider">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        onChange={handleToggleSelectAll}
+                        className="w-4 h-4 rounded border-metallicGold-900/50 bg-deepBlack-600 text-metallicGold-500 focus:ring-metallicGold-500"
+                      />
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-offWhite-500 uppercase tracking-wider">
                       제목
                     </th>
@@ -295,6 +394,14 @@ export default function AdminAITrendsPage() {
                       animate={{ opacity: 1 }}
                       className="hover:bg-deepBlack-600/30 transition-colors"
                     >
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedTrends.has(trend.id)}
+                          onChange={() => handleSelectTrend(trend.id)}
+                          className="w-4 h-4 rounded border-metallicGold-900/50 bg-deepBlack-600 text-metallicGold-500 focus:ring-metallicGold-500"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div>
                           <div className="text-sm font-medium text-offWhite-200">{trend.title}</div>
@@ -359,6 +466,7 @@ export default function AdminAITrendsPage() {
                           <Link
                             href={`/admin/ai-trends/${trend.id}/edit`}
                             className="p-2 text-metallicGold-500 hover:text-metallicGold-400 transition-colors"
+                            title="수정"
                           >
                             <Edit2 className="w-4 h-4" />
                           </Link>
@@ -367,6 +475,7 @@ export default function AdminAITrendsPage() {
                               void handleDelete(trend.id, trend.title);
                             }}
                             className="p-2 text-red-500 hover:text-red-400 transition-colors"
+                            title="삭제"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

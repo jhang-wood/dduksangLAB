@@ -94,6 +94,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         source_url: body.source_url,
         source_name: body.source_name,
         is_featured: body.is_featured || false,
+        is_published: body.is_published,
         seo_title: body.seo_title,
         seo_description: body.seo_description,
         seo_keywords: body.seo_keywords || []

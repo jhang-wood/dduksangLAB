@@ -11,11 +11,10 @@ import { useAuth } from '@/lib/auth-context';
 import { generateSlug } from '@/utils/helpers';
 
 const categories = [
-  { id: 'AI 기술', label: 'AI 기술' },
-  { id: 'AI 도구', label: 'AI 도구' },
-  { id: 'AI 활용', label: 'AI 활용' },
-  { id: 'AI 비즈니스', label: 'AI 비즈니스' },
-  { id: 'AI 교육', label: 'AI 교육' },
+  { id: 'AI 부업정보', label: 'AI 부업정보' },
+  { id: '바이브코딩 성공사례', label: '바이브코딩 성공사례' },
+  { id: 'MCP 추천', label: 'MCP 추천' },
+  { id: '클로드코드 Level UP', label: '클로드코드 Level UP' },
 ];
 
 export default function NewAITrendPage() {
@@ -30,7 +29,7 @@ export default function NewAITrendPage() {
     summary: '',
     content: '',
     thumbnail_url: '',
-    category: 'AI 기술',
+    category: 'AI 부업정보',
     tags: '',
     source_url: '',
     source_name: '',

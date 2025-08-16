@@ -48,29 +48,42 @@ export default function AITrendsPage() {
   const [trends, setTrends] = useState<AITrend[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // 디버그: 컴포넌트 마운트 확인
+  console.log('🎯 AITrendsPage 컴포넌트 렌더링됨');
+  
   useEffect(() => {
     const fetchTrends = async () => {
       try {
+        console.log('🔄 fetchTrends 시작 - selectedCategory:', selectedCategory);
         setLoading(true);
         const params = new URLSearchParams({
           limit: '50',
           ...(selectedCategory !== 'all' && { category: selectedCategory }),
         });
         
+        console.log('📡 API 호출:', `/api/ai-trends?${params.toString()}`);
         const response = await fetch(`/api/ai-trends?${params.toString()}`);
         const data = await response.json();
         
+        console.log('📊 API 응답:', data);
+        
         if (data.trends) {
+          console.log('✅ setTrends 호출:', data.trends.length, '개 트렌드');
           setTrends(data.trends);
+        } else {
+          console.log('❌ data.trends가 없음:', data);
+          setTrends([]);
         }
       } catch (error) {
-        console.error('Error fetching trends:', error);
+        console.error('❌ Error fetching trends:', error);
         setTrends([]);
       } finally {
+        console.log('🏁 setLoading(false) 호출');
         setLoading(false);
       }
     };
     
+    console.log('🚀 useEffect 실행 - selectedCategory:', selectedCategory);
     void fetchTrends();
   }, [selectedCategory]);
   
@@ -215,7 +228,8 @@ export default function AITrendsPage() {
 
               <div className="space-y-8">
                 {featuredTrends.map((trend, index) => {
-                  const categoryColor = categoryColors[trend.category] || categoryColors['AI 기술'];
+                  const category = trend.category || 'MCP 추천';
+                  const categoryColor = categoryColors[category] || categoryColors['MCP 추천'];
                   const readingTime = calculateReadingTime(trend.summary);
                   
                   return (
@@ -253,7 +267,7 @@ export default function AITrendsPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-3">
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${categoryColor.bg} ${categoryColor.text} ${categoryColor.border}`}>
-                                  {trend.category}
+                                  {category}
                                 </span>
                                 {trend.is_featured && (
                                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-metallicGold-500/20 to-metallicGold-600/20 text-metallicGold-400 border border-metallicGold-500/30">
@@ -327,7 +341,26 @@ export default function AITrendsPage() {
               >
                 <div className="inline-flex items-center gap-3">
                   <div className="w-6 h-6 border-2 border-metallicGold-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-offWhite-400">AI 트렌드 로딩 중...</span>
+                  <span className="text-offWhite-400">AI 트렌드 로딩 중... (디버그: loading={loading.toString()}, trends={trends.length}개)</span>
+                </div>
+                <div className="mt-4 text-sm text-offWhite-600">
+                  <button 
+                    onClick={() => {
+                      console.log('🔄 수동 API 호출 버튼 클릭됨');
+                      fetch('/api/ai-trends')
+                        .then(res => res.json())
+                        .then(data => {
+                          console.log('📊 수동 API 결과:', data);
+                          if (data.trends) {
+                            setTrends(data.trends);
+                            setLoading(false);
+                          }
+                        });
+                    }}
+                    className="px-4 py-2 bg-metallicGold-500 text-deepBlack-900 rounded hover:bg-metallicGold-400"
+                  >
+                    수동으로 데이터 로드
+                  </button>
                 </div>
               </motion.div>
             ) : filteredTrends.length === 0 ? (
@@ -341,7 +374,8 @@ export default function AITrendsPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredTrends.map((trend, index) => {
-                  const categoryColor = categoryColors[trend.category] || categoryColors['AI 기술'];
+                  const category = trend.category || 'MCP 추천'; // 기본값 설정
+                  const categoryColor = categoryColors[category] || categoryColors['MCP 추천'];
                   const readingTime = calculateReadingTime(trend.summary);
                   
                   return (
@@ -363,7 +397,7 @@ export default function AITrendsPage() {
                             <div className="relative w-full h-48 bg-deepBlack-600/50 overflow-hidden group-hover:scale-[1.02] transition-transform duration-400">
                               <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                               <Image
-                                src={trend.thumbnail || `https://source.unsplash.com/800x400/?${encodeURIComponent(trend.category)}`}
+                                src={trend.thumbnail || `https://source.unsplash.com/800x400/?${encodeURIComponent(category)}`}
                                 alt={trend.title}
                                 width={400}
                                 height={225}
@@ -372,7 +406,7 @@ export default function AITrendsPage() {
                               {/* Category Badge Overlay */}
                               <div className="absolute top-3 left-3">
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${categoryColor.bg} ${categoryColor.text} ${categoryColor.border}`}>
-                                  {trend.category}
+                                  {category}
                                 </span>
                               </div>
                             </div>

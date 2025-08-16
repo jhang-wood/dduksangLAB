@@ -64,14 +64,13 @@ async function getAITrendBySlug(slug: string): Promise<AITrend | null> {
 }
 
 /**
- * 관련 트렌드 가져오기 - 개선된 알고리즘
+ * 관련 트렌드 가져오기 - 같은 카테고리만 표시
  */
 async function getRelatedTrends(category: string, currentSlug: string, tags: string[] = []): Promise<AITrend[]> {
   try {
     const supabase = createAdminClient();
-    const relatedTrends: AITrend[] = [];
     
-    // 1. 같은 카테고리의 최신 글 3개
+    // 같은 카테고리의 글들만 가져오기 (최대 6개)
     const { data: categoryTrends } = await supabase
       .from('ai_trends')
       .select('id, title, slug, summary, category, tags, published_at, view_count, thumbnail_url')
@@ -79,62 +78,17 @@ async function getRelatedTrends(category: string, currentSlug: string, tags: str
       .eq('is_published', true)
       .neq('slug', currentSlug)
       .order('published_at', { ascending: false })
-      .limit(3);
+      .limit(6);
 
-    if (categoryTrends) {
-      relatedTrends.push(...categoryTrends.map((trend: any) => ({
-        ...trend,
-        published_at: trend.published_at || new Date().toISOString(),
-        tags: trend.tags || []
-      })));
+    if (!categoryTrends) {
+      return [];
     }
 
-    // 2. 태그가 겹치는 글 2개 (카테고리 무관)
-    if (tags.length > 0 && relatedTrends.length < 6) {
-      const { data: tagTrends } = await supabase
-        .from('ai_trends')
-        .select('id, title, slug, summary, category, tags, published_at, view_count, thumbnail_url')
-        .contains('tags', tags.slice(0, 2)) // 첫 2개 태그로 검색
-        .eq('is_published', true)
-        .neq('slug', currentSlug)
-        .order('view_count', { ascending: false })
-        .limit(2);
-
-      if (tagTrends) {
-        const newTrends = tagTrends.filter(t => 
-          !relatedTrends.find(rt => rt.id === t.id)
-        );
-        relatedTrends.push(...newTrends.map((trend: any) => ({
-          ...trend,
-          published_at: trend.published_at || new Date().toISOString(),
-          tags: trend.tags || []
-        })));
-      }
-    }
-
-    // 3. 인기글 2개 추가
-    if (relatedTrends.length < 6) {
-      const { data: popularTrends } = await supabase
-        .from('ai_trends')
-        .select('id, title, slug, summary, category, tags, published_at, view_count, thumbnail_url')
-        .eq('is_published', true)
-        .neq('slug', currentSlug)
-        .order('view_count', { ascending: false })
-        .limit(2);
-
-      if (popularTrends) {
-        const newTrends = popularTrends.filter(t => 
-          !relatedTrends.find(rt => rt.id === t.id)
-        );
-        relatedTrends.push(...newTrends.map((trend: any) => ({
-          ...trend,
-          published_at: trend.published_at || new Date().toISOString(),
-          tags: trend.tags || []
-        })));
-      }
-    }
-
-    return relatedTrends.slice(0, 6); // 최대 6개
+    return categoryTrends.map((trend: any) => ({
+      ...trend,
+      published_at: trend.published_at || new Date().toISOString(),
+      tags: trend.tags || []
+    }));
   } catch (error) {
     console.error('Error fetching related trends:', error);
     return [];
