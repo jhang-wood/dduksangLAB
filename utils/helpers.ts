@@ -189,14 +189,156 @@ export function timeAgo(date: Date | string): string {
  * @param text 변환할 텍스트
  * @returns slug 문자열
  */
-export function generateSlug(text: string): string {
-  return text
+export function generateSlug(text: string, maxLength: number = 100): string {
+  // 한글을 영문 키워드로 변환하는 맵핑
+  const koreanToEnglish: Record<string, string> = {
+    // AI 관련
+    '인공지능': 'artificial-intelligence',
+    '머신러닝': 'machine-learning',
+    '딥러닝': 'deep-learning',
+    '자동화': 'automation',
+    '로봇': 'robot',
+    '챗봇': 'chatbot',
+    '생성형': 'generative',
+    // 기업/제품명
+    '오픈에이아이': 'openai',
+    '앤트로픽': 'anthropic',
+    '구글': 'google',
+    '마이크로소프트': 'microsoft',
+    '메타': 'meta',
+    '테슬라': 'tesla',
+    'claude': 'claude',
+    'chatgpt': 'chatgpt',
+    'gpt': 'gpt',
+    // 기술 용어
+    '혁신': 'innovation',
+    '기술': 'technology',
+    '서비스': 'service',
+    '플랫폼': 'platform',
+    '솔루션': 'solution',
+    '개발': 'development',
+    '분석': 'analysis',
+    '예측': 'prediction',
+    '최적화': 'optimization',
+    '효율성': 'efficiency',
+    // 산업 분야
+    '금융': 'finance',
+    '의료': 'healthcare',
+    '교육': 'education',
+    '제조': 'manufacturing',
+    '유통': 'retail',
+    '물류': 'logistics',
+    '마케팅': 'marketing',
+    // 일반 용어
+    '비즈니스': 'business',
+    '전략': 'strategy',
+    '미래': 'future',
+    '트렌드': 'trend',
+    '시장': 'market',
+    '산업': 'industry',
+    '회사': 'company',
+    '기업': 'enterprise',
+    '스타트업': 'startup',
+    '투자': 'investment',
+    '성장': 'growth',
+    '성과': 'performance',
+    '수익': 'revenue',
+    '이익': 'profit',
+    '고객': 'customer',
+    '사용자': 'user',
+    '데이터': 'data',
+    '보안': 'security',
+    '프라이버시': 'privacy',
+    // 일반 단어
+    '새로운': 'new',
+    '최신': 'latest',
+    '완전': 'complete',
+    '전체': 'all',
+    '위한': 'for',
+    '활용': 'using',
+    '방법': 'method',
+    '가이드': 'guide'
+  };
+
+  let slug = text.toLowerCase().trim();
+  
+  // 한글 단어를 영문으로 변환
+  Object.entries(koreanToEnglish).forEach(([korean, english]) => {
+    const regex = new RegExp(korean, 'g');
+    slug = slug.replace(regex, english);
+  });
+  
+  // 남은 한글과 특수문자 제거, 영문/숫자/공백/하이픈만 유지
+  slug = slug.replace(/[^a-z0-9\s-]/g, '');
+  
+  // 공백을 하이픈으로 변경
+  slug = slug.replace(/\s+/g, '-');
+  
+  // 연속된 하이픈 제거
+  slug = slug.replace(/-+/g, '-');
+  
+  // 앞뒤 하이픈 제거
+  slug = slug.replace(/^-|-$/g, '');
+  
+  // 길이 제한
+  if (slug.length > maxLength) {
+    // 하이픈으로 잘라서 완전한 단어 유지
+    slug = slug.substring(0, maxLength);
+    const lastHyphen = slug.lastIndexOf('-');
+    if (lastHyphen > maxLength * 0.7) {
+      slug = slug.substring(0, lastHyphen);
+    }
+  }
+  
+  // 빈 문자열인 경우 기본값 반환
+  if (!slug) {
+    slug = 'ai-trend-' + Date.now();
+  }
+  
+  return slug;
+}
+
+/**
+ * 중복 방지를 위한 고유 slug 생성
+ * @param baseSlug 기본 slug
+ * @param existingSlugs 기존 slug 목록
+ * @returns 고유한 slug
+ */
+export function generateUniqueSlug(baseSlug: string, existingSlugs: string[]): string {
+  let uniqueSlug = baseSlug;
+  let counter = 1;
+  
+  while (existingSlugs.includes(uniqueSlug)) {
+    uniqueSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+  
+  return uniqueSlug;
+}
+
+/**
+ * URL 안전성 검증
+ * @param slug 검증할 slug
+ * @returns 유효성 여부
+ */
+export function validateSlug(slug: string): boolean {
+  // 영문, 숫자, 하이픈만 허용, 3-100자 제한
+  const slugRegex = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
+  return slugRegex.test(slug) && slug.length >= 3 && slug.length <= 100;
+}
+
+/**
+ * 안전한 slug 정리
+ * @param slug 정리할 slug
+ * @returns 정리된 slug
+ */
+export function sanitizeSlug(slug: string): string {
+  return slug
     .toLowerCase()
-    .trim()
-    .replace(/[^\w\s가-힣-]/g, '') // 한글, 영문, 숫자, 공백만 유지
-    .replace(/\s+/g, '-') // 공백을 하이펰으로 변경
-    .replace(/-+/g, '-') // 연속된 하이펰 제거
-    .replace(/^-|-$/g, ''); // 앞뒤 하이펰 제거
+    .replace(/[^a-z0-9-]/g, '') // 영문, 숫자, 하이픈만 유지
+    .replace(/-+/g, '-') // 연속 하이픈 제거
+    .replace(/^-|-$/g, '') // 시작/끝 하이픈 제거
+    .substring(0, 100); // 길이 제한
 }
 
 /**

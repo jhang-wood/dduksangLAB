@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
+import Script from 'next/script';
 
 interface AITrend {
   id: string;
@@ -79,52 +80,25 @@ export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, 
   };
 
   const renderContent = (content: string) => {
-    // Simple markdown-like rendering
-    return content.split('\n\n').map((paragraph, index) => {
-      if (!paragraph.trim()) return null;
-
-      // Headers
-      if (paragraph.startsWith('### ')) {
-        return (
-          <h3 key={index} className="text-2xl font-bold text-offWhite-200 mb-4 mt-8">
-            {paragraph.replace('### ', '')}
-          </h3>
-        );
-      }
-      if (paragraph.startsWith('## ')) {
-        return (
-          <h2 key={index} className="text-3xl font-bold text-offWhite-200 mb-6 mt-10">
-            {paragraph.replace('## ', '')}
-          </h2>
-        );
-      }
-      if (paragraph.startsWith('# ')) {
-        return (
-          <h1 key={index} className="text-4xl font-bold text-offWhite-200 mb-8 mt-12">
-            {paragraph.replace('# ', '')}
-          </h1>
-        );
-      }
-
-      // Lists
-      if (paragraph.includes('\n- ')) {
-        const items = paragraph.split('\n').filter(line => line.startsWith('- '));
-        return (
-          <ul key={index} className="list-disc list-inside space-y-2 mb-6 text-offWhite-400">
-            {items.map((item, i) => (
-              <li key={i}>{item.replace('- ', '')}</li>
-            ))}
-          </ul>
-        );
-      }
-
-      // Regular paragraphs
-      return (
-        <p key={index} className="text-lg text-offWhite-400 mb-6 leading-relaxed">
-          {paragraph}
-        </p>
-      );
-    }).filter(Boolean);
+    // HTML content를 안전하게 렌더링 (SEO 최적화)
+    // dangerouslySetInnerHTML을 사용하여 HTML 태그를 제대로 렌더링
+    return (
+      <div 
+        className="prose prose-lg prose-invert max-w-none
+          prose-headings:text-offWhite-200 prose-headings:font-bold
+          prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-12
+          prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-10  
+          prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-8
+          prose-p:text-offWhite-400 prose-p:mb-6 prose-p:leading-relaxed
+          prose-ul:list-disc prose-ul:list-inside prose-ul:space-y-2 prose-ul:mb-6 prose-ul:text-offWhite-400
+          prose-li:text-offWhite-400
+          prose-img:rounded-lg prose-img:my-6 prose-img:w-full
+          prose-strong:text-offWhite-200 prose-strong:font-semibold
+          prose-em:text-metallicGold-500 prose-em:not-italic
+          prose-blockquote:border-l-4 prose-blockquote:border-metallicGold-500 prose-blockquote:pl-6 prose-blockquote:italic"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
   };
 
   if (loading) {
@@ -177,11 +151,51 @@ export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, 
     );
   }
 
+  // 구조화된 데이터 생성 (SEO)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": trend.title,
+    "description": trend.summary,
+    "image": trend.thumbnail_url,
+    "datePublished": trend.published_at,
+    "dateModified": trend.published_at,
+    "author": {
+      "@type": "Organization",
+      "name": "떡상연구소",
+      "url": "https://dduksang.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "떡상연구소",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dduksang.com/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://dduksang.com/ai-trends/${trend.slug}`
+    },
+    "keywords": trend.tags.join(", "),
+    "articleSection": trend.category,
+    "wordCount": trend.content.length,
+    "inLanguage": "ko-KR"
+  };
+
   return (
-    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
-      <NeuralNetworkBackground />
-      <div className="relative z-10">
-        <Header />
+    <>
+      {/* 구조화된 데이터 스크립트 */}
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
+      <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+        <NeuralNetworkBackground />
+        <div className="relative z-10">
+          <Header />
 
         {/* Article Content */}
         <article className="container mx-auto max-w-4xl px-4 pt-32 pb-20">
@@ -250,10 +264,10 @@ export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, 
             </div>
           )}
 
-          {/* Article Content */}
-          <div className="prose prose-invert max-w-none">
+          {/* Article Content - SEO 최적화된 콘텐츠 */}
+          <article className="article-content">
             {renderContent(trend.content)}
-          </div>
+          </article>
 
           {/* Source Information */}
           {trend.source_name && (
@@ -319,5 +333,6 @@ export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, 
         )}
       </div>
     </div>
+    </>
   );
 }

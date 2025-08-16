@@ -18,7 +18,9 @@
     "deploy": "./scripts/git-automation.sh",
     "claude:fix": "npm run lint:fix && npm run type-check",
     "claude:commit": "git add . && git commit -m \"🚀 자동 커밋: 성능 최적화 완료\"",
-    "claude:deploy": "npm run claude:fix && npm run claude:commit && git push"
+    "claude:deploy": "npm run claude:fix && npm run claude:commit && git push",
+    "migrate:slugs": "node scripts/migrate-slugs.js",
+    "test:slugs": "node test-slug.js"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -31,7 +33,6 @@
     "lucide-react": "^0.292.0",
     "next": "^14.2.31",
     "node-cron": "^4.2.1",
-    "playwright": "^1.54.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^3.1.2"
@@ -47,6 +48,6 @@
     "eslint-config-next": "14.0.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.2"
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-server';
+import { generateSlug, generateUniqueSlug, validateSlug } from '@/utils/helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
     // Transform data for frontend
     const transformedTrends = trends ? trends.map((trend: any) => ({
       ...trend,
+      thumbnail: trend.thumbnail_url || trend.thumbnail, // Map thumbnail_url to thumbnail for consistency
       published_at: trend.published_at || new Date().toISOString(),
       tags: trend.tags || [],
       seo_keywords: trend.seo_keywords || []
@@ -68,11 +70,31 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
     const body = await request.json();
 
+    // Validate required fields
+    if (!body.title || !body.summary || !body.content) {
+      return NextResponse.json({ error: '필수 필드가 누락되었습니다.' }, { status: 400 });
+    }
+
+    // Generate or validate slug
+    let slug = body.slug;
+    if (!slug || !validateSlug(slug)) {
+      slug = generateSlug(body.title);
+    }
+
+    // Check for slug uniqueness
+    const { data: existingSlugs } = await supabase
+      .from('ai_trends')
+      .select('slug')
+      .neq('slug', ''); // Exclude empty slugs
+
+    const slugList = existingSlugs?.map(item => item.slug) || [];
+    const uniqueSlug = generateUniqueSlug(slug, slugList);
+
     const { data: trend, error } = await supabase
       .from('ai_trends')
       .insert([{
         title: body.title,
-        slug: body.slug,
+        slug: uniqueSlug,
         summary: body.summary,
         content: body.content,
         thumbnail_url: body.thumbnail_url,
@@ -81,6 +103,7 @@ export async function POST(request: NextRequest) {
         source_url: body.source_url,
         source_name: body.source_name,
         is_featured: body.is_featured || false,
+        is_published: body.is_published !== false, // Default to true
         seo_title: body.seo_title,
         seo_description: body.seo_description,
         seo_keywords: body.seo_keywords || []

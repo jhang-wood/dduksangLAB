@@ -8,6 +8,7 @@ import { ArrowLeft, Save, Eye } from 'lucide-react';
 import Link from 'next/link';
 import AdminHeader from '@/components/AdminHeader';
 import { useAuth } from '@/lib/auth-context';
+import { generateSlug } from '@/utils/helpers';
 
 const categories = [
   { id: 'AI 기술', label: 'AI 기술' },
@@ -51,13 +52,9 @@ export default function NewAITrendPage() {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-    // Auto-generate slug from title
-    if (name === 'title' && !formData.slug) {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^a-z0-9가-힣]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+    // Auto-generate slug from title using improved function
+    if (name === 'title' && value.trim() && !formData.slug) {
+      const slug = generateSlug(value);
       setFormData(prev => ({ ...prev, slug }));
     }
   };
