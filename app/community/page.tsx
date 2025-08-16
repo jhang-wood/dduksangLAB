@@ -163,34 +163,34 @@ export default function CommunityPage() {
         <Header currentPage="community" />
 
         {/* Header Section */}
-        <section className="pt-20 pb-8 px-4">
+        <section className="pt-20 pb-12 px-4">
           <div className="container mx-auto max-w-7xl">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-              <h1 className="text-2xl sm:text-3xl font-montserrat font-bold">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl sm:text-4xl font-montserrat font-bold mb-6">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
                   커뮤니티
                 </span>
               </h1>
               
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                {/* Search Bar */}
-                <div className="relative flex-1 sm:w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-offWhite-600" />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto">
+                {/* Centered Search Bar */}
+                <div className="relative w-full max-w-lg">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-offWhite-600" />
                   <input
                     type="text"
                     placeholder="게시글 검색..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-deepBlack-300/30 border border-metallicGold-900/20 rounded-lg text-offWhite-200 placeholder-offWhite-600 focus:outline-none focus:border-metallicGold-500/50"
+                    className="w-full pl-12 pr-4 py-3 bg-deepBlack-300/30 border border-metallicGold-900/20 rounded-xl text-offWhite-200 placeholder-offWhite-600 focus:outline-none focus:border-metallicGold-500/50 focus:ring-2 focus:ring-metallicGold-500/20 transition-all"
                   />
                 </div>
                 
                 {/* Write Button */}
                 <button
                   onClick={handleWriteClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-medium hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all whitespace-nowrap"
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-xl font-medium hover:from-metallicGold-400 hover:to-metallicGold-800 transition-all whitespace-nowrap shadow-lg hover:shadow-xl"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-5 h-5" />
                   글쓰기
                 </button>
               </div>
@@ -198,47 +198,103 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Hot Posts Section */}
+        {/* Hot Posts Ticker Section */}
         <section className="px-4 mb-8">
           <div className="container mx-auto max-w-7xl">
             <div className="flex items-center gap-2 mb-4">
-              <Flame className="w-5 h-5 text-red-500" />
+              <div className="relative">
+                <Flame className="w-5 h-5 text-red-500 animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+              </div>
               <h2 className="text-lg font-semibold text-offWhite-200">실시간 인기글</h2>
+              <div className="text-xs text-offWhite-500 bg-red-500/20 px-2 py-1 rounded-full animate-pulse">
+                LIVE
+              </div>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {hotPosts.slice(0, 4).map((post, index) => {
-                const category = categories.find(c => c.id === post.category);
-                return (
-                  <Link
-                    key={post.id}
-                    href={`/community/${post.category}/${post.id}`}
-                    className="block p-4 bg-deepBlack-300/20 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/30 hover:border-metallicGold-900/20 transition-all group"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="text-sm text-red-500 font-medium">#{index + 1}</span>
-                      {category && (
-                        <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
-                          {category.label}
+            {/* Horizontal Scrolling Hot Posts */}
+            <div className="relative overflow-hidden bg-deepBlack-300/10 rounded-xl border border-metallicGold-900/10">
+              <div className="flex animate-scroll-left gap-4 py-4">
+                {/* 첫 번째 세트 */}
+                {hotPosts.slice(0, 6).map((post, index) => {
+                  const category = categories.find(c => c.id === post.category);
+                  return (
+                    <Link
+                      key={`first-${post.id}`}
+                      href={`/community/${post.category}/${post.id}`}
+                      className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                            HOT {index + 1}
+                          </span>
+                          <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                        </div>
+                        {category && (
+                          <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
+                            {category.label}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
+                        {post.title}
+                      </h3>
+                      <div className="flex items-center gap-3 text-xs text-offWhite-600">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          {(post.view_count || 0).toLocaleString()}
                         </span>
-                      )}
-                    </div>
-                    <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
-                      {post.title}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs text-offWhite-600">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        {(post.view_count || 0).toLocaleString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-3 h-3" />
-                        {(post.likes || 0).toLocaleString()}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3 h-3 text-red-400" />
+                          {(post.likes || 0).toLocaleString()}
+                        </span>
+                        <span className="text-green-400 text-xs">실시간</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+                
+                {/* 두 번째 세트 (무한 스크롤을 위한 복제) */}
+                {hotPosts.slice(0, 6).map((post, index) => {
+                  const category = categories.find(c => c.id === post.category);
+                  return (
+                    <Link
+                      key={`second-${post.id}`}
+                      href={`/community/${post.category}/${post.id}`}
+                      className="flex-shrink-0 w-80 p-3 bg-deepBlack-300/30 border border-metallicGold-900/10 rounded-lg hover:bg-deepBlack-300/50 hover:border-metallicGold-500/30 transition-all group mx-2"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold animate-pulse">
+                            HOT {index + 1}
+                          </span>
+                          <div className="w-1 h-1 bg-green-500 rounded-full animate-ping"></div>
+                        </div>
+                        {category && (
+                          <span className="text-xs px-2 py-1 bg-metallicGold-900/20 text-metallicGold-500 rounded">
+                            {category.label}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-medium text-offWhite-200 group-hover:text-metallicGold-500 transition-colors line-clamp-2 mb-2">
+                        {post.title}
+                      </h3>
+                      <div className="flex items-center gap-3 text-xs text-offWhite-600">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          {(post.view_count || 0).toLocaleString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3 h-3 text-red-400" />
+                          {(post.likes || 0).toLocaleString()}
+                        </span>
+                        <span className="text-green-400 text-xs">실시간</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>

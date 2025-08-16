@@ -122,6 +122,7 @@ module.exports = {
         glow: 'glow 2s ease-in-out infinite',
         'gradient-shift': 'gradientShift 8s ease infinite',
         'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
+        'scroll-left': 'scrollLeft 30s linear infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -232,6 +233,14 @@ module.exports = {
           },
           '50%': {
             opacity: '0.8',
+          },
+        },
+        scrollLeft: {
+          '0%': {
+            transform: 'translateX(0)',
+          },
+          '100%': {
+            transform: 'translateX(-50%)',
           },
         },
       },
