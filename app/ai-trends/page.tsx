@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Eye, Brain, Zap, MessageCircle, BookOpen, DollarSign, Trophy, Server } from 'lucide-react';
+import { Clock, Eye, Brain, Zap, MessageCircle, BookOpen, DollarSign, Trophy, Server, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -48,6 +48,8 @@ export default function AITrendsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [trends, setTrends] = useState<AITrend[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   
   // 디버그: 컴포넌트 마운트 확인
   console.log('🎯 AITrendsPage 컴포넌트 렌더링됨');
@@ -93,6 +95,17 @@ export default function AITrendsPage() {
     : trends.filter(trend => trend.category === selectedCategory);
   
   const featuredTrends = filteredTrends.filter(trend => trend.is_featured);
+  
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(filteredTrends.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentTrends = filteredTrends.slice(startIndex, endIndex);
+  
+  // 카테고리 변경 시 첫 페이지로 리셋
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
   
   // Calculate reading time (assuming 200 words per minute)
   const calculateReadingTime = (text: string) => {
@@ -373,22 +386,23 @@ export default function AITrendsPage() {
                 <p className="text-offWhite-500">아직 등록된 트렌드가 없습니다.</p>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTrends.map((trend, index) => {
-                  const category = trend.category || 'MCP 추천'; // 기본값 설정
-                  const categoryColor = categoryColors[category] || categoryColors['MCP 추천'];
-                  const readingTime = calculateReadingTime(trend.summary);
-                  
-                  return (
-                    <motion.div
-                      key={trend.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05, duration: 0.6 }}
-                      viewport={{ once: true }}
-                    >
-                      <Link href={`/ai-trends/${trend.slug}`} className="group block h-full">
-                        <article className="relative group overflow-hidden bg-gradient-to-br from-deepBlack-300/50 via-deepBlack-400/30 to-deepBlack-500/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl hover:border-metallicGold-500/40 hover:shadow-xl hover:shadow-metallicGold-500/5 transition-all duration-400 h-full flex flex-col">
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {currentTrends.map((trend, index) => {
+                    const category = trend.category || 'MCP 추천'; // 기본값 설정
+                    const categoryColor = categoryColors[category] || categoryColors['MCP 추천'];
+                    const readingTime = calculateReadingTime(trend.summary);
+                    
+                    return (
+                      <motion.div
+                        key={trend.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05, duration: 0.6 }}
+                        viewport={{ once: true }}
+                      >
+                        <Link href={`/ai-trends/${trend.slug}`} className="group block h-full">
+                          <article className="relative group overflow-hidden bg-gradient-to-br from-deepBlack-300/50 via-deepBlack-400/30 to-deepBlack-500/50 backdrop-blur-sm border border-metallicGold-900/20 rounded-xl hover:border-metallicGold-500/40 hover:shadow-xl hover:shadow-metallicGold-500/5 transition-all duration-400 h-full flex flex-col">
                           {/* Glow Effect */}
                           <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                           
@@ -443,10 +457,98 @@ export default function AITrendsPage() {
                           </div>
                         </article>
                       </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+                
+                {/* 페이지네이션 */}
+                {totalPages > 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: true }}
+                    className="flex justify-center items-center gap-2 mt-12"
+                  >
+                    {/* 이전 페이지 버튼 */}
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        currentPage === 1
+                          ? 'text-offWhite-600 cursor-not-allowed'
+                          : 'text-offWhite-400 hover:text-metallicGold-400 hover:bg-deepBlack-300/50'
+                      }`}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span className="hidden sm:inline">이전</span>
+                    </button>
+                    
+                    {/* 페이지 번호들 */}
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                        // 현재 페이지 주변 5개 페이지만 표시
+                        const showPage = 
+                          pageNum === 1 || 
+                          pageNum === totalPages || 
+                          (pageNum >= currentPage - 2 && pageNum <= currentPage + 2);
+                        
+                        if (!showPage) {
+                          // ... 표시 로직
+                          if (pageNum === currentPage - 3 || pageNum === currentPage + 3) {
+                            return (
+                              <span key={pageNum} className="px-3 py-2 text-offWhite-600">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                              currentPage === pageNum
+                                ? 'bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 text-deepBlack-900 shadow-lg'
+                                : 'text-offWhite-400 hover:text-metallicGold-400 hover:bg-deepBlack-300/50'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* 다음 페이지 버튼 */}
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        currentPage === totalPages
+                          ? 'text-offWhite-600 cursor-not-allowed'
+                          : 'text-offWhite-400 hover:text-metallicGold-400 hover:bg-deepBlack-300/50'
+                      }`}
+                    >
+                      <span className="hidden sm:inline">다음</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                )}
+                
+                {/* 페이지 정보 */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className="text-center mt-6 text-sm text-offWhite-600"
+                >
+                  {filteredTrends.length}개 중 {startIndex + 1}-{Math.min(endIndex, filteredTrends.length)}번째 표시
+                </motion.div>
+              </>
             )}
           </div>
         </section>

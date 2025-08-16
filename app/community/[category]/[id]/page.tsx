@@ -81,22 +81,25 @@ export default function CommunityPostPage({
   }, [params.id, router]);
 
   const fetchComments = useCallback(async () => {
+    // 임시로 댓글 기능 비활성화 - community_comments 테이블 생성 필요
     try {
-      const { data, error } = await supabase
-        .from('community_comments')
-        .select(
-          `
-          *,
-          profiles (name)
-        `
-        )
-        .eq('post_id', params.id)
-        .order('created_at', { ascending: true });
+      // TODO: community_comments 테이블 생성 후 활성화
+      // const { data, error } = await supabase
+      //   .from('community_comments')
+      //   .select(
+      //     `
+      //     *,
+      //     profiles (name)
+      //   `
+      //   )
+      //   .eq('post_id', params.id)
+      //   .order('created_at', { ascending: true });
 
-      if (error) {
-        throw error;
-      }
-      setComments(data ?? []);
+      // if (error) {
+      //   throw error;
+      // }
+      // setComments(data ?? []);
+      setComments([]); // 임시로 빈 배열 설정
     } catch (error) {
       logger.error('Error fetching comments:', error);
     }
@@ -124,18 +127,24 @@ export default function CommunityPostPage({
     setCommentLoading(true);
 
     try {
-      const { error } = await supabase.from('community_comments').insert({
-        post_id: params.id,
-        user_id: user.id,
-        content: commentContent,
-      });
-
-      if (error) {
-        throw error;
-      }
-
+      // 임시로 댓글 작성 기능 비활성화 - community_comments 테이블 생성 필요
+      userNotification.alert('댓글 기능은 현재 준비 중입니다.');
       setCommentContent('');
-      void fetchComments();
+      return;
+      
+      // TODO: community_comments 테이블 생성 후 활성화
+      // const { error } = await supabase.from('community_comments').insert({
+      //   post_id: params.id,
+      //   user_id: user.id,
+      //   content: commentContent,
+      // });
+
+      // if (error) {
+      //   throw error;
+      // }
+
+      // setCommentContent('');
+      // void fetchComments();
     } catch (error) {
       logger.error('Error creating comment:', error);
       userNotification.alert('댓글 작성 중 오류가 발생했습니다.');

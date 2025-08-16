@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye, Heart, Pin, Star, Clock, Search, Flame, TrendingUp, ChevronRight } from 'lucide-react';
+import { Users, MessageSquare, HelpCircle, Briefcase, PlusCircle, Eye, Heart, Pin, Star, Search, Flame, TrendingUp, ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
@@ -19,7 +19,7 @@ interface Post {
   author_id: string;
   author_name: string;
   tags: string[];
-  views: number;
+  view_count: number;
   likes: number;
   comments_count: number;
   is_pinned: boolean;
@@ -43,7 +43,6 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [hotPosts, setHotPosts] = useState<Post[]>([]);
-  const [weeklyBestPosts, setWeeklyBestPosts] = useState<Post[]>([]);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -90,30 +89,11 @@ export default function CommunityPage() {
     }
   }, []);
 
-  const fetchWeeklyBestPosts = useCallback(async () => {
-    try {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      
-      const { data, error } = await supabase
-        .from('community_posts')
-        .select('*')
-        .gte('created_at', oneWeekAgo.toISOString())
-        .order('likes', { ascending: false })
-        .limit(4);
-
-      if (error) throw error;
-      setWeeklyBestPosts(data ?? []);
-    } catch (error) {
-      logger.error('Error fetching weekly best posts:', error);
-    }
-  }, []);
 
   useEffect(() => {
     void fetchPosts();
     void fetchHotPosts();
-    void fetchWeeklyBestPosts();
-  }, [fetchPosts, fetchHotPosts, fetchWeeklyBestPosts]);
+  }, [fetchPosts, fetchHotPosts]);
 
   // Search with debounce
   useEffect(() => {
@@ -134,6 +114,43 @@ export default function CommunityPage() {
       return;
     }
     router.push('/community/write');
+  };
+
+  const handleDeletePost = async (postId: string, authorId: string) => {
+    if (!user) {
+      userNotification.alert('로그인이 필요합니다.');
+      return;
+    }
+
+    // 관리자이거나 작성자인지 확인
+    const isAdmin = user.role === 'admin';
+    const isAuthor = user.id === authorId;
+    
+    if (!isAdmin && !isAuthor) {
+      userNotification.alert('자신의 게시글만 삭제할 수 있습니다.');
+      return;
+    }
+
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) {
+        throw error;
+      }
+
+      userNotification.alert('게시글이 삭제되었습니다.');
+      void fetchPosts(); // 목록 새로고침
+    } catch (error) {
+      logger.error('Error deleting post:', error);
+      userNotification.alert('게시글 삭제에 실패했습니다.');
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -413,6 +430,7 @@ export default function CommunityPage() {
                   <div className="w-16 text-center">조회</div>
                   <div className="w-16 text-center">추천</div>
                   <div className="w-20 text-center">작성일</div>
+                  <div className="w-8"></div>
                 </div>
                 
                 {/* Posts List */}
@@ -461,17 +479,34 @@ export default function CommunityPage() {
                           </h3>
                           
                           {/* Mobile Meta */}
-                          <div className="flex items-center gap-3 text-xs text-offWhite-600 sm:hidden">
-                            <span>{post.author_name}</span>
-                            <span>{formatDate(post.created_at)}</span>
-                            <span className="flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {(post.view_count || 0).toLocaleString()}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Heart className="w-3 h-3" />
-                              {(post.likes || 0).toLocaleString()}
-                            </span>
+                          <div className="flex items-center justify-between text-xs text-offWhite-600 sm:hidden">
+                            <div className="flex items-center gap-3">
+                              <span>{post.author_name}</span>
+                              <span>{formatDate(post.created_at)}</span>
+                              <span className="flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                {(post.view_count || 0).toLocaleString()}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Heart className="w-3 h-3" />
+                                {(post.likes || 0).toLocaleString()}
+                              </span>
+                            </div>
+                            
+                            {/* Delete Button - Mobile */}
+                            {user && (user.role === 'admin' || user.id === post.author_id) && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleDeletePost(post.id, post.author_id);
+                                }}
+                                className="p-1 text-offWhite-600 hover:text-red-400 transition-colors"
+                                title="게시글 삭제"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
                         </div>
                         
@@ -492,6 +527,23 @@ export default function CommunityPage() {
                         <div className="w-20 text-center text-xs text-offWhite-600 hidden sm:block">
                           {formatDate(post.created_at)}
                         </div>
+                        
+                        {/* Delete Button - Desktop */}
+                        {user && (user.role === 'admin' || user.id === post.author_id) && (
+                          <div className="w-8 hidden sm:flex items-center justify-center">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDeletePost(post.id, post.author_id);
+                              }}
+                              className="p-1 text-offWhite-600 hover:text-red-400 transition-colors"
+                              title="게시글 삭제"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
                       </Link>
                     );
                   })}
