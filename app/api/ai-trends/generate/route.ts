@@ -142,16 +142,19 @@ JSON 형식으로만 응답하세요.`;
     
     const parsed = JSON.parse(jsonMatch[0]);
     
-    // Unsplash 이미지 URL 생성 함수
-    const getUnsplashUrl = (keyword: string, width: number, height: number) => {
-      const encodedKeyword = encodeURIComponent(keyword);
-      return `https://source.unsplash.com/${width}x${height}/?${encodedKeyword}`;
+    // Picsum 이미지 URL 생성 함수 (더 안정적)
+    const getImageUrl = (seed: string, width: number, height: number) => {
+      // seed를 기반으로 고유한 이미지 ID 생성
+      const imageId = Math.abs(seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % 1000;
+      return `https://picsum.photos/seed/${imageId}/${width}/${height}`;
     };
     
     // 썸네일 URL 생성
-    const thumbnailUrl = parsed.thumbnail_keyword 
-      ? getUnsplashUrl(parsed.thumbnail_keyword, 800, 400)
-      : getUnsplashUrl(mainKeyword.replace(/[가-힣]/g, '').trim() || 'AI technology', 800, 400);
+    const thumbnailUrl = getImageUrl(
+      parsed.thumbnail_keyword || mainKeyword || 'AI', 
+      1200, 
+      630
+    );
     
     // 섹션별 콘텐츠와 이미지 처리
     let fullContent = '';
@@ -181,8 +184,9 @@ JSON 형식으로만 응답하세요.`;
         fullContent += section.content + '\n';
         
         // 이미지가 필요한 섹션에 이미지 추가
-        if (section.needs_image && section.image_keyword && contentImages.length < 8) {
-          const imageUrl = getUnsplashUrl(section.image_keyword, 800, 600);
+        if (section.needs_image && contentImages.length < 8) {
+          const imageSeed = section.image_keyword || section.heading || `section-${index}`;
+          const imageUrl = getImageUrl(imageSeed, 1200, 800);
           contentImages.push(imageUrl);
           // SEO 최적화된 이미지 태그
           fullContent += `<figure class="my-8">
@@ -190,8 +194,8 @@ JSON 형식으로만 응답하세요.`;
                  alt="${section.heading}" 
                  class="w-full rounded-lg shadow-lg" 
                  loading="lazy"
-                 width="800"
-                 height="600">
+                 width="1200"
+                 height="800">
             <figcaption class="text-center text-sm text-gray-600 mt-2">${section.heading}</figcaption>
           </figure>\n`;
         }
@@ -203,9 +207,9 @@ JSON 형식으로만 응답하세요.`;
     
     // 최소 2개 이미지 보장
     if (contentImages.length < 2) {
-      contentImages.push(getUnsplashUrl('artificial intelligence', 800, 600));
+      contentImages.push(getImageUrl('artificial intelligence tech', 1200, 800));
       if (contentImages.length < 2) {
-        contentImages.push(getUnsplashUrl('machine learning', 800, 600));
+        contentImages.push(getImageUrl('machine learning future', 1200, 800));
       }
     }
     
@@ -222,7 +226,6 @@ JSON 형식으로만 응답하세요.`;
     logger.error('Content generation error:', error);
     
     // 폴백 콘텐츠
-    const fallbackKeyword = mainKeyword.replace(/[가-힣]/g, '').trim() || 'AI';
     return {
       title: `📚 ${mainKeyword}: 2025년 완벽 가이드`,
       content: `
@@ -234,24 +237,24 @@ JSON 형식으로만 응답하세요.`;
         </div>
         <h2>🎯 ${mainKeyword} 소개</h2>
         <p>${mainKeyword}는 현재 AI 업계에서 가장 주목받는 기술 중 하나입니다. 2025년 현재 많은 기업들이 이 기술을 활용하여 혁신적인 서비스를 제공하고 있습니다.</p>
-        <img src="https://source.unsplash.com/800x600/?${encodeURIComponent(fallbackKeyword + ' technology')}" alt="${mainKeyword} 소개" class="w-full rounded-lg my-6" loading="lazy">
+        <img src="https://picsum.photos/seed/${Date.now()}-1/1200/800" alt="${mainKeyword} 소개" class="w-full rounded-lg my-6" loading="lazy">
         <h2>✨ 주요 특징</h2>
         <ul>
           <li>🚀 혁신적인 기술 구현</li>
           <li>💡 실용적인 활용 사례</li>
           <li>🔮 미래 발전 가능성</li>
         </ul>
-        <img src="https://source.unsplash.com/800x600/?${encodeURIComponent(fallbackKeyword + ' innovation')}" alt="${mainKeyword} 특징" class="w-full rounded-lg my-6" loading="lazy">
+        <img src="https://picsum.photos/seed/${Date.now()}-2/1200/800" alt="${mainKeyword} 특징" class="w-full rounded-lg my-6" loading="lazy">
         <h2>📖 활용 방법</h2>
         <p>다양한 분야에서 ${mainKeyword}를 활용할 수 있습니다. 특히 비즈니스, 교육, 연구 분야에서 큰 효과를 보이고 있습니다.</p>
       `,
       summary: `🎯 ${mainKeyword}의 핵심 개념과 2025년 최신 활용 방법을 상세히 알아봅니다.`,
       category,
       tags: [...keywords, '2025', 'AI트렌드'],
-      thumbnail: `https://source.unsplash.com/800x400/?${encodeURIComponent(fallbackKeyword)}`,
+      thumbnail: `https://picsum.photos/seed/${Date.now()}/1200/630`,
       images: [
-        `https://source.unsplash.com/800x600/?${encodeURIComponent(fallbackKeyword + ' technology')}`,
-        `https://source.unsplash.com/800x600/?${encodeURIComponent(fallbackKeyword + ' innovation')}`
+        `https://picsum.photos/seed/${Date.now()}-1/1200/800`,
+        `https://picsum.photos/seed/${Date.now()}-2/1200/800`
       ]
     };
   }

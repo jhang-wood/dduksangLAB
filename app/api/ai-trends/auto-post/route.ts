@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
             summary: content.summary,
             category: content.category,
             tags: content.tags,
-            thumbnail_url: content.thumbnail || `https://source.unsplash.com/800x400/?${encodeURIComponent(content.category || 'AI technology')}`,
+            thumbnail_url: content.thumbnail || `https://picsum.photos/seed/${Date.now()}/1200/630`,
             is_published: autoPublish,
             published_at: autoPublish ? new Date().toISOString() : null,
             view_count: 0,

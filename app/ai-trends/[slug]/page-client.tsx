@@ -84,18 +84,19 @@ export default function AITrendDetailClient({ slug: _slug, trend: initialTrend, 
     // dangerouslySetInnerHTML을 사용하여 HTML 태그를 제대로 렌더링
     return (
       <div 
-        className="prose prose-lg prose-invert max-w-none
+        className="prose prose-xl prose-invert max-w-none
           prose-headings:text-offWhite-200 prose-headings:font-bold
-          prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-12
-          prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-10  
-          prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-8
-          prose-p:text-offWhite-400 prose-p:mb-6 prose-p:leading-relaxed
-          prose-ul:list-disc prose-ul:list-inside prose-ul:space-y-2 prose-ul:mb-6 prose-ul:text-offWhite-400
-          prose-li:text-offWhite-400
-          prose-img:rounded-lg prose-img:my-6 prose-img:w-full
-          prose-strong:text-offWhite-200 prose-strong:font-semibold
-          prose-em:text-metallicGold-500 prose-em:not-italic
-          prose-blockquote:border-l-4 prose-blockquote:border-metallicGold-500 prose-blockquote:pl-6 prose-blockquote:italic"
+          prose-h1:text-5xl prose-h1:mb-10 prose-h1:mt-14
+          prose-h2:text-4xl prose-h2:mb-8 prose-h2:mt-12  
+          prose-h3:text-3xl prose-h3:mb-6 prose-h3:mt-10
+          prose-p:text-xl prose-p:mb-8 prose-p:leading-relaxed prose-p:text-offWhite-300
+          prose-ul:list-disc prose-ul:list-inside prose-ul:space-y-3 prose-ul:mb-8 prose-ul:text-xl prose-ul:text-offWhite-300
+          prose-li:text-xl prose-li:text-offWhite-300 prose-li:leading-relaxed
+          prose-img:rounded-xl prose-img:my-10 prose-img:w-full prose-img:shadow-2xl
+          prose-strong:text-offWhite-100 prose-strong:font-bold
+          prose-em:text-metallicGold-400 prose-em:not-italic prose-em:font-semibold
+          prose-blockquote:border-l-4 prose-blockquote:border-metallicGold-500 prose-blockquote:pl-8 prose-blockquote:italic prose-blockquote:text-xl
+          prose-figure:my-12 prose-figcaption:text-base prose-figcaption:text-offWhite-500 prose-figcaption:mt-4"
         dangerouslySetInnerHTML={{ __html: content }}
       />
     );

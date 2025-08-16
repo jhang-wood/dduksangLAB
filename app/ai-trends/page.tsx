@@ -239,7 +239,7 @@ export default function AITrendsPage() {
                               <div className="relative w-32 h-18 md:w-40 md:h-[90px] bg-deepBlack-600/50 rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-500">
                                 <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 <Image
-                                  src={trend.thumbnail || `https://source.unsplash.com/800x400/?${encodeURIComponent(trend.category)}`}
+                                  src={trend.thumbnail || `https://picsum.photos/seed/${trend.id}/800/400`}
                                   alt={trend.title}
                                   width={400}
                                   height={225}
