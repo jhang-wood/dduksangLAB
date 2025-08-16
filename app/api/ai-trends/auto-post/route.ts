@@ -4,19 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
-  // ⚠️ 이 API는 비활성화되었습니다.
-  // 새로운 Claude CLI + PlaywrightMCP 시스템을 사용하세요.
-  return NextResponse.json(
-    { 
-      error: 'API 비활성화됨', 
-      message: 'Claude CLI + PlaywrightMCP 시스템으로 대체되었습니다.',
-      newSystem: '/home/qwg18/workflow/agents_team/dduksang_trend_agent/',
-      usage: 'cd /home/qwg18/workflow/agents_team/dduksang_trend_agent && ./scripts/run.sh'
-    },
-    { status: 410 }
-  );
-  
-  /*
   try {
     // 인증 확인
     const authHeader = request.headers.get('authorization');
@@ -245,7 +232,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-  */
 }
 
 export async function GET() {
