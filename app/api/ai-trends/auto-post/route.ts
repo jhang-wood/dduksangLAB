@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
             summary: content.summary,
             category: content.category,
             tags: content.tags,
-            thumbnail_url: content.thumbnail || `https://picsum.photos/seed/${Date.now()}/1200/630`,
+            thumbnail_url: content.thumbnail || `https://placehold.co/1200x630/1a1a2e/ffd700?text=${encodeURIComponent(content.title?.substring(0, 30) || 'AI')}`,
             is_published: autoPublish,
             published_at: autoPublish ? new Date().toISOString() : null,
             view_count: 0,

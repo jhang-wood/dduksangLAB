@@ -142,18 +142,29 @@ JSON 형식으로만 응답하세요.`;
     
     const parsed = JSON.parse(jsonMatch[0]);
     
-    // Picsum 이미지 URL 생성 함수 (더 안정적)
-    const getImageUrl = (seed: string, width: number, height: number) => {
-      // seed를 기반으로 고유한 이미지 ID 생성
-      const imageId = Math.abs(seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % 1000;
-      return `https://picsum.photos/seed/${imageId}/${width}/${height}`;
+    // 안정적인 이미지 URL 생성 함수 (여러 소스 폴백)
+    const getImageUrl = (keyword: string, width: number, height: number, index: number = 0) => {
+      // 키워드 정리 (영문만)
+      const cleanKeyword = keyword.replace(/[가-힣ㄱ-ㅎㅏ-ㅣ]/g, '').trim() || 'technology';
+      
+      // 여러 이미지 소스 중 선택
+      const sources = [
+        `https://images.unsplash.com/photo-${1677000000000 + (index * 1000000)}?w=${width}&h=${height}&q=80&fit=crop&auto=format`, // Unsplash 직접 링크
+        `https://placehold.co/${width}x${height}/1a1a2e/ffffff?text=${encodeURIComponent(cleanKeyword)}`, // Placeholder
+        `https://via.placeholder.com/${width}x${height}/1a1a2e/ffd700?text=${encodeURIComponent(cleanKeyword)}`, // Via.placeholder
+        `https://dummyimage.com/${width}x${height}/1a1a2e/ffd700&text=${encodeURIComponent(cleanKeyword)}` // DummyImage
+      ];
+      
+      // 인덱스에 따라 다른 소스 사용
+      return sources[index % sources.length];
     };
     
-    // 썸네일 URL 생성
+    // 썸네일 URL 생성 (항상 안정적인 이미지)
     const thumbnailUrl = getImageUrl(
       parsed.thumbnail_keyword || mainKeyword || 'AI', 
       1200, 
-      630
+      630,
+      0
     );
     
     // 섹션별 콘텐츠와 이미지 처리
@@ -185,17 +196,18 @@ JSON 형식으로만 응답하세요.`;
         
         // 이미지가 필요한 섹션에 이미지 추가
         if (section.needs_image && contentImages.length < 8) {
-          const imageSeed = section.image_keyword || section.heading || `section-${index}`;
-          const imageUrl = getImageUrl(imageSeed, 1200, 800);
+          const imageKeyword = section.image_keyword || section.heading || `AI ${index}`;
+          const imageUrl = getImageUrl(imageKeyword, 1200, 800, index + 1);
           contentImages.push(imageUrl);
-          // SEO 최적화된 이미지 태그
+          // SEO 최적화된 이미지 태그 (폴백 이미지 포함)
           fullContent += `<figure class="my-8">
             <img src="${imageUrl}" 
                  alt="${section.heading}" 
                  class="w-full rounded-lg shadow-lg" 
                  loading="lazy"
                  width="1200"
-                 height="800">
+                 height="800"
+                 onerror="this.onerror=null; this.src='https://placehold.co/1200x800/1a1a2e/ffffff?text=AI+Technology';">
             <figcaption class="text-center text-sm text-gray-600 mt-2">${section.heading}</figcaption>
           </figure>\n`;
         }
@@ -207,9 +219,9 @@ JSON 형식으로만 응답하세요.`;
     
     // 최소 2개 이미지 보장
     if (contentImages.length < 2) {
-      contentImages.push(getImageUrl('artificial intelligence tech', 1200, 800));
+      contentImages.push(getImageUrl('artificial intelligence', 1200, 800, 10));
       if (contentImages.length < 2) {
-        contentImages.push(getImageUrl('machine learning future', 1200, 800));
+        contentImages.push(getImageUrl('machine learning', 1200, 800, 11));
       }
     }
     
@@ -237,24 +249,24 @@ JSON 형식으로만 응답하세요.`;
         </div>
         <h2>🎯 ${mainKeyword} 소개</h2>
         <p>${mainKeyword}는 현재 AI 업계에서 가장 주목받는 기술 중 하나입니다. 2025년 현재 많은 기업들이 이 기술을 활용하여 혁신적인 서비스를 제공하고 있습니다.</p>
-        <img src="https://picsum.photos/seed/${Date.now()}-1/1200/800" alt="${mainKeyword} 소개" class="w-full rounded-lg my-6" loading="lazy">
+        <img src="https://placehold.co/1200x800/1a1a2e/ffffff?text=${encodeURIComponent(mainKeyword)}" alt="${mainKeyword} 소개" class="w-full rounded-lg my-6" loading="lazy">
         <h2>✨ 주요 특징</h2>
         <ul>
           <li>🚀 혁신적인 기술 구현</li>
           <li>💡 실용적인 활용 사례</li>
           <li>🔮 미래 발전 가능성</li>
         </ul>
-        <img src="https://picsum.photos/seed/${Date.now()}-2/1200/800" alt="${mainKeyword} 특징" class="w-full rounded-lg my-6" loading="lazy">
+        <img src="https://placehold.co/1200x800/2a2a3e/ffd700?text=${encodeURIComponent(mainKeyword + ' Features')}" alt="${mainKeyword} 특징" class="w-full rounded-lg my-6" loading="lazy">
         <h2>📖 활용 방법</h2>
         <p>다양한 분야에서 ${mainKeyword}를 활용할 수 있습니다. 특히 비즈니스, 교육, 연구 분야에서 큰 효과를 보이고 있습니다.</p>
       `,
       summary: `🎯 ${mainKeyword}의 핵심 개념과 2025년 최신 활용 방법을 상세히 알아봅니다.`,
       category,
       tags: [...keywords, '2025', 'AI트렌드'],
-      thumbnail: `https://picsum.photos/seed/${Date.now()}/1200/630`,
+      thumbnail: `https://placehold.co/1200x630/1a1a2e/ffd700?text=${encodeURIComponent(mainKeyword)}`,
       images: [
-        `https://picsum.photos/seed/${Date.now()}-1/1200/800`,
-        `https://picsum.photos/seed/${Date.now()}-2/1200/800`
+        `https://placehold.co/1200x800/1a1a2e/ffffff?text=${encodeURIComponent(mainKeyword)}`,
+        `https://placehold.co/1200x800/2a2a3e/ffd700?text=${encodeURIComponent(mainKeyword + ' Tech')}`
       ]
     };
   }

@@ -4,7 +4,16 @@ const nextConfig = {
   swcMinify: true,
   
   images: {
-    domains: ['localhost', 'wpzvocfgfwvsxmpckdnu.supabase.co', 'placehold.co', 'picsum.photos', 'source.unsplash.com', 'images.unsplash.com'],
+    domains: [
+      'localhost', 
+      'wpzvocfgfwvsxmpckdnu.supabase.co', 
+      'placehold.co', 
+      'via.placeholder.com',
+      'dummyimage.com',
+      'picsum.photos', 
+      'source.unsplash.com', 
+      'images.unsplash.com'
+    ],
   },
   
   eslint: {
