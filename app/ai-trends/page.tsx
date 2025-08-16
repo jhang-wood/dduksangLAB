@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import AutomationBanner from '@/components/AutomationBanner';
+import LectureCTA from '@/components/LectureCTA';
 
 interface AITrend {
   id: string;
@@ -449,6 +450,9 @@ export default function AITrendsPage() {
             )}
           </div>
         </section>
+
+        {/* Call-to-Action Section */}
+        <LectureCTA />
         
         <Footer />
       </div>

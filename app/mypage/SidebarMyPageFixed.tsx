@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { 
   Eye, Trophy, Coins, UserPlus, Copy, Check,
   Flame, Star, Users, MessageSquare, Activity, TrendingUp,
   Globe, Clock, Heart, ChevronRight, Plus, Gift,
   Home, History, Settings, Bell, BarChart3,
-  User, Menu, X, ArrowUp, ArrowDown
+  User, Menu, X, ArrowUp, ArrowDown, Edit, Save, Upload, Camera, Trash2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -32,6 +33,9 @@ interface SiteData {
   name: string;
   url: string;
   description: string;
+  category: string;
+  tags: string[];
+  thumbnail_url?: string;
   views_today: number;
   views_total: number;
   rank_today: number;
@@ -39,6 +43,7 @@ interface SiteData {
   likes: number;
   comments: number;
   created_at: string;
+  is_active: boolean;
 }
 
 interface ActivityItem {
@@ -77,6 +82,12 @@ export default function SidebarMyPageFixed() {
   const [allSites, setAllSites] = useState<SiteData[]>([]);
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
   const [userName, setUserName] = useState('사용자');
+  const [editingSite, setEditingSite] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<SiteData>>({});
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -178,6 +189,249 @@ export default function SidebarMyPageFixed() {
 
   const formatNumber = (num: number) => num.toLocaleString('ko-KR');
 
+  // 사이트 수정 시작
+  const startEditSite = (site: SiteData) => {
+    setEditingSite(site.id);
+    setEditFormData({
+      name: site.name,
+      description: site.description,
+      url: site.url,
+      category: site.category,
+      tags: site.tags,
+      thumbnail_url: site.thumbnail_url
+    });
+  };
+
+  // 사이트 수정 취소
+  const cancelEditSite = () => {
+    setEditingSite(null);
+    setEditFormData({});
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // 썸네일 업로드
+  const uploadThumbnail = async (file: File) => {
+    try {
+      console.log('Starting upload with file:', {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `site-thumbnails/${fileName}`;
+
+      console.log('Upload path:', filePath);
+      console.log('Bucket name: uploads');
+
+      // First, let's check if bucket exists
+      const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+      console.log('Available buckets:', buckets);
+      if (listError) {
+        console.error('Error listing buckets:', listError);
+      }
+
+      // Upload file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('uploads')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      console.log('Upload response data:', uploadData);
+      console.log('Upload error:', uploadError);
+
+      if (uploadError) {
+        console.error('Detailed upload error:', {
+          message: uploadError.message,
+          name: uploadError.name,
+          stack: uploadError.stack
+        });
+        throw uploadError;
+      }
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('uploads').getPublicUrl(filePath);
+
+      console.log('Upload success, public URL:', publicUrl);
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading thumbnail:', error);
+      alert(`이미지 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      throw error;
+    }
+  };
+
+  // 파일 선택 핸들러
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기는 5MB 이하여야 합니다.');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
+      }
+
+      setThumbnailFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (e.target?.result && typeof e.target.result === 'string') {
+          setThumbnailPreview(e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+
+      // Clear URL input when file is selected
+      setEditFormData({ ...editFormData, thumbnail_url: '' });
+    }
+  };
+
+  // 썸네일 제거
+  const removeThumbnail = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    setEditFormData({ ...editFormData, thumbnail_url: '' });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // 사이트 정보 업데이트
+  const updateSite = async (siteId: string) => {
+    try {
+      setUploading(true);
+      console.log('Updating site:', siteId);
+      console.log('Form data:', editFormData);
+      console.log('Thumbnail file:', thumbnailFile);
+
+      let thumbnailUrl = editFormData.thumbnail_url;
+
+      // Upload thumbnail if file is selected
+      if (thumbnailFile) {
+        try {
+          console.log('Uploading thumbnail file...');
+          thumbnailUrl = await uploadThumbnail(thumbnailFile);
+          console.log('Thumbnail uploaded, URL:', thumbnailUrl);
+        } catch (uploadError) {
+          console.error('File upload failed, but continuing with URL input:', uploadError);
+          // 파일 업로드 실패 시에도 URL 입력값이 있으면 계속 진행
+          if (!editFormData.thumbnail_url) {
+            alert('이미지 업로드에 실패했습니다. Supabase Storage "uploads" 버킷이 생성되지 않았을 수 있습니다.\n\nURL을 직접 입력하여 저장해주세요.');
+            return;
+          }
+          thumbnailUrl = editFormData.thumbnail_url;
+        }
+      }
+
+      console.log('Final thumbnail URL:', thumbnailUrl);
+
+      const updateData = {
+        name: editFormData.name,
+        description: editFormData.description,
+        url: editFormData.url,
+        category: editFormData.category,
+        tags: editFormData.tags,
+        thumbnail_url: thumbnailUrl
+      };
+
+      console.log('Updating with data:', updateData);
+
+      const { error } = await supabase
+        .from('user_sites')
+        .update(updateData)
+        .eq('id', siteId);
+
+      if (error) {
+        console.error('Error updating site:', error);
+        alert('사이트 업데이트 중 오류가 발생했습니다.');
+        return;
+      }
+
+      console.log('Database update successful');
+
+      // 로컬 상태 업데이트
+      setUserSites(sites => sites.map(site => 
+        site.id === siteId 
+          ? { ...site, ...updateData }
+          : site
+      ));
+
+      console.log('Local state updated');
+
+      // 편집 모드 종료
+      setEditingSite(null);
+      setEditFormData({});
+      setThumbnailFile(null);
+      setThumbnailPreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      alert('사이트 정보가 성공적으로 업데이트되었습니다.');
+    } catch (error) {
+      console.error('Error updating site:', error);
+      alert('사이트 업데이트 중 오류가 발생했습니다.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deleteSite = async (siteId: string) => {
+    if (!confirm('정말로 이 사이트를 삭제하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      setUploading(true);
+
+      const { error } = await supabase
+        .from('user_sites')
+        .delete()
+        .eq('id', siteId);
+
+      if (error) {
+        console.error('Error deleting site:', error);
+        alert('사이트 삭제 중 오류가 발생했습니다.');
+        return;
+      }
+
+      // 로컬 상태에서 삭제
+      setUserSites(sites => sites.filter(site => site.id !== siteId));
+      
+      // 편집 모드 종료
+      if (editingSite === siteId) {
+        setEditingSite(null);
+        setEditFormData({});
+        setThumbnailFile(null);
+        setThumbnailPreview(null);
+      }
+
+      alert('사이트가 성공적으로 삭제되었습니다.');
+    } catch (error) {
+      console.error('Error deleting site:', error);
+      alert('사이트 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // 사이트 탭 컨텐츠 컴포넌트
   const SitesTabContent = () => {
     const isUserSite = (siteId: string) => userSites.some(site => site.id === siteId);
@@ -193,7 +447,7 @@ export default function SidebarMyPageFixed() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-offWhite-200">내 사이트 현황</h2>
             <button
-              onClick={() => router.push('/sites/register')}
+              onClick={() => router.push('/sites')}
               className="px-4 py-2 bg-metallicGold-500/20 hover:bg-metallicGold-500/30 border border-metallicGold-500/30 rounded-lg text-metallicGold-500 font-medium transition-all flex items-center gap-2"
             >
               <Plus className="w-5 h-5" />
@@ -207,7 +461,7 @@ export default function SidebarMyPageFixed() {
               <h3 className="text-lg font-bold text-offWhite-200 mb-2">아직 등록한 사이트가 없습니다</h3>
               <p className="text-offWhite-500 mb-4">지금 사이트를 등록하고 홍보를 시작해보세요!</p>
               <button
-                onClick={() => router.push('/sites/register')}
+                onClick={() => router.push('/sites')}
                 className="px-6 py-3 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 text-deepBlack-900 rounded-lg font-bold"
               >
                 첫 사이트 등록하기
@@ -220,45 +474,273 @@ export default function SidebarMyPageFixed() {
                   key={site.id}
                   className="bg-deepBlack-300/50 border border-metallicGold-900/30 rounded-xl p-6 hover:border-metallicGold-700/50 transition-all"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-offWhite-200 mb-1">{site.name}</h3>
-                      <a href={site.url} target="_blank" rel="noopener noreferrer" className="text-sm text-metallicGold-500 hover:text-metallicGold-400">
-                        {site.url}
-                      </a>
+                  {editingSite === site.id ? (
+                    // 편집 모드
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-metallicGold-500">사이트 정보 수정</h3>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              updateSite(site.id);
+                            }}
+                            disabled={uploading}
+                            className="p-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                            title="저장"
+                          >
+                            {uploading ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-green-400"></div>
+                            ) : (
+                              <Save className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              deleteSite(site.id);
+                            }}
+                            disabled={uploading}
+                            className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                            title="삭제"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              cancelEditSite();
+                            }}
+                            disabled={uploading}
+                            className="p-2 bg-gray-500/20 text-gray-400 rounded-lg hover:bg-gray-500/30 transition-colors disabled:opacity-50"
+                            title="취소"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-1">사이트명</label>
+                        <input
+                          type="text"
+                          value={editFormData.name || ''}
+                          onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                          className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-1">설명</label>
+                        <textarea
+                          value={editFormData.description || ''}
+                          onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
+                          rows={3}
+                          className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-1">URL</label>
+                        <input
+                          type="url"
+                          value={editFormData.url || ''}
+                          onChange={(e) => setEditFormData({...editFormData, url: e.target.value})}
+                          className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-1">카테고리</label>
+                        <select
+                          value={editFormData.category || ''}
+                          onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
+                          className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                        >
+                          <option value="AI 도구">AI 도구</option>
+                          <option value="포트폴리오">포트폴리오</option>
+                          <option value="블로그">블로그</option>
+                          <option value="이커머스">이커머스</option>
+                          <option value="교육">교육</option>
+                          <option value="서비스">서비스</option>
+                          <option value="기타">기타</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-1">태그 (콤마로 구분)</label>
+                        <input
+                          type="text"
+                          value={Array.isArray(editFormData.tags) ? editFormData.tags.join(', ') : ''}
+                          onChange={(e) => setEditFormData({...editFormData, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)})}
+                          className="w-full px-3 py-2 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                          placeholder="AI, 자동화, 노코드"
+                        />
+                      </div>
+                      
+                      {/* 썸네일 이미지 */}
+                      <div>
+                        <label className="block text-sm font-medium text-offWhite-500 mb-2">
+                          썸네일 이미지 (선택사항)
+                        </label>
+
+                        {/* Preview Area */}
+                        {(thumbnailPreview || editFormData.thumbnail_url) && (
+                          <div className="relative mb-4">
+                            <div className="relative aspect-video bg-deepBlack-600 rounded-lg overflow-hidden border border-metallicGold-900/30 max-w-xs">
+                              <Image
+                                src={thumbnailPreview || editFormData.thumbnail_url || ''}
+                                alt="썸네일 미리보기"
+                                fill
+                                className="object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={removeThumbnail}
+                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Upload Options */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {/* File Upload */}
+                          <div>
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileSelect}
+                              className="hidden"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="w-full px-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 hover:bg-deepBlack-900 transition-colors flex items-center justify-center gap-2"
+                            >
+                              <Upload size={18} />
+                              <span>파일 업로드</span>
+                            </button>
+                          </div>
+
+                          {/* URL Input */}
+                          <div className="relative">
+                            <Globe size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-offWhite-600" />
+                            <input
+                              type="url"
+                              value={editFormData.thumbnail_url || ''}
+                              onChange={(e) => {
+                                setEditFormData({ ...editFormData, thumbnail_url: e.target.value });
+                                if (e.target.value) {
+                                  // Clear file selection when URL is entered
+                                  setThumbnailFile(null);
+                                  setThumbnailPreview(null);
+                                  if (fileInputRef.current) {
+                                    fileInputRef.current.value = '';
+                                  }
+                                }
+                              }}
+                              className="w-full pl-10 pr-4 py-3 bg-deepBlack-600 border border-metallicGold-900/30 rounded-lg text-offWhite-200 focus:outline-none focus:ring-2 focus:ring-metallicGold-500"
+                              placeholder="이미지 URL"
+                              disabled={!!thumbnailFile}
+                            />
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-offWhite-600 mt-2">
+                          💡 이미지는 5MB 이하, JPG/PNG 형식만 가능합니다
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-metallicGold-500">#{site.rank_today || '---'}</div>
-                      {getRankChange(site) !== 0 && (
-                        <div className={`text-xs flex items-center ${getRankChange(site) > 0 ? 'text-red-400' : 'text-green-400'}`}>
-                          {getRankChange(site) > 0 ? (
-                            <ArrowDown className="w-3 h-3 mr-1" />
-                          ) : (
-                            <ArrowUp className="w-3 h-3 mr-1" />
-                          )}
-                          {Math.abs(getRankChange(site))}
+                  ) : (
+                    // 일반 모드
+                    <>
+                      {/* 썸네일 이미지 (있는 경우) */}
+                      {site.thumbnail_url && (
+                        <div className="relative aspect-video bg-deepBlack-600 rounded-lg overflow-hidden mb-4 border border-metallicGold-900/20">
+                          <Image
+                            src={site.thumbnail_url}
+                            alt={site.name}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
                       )}
-                    </div>
-                  </div>
-                  <p className="text-sm text-offWhite-500 mb-4 line-clamp-2">{site.description}</p>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
-                      <Eye className="w-4 h-4 text-blue-400 mx-auto mb-1" />
-                      <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.views_today)}</p>
-                      <p className="text-xs text-offWhite-500">오늘</p>
-                    </div>
-                    <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
-                      <BarChart3 className="w-4 h-4 text-green-400 mx-auto mb-1" />
-                      <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.views_total)}</p>
-                      <p className="text-xs text-offWhite-500">총 조회</p>
-                    </div>
-                    <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
-                      <Heart className="w-4 h-4 text-red-400 mx-auto mb-1" />
-                      <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.likes)}</p>
-                      <p className="text-xs text-offWhite-500">좋아요</p>
-                    </div>
-                  </div>
+                      
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-offWhite-200 mb-1">{site.name}</h3>
+                          <a href={site.url} target="_blank" rel="noopener noreferrer" className="text-sm text-metallicGold-500 hover:text-metallicGold-400">
+                            {site.url}
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <div className="text-xl font-bold text-metallicGold-500">#{site.rank_today || '---'}</div>
+                            {getRankChange(site) !== 0 && (
+                              <div className={`text-xs flex items-center ${getRankChange(site) > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                                {getRankChange(site) > 0 ? (
+                                  <ArrowDown className="w-3 h-3 mr-1" />
+                                ) : (
+                                  <ArrowUp className="w-3 h-3 mr-1" />
+                                )}
+                                {Math.abs(getRankChange(site))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => startEditSite(site)}
+                            className="p-2 bg-metallicGold-500/20 text-metallicGold-500 rounded-lg hover:bg-metallicGold-500/30 transition-colors"
+                            title="사이트 정보 수정"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-offWhite-500 mb-3 line-clamp-2">{site.description}</p>
+                      
+                      {/* 카테고리와 태그 표시 */}
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                        <span className="px-2 py-1 bg-metallicGold-500/10 text-metallicGold-500 rounded text-xs font-medium">
+                          {site.category || '미분류'}
+                        </span>
+                        {site.tags && site.tags.slice(0, 2).map((tag, index) => (
+                          <span key={index} className="px-2 py-1 bg-deepBlack-600 text-offWhite-600 rounded text-xs">
+                            #{tag}
+                          </span>
+                        ))}
+                        {site.tags && site.tags.length > 2 && (
+                          <span className="text-xs text-offWhite-500">+{site.tags.length - 2}</span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
+                          <Eye className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.views_today)}</p>
+                          <p className="text-xs text-offWhite-500">오늘</p>
+                        </div>
+                        <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
+                          <BarChart3 className="w-4 h-4 text-green-400 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.views_total)}</p>
+                          <p className="text-xs text-offWhite-500">총 조회</p>
+                        </div>
+                        <div className="text-center p-3 bg-deepBlack-900/30 rounded-lg">
+                          <Heart className="w-4 h-4 text-red-400 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-offWhite-200">{formatNumber(site.likes)}</p>
+                          <p className="text-xs text-offWhite-500">좋아요</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -401,7 +883,16 @@ export default function SidebarMyPageFixed() {
       {/* 공통 헤더 */}
       <Header currentPage="mypage" />
       
-      <div className="flex">
+      {/* 모바일 오버레이 */}
+      {sidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 pt-20"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      {/* 헤더 아래부터 시작하는 컨테이너 */}
+      <div className="flex pt-20">
         {/* 모바일 메뉴 토글 */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -412,11 +903,11 @@ export default function SidebarMyPageFixed() {
         
         {/* 사이드바 */}
         <aside
-          className={`w-64 bg-deepBlack-800 border-r border-metallicGold-900/30 ${
+          className={`w-64 bg-deepBlack-800 border-r border-metallicGold-900/30 fixed lg:static top-20 left-0 h-[calc(100vh-5rem)] lg:h-auto z-45 ${
             sidebarOpen ? 'block' : 'hidden'
           } lg:block`}
         >
-          <div className="p-6">
+          <div className="p-6 h-full overflow-y-auto">
             {/* 사용자 정보 */}
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-4">
@@ -473,7 +964,7 @@ export default function SidebarMyPageFixed() {
         </aside>
         
         {/* 메인 콘텐츠 */}
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8 min-h-[calc(100vh-5rem)]">
           {/* 대시보드 */}
           {activeTab === 'dashboard' && (
             <div>

@@ -223,8 +223,9 @@ async function generateSingleContent(category: string, topic?: string): Promise<
   const keywords = selectRandomKeywords(category, 3);
   const mainKeyword = topic || keywords[0];
   
-  // 문서 조건에 맞는 직접 콘텐츠 생성 (Gemini API 우회)
-  let parsed;
+  try {
+    // 문서 조건에 맞는 직접 콘텐츠 생성 (Gemini API 우회)
+    let parsed;
   
   if (category === 'AI 부업정보') {
     parsed = generateAISideIncomeContent(mainKeyword, keywords);

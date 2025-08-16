@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 import Header from '@/components/Header';
+import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
@@ -300,11 +301,13 @@ export default function SitesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-deepBlack-900">
-      <Header currentPage="sites" />
+    <div className="min-h-screen bg-deepBlack-900 relative overflow-hidden">
+      <NeuralNetworkBackground />
+      <div className="relative z-10">
+        <Header currentPage="sites" />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
+        {/* Hero Section */}
+        <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -771,6 +774,7 @@ export default function SitesPage() {
           </motion.div>
         </div>
       )}
+      </div>
     </div>
   );
 }

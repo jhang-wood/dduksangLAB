@@ -19,7 +19,7 @@ export default function CountdownTimer() {
   });
 
   useEffect(() => {
-    const targetDate = new Date('2025-08-15T19:00:00+09:00'); // 2025년 8월 15일 오후 7시 (한국 시간)
+    const targetDate = new Date('2025-08-20T19:00:00+09:00'); // 2025년 8월 20일 오후 7시 (한국 시간)
 
     const calculateTimeLeft = () => {
       const now = new Date();

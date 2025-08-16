@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Shield, Users, BookOpen, TrendingUp, Settings, Brain } from 'lucide-react';
+import { Shield, Users, BookOpen, TrendingUp, Settings, Brain, Globe } from 'lucide-react';
 import Header from '@/components/Header';
 import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import { useAuth } from '@/lib/auth-context';
@@ -51,6 +51,13 @@ export default function AdminPage() {
       description: 'AI 트렌드 콘텐츠 관리',
       href: '/admin/ai-trends',
       stats: '매일 3개 자동 수집',
+    },
+    {
+      icon: Globe,
+      title: '사이트 홍보관 관리',
+      description: '사용자 등록 사이트 승인 및 관리',
+      href: '/admin/sites',
+      stats: '등록 사이트 관리',
     },
     {
       icon: TrendingUp,

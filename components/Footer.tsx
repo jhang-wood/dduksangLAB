@@ -34,10 +34,7 @@ const Footer = React.memo(function Footer() {
 
           {/* Quick Links */}
           <div className="flex items-center gap-6">
-            <Link href="/register" className="text-metallicGold-500 hover:text-metallicGold-400 transition-colors font-semibold text-sm">
-              무료 강의
-            </Link>
-            <Link href="/lectures" className="text-offWhite-400 hover:text-metallicGold-500 transition-colors text-sm">
+            <Link href="/lectures" className="text-metallicGold-500 hover:text-metallicGold-400 transition-colors font-semibold text-sm">
               강의
             </Link>
             <Link href="/ai-trends" className="text-offWhite-400 hover:text-metallicGold-500 transition-colors text-sm">

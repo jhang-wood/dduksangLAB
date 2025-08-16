@@ -118,7 +118,7 @@ export default function HomePage() {
                   <CountdownTimer />
                 </Suspense>
                 <p className="text-2xl text-metallicGold-500 mt-8 font-semibold">
-                  2025년 8월 15일 (금) 오후 7시
+                  2025년 8월 20일 (수) 오후 7시
                 </p>
               </motion.div>
 
@@ -131,7 +131,7 @@ export default function HomePage() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link
-                  href="/register"
+                  href="/lectures"
                   className="group relative inline-flex items-center gap-3 px-12 py-5 overflow-hidden rounded-2xl font-bold text-lg tracking-wide transition-all duration-300"
                 >
                   {/* Background gradient */}
@@ -302,8 +302,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* First Gateway Section - 첫 번째 관문 (Section 3) */}
-        <section className="py-32 px-4 relative overflow-hidden">
+        {/* First Gateway Section - 첫 번째 관문 (Section 3) - 압축된 버전 */}
+        <section className="py-16 px-4 relative overflow-hidden">
           {/* Creative Background Pattern */}
           <div className="absolute inset-0">
             {/* Diagonal Gradient Stripes */}
@@ -326,37 +326,37 @@ export default function HomePage() {
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-metallicGold-400/5 rounded-full blur-3xl" />
           </div>
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-5xl relative z-10">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-montserrat font-bold text-offWhite-200 mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold text-offWhite-200 mb-4">
                 이번 무료 강의에서 당신이{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-metallicGold-500 to-metallicGold-900">
                   '훔쳐 갈'
                 </span>{' '}
                 3가지 비법
               </h2>
-              <p className="text-xl md:text-2xl text-offWhite-500 max-w-4xl mx-auto mb-8">
+              <p className="text-lg md:text-xl text-offWhite-500 max-w-3xl mx-auto mb-6">
                 단 1시간만에 정보의 소비자에서{' '}
                 <span className="text-metallicGold-500 font-bold">정보의 지배자</span>가 되는 방법
               </p>
-              <div className="w-32 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
+              <div className="w-24 h-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-900 mx-auto" />
             </motion.div>
 
-            {/* Creative Cards Layout - Zigzag Pattern */}
-            <div className="space-y-12">
+            {/* Compact Cards Layout */}
+            <div className="space-y-6">
               {[
                 {
                   number: '1',
                   badge: '비법 공개',
                   title: '고가 강의 "자동 분석 시스템" 구축법',
                   description:
-                    '300만원짜리 강의 결제 대신,\nAI에게 강의 내용을 분석시켜\n핵심 커리큘럼과 노하우만 추출하는 시스템을 직접 만듭니다.\n더 이상 정보의 소비자가 아닌, 정보의 \'지배자\'가 되십시오.',
+                    '300만원짜리 강의 결제 대신, AI에게 강의 내용을 분석시켜 핵심만 추출하는 시스템을 직접 만듭니다.',
                   icon: Brain,
                   highlight: '정보의 지배자',
                 },
@@ -365,7 +365,7 @@ export default function HomePage() {
                   badge: '실전 데모',
                   title: '실시간 "텔레그램 코딩" 시연',
                   description:
-                    '지하철에서, 카페에서, 어디서든\n텔레그램 채팅만으로 즉시 프로그램을 만드는 혁신적인 방법.\n컴퓨터 없이도 아이디어를 현실로 만드는 경험을 하게 됩니다.',
+                    '지하철에서, 카페에서, 어디서든 텔레그램 채팅만으로 즉시 프로그램을 만드는 혁신적인 방법.',
                   icon: MessageSquare,
                   highlight: '언제 어디서든',
                 },
@@ -374,7 +374,7 @@ export default function HomePage() {
                   badge: '즉시 활용',
                   title: '밥 먹듯이 EXE 뽑아내는 "메타 자동화" 설계도',
                   description:
-                    '아이디어만 있으면 클릭 몇 번에\n자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다.\n이는 당신이 평생 써먹을 \'디지털 건물\'을 짓는 능력입니다.',
+                    '아이디어만 있으면 클릭 몇 번에 자동화 프로그램(EXE), 웹사이트가 튀어나오는 경험을 하게 됩니다.',
                   icon: Rocket,
                   highlight: '평생 써먹을 능력',
                 },
@@ -382,66 +382,54 @@ export default function HomePage() {
                 <motion.div
                   key={index}
                   initial={{ 
-                    x: index % 2 === 0 ? -50 : 50, 
-                    opacity: 0,
-                    rotateY: index % 2 === 0 ? -5 : 5
+                    x: index % 2 === 0 ? -30 : 30, 
+                    opacity: 0
                   }}
                   whileInView={{ 
                     x: 0, 
-                    opacity: 1,
-                    rotateY: 0
+                    opacity: 1
                   }}
                   whileHover={{
-                    scale: 1.02,
-                    rotateY: index % 2 === 0 ? 3 : -3,
+                    scale: 1.01,
                     transition: { duration: 0.3 }
                   }}
-                  transition={{ delay: 0.2 + index * 0.15, duration: 0.6 }}
+                  transition={{ delay: 0.1 + index * 0.1, duration: 0.5 }}
                   viewport={{ once: true }}
-                  className={`group relative ${index % 2 === 0 ? 'md:mr-auto md:w-[85%]' : 'md:ml-auto md:w-[85%]'}`}
-                  style={{ perspective: '1000px' }}
+                  className="group relative"
                 >
-                  {/* Card Glow Background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-metallicGold-500/20 via-metallicGold-600/10 to-transparent rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-110" />
-                  
-                  {/* Main Card */}
-                  <div className="relative bg-gradient-to-br from-deepBlack-300/70 via-deepBlack-400/50 to-deepBlack-500/70 backdrop-blur-md border border-metallicGold-900/30 rounded-3xl overflow-hidden group-hover:border-metallicGold-500/50 transition-all duration-500 shadow-2xl">
-                    {/* Number Badge - Large Background */}
-                    <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-br from-metallicGold-500/20 to-metallicGold-600/10 rounded-full blur-2xl" />
-                    <div className="absolute top-8 left-8 text-8xl font-black text-metallicGold-500/10">
-                      {secret.number}
-                    </div>
-                    
+                  {/* Compact Card */}
+                  <div className="relative bg-gradient-to-br from-deepBlack-300/60 via-deepBlack-400/40 to-deepBlack-500/60 backdrop-blur-md border border-metallicGold-900/30 rounded-2xl overflow-hidden group-hover:border-metallicGold-500/50 transition-all duration-300 shadow-xl">
                     {/* Content */}
-                    <div className="relative p-10">
-                      <div className="flex items-start gap-6">
+                    <div className="relative p-6">
+                      <div className="flex items-start gap-4">
                         <div className="flex-shrink-0">
-                          <motion.div 
-                            whileHover={{ rotate: 360 }}
-                            transition={{ duration: 0.6 }}
-                            className="relative"
-                          >
-                            <div className="w-20 h-20 bg-gradient-to-br from-metallicGold-500/30 to-metallicGold-900/30 rounded-2xl flex items-center justify-center group-hover:from-metallicGold-500/40 group-hover:to-metallicGold-900/40 transition-all duration-300">
-                              <secret.icon className="w-10 h-10 text-metallicGold-500" />
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-14 h-14 bg-gradient-to-br from-metallicGold-500/30 to-metallicGold-900/30 rounded-xl flex items-center justify-center">
+                              <secret.icon className="w-7 h-7 text-metallicGold-500" />
                             </div>
-                            <span className="absolute -top-2 -right-2 px-3 py-1 bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 text-deepBlack-900 text-xs font-bold rounded-full shadow-lg">
+                            <span className="px-2 py-0.5 bg-gradient-to-r from-metallicGold-500 to-metallicGold-600 text-deepBlack-900 text-xs font-bold rounded-full whitespace-nowrap">
                               {secret.badge}
                             </span>
-                          </motion.div>
+                          </div>
                         </div>
                         
                         <div className="flex-1">
-                          <h3 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-offWhite-100 to-offWhite-300 bg-clip-text text-transparent mb-4">
-                            {secret.title}
-                          </h3>
-                          <p className="text-lg text-offWhite-400 leading-relaxed whitespace-pre-line mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl font-black text-metallicGold-500/50">
+                              {secret.number}
+                            </span>
+                            <h3 className="text-lg md:text-xl font-bold bg-gradient-to-r from-offWhite-100 to-offWhite-300 bg-clip-text text-transparent">
+                              {secret.title}
+                            </h3>
+                          </div>
+                          <p className="text-sm text-offWhite-400 leading-relaxed mb-3">
                             {secret.description}
                           </p>
                           
-                          {/* Highlight Bar */}
-                          <div className="flex items-center gap-3 mt-6 p-4 bg-metallicGold-500/10 rounded-xl border border-metallicGold-500/30">
-                            <div className="w-2 h-2 bg-metallicGold-500 rounded-full animate-pulse" />
-                            <p className="text-metallicGold-400 font-bold text-lg">
+                          {/* Compact Highlight Bar */}
+                          <div className="flex items-center gap-2 px-3 py-2 bg-metallicGold-500/10 rounded-lg border border-metallicGold-500/30">
+                            <div className="w-1.5 h-1.5 bg-metallicGold-500 rounded-full animate-pulse" />
+                            <p className="text-metallicGold-400 font-semibold text-sm">
                               {secret.highlight}
                             </p>
                           </div>
@@ -450,7 +438,7 @@ export default function HomePage() {
                     </div>
                     
                     {/* Bottom Gradient Line */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-metallicGold-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-metallicGold-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 </motion.div>
               ))}
@@ -796,7 +784,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-metallicGold-500 via-metallicGold-600 to-metallicGold-700 rounded-2xl blur-xl opacity-60 animate-pulse-soft scale-110" />
                 
                 <Link
-                  href="/register"
+                  href="/lectures"
                   className="group relative block overflow-hidden rounded-2xl transform-gpu"
                 >
                   {/* Enhanced Gradient Background */}
